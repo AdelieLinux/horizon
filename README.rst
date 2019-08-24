@@ -26,7 +26,7 @@ back-end source code, and front-end source code for Project Horizon.
 
 License
 ```````
-Development documentation documentation is licensed under a
+Development documentation for Project Horizon is licensed under the
 Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
 
 You should have received a copy of the license along with this
