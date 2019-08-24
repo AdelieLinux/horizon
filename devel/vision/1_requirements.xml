@@ -3,19 +3,108 @@
     <title>Organisational Requirements</title>
     <section id="background">
         <title>Background</title>
-        <para/>
+        <para>The Adélie Linux distribution has a belief that "all people, in all walks of life, deserve the very best that their technology can offer them".<footnote><para><citetitle>Adélie Linux home page</citetitle>, 2019-08-23, <ulink url="https://www.adelielinux.org/">adelielinux.org</ulink>.</para></footnote>
+            However, at present, the only way to install the Adélie Linux distribution is via a list of complex commands, entered at a shell prompt that may be foreign or confusing to many people.<footnote><para><citetitle>HOWTO: Manually install Adélie Linux</citetitle>, 2019-01-12, <ulink url="https://wiki.adelielinux.org/wiki/HOWTO:Manually_install_Ad%C3%A9lie_Linux">Adélie Wiki</ulink>.</para></footnote>
+            Further, improper execution of these commands can cause permanent loss of data<footnote><para>Such as improper use of <command>parted</command>, or even <command>mkfs</command>.</para></footnote>, or even hardware damage<footnote><para>Such as <ulink url="https://github.com/rhboot/efivar#warning">lovely UEFI implementations</ulink>.</para></footnote>.</para>
+        <para>To this end, a new system must be created.  The system must allow any user to install Adélie Linux onto their computer without needing to use a command line.</para>
+        <para>Additionally, we have identified a significant user need for installation automation.</para>
     </section>
     <section id="opportunity">
         <title>Opportunity</title>
-        <para/>
+        <para>The current Linux distribution landscape contains three major types of installation systems or routines: those that hold the user's hands at the expense of flexibility (or "batteries included"); those that are rigid and don't work well outside of a limited scope (or "fixed"); and those that require the user to do most, if not all, of the installation themselves using a command line (or "manual").</para>
+        <section id="existing">
+            <title>Existing Systems</title>
+            <section id="batteries">
+                <title>Batteries included</title>
+                <para>The Ubuntu distribution uses an installer named Ubiquity.
+                    Ubiquity is very user friendly; however, it has many shortcomings.
+                    It cannot be scripted - administrators must use the Debian installer with a preseed file to script an Ubuntu installation.
+                    The partitioning options offered are limited.
+                    It uses DBus and udevadm to set up networking, which is not robust.
+                    It is focused on x86 and unlikely to work well on other architectures.
+                    It uses Debian's partman internally for partitioning, which is a mess on its own.</para>
+                <para>The Debian distribution uses debian-installer, or d-i.  d-i offers a lot of flexibility with plug-in installation steps.
+                    However, it suffers from many limitations.
+                    The scripting format, termed "preseed", is extremely convoluted and very poorly documented.
+                    It has been described as a "nightmare" by its own users<footnote><para>See <ulink url="https://lists.debian.org/debian-boot/2012/01/msg00016.html">Eromenko 2012</ulink>, for example.</para></footnote> and has many warts as a result of being partially written in Perl, and partially in C, which resulted in a maintenance burden.
+                    In addition, d-i does not always support common hardware, especially on the remastered CDs required for scripting - notably, SATA drivers are not added which renders it unusable on most modern computers.
+                    It suffers from a severe lack of predictable results; given the same input, it does not always produce the same output.
+                    This is due to various race conditions throughout the system.</para>
+                <para>The Red Hat and Fedora family of distributions use the Anaconda installer.
+                    This is one of the oldest systems still in use today, and is wholly written in Python.
+                    Scripting support via Kickstart files are much better than d-i, but still suffer a number of problems.
+                    Repository signatures cannot be added, so if packages are required that are not present in the base RHEL/Fedora repo, you must allow unsigned packages to be installed.
+                    This can present a security risk in the case of DNS or ARP poisoning.
+                    Further, until the most recent version of Fedora, the only manner supported of wireless network authentication was WEP, which is highly insecure.
+                    The newest version additionally supports WPA passphrases; it does not support RADIUS authentication or certificate-based authentication.</para>
+                <para>The Calamares system is considered most likely to be a "batteries included" system, but was not thoroughly investigated during the requirements elicitation phase.</para>
+            </section>
+            <section id="fixed">
+                <title>Fixed</title>
+                <para>The Alpine Linux installer is a simple set of shell scripts that offers very few options.
+                    A user can choose between using a hard disk for the entire system or for data only (leaving the OS and software in a tmpfs).
+                    There is no option to use an existing partition map, or to use an alternative to LVM2, nor is there support for RAID.
+                    As it is a set of interactive shell scripts, it does not make sense to script an installation using it; typically, users script a manual installation (such as in the Manual section).
+                    There is no set of default packages; all the installation routine will install is the very base system.
+                    There is also no support for using IPv6 in the Alpine Linux installer, which is crucial for the modern Internet.</para>
+                <para>FreeBSD and OpenBSD, while not strictly Linux distributions, also fall in this category.
+                    OpenBSD's installation system is very close to Alpine's, while the FreeBSD bsdinstall makes many assumptions about the user's desired choices and offers very little customisation.
+                    One area where bsdinstall succeeds is the partition interface.
+                    None of the three major BSD derivatives support any form of scripted install.</para>
+            </section>
+            <section id="manual">
+                <title>Manual</title>
+                <para>The ArchLinux distribution provides a list of commands for the user to run, and provides a very minimal environment on their boot CD to allow them to run.
+                    You must manually bootstrap the package manager, Pacman, and install the base system packages yourself.
+                    This lends itself to scripting, but it again must be entirely manual.
+                    The user would be scripting the disk manipulation, clock set up, package database initialisation, and so on, themselves.</para>
+                <para>The Gentoo distribution provides a "stage" tarball containing a base system.
+                    The user must create partitions manually before extracting the stage to the target.
+                    The user must also build and install their own kernel and bootloader.
+                    As with ArchLinux, any scripting would be automating the low-level commands themselves; there is no provided framework for automating installs in Gentoo.</para>
+            </section>
+        </section>
+        <section id="point">
+            <title>Where Our Solution Fits</title>
+            <para>We feel that there is a significant user need for an installation system that is as easy to use as any of the proprietary operating systems, such as Windows 7 or Mac OS X.
+                Such a system would significantly further our goal of bringing high-quality, Libre software to all people of all walks of life.
+                Additionally, such a system could gain Adélie Linux significant market-share, leading to more sponsors, which will lead to further growth and the ability to take on even more ambitious projects in the future.</para>
+        </section>
     </section>
     <section id="objectives">
         <title>Objectives and Success Criteria</title>
-        <para/>
+        <para>We have identified a few key objectives that we feel are important for the system to meet.</para>
+        <para>Note that "completing" the installation routine, for the purpose of these objectives, means that the user has finished answering the system and that the system may now proceed to committing the installation.</para>
+        <orderedlist id="OBJ">
+            <listitem id="OBJ-1"><para>Users who have not used the Adélie Linux system before, but have prior experience with other Linux systems, shall be able to complete the installation routine in less than 15 minutes.</para></listitem>
+            <listitem id="OBJ-2"><para>Users who have not used any Linux system before shall be able to complete the installation routine in less than one hour.</para></listitem>
+            <listitem id="OBJ-3"><para>Positive reviews of our installation system in at least two publications within six months.</para></listitem>
+            <listitem id="OBJ-4"><para>Rated as the best installation system in at least one publication within one year.</para></listitem>
+        </orderedlist>
     </section>
     <section id="classes">
         <title>User Classes and Needs</title>
-        <para/>
+        <para>We have identified four major classes of users, each with their own unique set of needs and requirements for Project Horizon.
+            For each class of user, we have an example profile of a person who would belong to that class of user.
+            We then list their reasons for using the system and the features that matter most to them.</para>
+        <section id="beginner">
+            <title>Charlie: The Beginner</title>
+            <para>Charlie is a 45 year old designer.  Charlie is concerned about privacy using the Windows 10 OS, and would like to install an alternative operating system.  Charlie does not want to erase the current Windows install.</para>
+            <section>
+                <title>Needs</title>
+                <orderedlist id="NEB">
+                    <listitem id="NEB-1"><para>Simple user interface with defaults pre-set for most common identifiable use cases.</para></listitem>
+                    <listitem id="NEB-2"><para>Ability to install "side-by-side" with another OS with minimal effort, including:
+                        <orderedlist>
+                            <listitem><para>resizing the current OS partition;</para></listitem>
+                            <listitem><para>creating a new partition for Adélie Linux; and</para></listitem>
+                            <listitem><para>ensuring a boot menu is displayed that allows choice on whether to boot Adélie Linux or Windows.</para></listitem>
+                        </orderedlist></para>
+                    </listitem>
+                    <listitem id="NEB-3"><para>On-screen help for explaining terms used and an explanation for available options.</para></listitem>
+                </orderedlist>
+            </section>
+        </section>
     </section>
     <section id="risks">
         <title>Risks</title>
