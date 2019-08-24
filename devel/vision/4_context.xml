@@ -1,3 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <chapter label="4" id="context">
+    <title>Project Context</title>
+    <section id="priorities">
+        <title>Project Priorities</title>
+        <para/>
+    </section>
+    <section id="environment">
+        <title>Operating Environment</title>
+        <para/>
+    </section>
 </chapter>

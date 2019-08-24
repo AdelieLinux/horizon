@@ -1,3 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <chapter label="1" id="requirements">
+    <title>Organisational Requirements</title>
+    <section id="background">
+        <title>Background</title>
+        <para/>
+    </section>
+    <section id="opportunity">
+        <title>Opportunity</title>
+        <para/>
+    </section>
+    <section id="objectives">
+        <title>Objectives and Success Criteria</title>
+        <para/>
+    </section>
+    <section id="classes">
+        <title>User Classes and Needs</title>
+        <para/>
+    </section>
+    <section id="risks">
+        <title>Risks</title>
+        <para/>
+    </section>
 </chapter>

@@ -1,3 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <chapter label="3" id="scope">
+    <title>Scope and Limitations</title>
+    <section id="v1">
+        <title>Scope of Version 1.0</title>
+        <para/>
+    </section>
+    <section id="vNext">
+        <title>Scope of Future Versions</title>
+        <para/>
+    </section>
+    <section id="exclusions">
+        <title>Purposeful Exclusions</title>
+        <para/>
+    </section>
 </chapter>

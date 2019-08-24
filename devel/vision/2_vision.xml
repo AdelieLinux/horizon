@@ -1,3 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <chapter label="2" id="vision">
+    <title>Project Vision</title>
+    <section id="statement">
+        <title>Vision Statement</title>
+        <para/>
+    </section>
+    <section id="features">
+        <title>System Features</title>
+        <para/>
+    </section>
+    <section id="assumptions">
+        <title>Assumptions Made</title>
+        <para/>
+    </section>
+    <section id="dependencies">
+        <title>External Dependencies</title>
+        <para/>
+    </section>
 </chapter>
