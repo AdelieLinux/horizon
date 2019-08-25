@@ -89,7 +89,7 @@
             We then list their reasons for using the system and the features that matter most to them.</para>
         <section id="beginner">
             <title>Charlie: The Beginner</title>
-            <para>Charlie is a 45 year old designer.  Charlie is concerned about privacy using the Windows 10 OS, and would like to install an alternative operating system.  Charlie does not want to erase the current Windows install.</para>
+            <para>Charlie is a 45 year old designer who has never used Linux before.  Charlie is concerned about privacy using the Windows 10 OS, and would like to install an alternative operating system.  Charlie does not want to erase the current OS installed on this computer.</para>
             <section>
                 <title>Needs</title>
                 <orderedlist id="NEB">
@@ -98,16 +98,72 @@
                         <orderedlist>
                             <listitem><para>resizing the current OS partition;</para></listitem>
                             <listitem><para>creating a new partition for Adélie Linux; and</para></listitem>
-                            <listitem><para>ensuring a boot menu is displayed that allows choice on whether to boot Adélie Linux or Windows.</para></listitem>
+                            <listitem><para>ensuring a boot menu is displayed that allows choice on whether to boot Adélie Linux or another OS.</para></listitem>
                         </orderedlist></para>
                     </listitem>
                     <listitem id="NEB-3"><para>On-screen help for explaining terms used and an explanation for available options.</para></listitem>
+                    <listitem id="NEB-4"><para>Disk encryption to keep data private and secure at-rest.</para></listitem>
+                </orderedlist>
+            </section>
+        </section>
+        <section id="hacker">
+            <title>Dakota: The Enthusiast</title>
+            <para>Dakota is a 27 year old Linux enthusiast.  Dakota has used other distributions and wants to try Adélie Linux on a laptop, and has opinions on package choices.</para>
+            <section>
+                <title>Needs</title>
+                <orderedlist id="NEE">
+                    <listitem id="NEE-1"><para>Customisation of partitioning, including sizes and mountpoints.</para></listitem>
+                    <listitem id="NEE-2"><para>Ability to choose init system, shell, and window manager.</para></listitem>
+                </orderedlist>
+            </section>
+        </section>
+        <section id="admin">
+            <title>Jamie: The Administrator</title>
+            <para>Jamie is a 33 year old systems administrator at a business.  Jamie wants to deploy Adélie Linux to five Web servers on a business network.</para>
+            <section>
+                <title>Needs</title>
+                <orderedlist id="NEA">
+                    <listitem id="NEA-1"><para>Network-based, scripted installation.</para></listitem>
+                    <listitem id="NEA-2"><para>Ability to select additional packages to install.</para></listitem>
+                    <listitem id="NEA-3"><para>Assurance of security and integrity, for both the installation script and the packages installed.</para></listitem>
+                </orderedlist>
+            </section>
+        </section>
+        <section id="dev">
+            <title>River: The Developer</title>
+            <para>River is a 20 year old tinkerer.  River has Single Board Computers (SBCs) such as a Pine64 and a Quark.  River also has multiple disparate laptops.</para>
+            <section>
+                <title>Needs</title>
+                <orderedlist id="NED">
+                    <listitem id="NED-1"><para>Ability to choose init system, shell, and window manager.  (See NEE-2.)</para></listitem>
+                    <listitem id="NED-2"><para>Support for esoteric hardware.</para></listitem>
+                    <listitem id="NED-3"><para>Disk encryption to keep data private and secure at-rest.  (See NEB-4.)</para></listitem>
+                    <listitem id="NED-4"><para>Customisation of partitioning, including sizes and mountpoints.  (See NEE-1.)</para></listitem>
+                    <listitem id="NED-5"><para>Ability to select additional packages to install.</para></listitem>
                 </orderedlist>
             </section>
         </section>
     </section>
     <section id="risks">
         <title>Risks</title>
-        <para/>
+        <para>We have identified the following risks associated with developing Project Horizon.</para>
+        <orderedlist id="DRI">
+            <listitem id="DRI-1"><para>User acceptance may be lower than anticipated, causing less adoption than desired for Adélie Linux.</para>
+                <para>Impact: High; Probability: Medium.</para>
+                <para>Potential mitigations: Ensure that user acceptance tests are done throughout the development cycle.  Involve parties from different communities for higher quality feedback.</para></listitem>
+            <listitem id="DRI-2"><para>Scheduling over-runs could cause severe financial losses.</para>
+                <para>Impact: High; Probability: High.</para>
+                <para>Potential mitigations: Raise funding for Adélie Linux from sources that are not contigent on the release of Project Horizon first.  Drop lower priority features that are slated for 1.0 if schedule slippage begins.</para></listitem>
+            <listitem id="DRI-3"><para>Packages and security updates could fall behind if the team puts all resources into Project Horizon.</para>
+                <para>Impact: Medium; Probability: Low.</para>
+                <para>Potential mitigations: Not every Adélie Linux committer will be dedicated to Project Horizon.  Some committers can do important security bumps while the others work on Project Horizon.</para></listitem>
+        </orderedlist>
+        <para>We have identified the following risks associated with <emphasis>not</emphasis> developing Project Horizon.</para>
+        <orderedlist id="NRI">
+            <listitem id="NRI-1"><para>Users will not want to install Adélie Linux because manual installation is too complex.</para>
+                <para>Impact: High; Probability: High.</para></listitem>
+            <listitem id="NRI-2"><para>Sponsors will not fund Adélie Linux because they cannot easily install it.</para>
+                <para>Impact: High; Probability: High.</para></listitem>
+        </orderedlist>
     </section>
 </chapter>
