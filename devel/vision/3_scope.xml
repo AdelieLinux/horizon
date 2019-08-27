@@ -12,6 +12,8 @@
     </section>
     <section id="exclusions">
         <title>Purposeful Exclusions</title>
-        <para>The Project Horizon team has not purposefully excluded any features from future roadmaps at this time.</para>
+        <orderedlist id="EXL">
+            <listitem id="EXL-1"><para>Project Horizon will not support fetching HorizonScript files over the Gopher protocol.</para></listitem>
+        </orderedlist>
     </section>
 </chapter>
