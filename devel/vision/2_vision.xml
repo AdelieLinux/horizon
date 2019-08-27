@@ -3,11 +3,21 @@
     <title>Project Vision</title>
     <section id="statement">
         <title>Vision Statement</title>
-        <para/>
+        <para>For end users and network administrators who need to install Linux on their computers, Project Horizon is a Linux installation system that provides a streamlined way to install Adélie Linux.  Unlike other distribution installers, Project Horizon focuses on ease of use, integrity, and allowing customisation while providing good defaults.</para>
     </section>
     <section id="features">
         <title>System Features</title>
-        <para/>
+        <orderedlist id="FEA">
+            <listitem id="FEA-1"><para>Configure the natural language used for user interfaces.</para></listitem>
+            <listitem id="FEA-2"><para>Configure input device behaviour.</para></listitem>
+            <listitem id="FEA-3"><para>Create and modify partition tables.</para></listitem>
+            <listitem id="FEA-4"><para>Connect to wired and wireless networks.</para></listitem>
+            <listitem id="FEA-5"><para>Configure date, time, and timezone.</para></listitem>
+            <listitem id="FEA-6"><para>Select packages to install.</para></listitem>
+            <listitem id="FEA-7"><para>Configure boot loaders and settings.</para></listitem>
+            <listitem id="FEA-8"><para>Install the Adélie Linux system with the specified configuration and customisation.</para></listitem>
+            <listitem id="FEA-9"><para>Install the Adélie Linux system from configuration specified in a file or network location, without user interaction.</para></listitem>
+        </orderedlist>
     </section>
     <section id="assumptions">
         <title>Assumptions Made</title>
@@ -15,6 +25,6 @@
     </section>
     <section id="dependencies">
         <title>External Dependencies</title>
-        <para/>
+        <para></para>
     </section>
 </chapter>
