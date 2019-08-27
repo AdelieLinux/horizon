@@ -3,14 +3,15 @@
     <title>Scope and Limitations</title>
     <section id="v1">
         <title>Scope of Version 1.0</title>
-        <para/>
+        <para>The 1.0 release of Project Horizon must have a focus on reliability over featureset.  Advanced use cases may require manual (chroot-based) installation if the schedule extends too far out.</para>
+        <para>The needs of the Enthusiast class, or "Dakota", should be considered the highest priority, followed by the Beginner class, or "Charlie".  The other two user classes do not have a high priority for version 1.0.</para>
     </section>
     <section id="vNext">
         <title>Scope of Future Versions</title>
-        <para/>
+        <para>It is widely desired that a future version of Project Horizon have a post-installation OOBE (Out of Box Experience) that allows users to customise time zone, user account, and other information after the installation is already completed.  This matches the installation flow of Windows and Mac OS X, and would allow OEMs to pre-install Adélie Linux on their machines for end users.</para>
     </section>
     <section id="exclusions">
         <title>Purposeful Exclusions</title>
-        <para/>
+        <para>The Project Horizon team has not purposefully excluded any features from future roadmaps at this time.</para>
     </section>
 </chapter>

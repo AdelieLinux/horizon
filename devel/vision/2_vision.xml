@@ -15,16 +15,74 @@
             <listitem id="FEA-5"><para>Configure date, time, and timezone.</para></listitem>
             <listitem id="FEA-6"><para>Select packages to install.</para></listitem>
             <listitem id="FEA-7"><para>Configure boot loaders and settings.</para></listitem>
-            <listitem id="FEA-8"><para>Install the Adélie Linux system with the specified configuration and customisation.</para></listitem>
-            <listitem id="FEA-9"><para>Install the Adélie Linux system from configuration specified in a file or network location, without user interaction.</para></listitem>
+            <listitem id="FEA-8"><para>Configure user account information, including root password, user name, user password, and user icon.</para></listitem>
+            <listitem id="FEA-9"><para>Install the Adélie Linux system with the specified configuration and customisation.</para></listitem>
+            <listitem id="FEA-10"><para>Install the Adélie Linux system from configuration specified in a file or network location, without user interaction.</para></listitem>
         </orderedlist>
     </section>
     <section id="assumptions">
         <title>Assumptions Made</title>
-        <para/>
+        <orderedlist id="ASM">
+            <listitem id="ASM-1"><para>Project Horizon will be the only official way to install Adélie Linux outside of manual (chroot-based) installation.</para></listitem>
+            <listitem id="ASM-2"><para>Project Horizon will have exclusive control of the target system while it is committing to disk.  No other user-facing applications will be allowed to run during this process.</para></listitem>
+        </orderedlist>
     </section>
     <section id="dependencies">
         <title>External Dependencies</title>
-        <para></para>
+        <formalpara id="DEP-1">
+            <title>DEP-1: Input via console-setup</title>
+            <para>The system must integrate with the existing console-setup tooling for configuring the keyboard layout.</para>
+        </formalpara>
+        <formalpara id="DEP-2">
+            <title>DEP-2: Partition table formats</title>
+            <para>The system must be able to create, read, and modify partition tables and disk labels used on the architectures that the system will be used on.  For release 1.0, the following formats have been identified:
+                <orderedlist id="DEP2_sub">
+                    <listitem id="DEP-2.1"><para>Master Boot Record (MBR),</para></listitem>
+                    <listitem id="DEP-2.2"><para>GUID Partition Table (GPT), and</para></listitem>
+                    <listitem id="DEP-2.3"><para>Apple Partition Map (APM).</para></listitem>
+                </orderedlist>
+            </para>
+        </formalpara>
+        <formalpara id="DEP-3">
+            <title>DEP-3: Network interface manipulation</title>
+            <para>The system must be able to manipulate the following aspects of network interface state:
+                <orderedlist id="DEP3_sub">
+                    <listitem id="DEP-3.1"><para>The status of the link (up / down).</para></listitem>
+                    <listitem id="DEP-3.2"><para>The physical (MAC) address, if the interface supports spoofing.</para></listitem>
+                    <listitem id="DEP-3.3"><para>The network address and host address of the interface, using IP version 4 and/or 6.</para></listitem>
+                    <listitem id="DEP-3.4"><para>Routes and their metrics.</para></listitem>
+                </orderedlist>
+            </para>
+        </formalpara>
+        <formalpara id="DEP-4">
+            <title>DEP-4: Package manager</title>
+            <para>The system must be able to interface with the package manager in the following ways:
+                <orderedlist id="DEP4_sub">
+                    <listitem id="DEP-4.1"><para>To determine the estimated disk space required by the packages selected.</para></listitem>
+                    <listitem id="DEP-4.2"><para>To determine if any conflicts exist between packages selected.</para></listitem>
+                    <listitem id="DEP-4.3"><para>To install packages into a specified root directory.</para></listitem>
+                </orderedlist>
+            </para>
+        </formalpara>
+        <formalpara id="DEP-5">
+            <title>DEP-5: Boot loaders</title>
+            <para>The system must be able to configure multiple different types of bootloaders.  For release 1.0, the following formats have been identified:
+                <orderedlist id="DEP5_sub">
+                    <listitem id="DEP-5.1"><para>GRUB 2.</para></listitem>
+                    <listitem id="DEP-5.2"><para>syslinux.</para></listitem>
+                </orderedlist>
+            </para>
+        </formalpara>
+        <formalpara id="DEP-6">
+            <title>DEP-6: Network script loading</title>
+            <para>The system must be able to read an HorizonScript file from network locations.  The protocols supported for release 1.0 include:
+                <orderedlist id="DEP6_sub">
+                    <listitem id="DEP-6.1"><para>HTTP/1.1.</para></listitem>
+                    <listitem id="DEP-6.2"><para>HTTPS (HTTP/1.1 with TLS).</para></listitem>
+                    <listitem id="DEP-6.3"><para>TFTP.</para></listitem>
+                    <listitem id="DEP-6.4"><para>SFTP.</para></listitem>
+                    <listitem id="DEP-6.5"><para>CIFS.</para></listitem>
+                </orderedlist>
+            </para>
     </section>
 </chapter>
