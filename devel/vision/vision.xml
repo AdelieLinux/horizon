@@ -11,10 +11,10 @@
         <title>Project Horizon: Vision</title>
         <authorgroup>
             <author><firstname>A.</firstname><surname>Wilcox</surname><affiliation><orgname>Adélie Linux</orgname></affiliation></author>
-            <author><firstname>Elizabeth</firstname><surname>Myers</surname></author>
+            <author><firstname>Elizabeth</firstname><surname>Myers</surname><affiliation><orgname>Dentsply Sirona</orgname></affiliation></author>
         </authorgroup>
         <edition>Vision draft for Horizon 1.0</edition>
-        <pubdate>2019</pubdate>
+        <pubdate>2019-08-27</pubdate>
         <copyright>
             <year>2015</year>
             <year>2016</year>
