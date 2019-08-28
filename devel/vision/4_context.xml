@@ -3,10 +3,97 @@
     <title>Project Context</title>
     <section id="priorities">
         <title>Project Priorities</title>
-        <para/>
+        <section id="quality_dimension">
+            <title>Quality</title>
+            <para>The features that are agreed on for 1.0 must be implemented reliably and well-tested.  To that end, both automated and manual (user acceptance) testing shall be performed, and must cover at least 90% of all identified code paths.</para>
+        </section>
+        <section id="schedule_dimension">
+            <title>Schedule</title>
+            <para>Project Horizon 1.0 must ship with the Adélie Linux 1.0 distribution, which is scheduled to release on 2019-10-01.  Overrun will not be well-tolerated.  For proper testing procedures, Project Horizon should be feature complete by 2019-09-15.</para>
+        </section>
+        <section id="team_dimension">
+            <title>Team</title>
+            <para>A number of willing participants have been identified across all identified user classes for user acceptance testing.  Additionally, some of the Adélie Linux packagers may be able to contribute some work to Horizon.</para>
+        </section>
     </section>
     <section id="environment">
         <title>Operating Environment</title>
-        <para/>
+        <para>Project Horizon has two major components: the Horizon UI, which allows users to configure their system, and the Horizon Runner, which performs the configuration requested.</para>
+        <para>The Horizon Runner must be able to run on all computers where Adélie Linux can run; this implies that the minimum operating environment for the Horizon Runner is equivalent to the minimum operating environment for Adélie Linux.  At the time of this writing, this is:</para>
+        <table frame="all">
+            <title>Minimum operating environment for Horizon Runner</title>
+            <tgroup cols="6" align="left" colsep="1" rowsep="1">
+            <colspec colname="requirement"/>
+            <colspec colname="ppc32"/>
+            <colspec colname="ppc64"/>
+            <colspec colname="arm64"/>
+            <colspec colname="x86_32"/>
+            <colspec colname="x86_64"/>
+            <thead>
+                <row>
+                    <entry>Requirement</entry>
+                    <entry>32-bit PPC</entry>
+                    <entry>64-bit PPC</entry>
+                    <entry>64-bit ARM</entry>
+                    <entry>32-bit x86</entry>
+                    <entry>64-bit x86</entry>
+                </row>
+            </thead>
+            <tbody>
+                <row>
+                    <entry>CPU</entry>
+                    <entry>300 MHz G3 or higher</entry>
+                    <entry>1.6 GHz 970 or higher</entry>
+                    <entry>ARMv8</entry>
+                    <entry>100 MHz Pentium MMX or higher</entry>
+                    <entry>615 MHz x86_64</entry>
+                </row>
+                <row>
+                    <entry>Memory</entry>
+                    <entry namest="ppc32" nameend="x86_64">48 MB</entry>
+                </row>
+            </tbody>
+            </tgroup>
+        </table>
+        <para>The Horizon UI will require the following minimum operating environment:</para>
+        <table frame="all">
+            <title>Minimum operating environment for Horizon UI</title>
+            <tgroup cols="6" align="left" colsep="1" rowsep="1">
+            <colspec colname="requirement"/>
+            <colspec colname="ppc32"/>
+            <colspec colname="ppc64"/>
+            <colspec colname="arm64"/>
+            <colspec colname="x86_32"/>
+            <colspec colname="x86_64"/>
+            <thead>
+                <row>
+                    <entry>Requirement</entry>
+                    <entry>32-bit PPC</entry>
+                    <entry>64-bit PPC</entry>
+                    <entry>64-bit ARM</entry>
+                    <entry>32-bit x86</entry>
+                    <entry>64-bit x86</entry>
+                </row>
+            </thead>
+            <tbody>
+                <row>
+                    <entry>CPU</entry>
+                    <entry>500 MHz G3 or higher</entry>
+                    <entry>1.6 GHz 970 or higher</entry>
+                    <entry>ARMv8</entry>
+                    <entry>300 MHz Pentium II or higher</entry>
+                    <entry>615 MHz x86_64</entry>
+                </row>
+                <row>
+                    <entry>Memory</entry>
+                    <entry namest="ppc32" nameend="x86_64">128 MB</entry>
+                </row>
+                <row>
+                    <entry>Graphics</entry>
+                    <entry namest="ppc32" nameend="x86_64">SVGA 800x600 or better; X.Org support for graphics adaptor.</entry>
+                </row>
+            </tbody>
+            </tgroup>
+        </table>
     </section>
 </chapter>

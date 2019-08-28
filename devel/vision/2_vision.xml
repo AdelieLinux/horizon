@@ -25,6 +25,7 @@
         <orderedlist id="ASM">
             <listitem id="ASM-1"><para>Project Horizon will be the only official way to install Adélie Linux outside of manual (chroot-based) installation.</para></listitem>
             <listitem id="ASM-2"><para>Project Horizon will have exclusive control of the target system while it is committing to disk.  No other user-facing applications will be allowed to run during this process.</para></listitem>
+            <listitem id="ASM-3"><para>The Horizon UI will run in a graphical display mode, not a text-only mode.</para></listitem>
         </orderedlist>
     </section>
     <section id="dependencies">
