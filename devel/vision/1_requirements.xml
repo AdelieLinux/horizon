@@ -11,7 +11,7 @@
     </section>
     <section id="opportunity">
         <title>Opportunity</title>
-        <para>The current Linux distribution landscape contains three major types of installation systems or routines: those that hold the user's hands at the expense of flexibility (or "batteries included"); those that are rigid and don't work well outside of a limited scope (or "fixed"); and those that require the user to do most, if not all, of the installation themselves using a command line (or "manual").</para>
+        <para>Existing installation systems in the current Linux distribution landscape do not adequately meet the needs of different Linux users.  In this section, we will review current installation systems and their deficiencies.  Current distributions contain one of three major types of installation systems or routines: those that hold the user's hands at the expense of flexibility (or "batteries included"); those that are rigid and don't work well outside of a limited scope (or "fixed"); and those that require the user to do most or all of the installation themselves using a command line (or "manual").</para>
         <section id="existing">
             <title>Existing Systems</title>
             <section id="batteries">
@@ -32,36 +32,36 @@
                     This is due to various race conditions throughout the system.</para>
                 <para>The Red Hat and Fedora family of distributions use the Anaconda installer.
                     This is one of the oldest systems still in use today, and is wholly written in Python.
-                    Scripting support via Kickstart files are much better than d-i, but still suffer a number of problems.
-                    Repository signatures cannot be added, so if packages are required that are not present in the base RHEL/Fedora repo, you must allow unsigned packages to be installed.
-                    This can present a security risk in the case of DNS or ARP poisoning.
-                    Further, until the most recent version of Fedora, the only manner supported of wireless network authentication was WEP, which is highly insecure.
+                    Scripting support via Kickstart files is higher quality than Debian's installer, but still suffers from multiple issues.
+                    Repository signatures cannot be added.  If packages are required that are not present in the base RHEL/Fedora repo, you must allow unsigned packages to be installed.  This can present a security risk in the case of DNS or ARP poisoning.
+                    Further, until the most recent version of Fedora, the only supported wireless network authentication mechanism was WEP, which is highly insecure and is typically not available on newer wireless networks.
                     The newest version additionally supports WPA passphrases; it does not support RADIUS authentication or certificate-based authentication.</para>
-                <para>The Calamares system is considered most likely to be a "batteries included" system, but was not thoroughly investigated during the requirements elicitation phase.</para>
+                <para>The Calamares system is considered most likely to be a "batteries included" system, but we did not investigate it thoroughly during our requirements elicitation phase due to time constraints.</para>
             </section>
             <section id="fixed">
                 <title>Fixed</title>
-                <para>The Alpine Linux installer is a simple set of shell scripts that offers very few options.
-                    A user can choose between using a hard disk for the entire system or for data only (leaving the OS and software in a tmpfs).
-                    There is no option to use an existing partition map, or to use an alternative to LVM2, nor is there support for RAID.
-                    As it is a set of interactive shell scripts, it does not make sense to script an installation using it; typically, users script a manual installation (such as in the Manual section).
-                    There is no set of default packages; all the installation routine will install is the very base system.
-                    There is also no support for using IPv6 in the Alpine Linux installer, which is crucial for the modern Internet.</para>
-                <para>FreeBSD and OpenBSD, while not strictly Linux distributions, also fall in this category.
+                <para>The Alpine Linux installer is a set of interactive shell scripts that offers very few options.
+                    A user can choose between using a hard disk for the entire system or for data only, leaving the OS and software in a tmpfs.
+                    There is no option to use an existing partition map, or to use an alternative to LVM2, nor to use RAID.
+                    Because it is a set of interactive shell scripts, it does not make sense to script an installation using it.
+                    Typically, users script a manual installation (such as in the "Manual" section below).
+                    There is no set of default packages: the installation system only installs a minimal base system.
+                    There is no support for using IPv6 in the Alpine Linux installer, and IPv6 support is crucial for usage on the modern Internet.</para>
+                <para>FreeBSD and OpenBSD also fall in this category.
                     OpenBSD's installation system is very close to Alpine's, while the FreeBSD bsdinstall makes many assumptions about the user's desired choices and offers very little customisation.
                     One area where bsdinstall succeeds is the partition interface.
                     None of the three major BSD derivatives support any form of scripted install.</para>
             </section>
             <section id="manual">
                 <title>Manual</title>
-                <para>The ArchLinux distribution provides a list of commands for the user to run, and provides a very minimal environment on their boot CD to allow them to run.
+                <para>The Arch Linux distribution provides a list of commands for the user to run, and provides a very minimal environment on their boot CD to allow them to run.
                     You must manually bootstrap the package manager, Pacman, and install the base system packages yourself.
                     This lends itself to scripting, but it again must be entirely manual.
                     The user would be scripting the disk manipulation, clock set up, package database initialisation, and so on, themselves.</para>
                 <para>The Gentoo distribution provides a "stage" tarball containing a base system.
                     The user must create partitions manually before extracting the stage to the target.
                     The user must also build and install their own kernel and bootloader.
-                    As with ArchLinux, any scripting would be automating the low-level commands themselves; there is no provided framework for automating installs in Gentoo.</para>
+                    As with Arch Linux, any scripting would be automating the low-level commands themselves; there is no provided framework for automating installs in Gentoo.</para>
             </section>
         </section>
         <section id="point">
@@ -74,7 +74,7 @@
     <section id="objectives">
         <title>Objectives and Success Criteria</title>
         <para>We have identified a few key objectives that we feel are important for the system to meet.</para>
-        <para>Note that "completing" the installation routine, for the purpose of these objectives, means that the user has finished answering the system and that the system may now proceed to committing the installation.</para>
+        <para>For the purpose of these objectives, "completing" the installation routine means that the user has finished answering the system and that the system may now begin performing the installation.</para>
         <orderedlist id="OBJ">
             <listitem id="OBJ-1"><para>Users who have not used the Adélie Linux system before, but have prior experience with other Linux systems, shall be able to complete the installation routine in less than 15 minutes.</para></listitem>
             <listitem id="OBJ-2"><para>Users who have not used any Linux system before shall be able to complete the installation routine in less than one hour.</para></listitem>
@@ -89,7 +89,7 @@
             We then list their reasons for using the system and the features that matter most to them.</para>
         <section id="beginner">
             <title>Charlie: The Beginner</title>
-            <para>Charlie is a 45 year old designer who has never used Linux before.  Charlie is concerned about privacy using the Windows 10 OS, and would like to install an alternative operating system.  Charlie does not want to erase the current OS installed on this computer.</para>
+            <para>Charlie is a 45 year old designer who has never used Linux before.  Charlie is concerned about privacy using Windows 10, and would like to install an alternative operating system.  Charlie does not want to erase the current OS installed on this computer.</para>
             <section>
                 <title>Needs</title>
                 <orderedlist id="NEB">
@@ -97,7 +97,7 @@
                     <listitem id="NEB-2"><para>Ability to install "side-by-side" with another OS with minimal effort, including:
                         <orderedlist>
                             <listitem><para>resizing the current OS partition;</para></listitem>
-                            <listitem><para>creating a new partition for Adélie Linux; and</para></listitem>
+                            <listitem><para>creating needed new partition(s) for Adélie Linux; and</para></listitem>
                             <listitem><para>ensuring a boot menu is displayed that allows choice on whether to boot Adélie Linux or another OS.</para></listitem>
                         </orderedlist></para>
                     </listitem>
@@ -108,11 +108,11 @@
         </section>
         <section id="hacker">
             <title>Dakota: The Enthusiast</title>
-            <para>Dakota is a 27 year old Linux enthusiast.  Dakota has used other distributions and wants to try Adélie Linux on a laptop, and has opinions on package choices.</para>
+            <para>Dakota is a 27 year old Linux enthusiast, who has used Linux for 4 years.  Dakota has used other distributions and wants to try Adélie Linux on a laptop, and has opinions on package choices.</para>
             <section>
                 <title>Needs</title>
                 <orderedlist id="NEE">
-                    <listitem id="NEE-1"><para>Customisation of partitioning, including sizes and mountpoints.</para></listitem>
+                    <listitem id="NEE-1"><para>Customisation of partitioning, including sizes, file systems, and mountpoints.</para></listitem>
                     <listitem id="NEE-2"><para>Ability to choose init system, shell, and window manager.</para></listitem>
                 </orderedlist>
             </section>
@@ -150,10 +150,10 @@
         <orderedlist id="DRI">
             <listitem id="DRI-1"><para>User acceptance may be lower than anticipated, causing less adoption than desired for Adélie Linux.</para>
                 <para>Impact: High; Probability: Medium.</para>
-                <para>Potential mitigations: Ensure that user acceptance tests are done throughout the development cycle.  Involve parties from different communities for higher quality feedback.</para></listitem>
+                <para>Potential mitigations: Ensure that user acceptance tests are done throughout the development cycle.  Involve designers that have experience with user experience best practices.  For higher quality feedback, involve parties from different communities whom have different levels of familiarity with Linux.</para></listitem>
             <listitem id="DRI-2"><para>Scheduling over-runs could cause severe financial losses.</para>
                 <para>Impact: High; Probability: High.</para>
-                <para>Potential mitigations: Raise funding for Adélie Linux from sources that are not contigent on the release of Project Horizon first.  Drop lower priority features that are slated for 1.0 if schedule slippage begins.</para></listitem>
+                <para>Potential mitigations: Raise funding for Adélie Linux from sources that are not contigent on the release of Project Horizon first.  Drop lower priority features that are slated for 1.0 if schedule slippage begins.  Seek more contributors.</para></listitem>
             <listitem id="DRI-3"><para>Packages and security updates could fall behind if the team puts all resources into Project Horizon.</para>
                 <para>Impact: Medium; Probability: Low.</para>
                 <para>Potential mitigations: Not every Adélie Linux committer will be dedicated to Project Horizon.  Some committers can do important security bumps while the others work on Project Horizon.</para></listitem>
@@ -164,6 +164,10 @@
                 <para>Impact: High; Probability: High.</para></listitem>
             <listitem id="NRI-2"><para>Sponsors will not fund Adélie Linux because they cannot easily install it.</para>
                 <para>Impact: High; Probability: High.</para></listitem>
+            <listitem id="NRI-3"><para>Users having technical problems due to bad installation procedures would give Adélie a poor reputation and take up a lot of time for community support.</para>
+                <para>Impact: High; Probability: High.</para></listitem>
+            <listitem id="NRI-4"><para>Potential developers and maintainers would not contribute to Adélie Linux because the barrier to getting started with Adélie is too high.</para>
+                <para>Impact: High; Probability: Medium.</para></listitem>
         </orderedlist>
     </section>
 </chapter>

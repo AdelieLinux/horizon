@@ -26,6 +26,7 @@
             <listitem id="ASM-1"><para>Project Horizon will be the only official way to install Adélie Linux outside of manual (chroot-based) installation.</para></listitem>
             <listitem id="ASM-2"><para>Project Horizon will have exclusive control of the target system while it is committing to disk.  No other user-facing applications will be allowed to run during this process.</para></listitem>
             <listitem id="ASM-3"><para>The Horizon UI will run in a graphical display mode, not a text-only mode.</para></listitem>
+            <listitem id="ASM-4"><para>"Full disk encryption" does not include the /boot partition.</para></listitem>
         </orderedlist>
     </section>
     <section id="dependencies">
@@ -52,6 +53,7 @@
                     <listitem id="DEP-3.2"><para>The physical (MAC) address, if the interface supports spoofing.</para></listitem>
                     <listitem id="DEP-3.3"><para>The network address and host address of the interface, using IP version 4 and/or 6.</para></listitem>
                     <listitem id="DEP-3.4"><para>Routes and their metrics.</para></listitem>
+                    <listitem id="DEP-3.5"><para>For wireless links, access point / BSSID and authentication, including discovery of nearby networks and manual entry for hidden networks.</para></listitem>
                 </orderedlist>
             </para>
         </formalpara>
@@ -71,6 +73,7 @@
                 <orderedlist id="DEP5_sub">
                     <listitem id="DEP-5.1"><para>GRUB 2.</para></listitem>
                     <listitem id="DEP-5.2"><para>syslinux.</para></listitem>
+                    <listitem id="DEP-5.3"><para>U-Boot.</para></listitem>
                 </orderedlist>
             </para>
         </formalpara>
@@ -79,10 +82,10 @@
             <para>The system must be able to read an HorizonScript file from network locations.  The protocols supported for release 1.0 include:
                 <orderedlist id="DEP6_sub">
                     <listitem id="DEP-6.1"><para>HTTP/1.1.</para></listitem>
-                    <listitem id="DEP-6.2"><para>HTTPS (HTTP/1.1 with TLS).</para></listitem>
+                    <listitem id="DEP-6.2"><para>HTTPS (HTTP/1.1 with TLS 1.2 or higher).</para></listitem>
                     <listitem id="DEP-6.3"><para>TFTP.</para></listitem>
-                    <listitem id="DEP-6.4"><para>SFTP.</para></listitem>
-                    <listitem id="DEP-6.5"><para>CIFS.</para></listitem>
+                    <listitem id="DEP-6.4"><para>SFTP (subsystem of SSH).</para></listitem>
+                    <listitem id="DEP-6.5"><para>CIFS/SMB.</para></listitem>
                 </orderedlist>
             </para>
         </formalpara>
