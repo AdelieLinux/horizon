@@ -15,12 +15,18 @@
     </section>
     <section id="scope">
         <title>Project Scope</title>
-        <para>For information about the scope and overall feature set of release 1.0 of Project Horizon, see the Project Horizon: Vision document.  It is available <ulink url="https://www.adelielinux.org/horizon-vision/">on the World Wide Web at https://www.adelielinux.org/horizon-vision/</ulink>, or in the Horizon Git repository at <filename class="directory">devel/vision/</filename>.</para>
+        <para>For information about the scope and overall feature set of release 1.0 of Project Horizon, see <xref linkend="REF-1"/>.</para>
     </section>
     <section id="references">
         <title>References</title>
         <orderedlist id="REF">
-            <listitem id="REF-1"><para>TBD TODO: list references here as needed.</para></listitem>
+            <listitem id="REF-1" xreflabel="Project Horizon: Vision, 2019, Wilcox et al"><para>
+                    <citetitle pubwork="book">
+                        <author><surname>Wilcox et al.</surname></author> (2019),
+                        Project Horizon: Vision.
+                    </citetitle>
+                On-line reference: <ulink url="https://www.adelielinux.org/horizon-vision/">on the World Wide Web at https://www.adelielinux.org/horizon-vision/</ulink>, or in the Horizon Git repository at <filename class="directory">devel/vision/</filename>.
+            </para></listitem>
         </orderedlist>
     </section>
 </chapter>
