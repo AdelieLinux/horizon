@@ -8,13 +8,21 @@
             <title>User Language Selection</title>
             <section id="ui_language_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>A User must determine what natural language they are most comfortable with using for installing Adélie Linux.  The system shall allow the User to select their preferred natural language from a list of the languages to which the system has been translated.  Priority: Medium.</para>
             </section>
             <section id="ui_language_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Language.List">
+                    <title>UI.Language.List</title>
+                    <para>The system shall present the User with a list of natural languages, in the form of: "Install Adélie using English", "Installer Adélie en français".</para>
+                </formalpara>
+                <formalpara id="UI.Language.Button">
+                    <title>UI.Language.Button</title>
+                    <para>For this screen only, the system shall present the "Next" button as a single right-facing arrow.  The system shall not present the Cancel button on this screen.</para>
+                </formalpara>
+                <formalpara id="UI.Language.Enable">
+                    <title>UI.Language.Enable</title>
+                    <para>When the User chooses a language from the list, the system shall enable the Next button to be clicked.</para>
                 </formalpara>
             </section>
         </section>
@@ -22,13 +30,27 @@
             <title>Initial Introduction</title>
             <section id="ui_introduction_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>The system shall provide the User with an overview of the installation process, and introduce common UI elements.  A User may choose to run a tool or proceed with the installation.</para>
             </section>
             <section id="ui_introduction_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Intro.Describe">
+                    <title>UI.Intro.Describe</title>
+                    <para>The system shall present the User with a greeting message including a high-level overview of the installation process.  The system shall reassure the user that the installation process will not modify any data until the final step.</para>
+                </formalpara>
+                <formalpara id="UI.Intro.Elements">
+                    <title>UI.Intro.Elements</title>
+                    <para>The system shall describe the UI elements common to each screen, including the Help button, the Back/Next buttons, and the Cancel button.</para>
+                </formalpara>
+                <formalpara id="UI.Intro.Tools">
+                    <title>UI.Intro.Tools</title>
+                    <para>The system shall allow the User to start a tool from the following list before beginning the installation.
+                        <orderedlist id="UIT">
+                            <listitem id="UIT-1"><para>A terminal.</para></listitem>
+                            <listitem id="UIT-2"><para>An external partition editor.</para></listitem>
+                            <listitem id="UIT-3"><para>A lightweight Web browser.</para></listitem>
+                        </orderedlist>
+                    </para>
                 </formalpara>
             </section>
         </section>
