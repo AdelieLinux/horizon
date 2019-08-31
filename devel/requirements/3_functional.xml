@@ -25,6 +25,13 @@
                     <para>When the User chooses a language from the list, the system shall enable the Next button to be clicked.</para>
                 </formalpara>
             </section>
+            <section id="ui_language_key">
+                <title>HorizonScript Keys</title>
+                <formalpara id="Script.Key.language">
+                    <title>Script.Key.language</title>
+                    <para><varname>language</varname> &mdash; the locale identifier of the language chosen</para>
+                </formalpara>
+            </section>
         </section>
         <section id="ui_introduction">
             <title>Initial Introduction</title>
