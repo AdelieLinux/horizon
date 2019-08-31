@@ -87,27 +87,7 @@
         <title>Project Dependencies</title>
         <formalpara id="DEP-1">
             <title>DEP-1</title>
-            <para>The system shall use the <ulink url="https://www.skarnet.org/software/bcnm/libwpactrl/">wpactrl library</ulink> from <ulink url="https://www.skarnet.org/software/bcnm/"><package>bcnm</package></ulink> for manipulating wireless network connections.</para>
-        </formalpara>
-        <formalpara id="DEP-2">
-            <title>DEP-2</title>
-            <para>The system shall use the <ulink url="https://linux.die.net/man/3/libblkid">blkid library</ulink> from <ulink url="https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git"><package>util-linux</package></ulink> for determining current disk layout.<!-- TBD TODO discuss this --></para>
-        </formalpara>
-        <formalpara id="DEP-3">
-            <title>DEP-3</title>
-            <para>The system shall use the libparted library from <ulink url="https://www.gnu.org/software/parted/"><package>parted</package></ulink> for manipulating disk partitions.</para>
-        </formalpara>
-        <formalpara id="DEP-4">
-            <title>DEP-4</title>
-            <para>The system shall use <ulink url="https://roy.marples.name/projects/dhcpcd"><package>dhcpcd</package></ulink> for automatically obtaining network configuration over the DHCP protocol.</para>
-        </formalpara>
-        <formalpara id="DEP-5">
-            <title>DEP-5</title>
-            <para>The system shall use the <ulink url="https://www.freedesktop.org/software/systemd/man/libudev.html">libudev library</ulink> from <ulink url="https://wiki.gentoo.org/wiki/Eudev"><package>eudev</package></ulink> for enumerating devices present on the system, including but not limited to: disk drives, network interfaces, graphics adaptors.</para>
-        </formalpara>
-        <formalpara id="DEP-6">
-            <title>DEP-6</title>
-            <para>The system shall use <package>tzdata</package> for time zone information and selection.</para>
+            <para>The Horizon UI depends on the Horizon Runner.</para>
         </formalpara>
     </section>
 </chapter>

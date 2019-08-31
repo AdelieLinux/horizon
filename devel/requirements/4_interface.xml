@@ -4,7 +4,38 @@
     <para/>
     <section id="ui_design">
         <title>User Interfaces</title>
-        <para/>
+        <formalpara id="Iface.UI.IconTheme">
+            <title>Iface.UI.IconTheme</title>
+            <para>The system shall use the Papirus icon set for any icons displayed in the user interface.  Priority: Medium.</para>
+        </formalpara>
+        <formalpara id="Iface.UI.TabStops">
+            <title>Iface.UI.TabStops</title>
+            <para>The system shall ensure that each interactive control be assigned a tab stop in order from top left to top right to bottom left to bottom right.</para>
+        </formalpara>
+        <formalpara id="Iface.UI.Accelerators">
+            <title>Iface.UI.Accelerators</title>
+            <para>The system shall ensure that interactive controls may be selected for input via a keyboard accelerator.  The keyboard accelerator shall be in the form of Alt+[key], and the key shall be discoverable by underlining the letter corresponding to the key in the label for the interactive control.</para>
+        </formalpara>
+        <formalpara id="Iface.UI.ButtonAccel">
+            <title>Iface.UI.ButtonAccel</title>
+            <para>The system shall ensure that all displayed buttons have a corresponding function key as a keyboard accelerator.  The function key shall be displayed as a parenthetical note next to the label of the button.  For example: "Next (F6)", "Cancel (F3)".</para>
+        </formalpara>
+        <formalpara id="Iface.UI.ScreenRes">
+            <title>Iface.UI.ScreenRes</title>
+            <para>The system shall be usable with a minimum screen resolution of 800x600 pixels.</para>
+        </formalpara>
+        <formalpara id="Iface.UI.Scaling">
+            <title>Iface.UI.Scaling</title>
+            <para>The system shall ensure that controls and fonts and scaled based on the DPI of the screen.</para>
+        </formalpara>
+        <formalpara id="Iface.UI.StandardButtons">
+            <title>Iface.UI.StandardButtons</title>
+            <para>Horizon UI shall have a "Back (F5)", "Next (F6)", "Cancel (F3)", and "Help (F1)" on all pages except the first page (where the Back button shall not be displayed) and the last page (where the Back and Cancel buttons shall not be displayed).</para>
+        </formalpara>
+        <formalpara id="Iface.UI.ScreenReader">
+            <title>Iface.UI.ScreenReader</title>
+            <para>The system shall be usable by the built-in Qt screen reader.  Priority: Low.</para>
+        </formalpara>
     </section>
     <section id="hardware">
         <title>Hardware Interfaces</title>
@@ -12,11 +43,41 @@
     </section>
     <section id="software">
         <title>External Software Interfaces</title>
-        <para/>
+        <formalpara id="Iface.Software.WPA">
+            <title>Iface.Software.WPA</title>
+            <para>The system shall use the <ulink url="https://www.skarnet.org/software/bcnm/libwpactrl/">wpactrl library</ulink> from <ulink url="https://www.skarnet.org/software/bcnm/"><package>bcnm</package></ulink> for manipulating wireless network connections.</para>
+        </formalpara>
+        <formalpara id="Iface.Software.blkid">
+            <title>Iface.Software.blkid</title>
+            <para>The system shall use the <ulink url="https://linux.die.net/man/3/libblkid">blkid library</ulink> from <ulink url="https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git"><package>util-linux</package></ulink> for determining current disk layout.<!-- TBD TODO discuss this --></para>
+        </formalpara>
+        <formalpara id="Iface.Software.Parted">
+            <title>Iface.Software.Parted</title>
+            <para>The system shall use the libparted library from <ulink url="https://www.gnu.org/software/parted/"><package>parted</package></ulink> for manipulating disk partitions.</para>
+        </formalpara>
+        <formalpara id="Iface.Software.dhcpcd">
+            <title>Iface.Software.dhcpcd</title>
+            <para>The system shall use <ulink url="https://roy.marples.name/projects/dhcpcd"><package>dhcpcd</package></ulink> for automatically obtaining network configuration over the DHCP protocol.</para>
+        </formalpara>
+        <formalpara id="Iface.Software.Eudev">
+            <title>Iface.Software.Eudev</title>
+            <para>The system shall use the <ulink url="https://www.freedesktop.org/software/systemd/man/libudev.html">libudev library</ulink> from <ulink url="https://wiki.gentoo.org/wiki/Eudev"><package>eudev</package></ulink> for enumerating devices present on the system, including but not limited to: disk drives, network interfaces, graphics adaptors.</para>
+        </formalpara>
+        <formalpara id="Iface.Software.Timezones">
+            <title>Iface.Software.Timezones</title>
+            <para>The system shall use <package>tzdata</package> for time zone information and selection, and shall write the selected time zone to <filename>/etc/localtime</filename> in the installation environment.</para>
+        </formalpara>
     </section>
     <section id="comms">
         <title>External Communication Interfaces</title>
-        <para/>
+        <formalpara id="Iface.Comm.Runner.Serial">
+            <title>Iface.Comm.Serial</title>
+            <para>Horizon Runner shall support writing progress and log messages to a serial interface if requested by the user.</para>
+        </formalpara>
+        <formalpara id="Iface.Comm.UI.UploadLog">
+            <title>Iface.Comm.UI.UploadLog</title>
+            <para>Horizon UI shall support uploading of log files to an external service in the event of an installation failure.</para>
+        </formalpara>
     </section>
     <section id="ui_runner">
         <title>UI to Runner Interface</title>
