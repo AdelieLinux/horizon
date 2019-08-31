@@ -74,6 +74,10 @@
             <title>IC-4</title>
             <para>Horizon Runner shall be written in a programming language that is present in the System repository of Adélie Linux, as listed at <xref linkend="REF-4"/>.</para>
         </formalpara>
+        <formalpara id="IC-5">
+            <title>IC-5</title>
+            <para>The system shall perform all communication with external packages via documented APIs, and shall not use pipes to user-facing commands.</para>
+        </formalpara>
     </section>
     <section id="assumptions">
         <title>Assumptions</title>
@@ -91,7 +95,7 @@
         </formalpara>
         <formalpara id="DEP-3">
             <title>DEP-3</title>
-            <para>The system shall use TBD TODO HELP for manipulating disk partitions.</para>
+            <para>The system shall use the libparted library from <ulink url="https://www.gnu.org/software/parted/"><package>parted</package></ulink> for manipulating disk partitions.</para>
         </formalpara>
         <formalpara id="DEP-4">
             <title>DEP-4</title>
