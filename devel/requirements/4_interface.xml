@@ -26,7 +26,7 @@
         </formalpara>
         <formalpara id="Iface.UI.Scaling">
             <title>Iface.UI.Scaling</title>
-            <para>The system shall ensure that controls and fonts and scaled based on the DPI of the screen.</para>
+            <para>The system shall ensure that controls and fonts are scaled based on the DPI of the screen.</para>
         </formalpara>
         <formalpara id="Iface.UI.StandardButtons">
             <title>Iface.UI.StandardButtons</title>
