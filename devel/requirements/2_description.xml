@@ -53,7 +53,7 @@
         </formalpara>
         <formalpara id="OE-2">
             <title>OE-2</title>
-            <para>Horzon UI shall run under the X11 display server with a screen resolution no smaller than 800x600.</para>
+            <para>Horizon UI shall run under the X11 display server with a screen resolution no smaller than 800x600.</para>
         </formalpara>
     </section>
     <section id="constraints">
