@@ -20,5 +20,13 @@
             <title>SQA.Flexibility.ScriptFormat</title>
             <para>A programmer with two years of C++ experience shall be able to change the on-disk format of HorizonScript with no more than two hours of labour.</para>
         </formalpara>
+        <formalpara id="SQA.Flexibility.Firmware">
+            <title>SQA.Flexibility.Firmware</title>
+            <para>The firmware support described under the UI.Firmware.* requirements branch shall be disableable at compile-time.</para>
+        </formalpara>
+        <formalpara id="SQA.Flexibility.FirmwareConf">
+            <title>SQA.Flexibility.FirmwareConf</title>
+            <para>The firmware support described under the UI.Firmware.* requirements branch shall be disableable at run-time via a configuration setting.</para>
+        </formalpara>
     </section>
 </chapter>

@@ -10,6 +10,13 @@
                 <title>Description / Priority</title>
                 <para>A User must determine what natural language they are most comfortable with using for installing Adélie Linux.  The system shall allow the User to select their preferred natural language from a list of the languages to which the system has been translated.  Priority: Medium.</para>
             </section>
+            <section id="ui_language_pre">
+                <title>Prerequisites</title>
+                <formalpara id="UI.Language.Prerequisites">
+                    <title>UI.Language.Prerequisites</title>
+                    <para>The system must have more than one language translation available for use.</para>
+                </formalpara>
+            </section>
             <section id="ui_language_req">
                 <title>Functional Requirements</title>
                 <formalpara id="UI.Language.List">
@@ -109,6 +116,13 @@
             <section id="ui_firmware_meta">
                 <title>Description / Priority</title>
                 <para/>
+            </section>
+            <section id="ui_firmware_pre">
+                <title>Prerequisites</title>
+                <formalpara id="UI.Firmware.Prerequisites">
+                    <title>UI.Firmware.Prerequisites</title>
+                    <para>The system must have firmware support compiled in.</para>
+                </formalpara>
             </section>
             <section id="ui_firmware_req">
                 <title>Functional Requirements</title>
