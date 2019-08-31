@@ -5,6 +5,7 @@
         <title>Scope of Version 1.0</title>
         <para>The 1.0 release of Project Horizon must have a focus on reliability over featureset.  Advanced use cases may require manual (chroot-based) installation if the schedule extends too far out.</para>
         <para>The needs of the Enthusiast class, or "Dakota", should be considered the highest priority, followed by the Beginner class, or "Charlie".  The other two user classes do not have a high priority for version 1.0.</para>
+        <para>For the 1.0 release, if a feature requires higher hardware requirements than the minimum operating environment specified, it may be accepted and optimised later.</para>
     </section>
     <section id="vNext">
         <title>Scope of Future Versions</title>

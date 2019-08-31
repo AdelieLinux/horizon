@@ -10,7 +10,7 @@
         <orderedlist id="FEA">
             <listitem id="FEA-1"><para>Configure the natural language used for user interfaces.</para></listitem>
             <listitem id="FEA-2"><para>Configure input device behaviour.</para></listitem>
-            <listitem id="FEA-3"><para>Create and modify partition tables.</para></listitem>
+            <listitem id="FEA-3"><para>Create and modify partition tables, including file systems and mount points.</para></listitem>
             <listitem id="FEA-4"><para>Connect to wired and wireless networks.</para></listitem>
             <listitem id="FEA-5"><para>Configure date, time, and timezone.</para></listitem>
             <listitem id="FEA-6"><para>Select packages to install.</para></listitem>
@@ -18,6 +18,7 @@
             <listitem id="FEA-8"><para>Configure user account information, including root password, user name, user password, and user icon.</para></listitem>
             <listitem id="FEA-9"><para>Install the Adélie Linux system with the specified configuration and customisation.</para></listitem>
             <listitem id="FEA-10"><para>Install the Adélie Linux system from configuration specified in a file or network location, without user interaction.</para></listitem>
+            <listitem id="FEA-11"><para>Install the Adélie Linux system without requiring a network connection, provided that a local package repository exists.</para></listitem>
         </orderedlist>
     </section>
     <section id="assumptions">
@@ -27,6 +28,7 @@
             <listitem id="ASM-2"><para>Project Horizon will have exclusive control of the target system while it is committing to disk.  No other user-facing applications will be allowed to run during this process.</para></listitem>
             <listitem id="ASM-3"><para>The Horizon UI will run in a graphical display mode, not a text-only mode.</para></listitem>
             <listitem id="ASM-4"><para>"Full disk encryption" does not include the /boot partition.</para></listitem>
+            <listitem id="ASM-5"><para>A scripted installation performed only using the Horizon Runner will support computers with no graphics.</para></listitem>
         </orderedlist>
     </section>
     <section id="dependencies">
@@ -51,9 +53,17 @@
                 <orderedlist id="DEP3_sub">
                     <listitem id="DEP-3.1"><para>The status of the link (up / down).</para></listitem>
                     <listitem id="DEP-3.2"><para>The physical (MAC) address, if the interface supports spoofing.</para></listitem>
-                    <listitem id="DEP-3.3"><para>The network address and host address of the interface, using IP version 4 and/or 6.</para></listitem>
+                    <listitem id="DEP-3.3"><para>The network address and host address of the interface, using IP versions 4 and/or 6.
+                            <orderedlist id="DEP3.3_sub">
+                                <listitem id="DEP-3.3.1"><para>Addresses must support manual configuration.</para></listitem>
+                                <listitem id="DEP-3.3.2"><para>IP version 4 addresses must support automatic configuration via DHCP.</para></listitem>
+                                <listitem id="DEP-3.3.3"><para>IP version 6 addresses must support automatic configuration via DHCPv6 or SLAAC.</para></listitem>
+                            </orderedlist>
+                        </para>
+                    </listitem>
                     <listitem id="DEP-3.4"><para>Routes and their metrics.</para></listitem>
                     <listitem id="DEP-3.5"><para>For wireless links, access point / BSSID and authentication, including discovery of nearby networks and manual entry for hidden networks.</para></listitem>
+                    <listitem id="DEP-3.6"><para>DNS resolver configuration, including nameservers and search domains.</para></listitem>
                 </orderedlist>
             </para>
         </formalpara>
@@ -64,6 +74,8 @@
                     <listitem id="DEP-4.1"><para>To determine the estimated disk space required by the packages selected.</para></listitem>
                     <listitem id="DEP-4.2"><para>To determine if any conflicts exist between packages selected.</para></listitem>
                     <listitem id="DEP-4.3"><para>To install packages into a specified root directory.</para></listitem>
+                    <listitem id="DEP-4.4"><para>To select the repositories and signing keys used during installation.</para></listitem>
+                    <listitem id="DEP-4.5"><para>To select the repositories and signing keys used in the installed operating environment.</para></listitem>
                 </orderedlist>
             </para>
         </formalpara>
@@ -86,6 +98,17 @@
                     <listitem id="DEP-6.3"><para>TFTP.</para></listitem>
                     <listitem id="DEP-6.4"><para>SFTP (subsystem of SSH).</para></listitem>
                     <listitem id="DEP-6.5"><para>CIFS/SMB.</para></listitem>
+                </orderedlist>
+            </para>
+        </formalpara>
+        <formalpara id="DEP-7">
+            <title>DEP-7: File systems</title>
+            <para>The system must be able to create and write data to the following file systems.
+                <orderedlist id="DEP7_sub">
+                    <listitem id="DEP-7.1"><para>ext3.</para></listitem>
+                    <listitem id="DEP-7.2"><para>ext4.</para></listitem>
+                    <listitem id="DEP-7.3"><para>XFS.</para></listitem>
+                    <listitem id="DEP-7.4"><para>JFS.</para></listitem>
                 </orderedlist>
             </para>
         </formalpara>
