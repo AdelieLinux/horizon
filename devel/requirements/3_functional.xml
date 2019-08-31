@@ -29,7 +29,7 @@
                 <title>HorizonScript Keys</title>
                 <formalpara id="Script.Key.language">
                     <title>Script.Key.language</title>
-                    <para><varname>language</varname> &mdash; the locale identifier of the language chosen</para>
+                    <para><varname>language</varname> &mdash; The locale identifier of the chosen language.</para>
                 </formalpara>
             </section>
         </section>
@@ -65,13 +65,28 @@
             <title>Input Device Configuration</title>
             <section id="ui_input_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>A User may have a keyboard that is not the Linux default of US QWERTY.  As such, a User must be able to choose a keyboard layout that matches their hardware.</para>
             </section>
             <section id="ui_input_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Input.LayoutList">
+                    <title>UI.Input.LayoutList</title>
+                    <para>The system shall present the User with a list of available keyboard layouts.</para>
+                </formalpara>
+                <formalpara id="UI.Input.ChooseLayout">
+                    <title>UI.Input.ChooseLayout</title>
+                    <para>When the User selects a keyboard layout, the system shall load the keyboard layout and apply it.</para>
+                </formalpara>
+                <formalpara id="UI.Input.Test">
+                    <title>UI.Input.Test</title>
+                    <para>The system shall present an input box for the User to test their selected keyboard layout.</para>
+                </formalpara>
+            </section>
+            <section id="ui_input_key">
+                <title>HorizonScript Keys</title>
+                <formalpara id="Script.Key.keymap">
+                    <title>Script.Key.keymap</title>
+                    <para><varname>keymap</varname> &mdash; The identifier of the chosen keyboard layout.</para>
                 </formalpara>
             </section>
         </section>
