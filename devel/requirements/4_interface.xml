@@ -36,6 +36,14 @@
             <title>Iface.UI.ScreenReader</title>
             <para>The system shall be usable by the built-in Qt screen reader.  Priority: Low.</para>
         </formalpara>
+        <formalpara id="Iface.UI.Colours">
+            <title>Iface.UI.Colours</title>
+            <para>The system shall not rely on colour alone to differentiate options, controls, or any elements.  The system shall additionally be tested in a greyscale mode.</para>
+        </formalpara>
+        <formalpara id="Iface.UI.NeutralColours">
+            <title>Iface.UI.NeutralColours</title>
+            <para>The system shall use neutral colours for the window title bar, window border, and background.</para>
+        </formalpara>
     </section>
     <section id="hardware">
         <title>Hardware Interfaces</title>
