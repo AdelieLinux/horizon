@@ -55,6 +55,10 @@
             <title>OE-2</title>
             <para>Horizon UI shall run under the X11 display server with a screen resolution no smaller than 800x600.</para>
         </formalpara>
+        <formalpara id="OE-3">
+            <title>OE-3</title>
+            <para>The system shall provide the <package>adelie-base-posix</package> package in the installation environment.</para>
+        </formalpara>
     </section>
     <section id="constraints">
         <title>Implementation Constraints</title>
