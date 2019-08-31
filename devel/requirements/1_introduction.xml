@@ -25,7 +25,28 @@
                         <author><surname>Wilcox et al.</surname></author> (2019),
                         Project Horizon: Vision.
                     </citetitle>
-                On-line reference: <ulink url="https://www.adelielinux.org/horizon-vision/">on the World Wide Web at https://www.adelielinux.org/horizon-vision/</ulink>, or in the Horizon Git repository at <filename class="directory">devel/vision/</filename>.
+                    On-line reference: <ulink url="https://www.adelielinux.org/horizon-vision/">on the World Wide Web at https://www.adelielinux.org/horizon-vision/</ulink>, or in the Horizon Git repository at <filename class="directory">devel/vision/</filename>.
+            </para></listitem>
+            <listitem id="REF-2" xreflabel="Platform Group Documentation, 2019, Adélie Linux"><para>
+                    <citetitle pubwork="wiki">
+                        <author><othername>Adélie Linux Platform Group</othername></author> (2019),
+                        Platform Group Documentation.
+                    </citetitle>
+                    On-line reference: <ulink url="https://wiki.adelielinux.org/wiki/Project:Platform_Group">on the World Wide Web at https://wiki.adelielinux.org/wiki/Project:Platform_Group</ulink>.
+            </para></listitem>
+            <listitem id="REF-3" xreflabel="crypt(3), 2011, FreeBSD"><para>
+                    <citetitle pubwork="refentry">
+                        <author><othername>FreeBSD</othername></author> (2011),
+                        crypt(3).
+                    </citetitle>
+                    On-line reference: <ulink url="https://www.freebsd.org/cgi/man.cgi?query=crypt&amp;sektion=3&amp;manpath=FreeBSD+9.0-RELEASE">on the World Wide Web at https://www.freebsd.org/cgi/man.cgi</ulink>, or on most Linux or BSD computers by running <command>man 3 crypt</command>.
+            </para></listitem>
+            <listitem id="REF-4" xreflabel="Programming Languages, 2019, Wilcox"><para>
+                    <citetitle pubwork="wiki">
+                        <author><surname>Wilcox</surname></author> (2019),
+                        Programming Languages supported by Adélie Linux.
+                    </citetitle>
+                    On-line reference: <ulink url="https://code.foxkit.us/adelie/packages/wikis/Programming-Languages">on the World Wide Web at https://code.foxkit.us/adelie/packages/wikis/Programming-Languages</ulink>.
             </para></listitem>
         </orderedlist>
     </section>

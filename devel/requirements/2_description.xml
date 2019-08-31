@@ -10,14 +10,70 @@
     <section id="users">
         <title>User Classes and Characteristics</title>
         <para>The identified user classes are defined in <citetitle pubwork="section"><xref linkend="REF-1"/> section 1.4</citetitle>.  A summary of these classes is included below.</para>
+        <table frame="all">
+            <title>User classes for release 1.0 of Project Horizon</title>
+            <tgroup cols="2" align="left" colsep="1" rowsep="1">
+            <thead>
+                <row>
+                    <entry>User Class</entry>
+                    <entry>Description</entry>
+                </row>
+            </thead>
+            <tbody>
+                <row>
+                    <entry>The Beginner "Charlie" (favoured)</entry>
+                    <entry>This class of users has never used Linux before, but has used another operating system on their computer.
+                        Users of this class will need documentation that contains clear descriptions of what their option selection will cause to happen.
+                        Users of this class typically will want to keep their existing operating system while installing Adélie Linux to a second partition or disk.</entry>
+                </row>
+                <row>
+                    <entry>The Enthusiast "Dakota" (favoured)</entry>
+                    <entry>This class of users has experience with other Linux distributions, and wishes to install Adélie Linux.
+                        Users of this class will want to feel in control of their computer and the system being installed to it.
+                        Users of this class will use the majority of the features denoted as "advanced" in this requirements specification.</entry>
+                </row>
+                <row>
+                    <entry>The Administrator "Jamie"</entry>
+                    <entry>This class of users is interested in using HorizonScript to automate installation of Adélie Linux to one or more computers.
+                        Users of this class may or may not use the Horizon UI to create the HorizonScript.</entry>
+                </row>
+                <row>
+                    <entry>The Developer "River"</entry>
+                    <entry>This class of users has significant Linux experience and wishes to install Adélie Linux on more "esoteric" hardware, such as a BeagleBone Black or Pentium III.</entry>
+                </row>
+            </tbody>
+            </tgroup>
+        </table>
     </section>
     <section id="environment">
         <title>Operating Environment</title>
-        <para/>
+        <formalpara id="OE-1">
+            <title>OE-1</title>
+            <para>Project Horizon shall run on any computer that is supported by the Easy Kernel and is using a Tier 1 supported CPU architecture as defined at <xref linkend="REF-2"/>.</para>
+        </formalpara>
+        <formalpara id="OE-2">
+            <title>OE-2</title>
+            <para>Horzon UI shall run under the X11 display server with a screen resolution no smaller than 800x600.</para>
+        </formalpara>
     </section>
     <section id="constraints">
         <title>Implementation Constraints</title>
-        <para/>
+        <formalpara id="IC-1">
+            <title>IC-1</title>
+            <para>Project Horizon code written in C-based languages shall conform to the Adélie Linux code style <!-- TBD TODO add xref -->.</para>
+        </formalpara>
+        <formalpara id="IC-2">
+            <title>IC-2</title>
+            <para>Horizon UI shall be written in C++ using the Qt widget toolkit.</para>
+        </formalpara>
+        <formalpara id="IC-3">
+            <title>IC-3</title>
+            <para>The system shall use the Modular Crypt Format as described in <xref linkend="REF-3"/> and as implemented in the musl C library to encrypt passwords with the SHA-512 algorithm.</para>
+        </formalpara>
+        <formalpara id="IC-4">
+            <title>IC-4</title>
+            <para>Horizon Runner shall be written in a programming language that is present in the System repository of Adélie Linux, as listed at <xref linkend="REF-4"/>.</para>
+        </formalpara>
     </section>
     <section id="assumptions">
         <title>Assumptions</title>
@@ -25,6 +81,29 @@
     </section>
     <section id="dependencies">
         <title>Project Dependencies</title>
-        <para/>
+        <formalpara id="DEP-1">
+            <title>DEP-1</title>
+            <para>The system shall use the <ulink url="https://www.skarnet.org/software/bcnm/libwpactrl/">wpactrl library</ulink> from <ulink url="https://www.skarnet.org/software/bcnm/"><package>bcnm</package></ulink> for manipulating wireless network connections.</para>
+        </formalpara>
+        <formalpara id="DEP-2">
+            <title>DEP-2</title>
+            <para>The system shall use the <ulink url="https://linux.die.net/man/3/libblkid">blkid library</ulink> from <ulink url="https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git"><package>util-linux</package></ulink> for determining current disk layout.<!-- TBD TODO discuss this --></para>
+        </formalpara>
+        <formalpara id="DEP-3">
+            <title>DEP-3</title>
+            <para>The system shall use TBD TODO HELP for manipulating disk partitions.</para>
+        </formalpara>
+        <formalpara id="DEP-4">
+            <title>DEP-4</title>
+            <para>The system shall use <ulink url="https://roy.marples.name/projects/dhcpcd"><package>dhcpcd</package></ulink> for automatically obtaining network configuration over the DHCP protocol.</para>
+        </formalpara>
+        <formalpara id="DEP-5">
+            <title>DEP-5</title>
+            <para>The system shall use the <ulink url="https://www.freedesktop.org/software/systemd/man/libudev.html">libudev library</ulink> from <ulink url="https://wiki.gentoo.org/wiki/Eudev"><package>eudev</package></ulink> for enumerating devices present on the system, including but not limited to: disk drives, network interfaces, graphics adaptors.</para>
+        </formalpara>
+        <formalpara id="DEP-6">
+            <title>DEP-6</title>
+            <para>The system shall use <package>tzdata</package> for time zone information and selection.</para>
+        </formalpara>
     </section>
 </chapter>
