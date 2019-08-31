@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+               "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+               <!ENTITY chap1 SYSTEM "1_introduction.xml">
+               <!ENTITY chap2 SYSTEM "2_description.xml">
+               <!ENTITY chap3 SYSTEM "3_functional.xml">
+               <!ENTITY chap4 SYSTEM "4_interface.xml">
+               <!ENTITY chap5 SYSTEM "5_nonfunctional.xml">
+               <!ENTITY chap6 SYSTEM "6_other.xml">
+]>
+<book>
+    <bookinfo>
+        <title>Project Horizon: Requirements</title>
+        <authorgroup>
+            <author><firstname>A.</firstname><surname>Wilcox</surname><affiliation><orgname>Adélie Linux</orgname></affiliation></author>
+            <author><firstname>Tambra</firstname><surname>Wilcox</surname><affiliation><orgname>Adélie Linux</orgname></affiliation></author>
+            <author><firstname>Elizabeth</firstname><surname>Myers</surname><affiliation><orgname>The Interlinked Foundation</orgname></affiliation></author>
+            <author><firstname>Jeremy</firstname><surname>Rand</surname><affiliation><orgname>Namecoin</orgname></affiliation></author>
+            <author><firstname>Lee</firstname><surname>Starnes</surname></author>
+            <author><firstname>Max</firstname><surname>Rees</surname></author>
+            <author><firstname>Samuel</firstname><surname>Holland</surname></author>
+        </authorgroup>
+        <edition>Requirements for Horizon 1.0: Draft</edition>
+        <pubdate>2019</pubdate>
+        <copyright>
+            <year>2019</year>
+            <holder>Adélie Linux</holder>
+        </copyright>
+        <legalnotice>
+            <para>Development documentation for Project Horizon is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.</para>
+            <para>You should have received a copy of the license along with this work. If not, see <ulink url="https://creativecommons.org/licenses/by-nc-sa/4.0/"><citetitle>the Creative Commons Web site</citetitle></ulink>.</para>
+        </legalnotice>
+        <abstract><para>This document describes the functional and non-functional software requirements for Project Horizon, the installation system for Adélie Linux.</para></abstract>
+    </bookinfo>
+    &chap1;
+    &chap2;
+    &chap3;
+    &chap4;
+    &chap5;
+    &chap6;
+</book>

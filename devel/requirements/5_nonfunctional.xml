@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter label="5" id="nonfunctional">
+    <title>Non-functional Requirements</title>
+    <para/>
+    <section id="performance">
+        <title>Performance Requirements</title>
+        <para/>
+    </section>
+    <section id="safety">
+        <title>Safety Requirements</title>
+        <para/>
+    </section>
+    <section id="security">
+        <title>Security Requirements</title>
+        <para/>
+    </section>
+    <section id="sqa">
+        <title>Software Quality Attributes</title>
+        <para/>
+    </section>
+</chapter>

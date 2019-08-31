@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter label="2" id="description">
+    <title>Overall Description</title>
+    <para/>
+    <section id="perspective">
+        <title>Project Perspective</title>
+        <para/>
+    </section>
+    <section id="features">
+        <title>Project Features</title>
+        <para/>
+    </section>
+    <section id="users">
+        <title>User Classes and Characteristics</title>
+        <para/>
+    </section>
+    <section id="environment">
+        <title>Operating Enviornment</title>
+        <para/>
+    </section>
+    <section id="constraints">
+        <title>Implementation Constraints</title>
+        <para/>
+    </section>
+    <section id="documentation">
+        <title>User Documentation</title>
+        <para/>
+    </section>
+    <section id="assumptions">
+        <title>Assumptions</title>
+        <para/>
+    </section>
+    <section id="dependencies">
+        <title>Project Dependencies</title>
+        <para/>
+    </section>
+</chapter>

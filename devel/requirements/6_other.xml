@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter label="6" id="other">
+    <title>Other Requirements</title>
+    <para/>
+    <section id="logging">
+        <title>Logging Requirements</title>
+        <para/>
+    </section>
+    <section id="i18n">
+        <title>Internationalisation Requirements</title>
+        <para/>
+    </section>
+</chapter>

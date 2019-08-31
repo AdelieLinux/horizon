@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter label="4" id="interface">
+    <title>External Interface Requirements</title>
+    <para/>
+    <section id="ui_design">
+        <title>User Interfaces</title>
+        <para/>
+    </section>
+    <section id="hardware">
+        <title>Hardware Interfaces</title>
+        <para/>
+    </section>
+    <section id="software">
+        <title>External Software Interfaces</title>
+        <para/>
+    </section>
+    <section id="comms">
+        <title>External Communication Interfaces</title>
+        <para/>
+    </section>
+    <section id="ui_runner">
+        <title>UI to Runner Interface</title>
+        <para/>
+    </section>
+</chapter>

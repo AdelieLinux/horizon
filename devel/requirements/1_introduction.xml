@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter label="1" id="introduction">
+    <title>Introduction</title>
+    <para/>
+    <section id="purpose">
+        <title>Purpose</title>
+        <para/>
+    </section>
+    <section id="conventions">
+        <title>Document Conventions</title>
+        <para/>
+    </section>
+    <section id="audience">
+        <title>Intended Audience</title>
+        <para/>
+    </section>
+    <section id="scope">
+        <title>Project Scope</title>
+        <para/>
+    </section>
+    <section id="references">
+        <title>References</title>
+        <para/>
+    </section>
+</chapter>
