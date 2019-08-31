@@ -16,6 +16,9 @@
     </section>
     <section id="sqa">
         <title>Software Quality Attributes</title>
-        <para/>
+        <formalpara id="SQA.Flexibility.ScriptFormat">
+            <title>SQA.Flexibility.ScriptFormat</title>
+            <para>A programmer with two years of C++ experience shall be able to change the on-disk format of HorizonScript with no more than two hours of labour.</para>
+        </formalpara>
     </section>
 </chapter>
