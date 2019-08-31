@@ -1,29 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <chapter label="2" id="description">
     <title>Overall Description</title>
-    <para/>
+    <para>This chapter provides a high-level description of Project Horizon.  For more information on the background of Project Horizon, see <xref linkend="REF-1"/>.</para>
     <section id="perspective">
         <title>Project Perspective</title>
-        <para/>
-    </section>
-    <section id="features">
-        <title>Project Features</title>
-        <para/>
+        <para>Project Horizon is a new system that provides computer users and administrators the ability to install the Adélie Linux operating system.  It is intended to replace the current manual installation procedure for the use cases identified in <citetitle pubwork="chapter"><xref linkend="REF-1"/> sections 1.2.2 and 1.4</citetitle>.</para>
+        <para>It is expected over the next few years that Project Horizon will evolve with the Adélie family of software and services to provide a well-accepted libre environment for general purpose computing.</para>
     </section>
     <section id="users">
         <title>User Classes and Characteristics</title>
-        <para/>
+        <para>The identified user classes are defined in <citetitle pubwork="section"><xref linkend="REF-1"/> section 1.4</citetitle>.  A summary of these classes is included below.</para>
     </section>
     <section id="environment">
-        <title>Operating Enviornment</title>
+        <title>Operating Environment</title>
         <para/>
     </section>
     <section id="constraints">
         <title>Implementation Constraints</title>
-        <para/>
-    </section>
-    <section id="documentation">
-        <title>User Documentation</title>
         <para/>
     </section>
     <section id="assumptions">

@@ -2,6 +2,17 @@
 <chapter label="6" id="other">
     <title>Other Requirements</title>
     <para/>
+    <section id="documentation">
+        <title>User Documentation</title>
+        <formalpara>
+            <title>UserDoc.JargonFree</title>
+            <para>The system documentation must contain minimal uses of technical jargon.  The system documentation must define technical jargon where it is first used.  "Jargon" is defined as a word that is technical in nature and is not listed in a Webster's or Oxford English dictionary.</para>
+        </formalpara>
+        <formalpara>
+            <title>UserDoc.ContextAware</title>
+            <para>The system must allow the user to read documentation relevant to the phase of installation that is currently on-screen.</para>
+        </formalpara>
+    </section>
     <section id="logging">
         <title>Logging Requirements</title>
         <para/>
