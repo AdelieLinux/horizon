@@ -13,7 +13,7 @@
             <listitem id="FEA-3"><para>Create and modify partition tables, including file systems and mount points.</para></listitem>
             <listitem id="FEA-4"><para>Connect to wired and wireless networks.</para></listitem>
             <listitem id="FEA-5"><para>Configure date, time, and timezone.</para></listitem>
-            <listitem id="FEA-6"><para>Select packages to install.</para></listitem>
+            <listitem id="FEA-6"><para>Select packages and package sets to install.</para></listitem>
             <listitem id="FEA-7"><para>Configure boot loaders and settings.</para></listitem>
             <listitem id="FEA-8"><para>Configure user account information, including root password, user name, user password, and user icon.</para></listitem>
             <listitem id="FEA-9"><para>Install the Adélie Linux system with the specified configuration and customisation.</para></listitem>
@@ -29,6 +29,7 @@
             <listitem id="ASM-3"><para>The Horizon UI will run in a graphical display mode, not a text-only mode.</para></listitem>
             <listitem id="ASM-4"><para>"Full disk encryption" does not include the /boot partition.</para></listitem>
             <listitem id="ASM-5"><para>A scripted installation performed only using the Horizon Runner will support computers with no graphics.</para></listitem>
+            <listitem id="ASM-6"><para>Package sets will be defined during the requirements phase using feedback from the community and user class representatives.</para></listitem>
         </orderedlist>
     </section>
     <section id="dependencies">
