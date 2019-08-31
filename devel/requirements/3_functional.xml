@@ -65,6 +65,21 @@
                 </formalpara>
             </section>
         </section>
+        <section id="ui_firmware">
+            <title>Firmware Setup</title>
+            <para/>
+            <section id="ui_firmware_meta">
+                <title>Description / Priority</title>
+                <para/>
+            </section>
+            <section id="ui_firmware_req">
+                <title>Functional Requirements</title>
+                <formalpara>
+                    <title/>
+                    <para/>
+                </formalpara>
+            </section>
+        </section>
         <section id="ui_network">
             <title>Networking Setup</title>
             <para/>
