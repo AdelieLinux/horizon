@@ -8,7 +8,7 @@
             <title>User Language Selection</title>
             <section id="ui_language_meta">
                 <title>Description / Priority</title>
-                <para>A User must determine what natural language they are most comfortable with using for installing Adélie Linux.  The system shall allow the User to select their preferred natural language from a list of the languages to which the system has been translated.  Priority: Medium.</para>
+                <para>A User must determine what natural language they are most comfortable with using for installing Adélie Linux.  The system will allow the User to select their preferred natural language from a list of the languages to which the system has been translated.  Priority: Medium.</para>
             </section>
             <section id="ui_language_pre">
                 <title>Prerequisites</title>
@@ -44,7 +44,7 @@
             <title>Initial Introduction</title>
             <section id="ui_introduction_meta">
                 <title>Description / Priority</title>
-                <para>The system shall provide the User with an overview of the installation process, and introduce common UI elements.  A User may choose to run a tool or proceed with the installation.</para>
+                <para>The system will explain to the User an overview of the installation process, and introduce common UI elements.  A User may choose to run a tool or proceed with the installation.</para>
             </section>
             <section id="ui_introduction_req">
                 <title>Functional Requirements</title>
@@ -115,7 +115,7 @@
             <title>Firmware Setup</title>
             <section id="ui_firmware_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>A User may possess hardware that requires non-free binary firmware to operate.  This screen will allow users the choice on whether to load such firmware or not.  Note that this feature can be compiled out of Horizon UI, and can also be disabled at run-time with a configuration setting.</para>
             </section>
             <section id="ui_firmware_pre">
                 <title>Prerequisites</title>
@@ -126,9 +126,24 @@
             </section>
             <section id="ui_firmware_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Firmware.Prompt">
+                    <title>UI.Firmware.Prompt</title>
+                    <para>The system shall ask the User whether or not to load binary firmware, stressing that security-sensitive systems must not choose this option.</para>
+                </formalpara>
+                <formalpara id="UI.Firmware.Load">
+                    <title>UI.Firmware.Load</title>
+                    <para>If the User chooses to load binary firmware, the system shall add the APK Fission repository and the linux-firwmare package to the installed environment.</para>
+                </formalpara>
+                <formalpara id="UI.Firmware.ImmediateLoad">
+                    <title>UI.Firmware.ImmediateLoad</title>
+                    <para>If the User chooses to load binary firmware immediately, the system shall add the APK Fission repository signing key and the linux-firmware package to the running installer environment.</para>
+                </formalpara>
+            </section>
+            <section id="ui_firmware_key">
+                <title>HorizonScript Keys</title>
+                <formalpara id="Script.Key.firmware">
+                    <title>Script.Key.firmware</title>
+                    <para><varname>firmware</varname> &mdash; Whether to load firmware.</para>
                 </formalpara>
             </section>
         </section>
@@ -136,7 +151,14 @@
             <title>Networking Setup</title>
             <section id="ui_network_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>Most Users will want to configure a network connection on their computer.  The system will allow the user to configure their wired or wireless network connection, including authentication information (wireless), IP v4 and v6 addressing, routing, and DNS.</para>
+            </section>
+            <section id="ui_network_pre">
+                <title>Prerequisites</title>
+                <formalpara id="UI.Network.Prerequisites">
+                    <title>UI.Network.Prerequisites</title>
+                    <para>The system must have at least one non-loopback network interface detected by the kernel.</para>
+                </formalpara>
             </section>
             <section id="ui_network_req">
                 <title>Functional Requirements</title>
@@ -150,13 +172,54 @@
             <title>System Metadata Setup</title>
             <section id="ui_sysmeta_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>A User needs to specify the timezone the computer will be running in, and the computer's name.  The computer's name is used even on non-networked computers, for shell prompts and login screens.  The system will also allow the user to ensure the current date and time are accurate.</para>
             </section>
             <section id="ui_sysmeta_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.SysMeta.DateTime">
+                    <title>UI.SysMeta.DateTime</title>
+                    <para>The system shall display the date and time currently stored in the RTC (Real Time Clock), and allow the user to update the date and time stored in the RTC.</para>
+                </formalpara>
+                <formalpara id="UI.SysMeta.Timezone">
+                    <title>UI.SysMeta.Timezone</title>
+                    <para>The system shall allow the user to choose the time zone to use for time display.</para>
+                </formalpara>
+                <formalpara id="UI.SysMeta.DefaultTimezone">
+                    <title>UI.SysMeta.DefaultTimezone</title>
+                    <para>The system shall use UTC as the default time zone.</para>
+                </formalpara>
+                <formalpara id="UI.SysMeta.Hostname">
+                    <title>UI.SysMeta.Hostname</title>
+                    <para>The system shall allow the user to input the host name of the computer.</para>
+                </formalpara>
+                <formalpara id="UI.SysMeta.DefaultHostname">
+                    <title>UI.SysMeta.DefaultHostname</title>
+                    <para>The system shall provide a default host name for the user, calculated using the following rules:
+                        <orderedlist id="UI.SysMeta.DefaultHostname.Formula">
+                            <listitem><para>If the system is running in a non-installation environment, use "Adelie" and end calculation.</para></listitem>
+                            <listitem><para>If the system has a manufacturer available via DMI or similar API, use that name truncated to 11 characters.  Otherwise, use "Adelie".</para></listitem>
+                            <listitem><para>If the system has a network adaptor installed, even if it is not configured for use, use the last six characters of the MAC address from the first network adaptor.  Otherwise, use a random fruit name.</para></listitem>
+                        </orderedlist>
+                    </para>
+                </formalpara>
+                <formalpara id="UI.SysMeta.VerifyHostname">
+                    <title>UI.SysMeta.VerifyHostname</title>
+                    <para>The system shall ensure that the host name input by the user uses only valid characters for DNS names, and not accept characters that are invalid.</para>
+                </formalpara>
+                <formalpara id="UI.SysMeta.Enable">
+                    <title>UI.SysMeta.Enable</title>
+                    <para>The system shall enable the Next button when the host name field contains a valid name, and disable the Next button when it is empty.</para>
+                </formalpara>
+            </section>
+            <section id="ui_sysmeta_key">
+                <title>HorizonScript Keys</title>
+                <formalpara id="Script.Key.timezone">
+                    <title>Script.Key.timezone</title>
+                    <para><varname>timezone</varname> &mdash; The zoneinfo name of the system's timezone.  Ex: Africa/Nairobi.</para>
+                </formalpara>
+                <formalpara id="Script.Key.hostname">
+                    <title>Script.Key.hostname</title>
+                    <para><varname>hostname</varname> &mdash; The name of the system.</para>
                 </formalpara>
             </section>
         </section>
