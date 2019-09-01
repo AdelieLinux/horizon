@@ -249,13 +249,29 @@
             <title>Package and Package Set Selection</title>
             <section id="ui_packages_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>The system will let the user choose what packages and sets of packages to install on their computer.</para>
             </section>
             <section id="ui_packages_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Packages.SimpleSel">
+                    <title>UI.Packages.SimpleSel</title>
+                    <para>The system shall allow the user to choose from one of three preset package sets, or to customise the packages installed.</para>
+                </formalpara>
+                <formalpara id="UI.Packages.SimpleSel.Standard">
+                    <title>UI.Packages.SimpleSel.Standard</title>
+                    <para>The system shall allow the user to choose the Standard preset, which uses <literal>adelie-base-posix</literal> as an anchor package, and includes the <literal>firefox-esr</literal>, <literal>libreoffice</literal>, and <literal>thunderbird</literal> packages, and the <literal>kde</literal> and <literal>x11</literal> metapackages.</para>
+                </formalpara>
+                <formalpara id="UI.Packages.SimpleSel.Notebook">
+                    <title>UI.Packages.SimpleSel.Notebook</title>
+                    <para>The system shall allow the user to choose the Notebook preset, which includes the Standard preset and additional power management tools (UPower, pm-utils).</para>
+                </formalpara>
+                <formalpara id="UI.Packages.SimpleSel.Minimal">
+                    <title>UI.Packages.SimpleSel.Minimal</title>
+                    <para>The system shall allow the user to choose the Minimal preset, which uses <literal>adelie-base</literal> as an anchor package, and includes <literal>lxqt-desktop</literal>, <literal>featherpad</literal>, <literal>netsurf</literal>, <literal>xorg-apps</literal>, <literal>xorg-drivers</literal>, and <literal>xorg-server</literal> packages.</para>
+                </formalpara>
+                <formalpara id="UI.Packages.SimpleSel.Custom">
+                    <title>UI.Packages.SimpleSel.Custom</title>
+                    <para>The system shall allow the user to choose to customise the packages installed on their computer.</para>
                 </formalpara>
             </section>
         </section>
