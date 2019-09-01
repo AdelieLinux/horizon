@@ -3,7 +3,7 @@
     <title>Functional System Requirements</title>
     <section id="ui">
         <title>Horizon UI</title>
-        <para>The Horizon UI is the wizard-style user interface component of Project Horizon.  The system takes the input of the user and creates a HorizonScript.  The resultant HorizonScript is either executed on the running system when started in an installation environment, or saved for later use when started in a runtime environment.</para>
+        <para>The Horizon UI is the wizard-style user interface component of Project Horizon.  The system takes the input of the User and creates a HorizonScript.  The resultant HorizonScript is either executed on the running system when started in an installation environment, or saved for later use when started in a runtime environment.</para>
         <section id="ui_early">
             <title>System Initialisation</title>
             <section id="ui_early_meta">
@@ -14,7 +14,7 @@
                 <title>Functional Requirements</title>
                 <formalpara id="UI.Early.LoadFirmware">
                     <title>UI.Early.LoadFirmware</title>
-                    <para>If the user has specified to load firmware in the installation environment, the system shall install the linux-firmware package to the installation environment before eudev is started.</para>
+                    <para>If the User has specified to load firmware in the installation environment, the system shall install the linux-firmware package to the installation environment before eudev is started.</para>
                 </formalpara>
                 <formalpara id="UI.Early.DetectGfx">
                     <title>UI.Early.DetectGfx</title>
@@ -22,11 +22,11 @@
                 </formalpara>
                 <formalpara id="UI.Early.NoGfx">
                     <title>UI.Early.NoGfx</title>
-                    <para>If there are no usable graphics adaptors present, the system shall display a message that installation cannot continue, and allow the user to login to a virtual TTY or reboot the computer.</para>
+                    <para>If there are no usable graphics adaptors present, the system shall display a message that installation cannot continue, and allow the User to login to a virtual TTY or reboot the computer.</para>
                 </formalpara>
                 <formalpara id="UI.Early.MultiGfx">
                     <title>UI.Early.MultiGfx</title>
-                    <para>If multiple graphics adaptors are present, the system shall attempt to determine which graphics adaptor has a monitor attached.  If the determiniation is that multiple graphics adaptors have monitors attached, or it is indeterminiate which adaptor has a monitor attached, then the system shall prompt the user to choose which graphics adaptor to use for installation.</para>
+                    <para>If multiple graphics adaptors are present, the system shall attempt to determine which graphics adaptor has a monitor attached.  If the determiniation is that multiple graphics adaptors have monitors attached, or it is indeterminiate which adaptor has a monitor attached, then the system shall prompt the User to choose which graphics adaptor to use for installation.</para>
                 </formalpara>
             </section>
         </section>
@@ -76,7 +76,7 @@
                 <title>Functional Requirements</title>
                 <formalpara id="UI.Intro.Describe">
                     <title>UI.Intro.Describe</title>
-                    <para>The system shall present the User with a greeting message including a high-level overview of the installation process.  The system shall reassure the user that the installation process will not modify any data until the final step.</para>
+                    <para>The system shall present the User with a greeting message including a high-level overview of the installation process.  The system shall reassure the User that the installation process will not modify any data until the final step.</para>
                 </formalpara>
                 <formalpara id="UI.Intro.Elements">
                     <title>UI.Intro.Elements</title>
@@ -173,7 +173,7 @@
             <title>Networking Setup</title>
             <section id="ui_network_meta">
                 <title>Description / Priority</title>
-                <para>Most Users will want to configure a network connection on their computer.  The system will allow the user to configure their wired or wireless network connection, including authentication information (wireless), IP v4 and v6 addressing, routing, and DNS.</para>
+                <para>Most Users will want to configure a network connection on their computer.  The system will allow the User to configure their wired or wireless network connection, including authentication information (wireless), IP v4 and v6 addressing, routing, and DNS.</para>
             </section>
             <section id="ui_network_pre">
                 <title>Prerequisites</title>
@@ -230,17 +230,17 @@
             <title>System Metadata Setup</title>
             <section id="ui_sysmeta_meta">
                 <title>Description / Priority</title>
-                <para>A User needs to specify the timezone the computer will be running in, and the computer's name.  The computer's name is used even on non-networked computers, for shell prompts and login screens.  The system will also allow the user to ensure the current date and time are accurate.</para>
+                <para>A User needs to specify the timezone the computer will be running in, and the computer's name.  The computer's name is used even on non-networked computers, for shell prompts and login screens.  The system will also allow the User to ensure the current date and time are accurate.</para>
             </section>
             <section id="ui_sysmeta_req">
                 <title>Functional Requirements</title>
                 <formalpara id="UI.SysMeta.DateTime">
                     <title>UI.SysMeta.DateTime</title>
-                    <para>The system shall display the date and time currently stored in the RTC (Real Time Clock), and allow the user to update the date and time stored in the RTC.</para>
+                    <para>The system shall display the date and time currently stored in the RTC (Real Time Clock), and allow the User to update the date and time stored in the RTC.</para>
                 </formalpara>
                 <formalpara id="UI.SysMeta.Timezone">
                     <title>UI.SysMeta.Timezone</title>
-                    <para>The system shall allow the user to choose the time zone to use for time display.</para>
+                    <para>The system shall allow the User to choose the time zone to use for time display.</para>
                 </formalpara>
                 <formalpara id="UI.SysMeta.DefaultTimezone">
                     <title>UI.SysMeta.DefaultTimezone</title>
@@ -248,11 +248,11 @@
                 </formalpara>
                 <formalpara id="UI.SysMeta.Hostname">
                     <title>UI.SysMeta.Hostname</title>
-                    <para>The system shall allow the user to input the host name of the computer.</para>
+                    <para>The system shall allow the User to input the host name of the computer.</para>
                 </formalpara>
                 <formalpara id="UI.SysMeta.DefaultHostname">
                     <title>UI.SysMeta.DefaultHostname</title>
-                    <para>The system shall provide a default host name for the user, calculated using the following rules:
+                    <para>The system shall provide a default host name for the User, calculated using the following rules:
                         <orderedlist id="UI.SysMeta.DefaultHostname.Formula">
                             <listitem><para>If the system is running in a non-installation environment, use "Adelie" and end calculation.</para></listitem>
                             <listitem><para>If the system has a manufacturer available via DMI or similar API, use that name truncated to 11 characters.  Otherwise, use "Adelie".</para></listitem>
@@ -262,7 +262,7 @@
                 </formalpara>
                 <formalpara id="UI.SysMeta.VerifyHostname">
                     <title>UI.SysMeta.VerifyHostname</title>
-                    <para>The system shall ensure that the host name input by the user uses only valid characters for DNS names, and not accept characters that are invalid.</para>
+                    <para>The system shall ensure that the host name input by the User uses only valid characters for DNS names, and not accept characters that are invalid.</para>
                 </formalpara>
                 <formalpara id="UI.SysMeta.Enable">
                     <title>UI.SysMeta.Enable</title>
@@ -285,29 +285,29 @@
             <title>Package and Package Set Selection</title>
             <section id="ui_packages_meta">
                 <title>Description / Priority</title>
-                <para>The system will let the user choose what packages and sets of packages to install on their computer.</para>
+                <para>The system will let the User choose what packages and sets of packages to install on their computer.</para>
             </section>
             <section id="ui_packages_req">
                 <title>Functional Requirements</title>
                 <formalpara id="UI.Packages.SimpleSel">
                     <title>UI.Packages.SimpleSel</title>
-                    <para>The system shall allow the user to choose from one of three preset package sets, or to customise the packages installed.</para>
+                    <para>The system shall allow the User to choose from one of three preset package sets, or to customise the packages installed.</para>
                 </formalpara>
                 <formalpara id="UI.Packages.SimpleSel.Standard">
                     <title>UI.Packages.SimpleSel.Standard</title>
-                    <para>The system shall allow the user to choose the Standard preset, which uses <literal>adelie-base-posix</literal> as an anchor package, and includes the <literal>firefox-esr</literal>, <literal>libreoffice</literal>, <literal>thunderbird</literal>, and <literal>vlc</literal> packages, and the <literal>kde</literal> and <literal>x11</literal> metapackages.</para>
+                    <para>The system shall allow the User to choose the Standard preset, which uses <literal>adelie-base-posix</literal> as an anchor package, and includes the <literal>firefox-esr</literal>, <literal>libreoffice</literal>, <literal>thunderbird</literal>, and <literal>vlc</literal> packages, and the <literal>kde</literal> and <literal>x11</literal> metapackages.</para>
                 </formalpara>
                 <formalpara id="UI.Packages.SimpleSel.Notebook">
                     <title>UI.Packages.SimpleSel.Notebook</title>
-                    <para>The system shall allow the user to choose the Notebook preset, which includes the Standard preset and additional power management tools (UPower, pm-utils).</para>
+                    <para>The system shall allow the User to choose the Notebook preset, which includes the Standard preset and additional power management tools (UPower, pm-utils).</para>
                 </formalpara>
                 <formalpara id="UI.Packages.SimpleSel.Minimal">
                     <title>UI.Packages.SimpleSel.Minimal</title>
-                    <para>The system shall allow the user to choose the Minimal preset, which uses <literal>adelie-base</literal> as an anchor package, and includes <literal>lxqt-desktop</literal>, <literal>featherpad</literal>, <literal>netsurf</literal>, <literal>xorg-apps</literal>, <literal>xorg-drivers</literal>, and <literal>xorg-server</literal> packages.</para>
+                    <para>The system shall allow the User to choose the Minimal preset, which uses <literal>adelie-base</literal> as an anchor package, and includes <literal>lxqt-desktop</literal>, <literal>featherpad</literal>, <literal>netsurf</literal>, <literal>xorg-apps</literal>, <literal>xorg-drivers</literal>, and <literal>xorg-server</literal> packages.</para>
                 </formalpara>
                 <formalpara id="UI.Packages.SimpleSel.Custom">
                     <title>UI.Packages.SimpleSel.Custom</title>
-                    <para>The system shall allow the user to choose to customise the packages installed on their computer.</para>
+                    <para>The system shall allow the User to choose to customise the packages installed on their computer.</para>
                 </formalpara>
                 <formalpara id="UI.Packages.SimpleSel.Enable">
                     <title>UI.Packages.SimpleSel.Enable</title>
@@ -315,7 +315,7 @@
                 </formalpara>
                 <formalpara id="UI.Packages.Custom">
                     <title>UI.Packages.Custom</title>
-                    <para>If the User chooses Custom from UI.Packages.SimpleSel, the system shall present the User with a list of packages and package sets and allow the user to choose any or all of the packages listed.  The system shall display the disk space used by each selection, and the total required for installation.</para>
+                    <para>If the User chooses Custom from UI.Packages.SimpleSel, the system shall present the User with a list of packages and package sets and allow the User to choose any or all of the packages listed.  The system shall display the disk space used by each selection, and the total required for installation.</para>
                 </formalpara>
                 <formalpara id="UI.Packages.Custom.Packages">
                     <title>UI.Packages.Custom.Packages</title>
@@ -398,7 +398,7 @@
                 </formalpara>
                 <formalpara id="UI.Packages.Size">
                     <title>UI.Packages.Size</title>
-                    <para>If the User has selected a package set or packages that will use more disk space than the computer has, the system shall prompt the user to confirm the selection and warn that installation may not be successful.</para>
+                    <para>If the User has selected a package set or packages that will use more disk space than the computer has, the system shall prompt the User to confirm the selection and warn that installation may not be successful.</para>
                 </formalpara>
             </section>
         </section>
