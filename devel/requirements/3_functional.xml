@@ -4,6 +4,32 @@
     <section id="ui">
         <title>Horizon UI</title>
         <para>The Horizon UI is the wizard-style user interface component of Project Horizon.  The system takes the input of the user and creates a HorizonScript.  The resultant HorizonScript is either executed on the running system when started in an installation environment, or saved for later use when started in a runtime environment.</para>
+        <section id="ui_early">
+            <title>System Initialisation</title>
+            <section id="ui_early_meta">
+                <title>Description / Priority</title>
+                <para>This section describes the boot-up and initialisation procedures for the Horizon UI Installation Environment.</para>
+            </section>
+            <section id="ui_early_req">
+                <title>Functional Requirements</title>
+                <formalpara id="UI.Early.LoadFirmware">
+                    <title>UI.Early.LoadFirmware</title>
+                    <para>If the user has specified to load firmware in the installation environment, the system shall install the linux-firmware package to the installation environment before eudev is started.</para>
+                </formalpara>
+                <formalpara id="UI.Early.DetectGfx">
+                    <title>UI.Early.DetectGfx</title>
+                    <para>The system shall detect all usable graphics adaptors present in the computer.</para>
+                </formalpara>
+                <formalpara id="UI.Early.NoGfx">
+                    <title>UI.Early.NoGfx</title>
+                    <para>If there are no usable graphics adaptors present, the system shall display a message that installation cannot continue, and allow the user to login to a virtual TTY or reboot the computer.</para>
+                </formalpara>
+                <formalpara id="UI.Early.MultiGfx">
+                    <title>UI.Early.MultiGfx</title>
+                    <para>If multiple graphics adaptors are present, the system shall attempt to determine which graphics adaptor has a monitor attached.  If the determiniation is that multiple graphics adaptors have monitors attached, or it is indeterminiate which adaptor has a monitor attached, then the system shall prompt the user to choose which graphics adaptor to use for installation.</para>
+                </formalpara>
+            </section>
+        </section>
         <section id="ui_language">
             <title>User Language Selection</title>
             <section id="ui_language_meta">
@@ -133,10 +159,6 @@
                 <formalpara id="UI.Firmware.Load">
                     <title>UI.Firmware.Load</title>
                     <para>If the User chooses to load binary firmware, the system shall add the APK Fission repository and the linux-firwmare package to the installed environment.</para>
-                </formalpara>
-                <formalpara id="UI.Firmware.ImmediateLoad">
-                    <title>UI.Firmware.ImmediateLoad</title>
-                    <para>If the User chooses to load binary firmware immediately, the system shall add the APK Fission repository signing key and the linux-firmware package to the running installer environment.</para>
                 </formalpara>
             </section>
             <section id="ui_firmware_key">
