@@ -184,9 +184,45 @@
             </section>
             <section id="ui_network_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Network.ChooseIface">
+                    <title>UI.Network.ChooseIface</title>
+                    <para>If the computer has more than one network interface, the system shall prompt the User to choose which interface to use for installation.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless">
+                    <title>UI.Network.Wireless</title>
+                    <para>If the chosen network interface is a wireless network interface, the system shall display a Wireless Configuration screen.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless.APs">
+                    <title>UI.Network.Wireless.APs</title>
+                    <para>The system shall display a list of access points in range of the wireless interface for the User to select from.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless.CustomAP">
+                    <title>UI.Network.Wireless.CustomAP</title>
+                    <para>The system shall allow the User to input a custom access point name.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless.Security">
+                    <title>UI.Network.Wireless.Security</title>
+                    <para>If the chosen access point uses authentication, the system shall prompt the User for the requisite credentials.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless.CustomSecurity">
+                    <title>UI.Network.Wireless.CustomSecurity</title>
+                    <para>If the User inputs a custom access point name, the system shall prompt the User for the type of security used (or none) and requisite credentials.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless.Enable">
+                    <title>UI.Network.Wireless.Enable</title>
+                    <para>The system shall enable the Next button when an access point is selected or input, and the requisite credentials (if any) have been input.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless.Connect">
+                    <title>UI.Network.Wireless.Connect</title>
+                    <para>When the User chooses Next, the system shall attempt to connect to the specified wireless network.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless.Error">
+                    <title>UI.Network.Wireless.Error</title>
+                    <para>If an error occurs during wireless network connection, the system shall display a message explaning the error condition, and redisplay the Wireless Configuration screen.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless.ConnectTimeOut">
+                    <title>UI.Network.Wireless.ConnectTimeOut</title>
+                    <para>The system shall time out after waiting 15 seconds for the wireless network to connect, and consider a time out an error condition as specified in UI.Network.Wireless.Error.</para>
                 </formalpara>
             </section>
         </section>
@@ -259,7 +295,7 @@
                 </formalpara>
                 <formalpara id="UI.Packages.SimpleSel.Standard">
                     <title>UI.Packages.SimpleSel.Standard</title>
-                    <para>The system shall allow the user to choose the Standard preset, which uses <literal>adelie-base-posix</literal> as an anchor package, and includes the <literal>firefox-esr</literal>, <literal>libreoffice</literal>, and <literal>thunderbird</literal> packages, and the <literal>kde</literal> and <literal>x11</literal> metapackages.</para>
+                    <para>The system shall allow the user to choose the Standard preset, which uses <literal>adelie-base-posix</literal> as an anchor package, and includes the <literal>firefox-esr</literal>, <literal>libreoffice</literal>, <literal>thunderbird</literal>, and <literal>vlc</literal> packages, and the <literal>kde</literal> and <literal>x11</literal> metapackages.</para>
                 </formalpara>
                 <formalpara id="UI.Packages.SimpleSel.Notebook">
                     <title>UI.Packages.SimpleSel.Notebook</title>
@@ -272,6 +308,97 @@
                 <formalpara id="UI.Packages.SimpleSel.Custom">
                     <title>UI.Packages.SimpleSel.Custom</title>
                     <para>The system shall allow the user to choose to customise the packages installed on their computer.</para>
+                </formalpara>
+                <formalpara id="UI.Packages.SimpleSel.Enable">
+                    <title>UI.Packages.SimpleSel.Enable</title>
+                    <para>The system shall enable the Next button when a selection is made.</para>
+                </formalpara>
+                <formalpara id="UI.Packages.Custom">
+                    <title>UI.Packages.Custom</title>
+                    <para>If the User chooses Custom from UI.Packages.SimpleSel, the system shall present the User with a list of packages and package sets and allow the user to choose any or all of the packages listed.  The system shall display the disk space used by each selection, and the total required for installation.</para>
+                </formalpara>
+                <formalpara id="UI.Packages.Custom.Packages">
+                    <title>UI.Packages.Custom.Packages</title>
+                    <para>The system shall offer at least the following packages, with the following names, descriptions, and corresponding APK package names.
+                        <table frame="topbot" colsep="0" rowsep="1">
+                            <title>Custom packages offered on the Package Selection screen</title>
+                            <tgroup cols="3" align="left">
+                            <thead>
+                                <row>
+                                    <entry>Name</entry>
+                                    <entry>Description</entry>
+                                    <entry>APK name</entry>
+                                </row>
+                            </thead>
+                            <tbody>
+                                <row>
+                                    <entry>Firefox Web browser</entry>
+                                    <entry>The most popular and powerful Web browser for Linux.  Includes JavaScript and multimedia (audio/video) playback support.</entry>
+                                    <entry><literal><package>firefox-esr</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>Netsurf Web browser</entry>
+                                    <entry>Lightweight Web browser.  Does not include JavaScript support.</entry>
+                                    <entry><literal><package>netsurf</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>Thunderbird Email</entry>
+                                    <entry>Read and compose email, and participate in newsgroups.</entry>
+                                    <entry><literal><package>thunderbird</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>FeatherPad</entry>
+                                    <entry>Lightweight text editor.</entry>
+                                    <entry><literal><package>featherpad</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>LibreOffice</entry>
+                                    <entry>Popular, extensible office suite.</entry>
+                                    <entry><literal><package>libreoffice</package></literal>: <literal><package>libreoffice-base</package></literal>, <literal><package>libreoffice-calc</package></literal>, <literal><package>libreoffice-draw</package></literal>, <literal><package>libreoffice-impress</package></literal>, <literal><package>libreoffice-math</package></literal>, <literal><package>libreoffice-writer</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>VLC Media Player</entry>
+                                    <entry>Popular multimedia player, including support for a wide variety of audio and video types.</entry>
+                                    <entry><literal><package>vlc</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>KDE Applications</entry>
+                                    <entry>A variety of applications including a word processor, media player, and many games.</entry>
+                                    <entry><literal><package>kde</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>KDE Plasma</entry>
+                                    <entry>Modern desktop environment with graphical effect support.</entry>
+                                    <entry><literal><package>plasma-desktop</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>LXQt Desktop Environment</entry>
+                                    <entry>Lightweight desktop environment using the Openbox window manager and Qt widgets.</entry>
+                                    <entry><literal><package>lxqt-desktop</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>MATE Desktop Environment</entry>
+                                    <entry>Traditional desktop environment based on the GNOME 2 look and feel.</entry>
+                                    <entry><literal><package>mate-complete</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>XFCE Desktop Environment</entry>
+                                    <entry>Desktop environment based on Gtk+.</entry>
+                                    <entry><literal><package>xfce-desktop</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>Window Managers</entry>
+                                    <entry>Individual window managers that are not part of a desktop environment.</entry>
+                                    <entry><literal><package>awesome</package></literal>, <literal><package>fluxbox</package></literal>, <literal><package>i3wm</package></literal>, <literal><package>icewm</package></literal>, <literal><package>openbox</package></literal>, <literal><package>spectrwm</package></literal></entry>
+                                </row>
+                            </tbody>
+                            </tgroup>
+                        </table>
+                    </para>
+                </formalpara>
+                <formalpara id="UI.Packages.Size">
+                    <title>UI.Packages.Size</title>
+                    <para>If the User has selected a package set or packages that will use more disk space than the computer has, the system shall prompt the user to confirm the selection and warn that installation may not be successful.</para>
                 </formalpara>
             </section>
         </section>
