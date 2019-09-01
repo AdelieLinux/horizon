@@ -184,6 +184,14 @@
             </section>
             <section id="ui_network_req">
                 <title>Functional Requirements</title>
+                <formalpara id="UI.Network.AddressType">
+                    <title>UI.Network.AddressType</title>
+                    <para>The system shall ask the User whether they wish to use automatic addressing (DHCP), manual addressing, or disable network connectivity.</para>
+                </formalpara>
+                <formalpara id="UI.Network.AddressType.Skip">
+                    <title>UI.Network.AddressType.Skip</title>
+                    <para>If the User chooses to disable network connectivity, the system shall proceed to the System Metadata screen.</para>
+                </formalpara>
                 <formalpara id="UI.Network.ChooseIface">
                     <title>UI.Network.ChooseIface</title>
                     <para>If the computer has more than one network interface, the system shall prompt the User to choose which interface to use for installation.</para>
@@ -191,6 +199,18 @@
                 <formalpara id="UI.Network.Wireless">
                     <title>UI.Network.Wireless</title>
                     <para>If the chosen network interface is a wireless network interface, the system shall display a Wireless Configuration screen.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless.None">
+                    <title>UI.Network.Wireless.None</title>
+                    <para>The system shall allow the User to disable wireless connectivity.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless.None.Multi">
+                    <title>UI.Network.Wireless.None.Multi</title>
+                    <para>If the User has chosen to disable wireless connectivity, and the computer has multiple network interfaces, the system shall start at UI.Network.ChooseIface again.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Wireless.None.Single">
+                    <title>UI.Network.Wireless.None.Single</title>
+                    <para>If the User has chosen to disable wireless connectivity, and the computer only has wireless networking, the system shall prompt the User to confirm they wish to continue without networking.</para>
                 </formalpara>
                 <formalpara id="UI.Network.Wireless.APs">
                     <title>UI.Network.Wireless.APs</title>
@@ -223,6 +243,72 @@
                 <formalpara id="UI.Network.Wireless.ConnectTimeOut">
                     <title>UI.Network.Wireless.ConnectTimeOut</title>
                     <para>The system shall time out after waiting 15 seconds for the wireless network to connect, and consider a time out an error condition as specified in UI.Network.Wireless.Error.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Automatic">
+                    <title>UI.Network.Automatic</title>
+                    <para>If the User selected automatic addressing, the system shall attempt to obtain an IPv4 address via DHCP and an IPv6 address via Router Advertisement and DHCPv6.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Automatic.TimeOut">
+                    <title>UI.Network.Automatic.TimeOut</title>
+                    <para>If no IP address is obtained for v4 or v6 after 15 seconds, the system shall display a message that automatic configuration failed, and ask the user whether to retry the attempt, use manual addressing, or skip networking configuration.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Manual">
+                    <title>UI.Network.Manual</title>
+                    <para>If the User selected manual address, the system shall prompt the User for the following information:
+                        <table frame="topbot" colsep="0" rowsep="1">
+                            <title>Network information to collect from User for manual configuration</title>
+                            <tgroup cols="2" align="left">
+                            <thead>
+                                <row>
+                                    <entry>Information</entry>
+                                    <entry>Description</entry>
+                                </row>
+                            </thead>
+                            <tbody>
+                                <row>
+                                    <entry>IPv4 host address</entry>
+                                    <entry>The address of this computer</entry>
+                                </row>
+                                <row>
+                                    <entry>IPv4 subnet mask</entry>
+                                    <entry>The subnet mask / prefix of the network</entry>
+                                </row>
+                                <row>
+                                    <entry>IPv4 default gateway</entry>
+                                    <entry>The router on the network</entry>
+                                </row>
+                                <row>
+                                    <entry>IPv4 DNS resolver</entry>
+                                    <entry>The DNS resolver to use on IPv4 networks; default to 9.9.9.9</entry>
+                                </row>
+                                <row>
+                                    <entry>IPv6 host address</entry>
+                                    <entry>The address of this computer</entry>
+                                </row>
+                                <row>
+                                    <entry>IPv6 network prefix</entry>
+                                    <entry>The prefix of the network</entry>
+                                </row>
+                                <row>
+                                    <entry>IPv6 default gateway</entry>
+                                    <entry>The router on the network</entry>
+                                </row>
+                                <row>
+                                    <entry>IPv6 DNS resolver</entry>
+                                    <entry>The DNS resolver to use on IPv6 networks; default to 2620:fe::fe</entry>
+                                </row>
+                            </tbody>
+                            </tgroup>
+                        </table>
+                    </para>
+                </formalpara>
+                <formalpara id="UI.Network.Manual.Test">
+                    <title>UI.Network.Manual.Test</title>
+                    <para>The system shall allow the User to test their network configuration by attempting to connect to distfiles.adelielinux.org.</para>
+                </formalpara>
+                <formalpara id="UI.Network.Manual.Enable">
+                    <title>UI.Network.Manual.Enable</title>
+                    <para>The system shall enable the Next button when either an IPv4 or IPv6 configuration is complete (address, subnet mask, gateway, DNS resolver).</para>
                 </formalpara>
             </section>
         </section>
