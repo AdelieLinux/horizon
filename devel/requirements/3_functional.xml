@@ -341,7 +341,7 @@
                 <title>Functional Requirements</title>
                 <formalpara id="UI.SysMeta.DateTime">
                     <title>UI.SysMeta.DateTime</title>
-                    <para>The system shall display the date and time currently stored in the RTC (Real Time Clock), and allow the User to update the date and time stored in the RTC.</para>
+                    <para>If the system is running in an installation environment, the system shall display the date and time currently stored in the RTC (Real Time Clock), and allow the User to update the date and time stored in the RTC.</para>
                 </formalpara>
                 <formalpara id="UI.SysMeta.Timezone">
                     <title>UI.SysMeta.Timezone</title>
