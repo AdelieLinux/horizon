@@ -327,7 +327,7 @@
                 </formalpara>
                 <formalpara id="Script.Key.netssid">
                     <title>Script.Key.netssid</title>
-                    <para><varname>netssid</varname> &mdash; Wireless networking information, in the format: <literal>(iface) "(SSID)" {none|wep|wpa1|wpa2|enterprise} [(authdata)]</literal>  For example, <literal>netssid wlan0 "The New Fox 5G" wpa2 "shh sekrit"</literal>.  System behaviour is undefined if SSID or passphrase contain an ASCII double-quote character.</para>
+                    <para><varname>netssid</varname> &mdash; Wireless networking information, in the format: <literal>(iface) "(SSID)" {none|wep|wpa} [(passphrase)]</literal>  For example, <literal>netssid wlan0 "The New Fox 5G" wpa2 "shh sekrit"</literal>.  System behaviour is undefined if SSID or passphrase contain an ASCII double-quote character.</para>
                 </formalpara>
             </section>
         </section>

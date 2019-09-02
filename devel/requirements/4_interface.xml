@@ -92,9 +92,7 @@
                 <orderedlist id="SecTypeList">
                     <listitem><para>No Security</para></listitem>
                     <listitem><para>WEP Passphrase</para></listitem>
-                    <listitem><para>WPA1 Personal</para></listitem>
-                    <listitem><para>WPA2 Personal</para></listitem>
-                    <listitem><para>WPA2 Enterprise: Name/Password</para></listitem>
+                    <listitem><para>WPA with Preshared Key (PSK)</para></listitem>
                 </orderedlist>
             </para>
         </formalpara>
