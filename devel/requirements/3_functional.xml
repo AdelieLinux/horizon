@@ -315,6 +315,21 @@
                     <para>The system shall enable the Next button when either an IPv4 or IPv6 configuration is complete (address, subnet mask, gateway, DNS resolver).</para>
                 </formalpara>
             </section>
+            <section id="ui_network_key">
+                <title>HorizonScript Keys</title>
+                <formalpara id="Script.Key.network">
+                    <title>Script.Key.network</title>
+                    <para><varname>network</varname> &mdash; Whether to enable network connectivity (true or false).</para>
+                </formalpara>
+                <formalpara id="Script.Key.netaddress">
+                    <title>Script.Key.netaddress</title>
+                    <para><varname>netaddress</varname> &mdash; Connection information, in the format: <literal>(iface) {dhcp|static} [(address) (prefix-or-netmask) (gateway) (dns)]</literal>.  For example, <literal>netaddress eth0 static 2001:db8::1337 64 2001:db8::1 2620:fe::fe</literal>.  May be repeated, for multiple interfaces or IPv4/IPv6 dual-homing.</para>
+                </formalpara>
+                <formalpara id="Script.Key.netssid">
+                    <title>Script.Key.netssid</title>
+                    <para><varname>netssid</varname> &mdash; Wireless networking information, in the format: <literal>(iface) "(SSID)" {none|wep|wpa1|wpa2|enterprise} [(authdata)]</literal>  For example, <literal>netssid wlan0 "The New Fox 5G" wpa2 "shh sekrit"</literal>.  System behaviour is undefined if SSID or passphrase contain an ASCII double-quote character.</para>
+                </formalpara>
+            </section>
         </section>
         <section id="ui_sysmeta">
             <title>System Metadata Setup</title>
@@ -493,6 +508,13 @@
                 <formalpara id="UI.Packages.Size">
                     <title>UI.Packages.Size</title>
                     <para>If the User has selected a package set or packages that will use more disk space than the computer has, the system shall prompt the User to confirm the selection and warn that installation may not be successful.</para>
+                </formalpara>
+            </section>
+            <section id="ui_packages_key">
+                <title>HorizonScript Keys</title>
+                <formalpara id="Script.Key.pkginstall">
+                    <title>Script.Key.pkginstall</title>
+                    <para><varname>pkginstall</varname> &mdash; A space-separated list of packages to install.</para>
                 </formalpara>
             </section>
         </section>
