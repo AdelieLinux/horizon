@@ -141,7 +141,7 @@
             <title>Firmware Setup</title>
             <section id="ui_firmware_meta">
                 <title>Description / Priority</title>
-                <para>A User may possess hardware that requires non-free binary firmware to operate.  This screen will allow users the choice on whether to load such firmware or not.  Note that this feature can be compiled out of Horizon UI, and can also be disabled at run-time with a configuration setting.</para>
+                <para>A User may possess hardware that requires non-free binary firmware to operate.  This screen will allow the User to choose whether to load such firmware or not.  Note that this feature can be compiled out of Horizon UI, and can also be disabled at run-time with a configuration setting.</para>
             </section>
             <section id="ui_firmware_pre">
                 <title>Prerequisites</title>
@@ -191,6 +191,10 @@
                 <formalpara id="UI.Network.AddressType.Skip">
                     <title>UI.Network.AddressType.Skip</title>
                     <para>If the User chooses to disable network connectivity, the system shall proceed to the System Metadata screen.</para>
+                </formalpara>
+                <formalpara id="UI.Network.RuntimeEnv">
+                    <title>UI.Network.RuntimeEnv</title>
+                    <para>If Horizon UI is running in a runtime environment instead of an installation environment, the system shall allow the User to add their network interface by device name before proceeding.</para>
                 </formalpara>
                 <formalpara id="UI.Network.ChooseIface">
                     <title>UI.Network.ChooseIface</title>
@@ -250,7 +254,7 @@
                 </formalpara>
                 <formalpara id="UI.Network.Automatic.TimeOut">
                     <title>UI.Network.Automatic.TimeOut</title>
-                    <para>If no IP address is obtained for v4 or v6 after 15 seconds, the system shall display a message that automatic configuration failed, and ask the user whether to retry the attempt, use manual addressing, or skip networking configuration.</para>
+                    <para>If no IP address is obtained for v4 or v6 after 15 seconds, the system shall display a message that automatic configuration failed, and ask the User whether to retry the attempt, use manual addressing, or skip networking configuration.</para>
                 </formalpara>
                 <formalpara id="UI.Network.Manual">
                     <title>UI.Network.Manual</title>
@@ -524,13 +528,36 @@
             <title>Save HorizonScript</title>
             <section id="ui_writeout_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>The User is now able to save the HorizonScript they have created using the Horizon UI.  Priority: Medium, since installation environment concerns are paramount for release 1.0.</para>
+            </section>
+            <section id="ui_writeout_pre">
+                <title>Prerequisites</title>
+                <formalpara id="UI.Writeout.Prerequisites">
+                    <title>UI.Writeout.Prerequisites</title>
+                    <para>The system must be running in a runtime environment, not an installation environment.</para>
+                </formalpara>
             </section>
             <section id="ui_writeout_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Writeout.Explain">
+                    <title>UI.Writeout.Explain</title>
+                    <para>The system shall inform the User that the system has finished collecting information and is now ready to save the resultant HorizonScript.</para>
+                </formalpara>
+                <formalpara id="UI.Writeout.Button">
+                    <title>UI.Writeout.Button</title>
+                    <para>The system shall replace the "Next" button with a "Save" button using the same keyboard accelerator as Next.</para>
+                </formalpara>
+                <formalpara id="UI.Writeout.Save">
+                    <title>UI.Writeout.Save</title>
+                    <para>When the User chooses "Save", the system shall open a dialogue for the user to navigate to the directory in which they wish to save the HorizonScript, and the name of the file-on disk which shall default to <literal>installfile</literal>.</para>
+                </formalpara>
+                <formalpara id="UI.Writeout.Close">
+                    <title>UI.Writeout.Close</title>
+                    <para>If the HorizonScript file is saved successfully, the system shall exit.</para>
+                </formalpara>
+                <formalpara id="UI.Writeout.Failure">
+                    <title>UI.Writeout.Failure</title>
+                    <para>If the HorizonScript file cannot be saved successfully, the system shall display a message indicating the error, and then redisplay the writeout screen.</para>
                 </formalpara>
             </section>
         </section>
@@ -538,7 +565,7 @@
             <title>Begin Installation</title>
             <section id="ui_commit_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>The system will describe to the User what will be done.  The User may confirm, or go back.</para>
             </section>
             <section id="ui_commit_req">
                 <title>Functional Requirements</title>
