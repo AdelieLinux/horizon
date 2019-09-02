@@ -30,7 +30,7 @@
         </formalpara>
         <formalpara id="Iface.UI.StandardButtons">
             <title>Iface.UI.StandardButtons</title>
-            <para>Horizon UI shall have a "Back (F5)", "Next (F6)", "Cancel (F3)", and "Help (F1)" on all pages except the first page (where the Back button shall not be displayed) and the last page (where the Back and Cancel buttons shall not be displayed).</para>
+            <para>Horizon UI shall have a "Back (F5)", "Next (F8)", "Cancel (F3)", and "Help (F1)" on all pages except the first page (where the Back button shall not be displayed) and the last page (where the Back and Cancel buttons shall not be displayed).</para>
         </formalpara>
         <formalpara id="Iface.UI.ScreenReader">
             <title>Iface.UI.ScreenReader</title>
