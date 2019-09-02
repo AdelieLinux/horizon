@@ -377,7 +377,7 @@
                 <title>Functional Requirements</title>
                 <formalpara id="UI.Packages.SimpleSel">
                     <title>UI.Packages.SimpleSel</title>
-                    <para>The system shall allow the User to choose from one of three preset package sets, or to customise the packages installed.</para>
+                    <para>The system shall allow the User to choose from one of the following four preset package sets, or to customise the packages installed.</para>
                 </formalpara>
                 <formalpara id="UI.Packages.SimpleSel.Standard">
                     <title>UI.Packages.SimpleSel.Standard</title>
@@ -389,7 +389,11 @@
                 </formalpara>
                 <formalpara id="UI.Packages.SimpleSel.Minimal">
                     <title>UI.Packages.SimpleSel.Minimal</title>
-                    <para>The system shall allow the User to choose the Minimal preset, which uses <literal>adelie-base</literal> as an anchor package, and includes <literal>lxqt-desktop</literal>, <literal>featherpad</literal>, <literal>netsurf</literal>, <literal>xorg-apps</literal>, <literal>xorg-drivers</literal>, and <literal>xorg-server</literal> packages.</para>
+                    <para>The system shall allow the User to choose the Minimal preset, which uses <literal>adelie-base</literal> as an anchor package, and includes the <literal>lxqt-desktop</literal>, <literal>featherpad</literal>, <literal>netsurf</literal>, <literal>xorg-apps</literal>, <literal>xorg-drivers</literal>, and <literal>xorg-server</literal> packages.</para>
+                </formalpara>
+                <formalpara id="UI.Packages.SimpleSel.MinimalTUI">
+                    <title>UI.Packages.SimpleSel.MinimalTUI</title>
+                    <para>The system shall allow the User to choose the Minimal Non-Graphical preset, which uses <literal>adelie-base</literal> as an anchor package, and includes the <literal>elinks</literal> and <literal>tmux</literal> packages.</para>
                 </formalpara>
                 <formalpara id="UI.Packages.SimpleSel.Custom">
                     <title>UI.Packages.SimpleSel.Custom</title>
