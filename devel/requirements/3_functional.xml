@@ -357,8 +357,8 @@
                 </formalpara>
                 <formalpara id="UI.SysMeta.DefaultHostname">
                     <title>UI.SysMeta.DefaultHostname</title>
-                    <para>The system shall provide a default host name for the User, calculated using the following rules:
-                        <orderedlist id="UI.SysMeta.DefaultHostname.Formula">
+                    <para>The system shall provide a default host name for the User, calculated using the following algorithm:
+                        <orderedlist id="UI.SysMeta.DefaultHostname.Algo">
                             <listitem><para>If the system is running in a non-installation environment, use "Adelie" and end calculation.</para></listitem>
                             <listitem><para>If the system has a manufacturer available via DMI or similar API, use that name truncated to 11 characters.  Otherwise, use "Adelie".</para></listitem>
                             <listitem><para>If the system has a network adaptor installed, even if it is not configured for use, use the last six characters of the MAC address from the first network adaptor.  Otherwise, use a random fruit name.</para></listitem>
@@ -536,13 +536,83 @@
             <title>System Accounts Setup</title>
             <section id="ui_accounts_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>The User needs to configure the administrator password, and provide their name/alias and password for their own account.</para>
             </section>
             <section id="ui_accounts_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Accounts.RootPW">
+                    <title>UI.Accounts.RootPW</title>
+                    <para>The system shall prompt the User to enter a password for the root user.</para>
+                </formalpara>
+                <formalpara id="UI.Accounts.RootPW.Confirm">
+                    <title>UI.Accounts.RootPW.Confirm</title>
+                    <para>The system shall prompt the User to re-enter the root user password to confirm accuracy.</para>
+                </formalpara>
+                <formalpara id="UI.Accounts.RootPW.Explain">
+                    <title>UI.Accounts.RootPW.Explain</title>
+                    <para>The system shall explain to the User the important of keeping the root user's password secure, and written in a safe place, as it is used for system administration.</para>
+                </formalpara>
+                <formalpara id="UI.Accounts.RootPW.Enable">
+                    <title>UI.Accounts.RootPW.Enable</title>
+                    <para>The system shall enable the Next button when the root password and confirmation match and represent a valid password.</para>
+                </formalpara>
+                <formalpara id="UI.Accounts.UserAcct">
+                    <title>UI.Accounts.UserAcct</title>
+                    <para>If the system is running in an installation environment, then the system shall prompt the User to enter their name or alias to personalise their copy of Adélie Linux.</para>
+                </formalpara>
+                <formalpara id="UI.Accounts.UserAcct.AcctName">
+                    <title>UI.Accounts.UserAcct.AcctName</title>
+                    <para>The system shall prompt the User to enter an account name for their user account.</para>
+                </formalpara>
+                <formalpara id="UI.Accounts.UserAcct.AcctName.Default">
+                    <title>UI.Accounts.UserAcct.AcctName.Default</title>
+                    <para>The system shall use the following algorithm to provide a default account name for the User:
+                        <orderedlist id="UI.Accounts.UserAcct.AcctName.Default.Algo">
+                            <listitem><para>If the User's name or alias contains no spaces, let the account name be the entire name or alias.</para></listitem>
+                            <listitem><para>If the User's name or alias contains spaces, let the account name be the first character of each word that is not the last word, and the full last word.</para></listitem>
+                            <listitem><para>Transform the account name to a Latinised, lower-case form, as described by (Insert Unicode reference here).</para></listitem>
+                            <listitem><para>If the account name is longer than 32 characters, truncate the account name to 32 characters.</para></listitem>
+                        </orderedlist>
+                    </para>
+                </formalpara>
+                <formalpara id="UI.Accounts.UserAcct.Icon">
+                    <title>UI.Accounts.UserAcct.Icon</title>
+                    <para>The system shall allow the User to choose a personal icon to be shown on the system login screen from a list of preset icons.</para>
+                </formalpara>
+                <formalpara id="UI.Accounts.UserAcct.Password">
+                    <title>UI.Accounts.UserAcct.Password</title>
+                    <para>The system shall prompt the User to enter a password for their personal account.</para>
+                </formalpara>
+                <formalpara id="UI.Accounts.UserAcct.Password.Confirm">
+                    <title>UI.Accounts.UserAcct.Password.Confirm</title>
+                    <para>The system shall prompt the User to re-enter their personal password to confirm accuracy.</para>
+                </formalpara>
+                <formalpara id="UI.Accounts.UserAcct.Enable">
+                    <title>UI.Accounts.UserAcct.Enable</title>
+                    <para>The system shall enable the Next button when the user name, account name are valid, and the password and confirm password fields match and represent a valid password.</para>
+                </formalpara>
+            </section>
+            <section id="ui_accounts_key">
+                <title>HorizonScript Keys</title>
+                <formalpara id="Script.Key.rootpw">
+                    <title>Script.Key.rootpw</title>
+                    <para><varname>rootpw</varname> &mdash; The crypt(3)-formatted, SHA-512 hashed password for the root account.</para>
+                </formalpara>
+                <formalpara id="Script.Key.username">
+                    <title>Script.Key.username</title>
+                    <para><varname>username</varname> &mdash; The account name for the primary user of the computer.</para>
+                </formalpara>
+                <formalpara id="Script.Key.useralias">
+                    <title>Script.Key.useralias</title>
+                    <para><varname>useralias</varname> &mdash; The primary user's name or alias.</para>
+                </formalpara>
+                <formalpara id="Script.Key.userpw">
+                    <title>Script.Key.userpw</title>
+                    <para><varname>userpw</varname> &mdash; The crypt(3)-formatted, SHA-512 hashed password for the primary user account.</para>
+                </formalpara>
+                <formalpara id="Script.Key.usericon">
+                    <title>Script.Key.usericon</title>
+                    <para><varname>usericon</varname> &mdash; The name of the primary user account's icon.</para>
                 </formalpara>
             </section>
         </section>
