@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter label="2" id="keys">
+    <title>HorizonScript Keys</title>
+    <section id="key_intro">
+        <title>Introduction</title>
+        <para>A HorizonScript file is, at its core, a collection of values that determine the actions and configuration values used to transform a computer from an indeterminate state to a well-known state running Adélie Linux.  These values are categorised into <firstterm>key</firstterm>s, which is a logical unit of a value.</para>
+        <para>This chapter defines and specifies for every valid key for a HorizonScript file: its name, its purpose, its format, and one or more example values with explanations.</para>
+    </section>
+</chapter>

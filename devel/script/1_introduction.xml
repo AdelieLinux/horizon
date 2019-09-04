@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter label="1" id="introduction">
+    <title>Introduction</title>
+    <section id="purpose">
+        <title>Purpose</title>
+        <para>This document describes the file format, including logical and on-disk formats, for HorizonScript.  HorizonScript is the file read in by the Project Horizon system to configure Adélie Linux on a target computer.</para>
+    </section>
+    <section id="conventions">
+        <title>Document Conventions</title>
+        <para>Text formatted like <literal>this text</literal> is meant to represent a literal value, or a value that will appear verbatim in the HorizonScript.</para>
+        <para>Text formatted like <replaceable>this text</replaceable> is replacaeable, or a value that will vary based on User or Administrator decisions.</para>
+    </section>
+    <section id="audience">
+        <title>Intended Audience</title>
+        <para>This document is intended to be used by developers and researchers, to implement Project Horizon 1.0 and study how Project Horizon accomplishes its goals of installing and configuring Adélie Linux.  This document may also be used by Administrators intended to hand-write their own HorizonScript, though this activity is only recommended for advanced users.  This document is additionally intended to be used by the wider Adélie Linux community to determine how Project Horizon is designed, its intended purposes, and for development of future releases of Project Horizon.</para>
+    </section>
+</chapter>

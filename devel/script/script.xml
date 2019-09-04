@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+               "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+               <!ENTITY chap1 SYSTEM "1_introduction.xml">
+               <!ENTITY chap2 SYSTEM "2_keys.xml">
+               <!ENTITY chap3 SYSTEM "3_ondisk.xml">
+]>
+<book>
+    <bookinfo>
+        <title>HorizonScript Specification</title>
+        <authorgroup>
+            <author><firstname>A.</firstname><surname>Wilcox</surname><affiliation><orgname>Adélie Linux</orgname></affiliation></author>
+        </authorgroup>
+        <edition>Specification for HorizonScript (Horizon release 1.0): Draft</edition>
+        <pubdate>2019</pubdate>
+        <copyright>
+            <year>2019</year>
+            <holder>Adélie Linux</holder>
+        </copyright>
+        <legalnotice>
+            <para>Development documentation for Project Horizon is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.</para>
+            <para>You should have received a copy of the license along with this work. If not, see <ulink url="https://creativecommons.org/licenses/by-nc-sa/4.0/"><citetitle>the Creative Commons Web site</citetitle></ulink>.</para>
+        </legalnotice>
+        <abstract><para>This document describes the file format of HorizonScript.  HorizonScript is the input file used for Project Horizon, the installation system for Adélie Linux.</para></abstract>
+    </bookinfo>
+    &chap1;
+    &chap2;
+    &chap3;
+</book>
