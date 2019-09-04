@@ -8,7 +8,7 @@
     <section id="conventions">
         <title>Document Conventions</title>
         <para>Text formatted like <literal>this text</literal> is meant to represent a literal value, or a value that will appear verbatim in the HorizonScript.</para>
-        <para>Text formatted like <replaceable>this text</replaceable> is replacaeable, or a value that will vary based on User or Administrator decisions.</para>
+        <para>Text formatted like <replaceable>this text</replaceable> is replaceable, or a value that will vary based on User or Administrator decisions.</para>
     </section>
     <section id="audience">
         <title>Intended Audience</title>
