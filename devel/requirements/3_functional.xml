@@ -30,6 +30,36 @@
                 </formalpara>
             </section>
         </section>
+        <section id="ui_global">
+            <title>Global UI Requirements</title>
+            <section id="ui_global_meta">
+                <title>Description / Priority</title>
+                <para>The system must obey these requirements on all screens, except where explicitly noted.</para>
+            </section>
+            <section id="ui_global_req">
+                <title>Functional Requirements</title>
+                <formalpara id="UI.Global.Cancel">
+                    <title>UI.Global.Cancel</title>
+                    <para>The system shall display a Cancel button on every screen.</para>
+                </formalpara>
+                <formalpara id="UI.Global.Cancel.Confirm">
+                    <title>UI.Global.Cancel.Confirm</title>
+                    <para>If the User chooses the Cancel button, the system shall confirm that the User wishes to cancel installation.  The system shall additionally explain that no data has been modified yet, and that cancelling installation will cause the computer to reboot.</para>
+                </formalpara>
+                <formalpara id="UI.Global.Cancel.Perform">
+                    <title>UI.Global.Cancel.Perform</title>
+                    <para>If the User chooses to confirm cancellation of the installation, the system shall reboot the computer.</para>
+                </formalpara>
+                <formalpara id="UI.Global.Back">
+                    <title>UI.Global.Back</title>
+                    <para>The system shall display a Back button on every screen except the initial screen, which will move the User back to the previous screen.</para>
+                </formalpara>
+                <formalpara id="UI.Global.Back.Save">
+                    <title>UI.Global.Back.Save</title>
+                    <para>If the User chooses to go back to a previous screen, the system shall save any changes the User has made to the current screen before moving back to the previous screen.  The system shall then redisplay those changes when the current screen is shown again.</para>
+                </formalpara>
+            </section>
+        </section>
         <section id="ui_language">
             <title>User Language Selection</title>
             <section id="ui_language_meta">
@@ -661,9 +691,21 @@
             </section>
             <section id="ui_commit_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Commit.Explain">
+                    <title>UI.Commit.Explain</title>
+                    <para>The system shall explain to the User that the next step will be performing the installation.</para>
+                </formalpara>
+                <formalpara id="UI.Commit.Explain.Disk">
+                    <title>UI.Commit.Explain.Disk</title>
+                    <para>If the disk partitioning will cause existing data to be modified or destroyed, the system shall additionally explain to the User that proceeding will modify or destroy the data on the disk(s) partitioned.</para>
+                </formalpara>
+                <formalpara id="UI.Commit.Explain.Info">
+                    <title>UI.Commit.Explain.Info</title>
+                    <para>The system shall display the major choices the User has made in the installation.  The choices shown shall be determined later during the UX design phase and are intentionally omitted from this requirements specification.</para>
+                </formalpara>
+                <formalpara id="UI.Commit.Buttons">
+                    <title>UI.Commit.Buttons</title>
+                    <para>The system shall remove the Cancel button, and the Next button shall be labelled Install.</para>
                 </formalpara>
             </section>
         </section>
@@ -689,6 +731,10 @@
                 <formalpara id="UI.Perform">
                     <title>UI.Perform</title>
                     <para>The system shall execute the Horizon Runner with the specified HorizonScript, and display the installation progress.</para>
+                </formalpara>
+                <formalpara id="UI.Perform.Buttons">
+                    <title>UI.Perform.Buttons</title>
+                    <para>The system shall display no buttons during installation.</para>
                 </formalpara>
                 <formalpara id="UI.Perform.Status">
                     <title>UI.Perform.Status</title>
