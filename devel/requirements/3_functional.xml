@@ -849,8 +849,8 @@
                     <para>If no HorizonScript path was provided, the system shall download the HorizonScript from a TFTP server using the filename <filename>MACADDRESS.installfile</filename> where MACADDRESS is the MAC address of the active network adaptor with colons (:) replaced by dashes (-).  The system shall use the following algorithm to determine the TFTP server, using the first match.
                         <orderedlist id="Runner.Locate.Remote.FullAuto.Algo">
                             <listitem><para>The TFTP server specified in the DHCP options, if the DHCP response provided one.</para></listitem>
-                            <listitem><para>The DHCP server, if no TFTP server was specified in DHCP options and DHCP was used to configure the network.</para></listitem>
                             <listitem><para>The TFTP server specified on the command line, if one was provided.</para></listitem>
+                            <listitem><para>The DHCP server, if DHCP was used to configure the network.</para></listitem>
                             <listitem><para>The default gateway IP.</para></listitem>
                         </orderedlist>
                     </para>
