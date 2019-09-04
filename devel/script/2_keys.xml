@@ -8,7 +8,7 @@
     </section>
     <section id="reqd_keys">
         <title>Required Keys</title>
-        <para>Each key in this section is required to be present in a HorizonScript.  If any key from this section is missing, the HorizonScript will be considered invalid and Horizon Runner will not execute it.</para>
+        <para>Each key specified in this section is required to be present in a HorizonScript.  If any key from this section is missing, the HorizonScript will be considered invalid and Horizon Runner will not execute it.</para>
         <section id="network">
             <title><literal>network</literal></title>
             <formalpara id="network.name">
@@ -66,6 +66,48 @@ hostname gwyn
 hostname gwyn.foxkit.internal
                         </programlisting>
                         <para>This sets the hostname of the target computer to <literal>gwyn.foxkit.internal</literal>.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+    </section>
+    <section id="opt_keys">
+        <title>Optional Keys</title>
+        <para>Each key specified in this section may be present in a HorizonScript.  This section additionally defines the default value or action taken if the specified key is not present.</para>
+        <section id="language">
+            <title><literal>language</literal></title>
+            <formalpara id="language.name">
+                <title>Name</title>
+                <para><literal>language</literal></para>
+            </formalpara>
+            <formalpara id="language.purpose">
+                <title>Purpose</title>
+                <para>The <literal>language</literal> key determines the default natural language for the target computer.  The value of this key will be used to configure the <envar>LANG</envar> and <envar>LC_ALL</envar> environment variables, in addition to installing language packs for certain software.</para>
+            </formalpara>
+            <formalpara id="language.format">
+                <title>Format</title>
+                <para>The <literal>language</literal> key is a string value that specifies a valid locale code.  A locale code must match one of the following formats: <replaceable>xx</replaceable>, or <replaceable>xx</replaceable><literal>_</literal><replaceable>YY</replaceable>, or <replaceable>xx</replaceable><literal>_</literal><replaceable>YY</replaceable><literal>.UTF-8</literal>, where <replaceable>xx</replaceable> is a valid ISO 639-1 language code, and <replaceable>YY</replaceable> is a valid ISO 3166-1 country code.</para>
+            </formalpara>
+            <formalpara id="language.default">
+                <title>Default</title>
+                <para>If the <literal>language</literal> key is not present, no setting will be defined for the <envar>LANG</envar> or <envar>LC_ALL</envar> environment variables.  Most software treats this as either "C.UTF-8" or "en_US.UTF-8".  No language packs will be installed for software that supports multiple language; due to English being the <emphasis role="italics">de facto</emphasis> language of software engineering, this implies all software will run in English.</para>
+            </formalpara>
+            <formalpara id="language.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>language</literal> Key &mdash; Simple Language</title>
+                        <programlisting>
+language cy
+                        </programlisting>
+                        <para>This sets the language of the target computer to Welsh.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>language</literal> Key &mdash; Language with Country Localisation</title>
+                        <programlisting>
+language fr_CA
+                        </programlisting>
+                        <para>This sets the language of the target computer to Canadian French.</para>
                     </example>
                 </para>
             </formalpara>
