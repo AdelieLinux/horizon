@@ -85,7 +85,10 @@
     </section>
     <section id="assumptions">
         <title>Assumptions</title>
-        <para/>
+        <formalpara id="ASM-1">
+            <title>ASM-1</title>
+            <para>The Perform Installation and Installation Completion sections of Horizon UI are assumed to be their own executable, which is run when either: the Horizon UI completes gathering information from the User and has created the HorizonScript to use for installation, or an Administrator has started Horizon automatically and wishes to have graphical output of the installation progress.</para>
+        </formalpara>
     </section>
     <section id="dependencies">
         <title>Project Dependencies</title>
