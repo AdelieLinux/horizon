@@ -48,6 +48,13 @@
                     </citetitle>
                     On-line reference: <ulink url="https://code.foxkit.us/adelie/packages/wikis/Programming-Languages">on the World Wide Web at https://code.foxkit.us/adelie/packages/wikis/Programming-Languages</ulink>.
             </para></listitem>
+            <listitem id="REF-5" xreflabel="HorizonScript Specification, 2019, Wilcox et al"><para>
+                    <citetitle pubwork="book">
+                        <author><surname>Wilcox et al.</surname></author> (2019),
+                        HorizonScript Specification.
+                    </citetitle>
+                    On-line reference: <ulink url="https://www.adelielinux.org/horizon-script/">on the World Wide Web at https://www.adelielinux.org/horizon-script/</ulink>, or in the Horizon Git repository at <filename class="directory">devel/script/</filename>.
+            </para></listitem>
         </orderedlist>
     </section>
 </chapter>
