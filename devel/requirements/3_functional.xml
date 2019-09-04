@@ -815,7 +815,7 @@
                             <listitem><para>If the path to the HorizonScript is not provided, assume the HorizonScript is remote and end the calculation.  Priority: Low.</para></listitem>
                             <listitem><para>If the path to the HorizonScript begins with a single "/" followed by an alphanumeric character, the HorizonScript is local.</para></listitem>
                             <listitem><para>If the path to the HorizonScript begins with a recognised valid protocol for downloading a HorizonScript followed by the characters "://", the HorizonScript is remote.</para></listitem>
-                            <listitem><para>If the path to the HorizonScript begins with an alphanumeric character, the HorizonScript is local and relative to the path <filename type="directory">/etc/horizon</filename>.</para></listitem>
+                            <listitem><para>If the path to the HorizonScript begins with an alphanumeric character, the HorizonScript is local and relative to the path <filename class="directory">/etc/horizon</filename>.</para></listitem>
                             <listitem><para>If the path to the HorizonScript does not match any of the rules specified before this line, the path provided is invalid and the system shall return an error.</para></listitem>
                         </orderedlist>
                     </para>
