@@ -6,4 +6,69 @@
         <para>A HorizonScript file is, at its core, a collection of values that determine the actions and configuration values used to transform a computer from an indeterminate state to a well-known state running Adélie Linux.  These values are categorised into <firstterm>key</firstterm>s, which is a logical unit of a value.</para>
         <para>This chapter defines and specifies for every valid key for a HorizonScript file: its name, its purpose, its format, and one or more example values with explanations.</para>
     </section>
+    <section id="reqd_keys">
+        <title>Required Keys</title>
+        <para>Each key in this section is required to be present in a HorizonScript.  If any key from this section is missing, the HorizonScript will be considered invalid and Horizon Runner will not execute it.</para>
+        <section id="network">
+            <title><literal>network</literal></title>
+            <formalpara id="network.name">
+                <title>Name</title>
+                <para><literal>network</literal></para>
+            </formalpara>
+            <formalpara id="network.purpose">
+                <title>Purpose</title>
+                <para>The <literal>network</literal> key determines if the target computer will support networking or not.  If the value is <literal>true</literal>, the computer will support networking, and at least one <literal>netaddress</literal> key will then be required.</para>
+            </formalpara>
+            <formalpara id="network.format">
+                <title>Format</title>
+                <para>The <literal>network</literal> key is a Boolean value &mdash; valid values are <literal>true</literal> and <literal>false</literal>.  <literal>network</literal> must appear exactly once in a HorizonScript.</para>
+            </formalpara>
+            <formalpara id="network.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>network</literal> Key</title>
+                        <programlisting>
+network true
+                        </programlisting>
+                        <para>This enables networking for the target computer.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="hostname">
+            <title><literal>hostname</literal></title>
+            <formalpara id="hostname.name">
+                <title>Name</title>
+                <para><literal>hostname</literal></para>
+            </formalpara>
+            <formalpara id="hostname.purpose">
+                <title>Purpose</title>
+                <para>The <literal>hostname</literal> key determines the hostname of the target computer.  This key is always required, even when the target computer will not participate in a network.  The computer's hostname is used on shell prompts, most window manager launchers, and in log files.</para>
+            </formalpara>
+            <formalpara id="hostname.format">
+                <title>Format</title>
+                <para>The <literal>hostname</literal> key is a string value that must contain only alphanumeric characters and optionally one or more '.' characters.  If hostname contains one or more '.' characters, all content before the first '.' is considered the hostname, and all content after the first '.' is considered the domain name.</para>
+            </formalpara>
+            <formalpara id="hostname.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>hostname</literal> Key &mdash; Setting a Host Name</title>
+                        <programlisting>
+hostname gwyn
+                        </programlisting>
+                        <para>This sets the hostname of the target computer to <literal>gwyn</literal>.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>hostname</literal> Key &mdash; Setting a Host Name and Domain Name</title>
+                        <programlisting>
+hostname gwyn.foxkit.internal
+                        </programlisting>
+                        <para>This sets the hostname of the target computer to <literal>gwyn.foxkit.internal</literal>.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+    </section>
 </chapter>
