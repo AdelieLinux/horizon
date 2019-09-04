@@ -188,7 +188,7 @@
                 </formalpara>
                 <formalpara id="UI.Firmware.Load">
                     <title>UI.Firmware.Load</title>
-                    <para>If the User chooses to load binary firmware, the system shall add the APK Fission repository and the linux-firwmare package to the installed environment.</para>
+                    <para>If the User chooses to load binary firmware, the system shall add the APK Fission repository and the <literal>linux-firmware</literal> package to the installed environment.</para>
                 </formalpara>
             </section>
             <section id="ui_firmware_key">
