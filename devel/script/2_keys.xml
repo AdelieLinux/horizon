@@ -112,5 +112,36 @@ language fr_CA
                 </para>
             </formalpara>
         </section>
+        <section id="keymap">
+            <title><literal>keymap</literal></title>
+            <formalpara id="keymap.name">
+                <title>Name</title>
+                <para><literal>keymap</literal></para>
+            </formalpara>
+            <formalpara id="keymap.purpose">
+                <title>Purpose</title>
+                <para>The <literal>keymap</literal> key determines the keyboard layout used for input on the target computer.</para>
+            </formalpara>
+            <formalpara id="keymap.format">
+                <title>Format</title>
+                <para>The <literal>keymap</literal> key is a string value that specifies the name of a keyboard layout.  Valid keyboard layouts are listed in <filename class="file">/etc/console-setup/ckb/rules/xorg.lst</filename> under the <literal>! layout</literal> heading.</para>
+            </formalpara>
+            <formalpara id="keymap.default">
+                <title>Default</title>
+                <para>If the <literal>keymap</literal> key is not present, the target computer will use the default keyboard settings from Linux.  These settings are architecture-dependent, but almost universally use a US QWERTY-style layout.</para>
+            </formalpara>
+            <formalpara id="keymap.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>keymap</literal> Key</title>
+                        <programlisting>
+keymap fr
+                        </programlisting>
+                        <para>This sets the keyboard layout of the target computer to French AZERTY.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
     </section>
 </chapter>
