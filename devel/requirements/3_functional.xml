@@ -869,13 +869,13 @@
             <title>Verify HorizonScript</title>
             <section id="runner_verify_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>The system needs to verify the validity of the supplied HorizonScript before executing it.</para>
             </section>
             <section id="runner_verify_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="Runner.Verify.Required">
+                    <title>Runner.Verify.Required</title>
+                    <para>The system shall verify the presence and validity of each required keyword in the HorizonScript.</para>
                 </formalpara>
             </section>
         </section>
