@@ -671,13 +671,40 @@
             <title>Perform Installation</title>
             <section id="ui_perform_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>The system installs Adélie Linux per the User's choices.</para>
+            </section>
+            <section id="ui_perform_pre">
+                <title>Prerequisites</title>
+                <formalpara id="UI.Perform.Prerequisites.Wizard">
+                    <title>UI.Perform.Prerequisites.Wizard</title>
+                    <para>If the system is running in a graphical installation environment, the HorizonScript used shall be the HorizonScript generated from the User's choices in the Horizon UI.</para>
+                </formalpara>
+                <formalpara id="UI.Perform.Prerequisites.GUIServer">
+                    <title>UI.Perform.Prerequisites.GUIServer</title>
+                    <para>If the system was booted with a HorizonScript specified, and the graphical progress output option is enabled, the HorizonScript used shall be the HorizonScript loaded from the file or network location specified.</para>
+                </formalpara>
             </section>
             <section id="ui_perform_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Perform">
+                    <title>UI.Perform</title>
+                    <para>The system shall execute the Horizon Runner with the specified HorizonScript, and display the installation progress.</para>
+                </formalpara>
+                <formalpara id="UI.Perform.Status">
+                    <title>UI.Perform.Status</title>
+                    <para>The system shall update the current step being performed, the progress of the step being performed, and the overall progress of the installation, whenever it receives an update from the Horizon Runner.</para>
+                </formalpara>
+                <formalpara id="UI.Perform.Error">
+                    <title>UI.Perform.Error</title>
+                    <para>If the Horizon Runner reports an error, the system shall display a screen explaining the error, possible causes, possible solutions, and that the installation has failed.</para>
+                </formalpara>
+                <formalpara id="UI.Perform.Error.Save">
+                    <title>UI.Perform.Error.Save</title>
+                    <para>The system shall allow the User to save the HorizonScript used, along with relevant log files, to a storage location.</para>
+                </formalpara>
+                <formalpara id="UI.Perform.Complete">
+                    <title>UI.Perform.Complete</title>
+                    <para>When Horizon Runner reports that installation is complete, the system shall continue to UI.Finish.</para>
                 </formalpara>
             </section>
         </section>
@@ -685,13 +712,33 @@
             <title>Installation Completion</title>
             <section id="ui_finish_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>The system informs the User that installation has completed successfully, and allows the User to optionally save the HorizonScript and log files, then remove any media and reboot the computer.</para>
             </section>
             <section id="ui_finish_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Finish">
+                    <title>UI.Finish</title>
+                    <para>The system shall display a screen congratulating the User on a successful installation of Adélie Linux.</para>
+                </formalpara>
+                <formalpara id="UI.Finish.Save">
+                    <title>UI.Finish.Save</title>
+                    <para>The system shall allow the User to save the HorizonScript and log files related to this installation to a storage location.</para>
+                </formalpara>
+                <formalpara id="UI.Finish.Save.Error">
+                    <title>UI.Finish.Save.Error</title>
+                    <para>If an error occurs while saving the HorizonScript and log files, the system shall display a message explaining the error, and allow the User to choose a different storage location.</para>
+                </formalpara>
+                <formalpara id="UI.Finish.RemoveMedia">
+                    <title>UI.Finish.RemoveMedia</title>
+                    <para>The system shall prompt the User to remove any installation media used, including optical media.</para>
+                </formalpara>
+                <formalpara id="UI.Finish.Buttons">
+                    <title>UI.Finish.Buttons</title>
+                    <para>The system shall only display a single button: Complete, which uses the same keyboard accelerator as the Next button.  The Complete button shall cause the system to reboot.</para>
+                </formalpara>
+                <formalpara id="UI.Finish.Automatic">
+                    <title>UI.Finish.Automatic</title>
+                    <para>If the system is using a HorizonScript loaded from a file or network location, then the system shall automatically reboot the computer in 15 seconds.</para>
                 </formalpara>
             </section>
         </section>
