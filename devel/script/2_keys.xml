@@ -448,4 +448,27 @@ signingkey https://packages/builder@ourcompany.net.pub
             </formalpara>
         </section>
     </section>
+    <section id="disk">
+        <title>Disk Partitioning Keys</title>
+        <para>This section describes the keys used for partitioning one or more hard disk drives using HorizonScript.  Of these, only the <literal>mount</literal> key is required to be present in a valid HorizonScript.</para>
+        <section id="disk.sizing">
+            <title>Sizing</title>
+            <formalpara id="sizing.purpose">
+                <title>Purpose</title>
+                <para>All disk partitioning keys that take a size argument shall follow the format described in this section.  There are three forms of valid size that may be specified.</para>
+            </formalpara>
+            <formalpara id="sizing.format1">
+                <title>Format #1: Block Size</title>
+                <para>Block sizing format is: <replaceable>number</replaceable>{K|M|G|T}.  K, M, G, and T represent IEC binary prefixes; for example, "150G" would specify 150 GiB.</para>
+            </formalpara>
+            <formalpara id="sizing.format2">
+                <title>Format #2: Percentage</title>
+                <para>Percentage format is: <replaceable>number</replaceable>%, where <replaceable>number</replaceable> is a number from 1 to 100 inclusive.  It is invalid to specify multiple partitions that would use more than 100% of a containing block device.</para>
+            </formalpara>
+            <formalpara id="sizing.format3">
+                <title>Format #3: Fill</title>
+                <para>The literal string <literal>fill</literal> specifies that the partition shall fill the remaining space of the containing block device.  No partitions may come after one that specifies <literal>fill</literal> on the same containing block device.</para>
+            </formalpara>
+        </section>
+    </section>
 </chapter>
