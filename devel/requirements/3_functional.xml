@@ -357,7 +357,11 @@
                 </formalpara>
                 <formalpara id="Script.Key.netaddress">
                     <title>Script.Key.netaddress</title>
-                    <para><varname>netaddress</varname> &mdash; Connection information, in the format: <literal>(iface) {dhcp|static} [(address) (prefix-or-netmask) (gateway) (dns)]</literal>.  For example, <literal>netaddress eth0 static 2001:db8::1337 64 2001:db8::1 2620:fe::fe</literal>.  May be repeated, for multiple interfaces or IPv4/IPv6 dual-homing.</para>
+                    <para><varname>netaddress</varname> &mdash; Connection information, in the format: <literal>(iface) {dhcp|static} [(address) (prefix-or-netmask) (gateway)]</literal>.  For example, <literal>netaddress eth0 static 2001:db8::1337 64 2001:db8::1</literal>.  May be repeated, for multiple interfaces or IPv4/IPv6 dual-homing.</para>
+                </formalpara>
+                <formalpara id="Script.Key.nameserver">
+                    <title>Script.Key.nameserver</title>
+                    <para><varname>nameserver</varname> &mdash; DNS resolver information.  Must be a valid IPv4 or IPv6 address.</para>
                 </formalpara>
                 <formalpara id="Script.Key.netssid">
                     <title>Script.Key.netssid</title>
