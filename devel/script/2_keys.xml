@@ -143,5 +143,36 @@ keymap fr
                 </para>
             </formalpara>
         </section>
+        <section id="firmware">
+            <title><literal>firmware</literal></title>
+            <formalpara id="firmware.name">
+                <title>Name</title>
+                <para><literal>firmware</literal></para>
+            </formalpara>
+            <formalpara id="firmware.purpose">
+                <title>Purpose</title>
+                <para>The <literal>firmware</literal> key determines if the target computer will load potentially insecure, proprietary firmware.</para>
+            </formalpara>
+            <formalpara id="firmware.format">
+                <title>Format</title>
+                <para>The <literal>firmware</literal> key is a Boolean value &mdash; valid values are <literal>true</literal> and <literal>false</literal>.  <literal>firmware</literal> may appear at most once in a HorizonScript.</para>
+            </formalpara>
+            <formalpara id="firmware.default">
+                <title>Default</title>
+                <para>If the <literal>firmware</literal> key is not present, the target computer will not load proprietary firmware.  This is to ensure the integrity, security, and reliability of the target computer.</para>
+            </formalpara>
+            <formalpara id="firmware.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>firmware</literal> Key</title>
+                        <programlisting>
+firmware false
+                        </programlisting>
+                        <para>This explicitly disables loading of firmware on the target computer.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
     </section>
 </chapter>
