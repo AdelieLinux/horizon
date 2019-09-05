@@ -70,6 +70,42 @@ hostname gwyn.foxkit.internal
                 </para>
             </formalpara>
         </section>
+        <section id="pkginstall">
+            <title><literal>pkginstall</literal></title>
+            <formalpara id="pkginstall.name">
+                <title>Name</title>
+                <para><literal>pkginstall</literal></para>
+            </formalpara>
+            <formalpara id="pkginstall.purpose">
+                <title>Purpose</title>
+                <para>The <literal>pkginstall</literal> key lists the packages that will be installed on the target computer.</para>
+            </formalpara>
+            <formalpara id="pkginstall.format">
+                <title>Format</title>
+                <para>The <literal>pkginstall</literal> is a space-separated list of APK packages.  They must be available in the repositories used during the installation process.  <literal>pkginstall</literal> must appear at least once in a HorizonScript.  There is no limit to the number of times <literal>pkginstall</literal> may be specified; each one will append to the list of packages to install.</para>
+            </formalpara>
+            <formalpara id="pkginstall.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>pkginstall</literal> Key &mdash; Simple Usage</title>
+                        <programlisting>
+pkginstall adelie-base-posix kde x11
+                        </programlisting>
+                        <para>This installs the <literal><package>adelie-base-posix</package></literal>, <literal><package>kde</package></literal>, and <literal><package>x11</package></literal> packages on the target computer.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>pkginstall</literal> Key &mdash; Multiple Invocations</title>
+                        <programlisting>
+pkginstall adelie-base-posix
+pkginstall x11 i3wm
+pkginstall claws-mail
+                        </programlisting>
+                        <para>This installs the <literal><package>adelie-base-posix</package></literal>, <literal><package>x11</package></literal>, <literal><package>i3wm</package></literal>, and <literal><package>claws-mail</package></literal> packages on the target computer.  This advanced usage may be useful if you use a templating engine to generate HorizonScript files.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
     </section>
     <section id="opt_keys">
         <title>Optional Keys</title>
@@ -306,6 +342,107 @@ netssid wlan0 "Hophop" wep omgitsarabbit
 netssid wlan0 "The New Fox 5G" wpa shh sekrit
                         </programlisting>
                         <para>This configures the target computer to connect to the access point with name <literal>The New Fox 5G</literal>, with the WPA PSK <literal>shh sekrit</literal>.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="timezone">
+            <title><literal>timezone</literal></title>
+            <formalpara id="timezone.name">
+                <title>Name</title>
+                <para><literal>timezone</literal></para>
+            </formalpara>
+            <formalpara id="timezone.purpose">
+                <title>Purpose</title>
+                <para>The <literal>timezone</literal> key determines the local time zone on the target computer.</para>
+            </formalpara>
+            <formalpara id="timezone.format">
+                <title>Format</title>
+                <para>The <literal>timezone</literal> key is a string value that must correspond with a valid zoneinfo time zone name.  A list of valid time zone names may be found using the following command on any Adélie Linux computer: <command>find /usr/share/zoneinfo</command>.  <literal>timezone</literal> may appear at most once in a HorizonScript.</para>
+            </formalpara>
+            <formalpara id="timezone.default">
+                <title>Default</title>
+                <para>If the <literal>timezone</literal> key is not specified, the target computer will use UTC (Universal Coordinated Time) as its time zone.</para>
+            </formalpara>
+            <formalpara id="timezone.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>timezone</literal> Key</title>
+                        <programlisting>
+timezone Africa/Nairobi
+                        </programlisting>
+                        <para>This configures the target computer to use East Africa Time, as observed in Nairobi, Kenya, for the local time zone.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="repository">
+            <title><literal>repository</literal></title>
+            <formalpara id="repository.name">
+                <title>Name</title>
+                <para><literal>repository</literal></para>
+            </formalpara>
+            <formalpara id="repository.purpose">
+                <title>Purpose</title>
+                <para>The <literal>repository</literal> key specifies the location of an APK package repository to use on the target computer.  This repository will be used for initial installation, and added to the <filename>/etc/apk/repository</filename> file on the target computer.</para>
+            </formalpara>
+            <formalpara id="repository.format">
+                <title>Format</title>
+                <para>The <literal>repository</literal> key is a string value which must describe either an absolute local path or a HTTP or HTTPS location on the network.  <literal>repository</literal> may appear up to ten times in a HorizonScript, or be omitted.</para>
+            </formalpara>
+            <formalpara id="repository.default">
+                <title>Default</title>
+                <para>If the <literal>repository</literal> key is not specified, the default repositories for Adélie Linux will be used:
+                    <itemizedlist id="repository.default.repos">
+                        <listitem><para>https://distfiles.adelielinux.org/adelie/$VERSION/system</para></listitem>
+                        <listitem><para>https://distfiles.adelielinux.org/adelie/$VERSION/user</para></listitem>
+                    </itemizedlist>
+                    where <replaceable>$VERSION</replaceable> is the version of Adélie Linux being installed.  Additionally, if the <literal>firmware</literal> key is specified and set to <literal>true</literal>, the <literal>https://distfiles.apkfission.net/adelie-$VERSION/nonfree</literal> repository will be added.  If <literal>repository</literal> is specified, <emphasis>none of these repositories will be used unless manually specified</emphasis>.
+                </para>
+            </formalpara>
+            <formalpara id="repository.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>repository</literal> Key</title>
+                        <programlisting>
+repository https://mirrors.servercentral.com/adelie/1.0/system
+repository https://mirrors.servercentral.com/adelie/1.0/user
+                        </programlisting>
+                        <para>This configures the target computer to use the Server Central mirrors.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="signingkey">
+            <title><literal>signingkey</literal></title>
+            <formalpara id="signingkey.name">
+                <title>Name</title>
+                <para><literal>signingkey</literal></para>
+            </formalpara>
+            <formalpara id="signingkey.purpose">
+                <title>Purpose</title>
+                <para>The <literal>signingkey</literal> key specifies a key to trust for APK package repositories.</para>
+            </formalpara>
+            <formalpara id="signingkey.format">
+                <title>Format</title>
+                <para>The <literal>signingkey</literal> key is a string value which must describe either an absolute local path or an HTTPS location on the network.  It is not valid to use an HTTP connection for <literal>signingkey</literal>.  <literal>signingkey</literal> may appear up to ten times in a HorizonScript, or be omitted.</para>
+            </formalpara>
+            <formalpara id="signingkey.default">
+                <title>Default</title>
+                <para>If the <literal>signingkey</literal> key is not specified, the Adélie Linux repository signing key will be used.  Additionally, if the <literal>firmware</literal> key is specified and set to <literal>true</literal>, the APK Fission signing key will be used.  If <literal>signingkey</literal> is specified, <emphasis>none of these signing keys will be trusted unless manually specified</emphasis>.</para>
+            </formalpara>
+            <formalpara id="signingkey.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>signingkey</literal> Key</title>
+                        <programlisting>
+signingkey /etc/apk/keys/packages@adelielinux.org.pub
+signingkey https://packages/builder@ourcompany.net.pub
+                        </programlisting>
+                        <para>This configures the target computer to use the default Adélie Linux repository signing key, and also a repository signing key that is available for download from the URL <literal>https://packages/builder@ourcompany.net.pub</literal>.</para>
                     </example>
                 </para>
             </formalpara>
