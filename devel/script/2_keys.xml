@@ -48,7 +48,7 @@ network true
             </formalpara>
             <formalpara id="hostname.format">
                 <title>Format</title>
-                <para>The <literal>hostname</literal> key is a string value that must contain only alphanumeric characters and optionally one or more '.' characters.  If hostname contains one or more '.' characters, all content before the first '.' is considered the hostname, and all content after the first '.' is considered the domain name.</para>
+                <para>The <literal>hostname</literal> key is a string value that must contain only alphanumeric characters and optionally one or more '.' characters.  If hostname contains one or more '.' characters, all content before the first '.' is considered the hostname, and all content after the first '.' is considered the domain name.  <literal>hostname</literal> must appear exactly once in a HorizonScript.</para>
             </formalpara>
             <formalpara id="hostname.examples">
                 <title>Examples</title>
@@ -86,7 +86,7 @@ hostname gwyn.foxkit.internal
             </formalpara>
             <formalpara id="language.format">
                 <title>Format</title>
-                <para>The <literal>language</literal> key is a string value that specifies a valid locale code.  A locale code must match one of the following formats: <replaceable>xx</replaceable>, or <replaceable>xx</replaceable><literal>_</literal><replaceable>YY</replaceable>, or <replaceable>xx</replaceable><literal>_</literal><replaceable>YY</replaceable><literal>.UTF-8</literal>, where <replaceable>xx</replaceable> is a valid ISO 639-1 language code, and <replaceable>YY</replaceable> is a valid ISO 3166-1 country code.</para>
+                <para>The <literal>language</literal> key is a string value that specifies a valid locale code.  A locale code must match one of the following formats: <replaceable>xx</replaceable>, or <replaceable>xx</replaceable><literal>_</literal><replaceable>YY</replaceable>, or <replaceable>xx</replaceable><literal>_</literal><replaceable>YY</replaceable><literal>.UTF-8</literal>, where <replaceable>xx</replaceable> is a valid ISO 639-1 language code, and <replaceable>YY</replaceable> is a valid ISO 3166-1 country code.  <literal>language</literal> may appear at most once in a HorizonScript.</para>
             </formalpara>
             <formalpara id="language.default">
                 <title>Default</title>
@@ -124,7 +124,7 @@ language fr_CA
             </formalpara>
             <formalpara id="keymap.format">
                 <title>Format</title>
-                <para>The <literal>keymap</literal> key is a string value that specifies the name of a keyboard layout.  Valid keyboard layouts are listed in <filename class="file">/etc/console-setup/ckb/rules/xorg.lst</filename> under the <literal>! layout</literal> heading.</para>
+                <para>The <literal>keymap</literal> key is a string value that specifies the name of a keyboard layout.  Valid keyboard layouts are listed in <filename class="file">/etc/console-setup/ckb/rules/xorg.lst</filename> under the <literal>! layout</literal> heading.  <literal>keymap</literal> may appear at most once in a HorizonScript.</para>
             </formalpara>
             <formalpara id="keymap.default">
                 <title>Default</title>
