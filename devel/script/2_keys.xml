@@ -124,7 +124,7 @@ language fr_CA
             </formalpara>
             <formalpara id="keymap.format">
                 <title>Format</title>
-                <para>The <literal>keymap</literal> key is a string value that specifies the name of a keyboard layout.  Valid keyboard layouts are listed in <filename class="file">/etc/console-setup/ckb/rules/xorg.lst</filename> under the <literal>! layout</literal> heading.  <literal>keymap</literal> may appear at most once in a HorizonScript.</para>
+                <para>The <literal>keymap</literal> key is a string value that specifies the name of a keyboard layout.  Valid keyboard layouts are listed in <filename>/etc/console-setup/ckb/rules/xorg.lst</filename> under the <literal>! layout</literal> heading.  <literal>keymap</literal> may appear at most once in a HorizonScript.</para>
             </formalpara>
             <formalpara id="keymap.default">
                 <title>Default</title>
@@ -170,6 +170,142 @@ keymap fr
 firmware false
                         </programlisting>
                         <para>This explicitly disables loading of firmware on the target computer.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="netaddress">
+            <title><literal>netaddress</literal></title>
+            <formalpara id="netaddress.name">
+                <title>Name</title>
+                <para><literal>netaddress</literal></para>
+            </formalpara>
+            <formalpara id="netaddress.purpose">
+                <title>Purpose</title>
+                <para>The <literal>netaddress</literal> key determines the network configuration used on the target computer.</para>
+            </formalpara>
+            <formalpara id="netaddress.format">
+                <title>Format</title>
+                <para>The <literal>netaddress</literal> key is a space-separated list of network configuration information:
+                    <orderedlist id="netaddress.format.items">
+                        <listitem><para>The kernel interface name.  If the interface specified does not exist, the system will issue a soft error (logging the failure but attempting to continue with installation).</para></listitem>
+                        <listitem><para>The addressing type.  Valid values are <literal>dhcp</literal> for DHCP v4 and v6, <literal>slaac</literal> for IPv6 Stateless Automatic Address Configuration, and <literal>static</literal> for Administrator-specified addressing.  The list must end here unless the address type specified is <literal>static</literal>.  Any additional items constitute a configuration error and an invalid HorizonScript.</para></listitem>
+                        <listitem><para>The IP address.  The value specified must be a valid IPv4 or IPv6 address.</para></listitem>
+                        <listitem><para>The prefix or network mask.  The value must be either:
+                                <orderedlist id="netaddress.format.prefix_types">
+                                    <listitem><para>A whole number in the range of 1-32 for IPv4 addresses, or 1-64 for IPv6 addresses.</para></listitem>
+                                    <listitem><para>An IPv4 network mask, in the format <literal><replaceable>octet</replaceable>.<replaceable>octet</replaceable>.<replaceable>octet</replaceable>.<replaceable>octet</replaceable></literal>.</para></listitem>
+                                </orderedlist>
+                        </para></listitem>
+                        <listitem><para>Optionally, the default gateway.  The value specified must be a valid IP address of the same family as the IP address specified in item 3.</para></listitem>
+                    </orderedlist>
+                    <literal>netaddress</literal> must not appear unless <literal>network</literal> is <literal>true</literal>.  If <literal>network</literal> is <literal>true</literal>, then <literal>netaddress</literal> must appear at least once, and may appear up to 255 times per interface.
+                </para>
+            </formalpara>
+            <formalpara id="netaddress.default">
+                <title>Default</title>
+                <para>There is no default for this key.  It is invalid to enable networking and not provide at least one <literal>netaddress</literal> key.</para>
+            </formalpara>
+            <formalpara id="netaddress.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>netaddress</literal> Key &mdash; Simple DHCP</title>
+                        <programlisting>
+netaddress eth0 dhcp
+                        </programlisting>
+                        <para>This configures the target computer to use DHCP on interface <literal>eth0</literal>.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>netaddress</literal> Key &mdash; Static Addressing</title>
+                        <programlisting>
+netaddress eth0 2001:db8::1337 64 2001:db8::1
+netaddress eth0 198.51.100.37 24 198.51.100.1
+                        </programlisting>
+                        <para>This configures the target computer to use the addresses <literal>2001:db::1337/64</literal> and <literal>198.51.100.37/24</literal> on interface <literal>eth0</literal>.  The default gateways are <literal>2001:db::1</literal> and <literal>198.51.100.1</literal>.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="nameserver">
+            <title><literal>nameserver</literal></title>
+            <formalpara id="nameserver.name">
+                <title>Name</title>
+                <para><literal>nameserver</literal></para>
+            </formalpara>
+            <formalpara id="nameserver.purpose">
+                <title>Purpose</title>
+                <para>The <literal>nameserver</literal> key determines the DNS server used for name queries on the target computer.</para>
+            </formalpara>
+            <formalpara id="nameserver.format">
+                <title>Format</title>
+                <para>The <literal>nameserver</literal> key takes either an IPv4 address or IPv6 address.  Any other value is invalid.  The <literal>nameserver</literal> may appear up to four times in a HorizonScript, or be omitted.  It is valid to specify <literal>nameserver</literal> even if <literal>network</literal> is <literal>false</literal>, but name queries will not function properly without a network configuration.</para>
+            </formalpara>
+            <formalpara id="nameserver.default">
+                <title>Default</title>
+                <para>If the <literal>nameserver</literal> key is not specified, name queries requiring the DNS will not succeed on the target computer.</para>
+            </formalpara>
+            <formalpara id="nameserver.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>nameserver</literal> Key</title>
+                        <programlisting>
+nameserver 2620:fe::fe
+                        </programlisting>
+                        <para>This configures the target computer to use <ulink url="https://www.quad9.net/about/">Quad9</ulink>'s public resolver, <literal>2620:fe::fe</literal>, for name queries.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="netssid">
+            <title><literal>netssid</literal></title>
+            <formalpara id="netssid.name">
+                <title>Name</title>
+                <para><literal>netssid</literal></para>
+            </formalpara>
+            <formalpara id="netssid.purpose">
+                <title>Purpose</title>
+                <para>The <literal>netssid</literal> key determines the wireless networking configuration on the target computer.</para>
+            </formalpara>
+            <formalpara id="netssid.format">
+                <title>Format</title>
+                <para>The <literal>netssid</literal> is a space-separated list of wireless networking configuration information:
+                    <orderedlist id="netssid.format.items">
+                        <listitem><para>The kernel interface name.  If the interface specified does not exist, the system will issue a soft error (logging the failure but attempting to continue with installation).</para></listitem>
+                        <listitem><para>The SSID name to connect to.  This must be a string value enclosed by ASCII double-quotes (<literal>"</literal>).  System behaviour is undefined if the SSID name contains an ASCII double-quote.</para></listitem>
+                        <listitem><para>The security type of the SSID.  Valid values are <literal>none</literal> for an open access point, <literal>wep</literal> for a WEP passphrase, and <literal>wpa</literal> for a WPA pre-shared key (PSK).</para></listitem>
+                        <listitem><para>If the security type is not <literal>none</literal>, the passphrase or pre-shared key.  WPA PSKs may be specified in hexadecimal or as a raw string.  The remainder of the line will be used verbatim.</para></listitem>
+                    </orderedlist>
+                </para>
+            </formalpara>
+            <formalpara id="netssid.default">
+                <title>Default</title>
+                <para>If the <literal>netssid</literal> key is not specified, no wireless network configuration will be present on the target computer.</para>
+            </formalpara>
+            <formalpara id="netssid.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>netssid</literal> Key &mdash; Open Network</title>
+                        <programlisting>
+netssid wlan0 "Insecure Net" none
+                        </programlisting>
+                        <para>This configures the target computer to connect to the access point with name <literal>Insecure Net</literal>, with no security.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>netssid</literal> Key &mdash; WEP Network</title>
+                        <programlisting>
+netssid wlan0 "Hophop" wep omgitsarabbit
+                        </programlisting>
+                        <para>This configures the target computer to connect to the access point with name <literal>Hophop</literal>, and the WEP passphrase <literal>omgitsarabbit</literal>.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>netssid</literal> Key &mdash; WPA2 Network</title>
+                        <programlisting>
+netssid wlan0 "The New Fox 5G" wpa shh sekrit
+                        </programlisting>
+                        <para>This configures the target computer to connect to the access point with name <literal>The New Fox 5G</literal>, with the WPA PSK <literal>shh sekrit</literal>.</para>
                     </example>
                 </para>
             </formalpara>
