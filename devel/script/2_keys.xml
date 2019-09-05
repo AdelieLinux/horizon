@@ -289,16 +289,16 @@ nameserver 2620:fe::fe
                     <example>
                         <title>The <literal>netssid</literal> Key &mdash; Open Network</title>
                         <programlisting>
-netssid wlan0 "Insecure Net" none
+netssid wlan0 "h" none
                         </programlisting>
-                        <para>This configures the target computer to connect to the access point with name <literal>Insecure Net</literal>, with no security.</para>
+                        <para>This configures the target computer to connect to the access point with name <literal>h</literal>, with no security.</para>
                     </example>
                     <example>
                         <title>The <literal>netssid</literal> Key &mdash; WEP Network</title>
                         <programlisting>
 netssid wlan0 "Hophop" wep omgitsarabbit
                         </programlisting>
-                        <para>This configures the target computer to connect to the access point with name <literal>Hophop</literal>, and the WEP passphrase <literal>omgitsarabbit</literal>.</para>
+                        <para>This configures the target computer to connect to the access point with name <literal>Hophop</literal>, with the WEP passphrase <literal>omgitsarabbit</literal>.</para>
                     </example>
                     <example>
                         <title>The <literal>netssid</literal> Key &mdash; WPA2 Network</title>
