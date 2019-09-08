@@ -353,19 +353,19 @@
                 <title>HorizonScript Keys</title>
                 <formalpara id="Script.Key.network">
                     <title>Script.Key.network</title>
-                    <para><varname>network</varname> &mdash; Whether to enable network connectivity (true or false).</para>
+                    <para><varname>network</varname> &mdash; Whether to enable network connectivity.</para>
                 </formalpara>
                 <formalpara id="Script.Key.netaddress">
                     <title>Script.Key.netaddress</title>
-                    <para><varname>netaddress</varname> &mdash; Connection information, in the format: <literal>(iface) {dhcp|static} [(address) (prefix-or-netmask) (gateway)]</literal>.  For example, <literal>netaddress eth0 static 2001:db8::1337 64 2001:db8::1</literal>.  May be repeated, for multiple interfaces or IPv4/IPv6 dual-homing.</para>
+                    <para><varname>netaddress</varname> &mdash; Connection information.</para>
                 </formalpara>
                 <formalpara id="Script.Key.nameserver">
                     <title>Script.Key.nameserver</title>
-                    <para><varname>nameserver</varname> &mdash; DNS resolver information.  Must be a valid IPv4 or IPv6 address.</para>
+                    <para><varname>nameserver</varname> &mdash; DNS resolver information.</para>
                 </formalpara>
                 <formalpara id="Script.Key.netssid">
                     <title>Script.Key.netssid</title>
-                    <para><varname>netssid</varname> &mdash; Wireless networking information, in the format: <literal>(iface) "(SSID)" {none|wep|wpa} [(passphrase)]</literal>  For example, <literal>netssid wlan0 "The New Fox 5G" wpa "shh sekrit"</literal>.  The passphrase may be passed a literal string surrounded by ASCII double-quotes, or a hex string.  System behaviour is undefined if the SSID or literal passphrase contain an ASCII double-quote character.</para>
+                    <para><varname>netssid</varname> &mdash; Wireless networking information.</para>
                 </formalpara>
             </section>
         </section>
@@ -600,7 +600,7 @@
                 </formalpara>
                 <formalpara id="UI.Accounts.UserAcct">
                     <title>UI.Accounts.UserAcct</title>
-                    <para>If the system is running in an installation environment, then the system shall prompt the User to enter their name or alias to personalise their copy of Adélie Linux.</para>
+                    <para>The system shall prompt the User to enter their name or alias to personalise their copy of Adélie Linux, and up to four others.</para>
                 </formalpara>
                 <formalpara id="UI.Accounts.UserAcct.AcctName">
                     <title>UI.Accounts.UserAcct.AcctName</title>
@@ -633,6 +633,14 @@
                     <title>UI.Accounts.UserAcct.Enable</title>
                     <para>The system shall enable the Next button when the user name, account name are valid, and the password and confirm password fields match and represent a valid password.</para>
                 </formalpara>
+                <formalpara id="UI.Accounts.UserAcct.Others">
+                    <title>UI.Accounts.UserAcct.Others</title>
+                    <para>The system shall allow the User to add up to four more user accounts, with account name, personal name/alias, personal icon, and password entry using the same requirements as the primary user acconut.</para>
+                </formalpara>
+                <formalpara id="UI.Accounts.UserAcct.Others.Wheel">
+                    <title>UI.Accounts.UserAcct.Others.Wheel</title>
+                    <para>For each account the User adds, the system shall ask the User if the user should be an administrator or not.  The primary user account will always be an administrator.</para>
+                </formalpara>
             </section>
             <section id="ui_accounts_key">
                 <title>HorizonScript Keys</title>
@@ -642,19 +650,23 @@
                 </formalpara>
                 <formalpara id="Script.Key.username">
                     <title>Script.Key.username</title>
-                    <para><varname>username</varname> &mdash; The account name for the primary user of the computer.</para>
+                    <para><varname>username</varname> &mdash; The account name(s) given.</para>
                 </formalpara>
                 <formalpara id="Script.Key.useralias">
                     <title>Script.Key.useralias</title>
-                    <para><varname>useralias</varname> &mdash; The primary user's name or alias.</para>
+                    <para><varname>useralias</varname> &mdash; The user's name or alias.</para>
                 </formalpara>
                 <formalpara id="Script.Key.userpw">
                     <title>Script.Key.userpw</title>
-                    <para><varname>userpw</varname> &mdash; The crypt(3)-formatted, SHA-512 hashed password for the primary user account.</para>
+                    <para><varname>userpw</varname> &mdash; The crypt(3)-formatted, SHA-512 hashed password for the account(s).</para>
                 </formalpara>
                 <formalpara id="Script.Key.usericon">
                     <title>Script.Key.usericon</title>
-                    <para><varname>usericon</varname> &mdash; The name of the primary user account's icon.</para>
+                    <para><varname>usericon</varname> &mdash; Path to the chosen icon for the account(s).</para>
+                </formalpara>
+                <formalpara id="Script.Key.usergroups">
+                    <title>Script.Key.usergroups</title>
+                    <para><varname>usergroups</varname> &mdash; The groups to which the user account(s) will belong.  "users,lp,audio,cdrom,cdrw,usb,video,games" for normal users; add ",disk,wheel" for administrators.</para>
                 </formalpara>
             </section>
         </section>
