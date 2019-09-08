@@ -470,5 +470,360 @@ signingkey https://packages/builder@ourcompany.net.pub
                 <para>The literal string <literal>fill</literal> specifies that the partition shall fill the remaining space of the containing block device.  No partitions may come after one that specifies <literal>fill</literal> on the same containing block device.</para>
             </formalpara>
         </section>
+        <section id="diskid">
+            <title><literal>diskid</literal></title>
+            <formalpara id="diskid.name">
+                <title>Name</title>
+                <para><literal>diskid</literal></para>
+            </formalpara>
+            <formalpara id="diskid.purpose">
+                <title>Purpose</title>
+                <para>The <literal>diskid</literal> key specifies a substring of a disk's identification string.  The system matches this string to the specified block device's identification string to ensure that the proper disk is partitioned.</para>
+            </formalpara>
+            <formalpara id="diskid.format">
+                <title>Format</title>
+                <para>The <literal>diskid</literal> key is a space-separated tuple of values that contains exactly two string elements: a valid block device file name, and the substring of its identification string.  The second element is read to the end of the string, so it may contain further spaces.  <literal>diskid</literal> may appear up to one time per block device file name.  It is invalid to specify more than one <literal>diskid</literal> for the same block device.</para>
+            </formalpara>
+            <formalpara id="diskid.default">
+                <title>Default</title>
+                <para>If the <literal>diskid</literal> key is not specified for a block device, the system will not be able to verify that the block device is the intended target of partitioning commands.</para>
+            </formalpara>
+            <formalpara id="diskid.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>diskid</literal> Key &mdash; Verify Manufacturer of Hard Disk</title>
+                        <programlisting>
+diskid /dev/sda HITACHI
+                        </programlisting>
+                        <para>This ensures that the identification string of the disk at <filename>/dev/sda</filename> contains the string 'HITACHI'.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>diskid</literal> Key &mdash; Verify Model of NVMe Device</title>
+                        <programlisting>
+diskid /dev/nvme0n1 WDC WDS512G1X0C-00ENX0
+                        </programlisting>
+                        <para>This ensures that the identification string of the NVMe device at <filename>/dev/nvme0n1</filename> contains the string 'WDC WDS512G1X0C-00ENX0'.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="disklabel">
+            <title><literal>disklabel</literal></title>
+            <formalpara id="disklabel.name">
+                <title>Name</title>
+                <para><literal>disklabel</literal></para>
+            </formalpara>
+            <formalpara id="disklabel.purpose">
+                <title>Purpose</title>
+                <para>The <literal>disklabel</literal> key specifies the type of partitioning a disk will use.</para>
+            </formalpara>
+            <formalpara id="disklabel.format">
+                <title>Format</title>
+                <para>The <literal>disklabel</literal> key is a space-separated tuple of values that contains exactly two string elements: a valid block device file name, and the type of disk label to use.  Valid disk labels are:
+                    <orderedlist id="disklabel.format.labels">
+                        <listitem><para><literal>mbr</literal> &mdash; Master Boot Record (MBR)</para></listitem>
+                        <listitem><para><literal>gpt</literal> &mdash; GUID Partition Table (GPT)</para></listitem>
+                        <listitem><para><literal>apm</literal> &mdash; Apple Partition Map (APM)</para></listitem>
+                    </orderedlist>
+                    <literal>disklabel</literal> may appear up to once per block device file name.  It is invalid to specify more than one <literal>disklabel</literal> for the same block device.
+                </para>
+            </formalpara>
+            <formalpara id="disklabel.default">
+                <title>Default</title>
+                <para>If the <literal>disklabel</literal> key is not specified for a block device, the existing disk label will be used.  If no disk label is currently written to the device, the device will not contain a disk label.</para>
+            </formalpara>
+            <formalpara id="disklabel.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>disklabel</literal> Key &mdash; Simple Usage</title>
+                        <programlisting>
+disklabel /dev/sda mbr
+                        </programlisting>
+                        <para>This erases any present disk label on the block device at <filename>/dev/sda</filename> and creates a new MBR disk label.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>disklabel</literal> Key &mdash; Multiple Disks</title>
+                        <programlisting>
+disklabel /dev/sda apm
+disklabel /dev/sdb gpt
+disklabel /dev/nvme0n1 gpt
+                        </programlisting>
+                        <para>This erases any present disk labels on the block devices <filename>/dev/sda</filename>, <filename>/dev/sdb</filename>, and <filename>/dev/nvme0n1</filename>.  The system will then create a new APM disk label on <filename>/dev/sda</filename>, and new GPT disk labels on each of <filename>/dev/sdb</filename> and <filename>/dev/nvme0n1</filename>.  This example would allow you to use mass storage (greater than 2 TB) on a Power Mac G5 while retaining OpenFirmware boot compatibility on the first disk.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="partition">
+            <title><literal>partition</literal></title>
+            <formalpara id="partition.name">
+                <title>Name</title>
+                <para><literal>partition</literal></para>
+            </formalpara>
+            <formalpara id="partition.purpose">
+                <title>Purpose</title>
+                <para>The <literal>partition</literal> key specifies a new partition to be created on a block device.</para>
+            </formalpara>
+            <formalpara id="partition.format">
+                <title>Format</title>
+                <para>The <literal>partition</literal> key is a space-separated tuple of values that contains either three or four elements: a valid block device file name, the partition number to create, the size of the new partition as specified in <xref linkend="disk.sizing" />, and optionally a type code for the partition.  Valid type codes are:
+                    <orderedlist id="partition.format.types">
+                        <listitem><para><literal>boot</literal> &mdash; Marks the partition as bootable.  On MBR disk labels, this enables the Bootable flag.  On APM disk labels, this sets the partition type to <literal>Apple_Bootstrap</literal>.  On GPT disk labels, this sets the partition's type to BIOS Boot.</para></listitem>
+                        <listitem><para><literal>esp</literal> &mdash; Marks the partition as an EFI System Partition (ESP).  This type is only valid on GPT disk labels.</para></listitem>
+                    </orderedlist>
+                    <literal>partition</literal> may appear many times per block device file name; the exact maximum depend on the disk label in use on the block device.  It is invalid to specify a <literal>partition</literal> for a partition number that already exists on the block device.  It is invalid to specify a <literal>partition</literal> for a block device that does not have a disk label supported by Horizon.
+                </para>
+            </formalpara>
+            <formalpara id="partition.default">
+                <title>Default</title>
+                <para>If no <literal>partition</literal> key is specified for a given block device, then the partition table on that block device is not modified.</para>
+            </formalpara>
+            <formalpara id="partition.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>partition</literal> Key &mdash; Simple Usage</title>
+                        <programlisting>
+partition /dev/sda 1 40M boot
+partition /dev/sda 2 fill
+                        </programlisting>
+                        <para>This configures <filename>/dev/sda</filename> to contain a 40 MiB boot partition, and uses the rest of the disk as a single data partition.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>partition</literal> Key &mdash; Advanced Usage</title>
+                        <programlisting>
+partition /dev/sda 1 1G boot
+partition /dev/sda 2 20%
+partition /dev/sda 3 40%
+partition /dev/sda 4 fill
+                        </programlisting>
+                        <para>This configures <filename>/dev/sda</filename> to contain a 1 GiB boot partition, a second partition using 20% of the disk's total size, a third partition using 40% of the disk's total size, and a fourth partition that utilises the rest of the disk.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="lvm_pv">
+            <title><literal>lvm_pv</literal></title>
+            <formalpara id="lvm_pv.name">
+                <title>Name</title>
+                <para><literal>lvm_pv</literal></para>
+            </formalpara>
+            <formalpara id="lvm_pv.purpose">
+                <title>Purpose</title>
+                <para>The <literal>lvm_pv</literal> key specifies a block device to use as a LVM physical volume.</para>
+            </formalpara>
+            <formalpara id="lvm_pv.format">
+                <title>Format</title>
+                <para>The <literal>lvm_pv</literal> key is a string value which must describe a path to a valid block device.  This is typically either a whole disk or a partition on a disk.  <literal>lvm_pv</literal> may be specified up to once per block device specification.  If an <literal>lvm_pv</literal> key is specified for both a block device and an underlying partition already extant on the block device, system behaviour is undefined.</para>
+            </formalpara>
+            <formalpara id="lvm_pv.default">
+                <title>Default</title>
+                <para>If no <literal>lvm_pv</literal> key is specified, no LVM physical volume will be created by the system.</para>
+            </formalpara>
+            <formalpara id="lvm_pv.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>lvm_pv</literal> Key &mdash; Whole Disk LVM</title>
+                        <programlisting>
+lvm_pv /dev/sda
+                        </programlisting>
+                        <para>This configures the entire block device at <filename>/dev/sda</filename> to be an LVM physical volume.  Any existing data on the specified disk will be destroyed.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>lvm_pv</literal> Key &mdash; LVM Partition</title>
+                        <programlisting>
+disklabel /dev/sda apm
+partition /dev/sda 1 4M boot
+partition /dev/sda 2 fill
+lvm_pv /dev/sda2
+                        </programlisting>
+                        <para>This configures the block device at <filename>/dev/sda</filename> with a new GPT disk label, creates a 4 MiB BIOS Boot partition, and then uses the rest of the disk as an LVM physical volume.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="lvm_vg">
+            <title><literal>lvm_vg</literal></title>
+            <formalpara id="lvm_vg.name">
+                <title>Name</title>
+                <para><literal>lvm_vg</literal></para>
+            </formalpara>
+            <formalpara id="lvm_vg.purpose">
+                <title>Purpose</title>
+                <para>The <literal>lvm_vg</literal> key specifies parameters for creating a new LVM volume group on the target computer.</para>
+            </formalpara>
+            <formalpara id="lvm_vg.format">
+                <title>Format</title>
+                <para>The <literal>lvm_vg</literal> key is a space-separated tuple of exactly two string values: a path to a valid block device containing an LVM physical volume, and a valid LVM volume group name.  A volume group will be created on the specified LVM physical volume with the specified name.  <literal>lvm_vg</literal> must appear exactly once per <literal>lvm_pv</literal> key.  It is invalid to specify a block device that does not contain an LVM physical volume.</para>
+            </formalpara>
+            <formalpara id="lvm_vg.default">
+                <title>Default</title>
+                <para>If no <literal>lvm_vg</literal> key is specified, no LVM volume groups will be created on the target computer.</para>
+            </formalpara>
+            <formalpara id="lvm_vg.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>lvm_vg</literal> Key</title>
+                        <programlisting>
+lvm_vg /dev/sda2 elaine
+                        </programlisting>
+                        <para>This creates a new LVM volume group named <literal>elaine</literal> on the LVM physical volume <literal>/dev/sda2</literal>.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="lvm_lv">
+            <title><literal>lvm_lv</literal></title>
+            <formalpara id="lvm_lv.name">
+                <title>Name</title>
+                <para><literal>lvm_lv</literal></para>
+            </formalpara>
+            <formalpara id="lvm_lv.purpose">
+                <title>Purpose</title>
+                <para>The <literal>lvm_lv</literal> key specifies parameters for creating a new LVM logical volume on the target computer.</para>
+            </formalpara>
+            <formalpara id="lvm_lv.format">
+                <title>Format</title>
+                <para>The <literal>lvm_lv</literal> key is a space-separated tuple of exactly three values: the name of an extant LVM volume group, the name of the LVM logical volume to create, and the size of the new LVM logical volume as specified in <xref linkend="disk.sizing" />.  The name of the new LVM logical volume must be a valid logical volume name.  It is invalid to specify a logical volume size larger than the available space in the volume group.</para>
+            </formalpara>
+            <formalpara id="lvm_lv.default">
+                <title>Default</title>
+                <para>If no <literal>lvm_lv</literal> key is specified, no LVM logical volumes will be created on the target computer.</para>
+            </formalpara>
+            <formalpara id="lvm_lv.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>lvm_lv</literal> Key</title>
+                        <programlisting>
+lvm_lv elaine root fill
+                        </programlisting>
+                        <para>This creates a new LVM logical volume named <literal>root</literal> on the LVM volume group <literal>elaine</literal>, using all available space in the volume group.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="encrypt">
+            <title><literal>encrypt</literal></title>
+            <formalpara id="encrypt.name">
+                <title>Name</title>
+                <para><literal>encrypt</literal></para>
+            </formalpara>
+            <formalpara id="encrypt.purpose">
+                <title>Purpose</title>
+                <para>The <literal>encrypt</literal> key specifies block devices to encrypt with LUKS.</para>
+            </formalpara>
+            <formalpara id="encrypt.format">
+                <title>Format</title>
+                <para>The <literal>encrypt</literal> key has two forms.  The first form is a string value which must be a path to a valid block device.  The second form is a tuple of two string values which are a path to a valid block device, and the passphrase to use to encrypt the volume.
+                    <warning>
+                        <para>The passphrase to encrypt the volume should not be provided if a non-encrypted network transport is used to transfer the HorizonScript to the target computer.  This could expose the passphrase to attackers.</para>
+                    </warning>
+                    The passphrase will be read to the end of the line, so it may contain spaces if desired.
+                    If no passphrase is specified, the system will interactively prompt for a passphrase during the installation.  There is no time out for entering a passphrase.
+                    <literal>encrypt</literal> may be specified up to once per block device.  It is invalid to specify an <literal>encrypt</literal> key more than once for the same block device.
+                </para>
+            </formalpara>
+            <formalpara id="encrypt.default">
+                <title>Default</title>
+                <para>If no <literal>encrypt</literal> key is specified, no LUKS containers will be created.  If no passphrase is specified in an <literal>encrypt</literal> key, the system will interactively prompt for one.</para>
+            </formalpara>
+            <formalpara id="encrypt.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>encrypt</literal> Key &mdash; Prompt for Passphrase</title>
+                        <programlisting>
+encrypt /dev/elaine/root
+                        </programlisting>
+                        <para>This configures the block device at <filename>/dev/elaine/root</filename> to use LUKS, and prompts the installing technician for a passphrase.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>encrypt</literal> Key &mdash; Use Plaintext Passphrase</title>
+                        <programlisting>
+encrypt /dev/elaine/home oh. so. secret.
+                        </programlisting>
+                        <para>This configures the block device at <filename>/dev/elaine/home</filename> to use LUKS with the passphrase <literal>oh. so. secret.</literal> in plaintext.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="fs">
+            <title><literal>fs</literal></title>
+            <formalpara id="fs.name">
+                <title>Name</title>
+                <para><literal>fs</literal></para>
+            </formalpara>
+            <formalpara id="fs.purpose">
+                <title>Purpose</title>
+                <para>The <literal>fs</literal> key specifies file systems to create on the target computer.</para>
+            </formalpara>
+            <formalpara id="fs.format">
+                <title>Format</title>
+                <para>The <literal>fs</literal> key is a space-separated tuple of two string elements: a path to a valid block device, the type of file system to use  Valid file systems are:
+                    <orderedlist id="fs.format.fses">
+                        <listitem><para><literal>ext2</literal> &mdash; The ext2 file system, a non-journaled Linux filesystem.</para></listitem>
+                        <listitem><para><literal>ext3</literal> &mdash; The ext3 file system, a journaled Linux filesystem.</para></listitem>
+                        <listitem><para><literal>ext4</literal> &mdash; The ext4 file system, a journaled Linux filesystem.</para></listitem>
+                        <listitem><para><literal>hfs+</literal> &mdash; The HFS Plus file system, a non-journaled filesystem from Apple used for boot partitions on Macintosh computers.</para></listitem>
+                        <listitem><para><literal>jfs</literal> &mdash; The JFS file system, a journaled filesystem from IBM.</para></listitem>
+                        <listitem><para><literal>xfs</literal> &mdash; The XFS file system, a journaled filesystem orginally developed by SGI.</para></listitem>
+                        <listitem><para><literal>vfat</literal> &mdash; The FAT32 file system, a non-journaled filesystem used for EFI System Partitions on computers with EFI firmware.</para></listitem>
+                        <listitem><para><literal>swap</literal> &mdash; Swap space, used for virtual memory.</para></listitem>
+                    </orderedlist>
+                    <literal>fs</literal> may be specified up to once per block device.  It is invalid to specify <literal>fs</literal> more than once for the same block device.
+                </para>
+            </formalpara>
+            <formalpara id="fs.default">
+                <title>Default</title>
+                <para>If no <literal>fs</literal> key is specified, no file systems will be created on the target computer.</para>
+            </formalpara>
+            <formalpara id="fs.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>fs</literal> Key</title>
+                        <programlisting>
+fs /dev/elaine/root ext4
+fs /dev/elaine/home xfs
+                        </programlisting>
+                        <para>This creates a new ext4 file system on the block device at <filename>/dev/elaine/root</filename>, and creates a new XFS file system on <filename>/dev/elaine/home</filename>.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="mount">
+            <title><literal>mount</literal></title>
+            <formalpara id="mount.name">
+                <title>Name</title>
+                <para><literal>mount</literal></para>
+            </formalpara>
+            <formalpara id="mount.purpose">
+                <title>Purpose</title>
+                <para>The <literal>mount</literal> key describes the filesystems and mountpoints to use on the target computer.</para>
+            </formalpara>
+            <formalpara id="mount.format">
+                <title>Format</title>
+                <para>The <literal>mount</literal> key is a space-separated tuple of two or three string elements: a path to a valid block device, the mountpoint on the target computer, and optionally mounting options.  The mountpoint must start with <literal>/</literal>.  Valid mounting options depend on the file system chosen, but typically include options such as <literal>noatime</literal>, <literal>user</literal>, and so on.  See the mount manpage for the file system you are using for more information on mounting options.  Mounting options are separated with commas.  Mounting options will be used in the installation environment and additionally saved to the target computer's <filename>/etc/fstab</filename> file.
+                    <literal>mount</literal> must be specified at least once, for the root (<literal>/</literal>) partition.  It is invalid to specify <literal>mount</literal> more than once for the same block device.  It is invalid to specify <literal>mount</literal> more than once for the same mountpoint.
+                </para>
+            </formalpara>
+            <formalpara id="mount.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>mount</literal> Key</title>
+                        <programlisting>
+mount /dev/elaine/root /
+mount /dev/elaine/home /home noquota,wsync
+                        </programlisting>
+                        <para>The filesystem at <filename>/dev/elaine/root</filename> will be mounted at <literal>/</literal>.  The filesystem at <filename>/dev/elaine/home</filename> will be mounted at <literal>/home</literal>, with the <literal>noquota</literal> and <literal>wsync</literal> options.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
     </section>
 </chapter>
