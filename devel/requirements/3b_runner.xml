@@ -1,0 +1,97 @@
+    <section id="runner">
+        <title>Horizon Runner</title>
+        <para>The Horizon Runner is the component of Project Horizon that configures a computer to match an input HorizonScript.</para>
+        <section id="runner_locate">
+            <title>Locate HorizonScript</title>
+            <section id="runner_locate_meta">
+                <title>Description / Priority</title>
+                <para>The system needs to load the HorizonScript into memory.  If the HorizonScript is a local file, the system needs to ensure it is present and readable.  If the HorizonScript is remote, the system needs to proceed to Network Configuration before continuing.</para>
+            </section>
+            <section id="runner_locate_req">
+                <title>Functional Requirements</title>
+                <formalpara id="Runner.Locate.DetermineLocality">
+                    <title>Runner.Locate.DetermineLocality</title>
+                    <para>The system shall determine if the HorizonScript is stored locally or remotely using the following algorithm:
+                        <orderedlist id="Runner.Locate.DetermineLocality.Algo">
+                            <listitem><para>If the path to the HorizonScript is not provided, assume the HorizonScript is remote and end the calculation.  Priority: Low.</para></listitem>
+                            <listitem><para>If the path to the HorizonScript begins with a single "/" followed by an alphanumeric character, the HorizonScript is local.</para></listitem>
+                            <listitem><para>If the path to the HorizonScript begins with a recognised valid protocol for downloading a HorizonScript followed by the characters "://", the HorizonScript is remote.</para></listitem>
+                            <listitem><para>If the path to the HorizonScript begins with an alphanumeric character, the HorizonScript is local and relative to the path <filename class="directory">/etc/horizon</filename>.</para></listitem>
+                            <listitem><para>If the path to the HorizonScript does not match any of the rules specified before this line, the path provided is invalid and the system shall return an error describing the specified path and the fact it is invalid.</para></listitem>
+                        </orderedlist>
+                    </para>
+                </formalpara>
+                <formalpara id="Runner.Locate.Local">
+                    <title>Runner.Locate.Local</title>
+                    <para>If the HorizonScript is local, the system shall ensure the HorizonScript specified exists at the specified path, is readable by the system, and is the correct format.</para>
+                </formalpara>
+                <formalpara id="Runner.Locate.Local.Failure">
+                    <title>Runner.Locate.Local.Failure</title>
+                    <para>If the HorizonScript fails the tests in Runner.Locate.Local, the system shall return an error describing the reason the HorizonScript could not be used.</para>
+                </formalpara>
+                <formalpara id="Runner.Locate.Remote">
+                    <title>Runner.Locate.Remote</title>
+                    <para>If the HorizonScript is remote, the system shall configure the network and then ensure the HorizonScript specified is accessible, as described in the following requirements sections.</para>
+                </formalpara>
+                <formalpara id="Runner.Locate.Remote.Configure">
+                    <title>Runner.Locate.Remote.Configure</title>
+                    <para>The system shall use the network settings configured by the Administrator on the command line, if they have been provided.</para>
+                </formalpara>
+                <formalpara id="Runner.Locate.Remote.Configure.Automatic">
+                    <title>Runner.Locate.Remote.Configure.Automatic</title>
+                    <para>If no network configuration was provided on the command line, the system shall initiate a DHCP request on each available network interface, waiting for a 15 second time out period before continuing to the next network interface.  An "available network interface" is defined as a non-loopback network interface that currently has a carrier signal.</para>
+                </formalpara>
+                <formalpara id="Runner.Locate.Remote.Configure.AutoFailure">
+                    <title>Runner.Locate.Remote.Configure.AutoFailure</title>
+                    <para>If no network configuration can be found using DHCP, the system shall return an error describing the inability to configure a network connection.</para>
+                </formalpara>
+                <formalpara id="Runner.Locate.Remote.FullAuto">
+                    <title>Runner.Locate.Remote.FullAuto</title>
+                    <para>If no HorizonScript path was provided, the system shall download the HorizonScript from a TFTP server using the filename <filename>MACADDRESS.installfile</filename> where MACADDRESS is the MAC address of the active network adaptor with colons (:) replaced by dashes (-).  The system shall use the following algorithm to determine the TFTP server, using the first match.
+                        <orderedlist id="Runner.Locate.Remote.FullAuto.Algo">
+                            <listitem><para>The TFTP server specified in the DHCP options, if the DHCP response provided one.</para></listitem>
+                            <listitem><para>The TFTP server specified on the command line, if one was provided.</para></listitem>
+                            <listitem><para>The DHCP server, if DHCP was used to configure the network.</para></listitem>
+                            <listitem><para>The default gateway IP.</para></listitem>
+                        </orderedlist>
+                    </para>
+                </formalpara>
+                <formalpara id="Runner.Locate.Remote.Verify">
+                    <title>Runner.Locate.Remote.Verify</title>
+                    <para>The system shall ensure that the server where the HorizonScript is kept is reachable over the protocol specified and that the HorizonScript exists.</para>
+                </formalpara>
+                <formalpara id="Runner.Locate.Remote.Download">
+                    <title>Runner.Locate.Remote.Download</title>
+                    <para>The system shall download the HorizonScript from the remote server to <filename class="directory">/etc/horizon/</filename>.</para>
+                </formalpara>
+            </section>
+        </section>
+        <section id="runner_verify">
+            <title>Verify HorizonScript</title>
+            <section id="runner_verify_meta">
+                <title>Description / Priority</title>
+                <para>The system needs to verify the validity of the supplied HorizonScript before executing it.</para>
+            </section>
+            <section id="runner_verify_req">
+                <title>Functional Requirements</title>
+                <formalpara id="Runner.Verify.Required">
+                    <title>Runner.Verify.Required</title>
+                    <para>The system shall verify the presence and validity of each required keyword in the HorizonScript.</para>
+                </formalpara>
+            </section>
+        </section>
+        <section id="runner_execute">
+            <title>Execute HorizonScript</title>
+            <section id="runner_execute_meta">
+                <title>Description / Priority</title>
+                <para/>
+            </section>
+            <section id="runner_execute_req">
+                <title>Functional Requirements</title>
+                <formalpara>
+                    <title/>
+                    <para/>
+                </formalpara>
+            </section>
+        </section>
+    </section>

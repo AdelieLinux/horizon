@@ -4,6 +4,7 @@
                <!ENTITY chap1 SYSTEM "1_introduction.xml">
                <!ENTITY chap2 SYSTEM "2_description.xml">
                <!ENTITY chap3 SYSTEM "3_functional.xml">
+               <!ENTITY runner SYSTEM "3b_runner.xml">
                <!ENTITY chap4 SYSTEM "4_interface.xml">
                <!ENTITY chap5 SYSTEM "5_nonfunctional.xml">
                <!ENTITY chap6 SYSTEM "6_other.xml">
