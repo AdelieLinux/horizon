@@ -82,7 +82,7 @@ hostname gwyn.foxkit.internal
             </formalpara>
             <formalpara id="pkginstall.format">
                 <title>Format</title>
-                <para>The <literal>pkginstall</literal> is a space-separated list of APK packages.  They must be available in the repositories used during the installation process.  <literal>pkginstall</literal> must appear at least once in a HorizonScript.  There is no limit to the number of times <literal>pkginstall</literal> may be specified; each one will append to the list of packages to install.</para>
+                <para>The <literal>pkginstall</literal> key is a space-separated list of APK packages.  They must be available in the repositories used during the installation process.  <literal>pkginstall</literal> must appear at least once in a HorizonScript.  There is no limit to the number of times <literal>pkginstall</literal> may be specified; each one will append to the list of packages to install.</para>
             </formalpara>
             <formalpara id="pkginstall.examples">
                 <title>Examples</title>
@@ -102,6 +102,33 @@ pkginstall x11 i3wm
 pkginstall claws-mail
                         </programlisting>
                         <para>This installs the <literal><package>adelie-base-posix</package></literal>, <literal><package>x11</package></literal>, <literal><package>i3wm</package></literal>, and <literal><package>claws-mail</package></literal> packages on the target computer.  This advanced usage may be useful if you use a templating engine to generate HorizonScript files.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="rootpw">
+            <title><literal>rootpw</literal></title>
+            <formalpara id="rootpw.name">
+                <title>Name</title>
+                <para><literal>rootpw</literal></para>
+            </formalpara>
+            <formalpara id="rootpw.purpose">
+                <title>Purpose</title>
+                <para>The <literal>rootpw</literal> key provides the encrypted passphrase for the administrative <literal>root</literal> user on the machine.</para>
+            </formalpara>
+            <formalpara id="rootpw.format">
+                <title>Format</title>
+                <para>The <literal>rootpw</literal> key is a string value containing a crypt(3) style, SHA-512 hashed passphrase.  It is invalid to provide a plaintext passphrase.</para>
+            </formalpara>
+            <formalpara id="rootpw.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>rootpw</literal> Key</title>
+                        <programlisting>
+rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
+                        </programlisting>
+                        <para>This sets the target computer's root passphrase to "Test Password".  (Please do not use this passphrase.)</para>
                     </example>
                 </para>
             </formalpara>
@@ -443,6 +470,183 @@ signingkey /etc/apk/keys/packages@adelielinux.org.pub
 signingkey https://packages/builder@ourcompany.net.pub
                         </programlisting>
                         <para>This configures the target computer to use the default Adélie Linux repository signing key, and also a repository signing key that is available for download from the URL <literal>https://packages/builder@ourcompany.net.pub</literal>.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="username">
+            <title><literal>username</literal></title>
+            <formalpara id="username.name">
+                <title>Name</title>
+                <para><literal>username</literal></para>
+            </formalpara>
+            <formalpara id="username.purpose">
+                <title>Purpose</title>
+                <para>The <literal>username</literal> key specifies a user account to create on the target computer.</para>
+            </formalpara>
+            <formalpara id="username.format">
+                <title>Format</title>
+                <para>The <literal>username</literal> key is a string value, describing the user account's name.  This name must be a valid Linux account name.  <literal>username</literal> may be specified up to 64,535 times.  It is invalid to specify the same account name more than once.  It is invalid to specify the name of a system account.</para>
+            </formalpara>
+            <formalpara id="username.default">
+                <title>Default</title>
+                <para>If no <literal>username</literal> key is specified, no user accounts will be created on the system beyond the built-in system accounts.  Only <literal>root</literal> will be able to log in.</para>
+            </formalpara>
+            <formalpara id="username.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>username</literal> Key &mdash; Simple Usage</title>
+                        <programlisting>
+username awilfox
+                        </programlisting>
+                        <para>This creates an account with name <literal>awilfox</literal> on the target computer.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>username</literal> Key &mdash; Advanced Usage</title>
+                        <programlisting>
+username chris
+username kayla
+username meg
+username steph
+username amanada
+                        </programlisting>
+                        <para>This creates five accounts on the target computer.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="useralias">
+            <title><literal>useralias</literal></title>
+            <formalpara id="useralias.name">
+                <title>Name</title>
+                <para><literal>useralias</literal></para>
+            </formalpara>
+            <formalpara id="useralias.purpose">
+                <title>Purpose</title>
+                <para>The <literal>useralias</literal> key provides the friendly name or alias of a user account on the target computer.</para>
+            </formalpara>
+            <formalpara id="useralias.format">
+                <title>Format</title>
+                <para>The <literal>useralias</literal> key is a space-separated tuple of two string values: the user account name, and the friendly name or alias to use.  The friendly name is read to the end of the line and may contain spaces.  <literal>useralias</literal> may appear up to once per <literal>username</literal>.  It is invalid to specify more than one <literal>useralias</literal> for a given <literal>username</literal>.  It is invalid to specify a <literal>useralias</literal> for an account that is not created by <literal>username</literal>.</para>
+            </formalpara>
+            <formalpara id="useralias.default">
+                <title>Default</title>
+                <para>If no <literal>useralias</literal> key is specified for a <literal>username</literal>, the alias "Adélie User" will be used.</para>
+            </formalpara>
+            <formalpara id="useralias.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>useralias</literal> Key</title>
+                        <programlisting>
+useralias awilfox A. Wilcox
+                        </programlisting>
+                        <para>This sets the friendly name of the <literal>awilfox</literal> account to <literal>A. Wilcox</literal>.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="userpw">
+            <title><literal>userpw</literal></title>
+            <formalpara id="userpw.name">
+                <title>Name</title>
+                <para><literal>userpw</literal></para>
+            </formalpara>
+            <formalpara id="userpw.purpose">
+                <title>Purpose</title>
+                <para>The <literal>userpw</literal> key specifies the passphrase to use for a given user account on the target computer.</para>
+            </formalpara>
+            <formalpara id="userpw.format">
+                <title>Format</title>
+                <para>The <literal>userpw</literal> key is a space-separated tuple of two string elements: the user account name, and the encrypted, SHA-512 hashed passphrase.  It is invalid to specify a plaintext passphrase.  <literal>userpw</literal> may appear up to once per <literal>username</literal>.  It is invalid to specify more than one <literal>userpw</literal> for a given <literal>username</literal>.  It is invalid to specify a <literal>userpw</literal> for an account that is not created by <literal>username</literal>.</para>
+            </formalpara>
+            <formalpara id="userpw.default">
+                <title>Default</title>
+                <para>If no <literal>userpw</literal> key is specified for a <literal>username</literal>, it will have no passphrase set.  By default, this will prevent users from logging in to the account.</para>
+            </formalpara>
+            <formalpara id="userpw.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>userpw</literal> Key</title>
+                        <programlisting>
+userpw awilfox $6$UZJm/vBmVgyIdMZr$ppKEulz/HY0/e7RcXXujQbcqDXkUYgIqNEVPQJO6.le9kUpz8GvvRezY3ifqUUEwjhSo9tTOMG7lhqjn8gGpH0
+                        </programlisting>
+                        <para>This sets the passphrase of the <literal>awilfox</literal> account to <literal>My Passphrase</literal>.  (Please do not use this passphrase.)</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="usericon">
+            <title><literal>usericon</literal></title>
+            <formalpara id="usericon.name">
+                <title>Name</title>
+                <para><literal>usericon</literal></para>
+            </formalpara>
+            <formalpara id="usericon.purpose">
+                <title>Purpose</title>
+                <para>The <literal>usericon</literal> key specifies a icon used to identify a given user account on the target computer.</para>
+            </formalpara>
+            <formalpara id="usericon.format">
+                <title>Format</title>
+                <para>The <literal>usericon</literal> key is a space-separated tuple of two string elements: the user account name, and a path to the icon.  The icon must be in JPEG, PNG, TGA, or TIFF format.  The path must be an absolute path accessible from the installation environment, or a supported URL.  <literal>usericon</literal> may appear up to once per <literal>username</literal>.  It is invalid to specify more than one <literal>usericon</literal> for a given <literal>username</literal>.  It is invalid to specify a <literal>usericon</literal> for an account that is not created by <literal>username</literal>.</para>
+            </formalpara>
+            <formalpara id="usericon.default">
+                <title>Default</title>
+                <para>If no <literal>usericon</literal> key is specified for a <literal>username</literal>, a default silhouette icon will be used for that account.</para>
+            </formalpara>
+            <formalpara id="usericon.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>usericon</literal> Key</title>
+                        <programlisting>
+usericon awilfox /usr/share/user-manager/avatars/circles/Cat.png
+                        </programlisting>
+                        <para>This sets the icon of the <literal>awilfox</literal> account to the default Cat avatar.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
+        <section id="usergroups">
+            <title><literal>usergroups</literal></title>
+            <formalpara id="usergroups.name">
+                <title>Name</title>
+                <para><literal>usergroups</literal></para>
+            </formalpara>
+            <formalpara id="usergroups.purpose">
+                <title>Purpose</title>
+                <para>The <literal>usergroups</literal> key specifies group membership for a given user account on the target computer.</para>
+            </formalpara>
+            <formalpara id="usergroups.format">
+                <title>Format</title>
+                <para>The <literal>usergroups</literal> key is a space-separated tuple of two string elements: the user account name, and a comma-separated list of groups of which the account should become a member.  <literal>usergroups</literal> may appear at least once per <literal>username</literal>.  Each <literal>usergroups</literal> key for a given <literal>username</literal> appends to an existing list, if any.  It is invalid to specify the same group more than once for a given <literal>username</literal>.  It is invalid to specify more than 16 groups for a given <literal>username</literal> across all <literal>usergroups</literal> specified for it.</para>
+            </formalpara>
+            <formalpara id="usergroups.default">
+                <title>Default</title>
+                <para>If no <literal>usergroups</literal> is specified for a given <literal>username</literal>, it will be added to the <literal>users</literal> group.  If it is given, the <literal>users</literal> group must be explicitly specified if desired.</para>
+            </formalpara>
+            <formalpara id="usergroups.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>usergroups</literal> Key &mdash; Simple Usage</title>
+                        <programlisting>
+usergroups awilfox users,wheel
+                        </programlisting>
+                        <para>This specifies that the <literal>awilfox</literal> account will become a member of the groups <literal>users</literal> and <literal>wheel</literal> on the target computer.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>usergroups</literal> Key &mdash; Advanced Usage</title>
+                        <programlisting>
+usergroups chris disk,lp,wheel,floppy,audio,cdrom,video,games,cdrw,usb,users
+usergroups kayla lp,audio,cdrom,video,games,users
+usergroups meg lp,audio,cdrom,video,games,users
+usergroups steph lp,audio,cdrom,video,games,users
+usergroups amanda lp,audio,cdrom,video,games,users
+                        </programlisting>
+                        <para>This specifies that the <literal>chris</literal> account will become an administrative account and have access to most peripherals of the system, while the rest will have access to printers, sound, optical storage, graphics, and the ability to play games.</para>
                     </example>
                 </para>
             </formalpara>
