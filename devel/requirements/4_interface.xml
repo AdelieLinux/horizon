@@ -97,8 +97,8 @@
             </para>
         </formalpara>
     </section>
-    <section id="ui_runner">
-        <title>UI to Runner Interface</title>
-        <para/>
+    <section id="runner_agent">
+        <title>Runner Listening Agent Interface</title>
+        <para>The Horizon Runner Listening Agent Interface is the interface used to communicate progress.  The Horizon Runner will send messages to the Listening Agent using the interface defined here to note status messages, step completion, and any exceptions that occur during execution.  The Listening Agent may be an external application (such as the Horizon UI), a logging system, or even a serial port or TTY monitored by the user.  For this reason, automated parsing is a higher priority than sapient parsing, but sapient parsing still must be considered.</para>
     </section>
 </chapter>

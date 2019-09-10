@@ -84,14 +84,19 @@
             <title>Execute HorizonScript</title>
             <section id="runner_execute_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>The system executes the instructions provided in the HorizonScript, in the specified order.  The system reports progress, and all warnings and errors, to the listening agent.  Once the system has finished, it reports the completion status to the listening agent.</para>
             </section>
             <section id="runner_execute_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="Runner.Execute">
+                    <title>Runner.Execute</title>
+                    <para>The system shall execute the instructions provided in the HorizonScript in the order described.</para>
                 </formalpara>
+                <formalpara id="Runner.Execute.Exception">
+                    <title>Runner.Execute.Exception</title>
+                    <para>The system shall report any exception encountered during execution to the listening agent, following the specification in <xref linkend="runner_agent"/>.</para>
+                </formalpara>
+                
             </section>
         </section>
     </section>
