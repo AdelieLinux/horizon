@@ -96,6 +96,26 @@
                     <title>Runner.Execute.Exception</title>
                     <para>The system shall report any exception encountered during execution to the listening agent, following the specification in <xref linkend="runner_agent"/>.</para>
                 </formalpara>
+                <formalpara id="Runner.Execute.Status">
+                    <title>Runner.Execute.Status</title>
+                    <para>If an operation has taken more than 10 seconds, the system shall report the status of the operation to the listening agent, following the specification in <xref linkend="runner_agent"/>.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.StepBegin">
+                    <title>Runner.Execute.StepBegin</title>
+                    <para>When the system begins a step, the system shall report the step as beginning to the listening agent, following the specification in <xref linkend="runner_agent"/>.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.StepDone">
+                    <title>Runner.Execute.StepDone</title>
+                    <para>When the system completes a step, the system shall report the step as completed to the listening agent, following the specification in <xref linkend="runner_agent"/>.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.Verify">
+                    <title>Runner.Execute.Verify</title>
+                    <para>The system shall verify the HorizonScript, using the process specified in the section <xref linkend="runner_verify"/>, before execution.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.Verify.Failure">
+                    <title>Runner.Execute.Verify.Failure</title>
+                    <para>If the HorizonScript fails verification, the system shall report a fatal exception (<xref linkend="Runner.Execute.Exception"/>) and stop execution.</para>
+                </formalpara>
                 
             </section>
         </section>
