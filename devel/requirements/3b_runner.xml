@@ -146,6 +146,26 @@
                     <title>Runner.Verify.network.netssid.NoNetwork</title>
                     <para>If the value in the HorizonScript for the <literal>network</literal> key is <literal>false</literal>, the system shall verify that no <literal>netssid</literal> key is present.</para>
                 </formalpara>
+                <formalpara id="Runner.Verify.network.netssid.Validity">
+                    <title>Runner.Verify.network.netaddress.Validity</title>
+                    <para>The system shall verify that each <literal>netssid</literal> key has a valid form of either three values or four values in a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netssid.Interface">
+                    <title>Runner.Verify.network.netssid.Interface</title>
+                    <para>If the system is running in an installation environment, the system shall ensure that the interface specified as the first value in each <literal>netssid</literal> tuple is present on the system and supports wireless extensions.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netssid.SSID">
+                    <title>Runner.Verify.network.netssid.SSID</title>
+                    <para>The system shall verify that the second value of each <literal>netssid</literal> tuple is a valid SSID enclosed in ASCII double-quotes (<literal>"</literal>).</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netssid.Security">
+                    <title>Runner.Verify.network.netssid.Security</title>
+                    <para>The system shall verify that the third value of each <literal>netssid</literal> tuple is a valid security type: either <literal>none</literal>, <literal>wep</literal>, or <literal>wpa</literal>.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netssid.Key">
+                    <title>Runner.Verify.network.netssid.Key</title>
+                    <para>If the third value of a <literal>netssid</literal> tuple is a valid security type and not <literal>none</literal>, the system shall ensure that the <literal>netssid</literal> tuple has a fourth value that specifies the security key.</para>
+                </formalpara>
             </section>
         </section>
         <section id="runner_execute">
