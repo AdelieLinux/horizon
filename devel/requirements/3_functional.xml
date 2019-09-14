@@ -296,7 +296,7 @@
                 </formalpara>
                 <formalpara id="UI.Network.WirelessPortal.Open">
                     <title>UI.Network.WirelessPortal.Open</title>
-                    <para>If the captive portal test determines a captive portal is in use, the system shall open a lightweight Web browser and attempt to navigate to http://www.adelielinux.org/.</para>
+                    <para>If the captive portal test determines a captive portal is in use, the system shall open a lightweight Web browser and attempt to navigate to http://detectportal.firefox.com/.</para>
                 </formalpara>
                 <formalpara id="UI.Network.WirelessPortal.Open.Message">
                     <title>UI.Network.WirelessPortal.Open.Message</title>

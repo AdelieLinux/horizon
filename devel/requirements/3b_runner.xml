@@ -166,6 +166,34 @@
                     <title>Runner.Verify.network.netssid.Key</title>
                     <para>If the third value of a <literal>netssid</literal> tuple is a valid security type and not <literal>none</literal>, the system shall ensure that the <literal>netssid</literal> tuple has a fourth value that specifies the security key.</para>
                 </formalpara>
+                <formalpara id="Runner.Verify.hostname">
+                    <title>Runner.Verify.hostname</title>
+                    <para>The system shall verify that the HorizonScript contains exactly one <literal>hostname</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.hostname.Chars">
+                    <title>Runner.Verify.hostname.Chars</title>
+                    <para>The system shall verify that the value for the <literal>hostname</literal> key contains only alphanumeric and optionally one or more period (<literal>.</literal>) characters.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.hostname.Begin">
+                    <title>Runner.Verify.hostname.Begin</title>
+                    <para>The system shall verify that the value for the <literal>hostname</literal> key begins with an alphabetical character.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.hostname.Length">
+                    <title>Runner.Verify.hostname.Length</title>
+                    <para>The system shall verify that the value for the <literal>hostname</literal> key does not exceed 320 characters in length.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.pkginstall">
+                    <title>Runner.Verify.pkginstall</title>
+                    <para>The system shall verify that the HorizonScript contains at least one <literal>pkginstall</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.rootpw">
+                    <title>Runner.Verify.rootpw</title>
+                    <para>The system shall verify that the HorizonScript contains exactly one <literal>rootpw</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.rootpw.Crypt">
+                    <title>Runner.Verify.rootpw.Crypt</title>
+                    <para>The system shall verify that the value for the <literal>rootpw</literal> key is in the format: <literal>$</literal>, either <literal>2</literal> for Blowfish or <literal>6</literal> for SHA-512, <literal>$</literal>, and then variant data.</para>
+                </formalpara>
             </section>
         </section>
         <section id="runner_execute">
