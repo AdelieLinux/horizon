@@ -118,7 +118,7 @@ pkginstall claws-mail
             </formalpara>
             <formalpara id="rootpw.format">
                 <title>Format</title>
-                <para>The <literal>rootpw</literal> key is a string value containing a crypt(3) style, SHA-512 hashed passphrase.  It is invalid to provide a plaintext passphrase.</para>
+                <para>The <literal>rootpw</literal> key is a string value containing a crypt(3) style, SHA-512 or Blowfish hashed passphrase.  It is invalid to provide a plaintext passphrase.</para>
             </formalpara>
             <formalpara id="rootpw.example">
                 <title>Example</title>
@@ -559,7 +559,7 @@ useralias awilfox A. Wilcox
             </formalpara>
             <formalpara id="userpw.format">
                 <title>Format</title>
-                <para>The <literal>userpw</literal> key is a space-separated tuple of two string elements: the user account name, and the encrypted, SHA-512 hashed passphrase.  It is invalid to specify a plaintext passphrase.  <literal>userpw</literal> may appear up to once per <literal>username</literal>.  It is invalid to specify more than one <literal>userpw</literal> for a given <literal>username</literal>.  It is invalid to specify a <literal>userpw</literal> for an account that is not created by <literal>username</literal>.</para>
+                <para>The <literal>userpw</literal> key is a space-separated tuple of two string elements: the user account name, and the encrypted, SHA-512 or Blowfish hashed passphrase.  It is invalid to specify a plaintext passphrase.  <literal>userpw</literal> may appear up to once per <literal>username</literal>.  It is invalid to specify more than one <literal>userpw</literal> for a given <literal>username</literal>.  It is invalid to specify a <literal>userpw</literal> for an account that is not created by <literal>username</literal>.</para>
             </formalpara>
             <formalpara id="userpw.default">
                 <title>Default</title>
