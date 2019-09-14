@@ -290,6 +290,18 @@
                     <title>UI.Network.Automatic.TimeOut</title>
                     <para>If no IP address is obtained for v4 or v6 after 15 seconds, the system shall display a message that automatic configuration failed, and ask the User whether to retry the attempt, use manual addressing, or skip networking configuration.</para>
                 </formalpara>
+                <formalpara id="UI.Network.WirelessPortal">
+                    <title>UI.Network.WirelessPortal</title>
+                    <para>If the computer has obtained an address automatically and is using a wireless network, the system shall test if the network is using a captive portal by attempting to download the file at http://detectportal.firefox.com and determining if the response is <literal>success</literal>.</para>
+                </formalpara>
+                <formalpara id="UI.Network.WirelessPortal.Open">
+                    <title>UI.Network.WirelessPortal.Open</title>
+                    <para>If the captive portal test determines a captive portal is in use, the system shall open a lightweight Web browser and attempt to navigate to http://www.adelielinux.org/.</para>
+                </formalpara>
+                <formalpara id="UI.Network.WirelessPortal.Open.Message">
+                    <title>UI.Network.WirelessPortal.Open.Message</title>
+                    <para>The system shall display a message on the lightweight Web browser that instructs the user to close the Web browser when network connectivity is established in order to continue the installation.</para>
+                </formalpara>
                 <formalpara id="UI.Network.Manual">
                     <title>UI.Network.Manual</title>
                     <para>If the User selected manual address, the system shall prompt the User for the following information:
