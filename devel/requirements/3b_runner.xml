@@ -74,9 +74,77 @@
             </section>
             <section id="runner_verify_req">
                 <title>Functional Requirements</title>
+                <formalpara id="Runner.Verify.Exception">
+                    <title>Runner.Verify.Exception</title>
+                    <para>If the HorizonScript fails any verification step performed by the system, the system shall report the error.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.Exception.Install">
+                    <title>Runner.Verify.Exception.Install</title>
+                    <para>If the system is running in an installation environment, the system shall report verification step failure to the listening agent.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.Exception.Continue">
+                    <title>Runner.Verify.Exception.Continue</title>
+                    <para>The system shall support a mode where the system will continue verification after encountering a verification failure, to display all verification failures for a given HorizonScript.</para>
+                </formalpara>
                 <formalpara id="Runner.Verify.Required">
                     <title>Runner.Verify.Required</title>
-                    <para>The system shall verify the presence and validity of each required keyword in the HorizonScript.</para>
+                    <para>The system shall verify the presence of each required keyword in the HorizonScript: <literal>mount</literal>, <literal>network</literal>, <literal>hostname</literal>, <literal>pkginstall</literal>, and <literal>rootpw</literal>.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network">
+                    <title>Runner.Verify.network</title>
+                    <para>The system shall verify that a single <literal>network</literal> entry is present in the HorizonScript, and that the value is either <literal>true</literal> or <literal>false</literal>.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netaddress">
+                    <title>Runner.Verify.network.netaddress</title>
+                    <para>If the value in the HorizonScript for the <literal>network</literal> key is <literal>true</literal>, the system shall verify that at least one <literal>netaddress</literal> key is present.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netaddress.NoNetwork">
+                    <title>Runner.Verify.network.netaddress.NoNetwork</title>
+                    <para>If the value in the HorizonScript for the <literal>network</literal> key is <literal>false</literal>, the system shall verify that no <literal>netaddress</literal> key is present.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netaddress.Validity">
+                    <title>Runner.Verify.network.netaddress.Validity</title>
+                    <para>The system shall verify that each <literal>netaddress</literal> key has a valid form of at least two values in a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netaddress.Validity.Type">
+                    <title>Runner.Verify.network.netaddress.Validity.Type</title>
+                    <para>The system shall verify that the second value in each <literal>netaddress</literal> tuple is either <literal>dhcp</literal> or <literal>static</literal>.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netaddress.Validity.DHCP">
+                    <title>Runner.Verify.network.netaddress.Validity.DHCP</title>
+                    <para>The system shall verify that each <literal>netaddress</literal> key is a two value tuple if the second value is <literal>dhcp</literal>.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netaddress.Validity.Static">
+                    <title>Runner.Verify.network.netaddress.Validity.Static</title>
+                    <para>The system shall verify that each <literal>netaddress</literal> key is either a four value tuple or a five value tuple if the second value is <literal>static</literal>.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netaddress.Interface">
+                    <title>Runner.Verify.network.netaddress.Interface</title>
+                    <para>If the system is running in an installation environment, the system shall ensure that the interface specified as the first value in each <literal>netaddress</literal> tuple is present on the system.  Failure of this requirement is a "soft" error.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netaddress.Address">
+                    <title>Runner.Verify.network.netaddress.Address</title>
+                    <para>If the second value of the <literal>netaddress</literal> key is <literal>static</literal>, the system shall ensure that the third value in the tuple is a valid IPv4 or IPv6 address.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netaddress.Mask">
+                    <title>Runner.Verify.network.netaddress.Mask</title>
+                    <para>If the second value of the <literal>netaddress</literal> key is <literal>static</literal>, the system shall ensure that the fourth value in the tuple is a valid prefix, in the form of a whole number between 1 and 32 inclusive if the third value is an IPv4 address, a whole number between 1 and 64 inclusive if the third value is an IPv6 address, or a network mask in the form of four octets separated by the period (<literal>.</literal>) symbol if the third value is an IPv4 address.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netaddress.Gateway">
+                    <title>Runner.Verify.network.netaddress.Gateway</title>
+                    <para>If the second value of the <literal>netaddress</literal> key is <literal>static</literal>, and the tuple contains a fifth value, the system shall ensure that the fifth value is a valid IP address of the same type as the third value in the tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netaddress.Count">
+                    <title>Runner.Verify.network.netaddress.Count</title>
+                    <para>The system shall verify that <literal>netaddress</literal> is not specified more than 255 times per interface.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netssid">
+                    <title>Runner.Verify.network.netssid</title>
+                    <para>If the value in the HorizonScript for the <literal>network</literal> key is <literal>true</literal>, the system shall verify the validity of any present <literal>netssid</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.network.netssid.NoNetwork">
+                    <title>Runner.Verify.network.netssid.NoNetwork</title>
+                    <para>If the value in the HorizonScript for the <literal>network</literal> key is <literal>false</literal>, the system shall verify that no <literal>netssid</literal> key is present.</para>
                 </formalpara>
             </section>
         </section>
@@ -116,7 +184,10 @@
                     <title>Runner.Execute.Verify.Failure</title>
                     <para>If the HorizonScript fails verification, the system shall report a fatal exception (<xref linkend="Runner.Execute.Exception"/>) and stop execution.</para>
                 </formalpara>
-                
+                <formalpara id="Runner.Execute.diskid">
+                    <title>Runner.Execute.diskid</title>
+                    <para></para>
+                </formalpara>
             </section>
         </section>
     </section>
