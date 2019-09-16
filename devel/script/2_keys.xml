@@ -486,7 +486,7 @@ signingkey https://packages/builder@ourcompany.net.pub
             </formalpara>
             <formalpara id="username.format">
                 <title>Format</title>
-                <para>The <literal>username</literal> key is a string value, describing the user account's name.  This name must be a valid Linux account name.  <literal>username</literal> may be specified up to 64,535 times.  It is invalid to specify the same account name more than once.  It is invalid to specify the name of a system account.</para>
+                <para>The <literal>username</literal> key is a string value, describing the user account's name.  This name must be a valid Linux account name.  <literal>username</literal> may be specified up to 255 times.  It is invalid to specify the same account name more than once.  It is invalid to specify the name of a system account.</para>
             </formalpara>
             <formalpara id="username.default">
                 <title>Default</title>
