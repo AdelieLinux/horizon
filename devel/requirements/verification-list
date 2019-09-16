@@ -1,0 +1,45 @@
+Required Keys
+
+✓   network
+✓   hostname
+✓   pkginstall
+✓   rootpw
+
+Optional Keys
+
+✓   language
+✓   keymap
+✓   firmware
+✓   netaddress
+✓   nameserver
+✓   netssid
+    timezone
+    repository
+    signingkey
+    username
+    useralias
+    userpw
+    usericon
+    usergroups
+
+Disk Partitioning Keys
+
+-   Sizing
+    diskid
+    disklabel
+    partition
+    lvm_pv
+    lvm_vg
+    lvm_lv
+    encrypt
+    fs
+    mount
+
+Other
+
+    Packages present in repositories (runtime only)
+
+Misc
+
+    really should have a design spec for the CLI / GUI
+    should errors be more formally defined?  probably just waste of time tbh
