@@ -13,9 +13,9 @@ Optional Keys
 ✓   netaddress
 ✓   nameserver
 ✓   netssid
-    timezone
-    repository
-    signingkey
+✓   timezone
+✓   repository
+✓   signingkey
     username
     useralias
     userpw
@@ -43,3 +43,4 @@ Misc
 
     really should have a design spec for the CLI / GUI
     should errors be more formally defined?  probably just waste of time tbh
+    COMMENTS, also blank lines

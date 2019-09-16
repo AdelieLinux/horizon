@@ -196,7 +196,7 @@
                 </formalpara>
                 <formalpara id="Runner.Verify.language">
                     <title>Runner.Verify.language</title>
-                    <para>If a <literal>language</literal> key is present in the HorizonScript, the system shall verify that the HorizonScript contains exactly one <literal>language</literal> key.</para>
+                    <para>The system shall verify that the HorizonScript contains at most one <literal>language</literal> key.</para>
                 </formalpara>
                 <formalpara id="Runner.Verify.language.Format">
                     <title>Runner.Verify.language.Format</title>
@@ -204,7 +204,7 @@
                 </formalpara>
                 <formalpara id="Runner.Verify.keymap">
                     <title>Runner.Verify.keymap</title>
-                    <para>If a <literal>keymap</literal> key is present in the HorizonScript, the system shall verify that the HorizonScript contains exactly one <literal>keymap</literal> key.</para>
+                    <para>The system shall verify that the HorizonScript contains at most one <literal>keymap</literal> key.</para>
                 </formalpara>
                 <formalpara id="Runner.Verify.keymap.Valid">
                     <title>Runner.Verify.keymap.Valid</title>
@@ -220,7 +220,31 @@
                 </formalpara>
                 <formalpara id="Runner.Verify.firmware.ForceOff">
                     <title>Runner.Verify.firmware.ForceOff</title>
-                    <para>If the system is running in an installation environment, and the system has firmware support compiled out, the system shall verify that the value of the <literal>firmware</literal> key is <literal>false</literal>.</para>
+                    <para>If the system has firmware support compiled out, the system shall verify that the value of the <literal>firmware</literal> key, if present, is <literal>false</literal>.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.timezone">
+                    <title>Runner.Verify.timezone</title>
+                    <para>The system shall verify that the HorizonScript contains at most one <literal>timezone</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.timezone.zoneinfo">
+                    <title>Runner.Verify.timezone.zoneinfo</title>
+                    <para>The system shall verify that the value of the <literal>timezone</literal> key, if present, represents a valid zoneinfo time zone name.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.repository">
+                    <title>Runner.Verify.repository</title>
+                    <para>The system shall verify that the HorizonScript contains zero to ten <literal>repository</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.repository.ValidPath">
+                    <title>Runner.Verify.repository.ValidPath</title>
+                    <para>The system shall verify that the value of each <literal>repository</literal> key is either an absolute local path beginning with an ASCII backslash (<literal>/</literal>), or a valid URL utilising the HTTP or HTTPS protocols.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.signingkey">
+                    <title>Runner.Verify.signingkey</title>
+                    <para>The system shall verify that the HorizonScript contains zero to ten <literal>signingkey</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.signingkey.ValidPath">
+                    <title>Runner.Verify.signingkey.ValidPath</title>
+                    <para>The system shall verify that the value of each <literal>signingkey</literal> key is either an absolute local path beginning with an ASCII backslash (<literal>/</literal>), or a valid URL utilising the HTTPS protocol.</para>
                 </formalpara>
             </section>
         </section>
