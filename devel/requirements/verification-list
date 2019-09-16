@@ -16,11 +16,11 @@ Optional Keys
 ✓   timezone
 ✓   repository
 ✓   signingkey
-    username
-    useralias
-    userpw
-    usericon
-    usergroups
+✓   username
+✓   useralias
+✓   userpw
+✓   usericon
+✓   usergroups
 
 Disk Partitioning Keys
 

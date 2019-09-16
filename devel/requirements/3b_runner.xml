@@ -196,7 +196,7 @@
                 </formalpara>
                 <formalpara id="Runner.Verify.language">
                     <title>Runner.Verify.language</title>
-                    <para>The system shall verify that the HorizonScript contains at most one <literal>language</literal> key.</para>
+                    <para>The system shall verify that the HorizonScript contains zero or one <literal>language</literal> key.</para>
                 </formalpara>
                 <formalpara id="Runner.Verify.language.Format">
                     <title>Runner.Verify.language.Format</title>
@@ -204,7 +204,7 @@
                 </formalpara>
                 <formalpara id="Runner.Verify.keymap">
                     <title>Runner.Verify.keymap</title>
-                    <para>The system shall verify that the HorizonScript contains at most one <literal>keymap</literal> key.</para>
+                    <para>The system shall verify that the HorizonScript contains zero or one <literal>keymap</literal> key.</para>
                 </formalpara>
                 <formalpara id="Runner.Verify.keymap.Valid">
                     <title>Runner.Verify.keymap.Valid</title>
@@ -212,7 +212,7 @@
                 </formalpara>
                 <formalpara id="Runner.Verify.firmware">
                     <title>Runner.Verify.firmware</title>
-                    <para>The system shall verify that the HorizonScript contains at most one <literal>firmware</literal> key.</para>
+                    <para>The system shall verify that the HorizonScript contains zero or one <literal>firmware</literal> key.</para>
                 </formalpara>
                 <formalpara id="Runner.Verify.firmware.Boolean">
                     <title>Runner.Verify.firmware.Boolean</title>
@@ -224,7 +224,7 @@
                 </formalpara>
                 <formalpara id="Runner.Verify.timezone">
                     <title>Runner.Verify.timezone</title>
-                    <para>The system shall verify that the HorizonScript contains at most one <literal>timezone</literal> key.</para>
+                    <para>The system shall verify that the HorizonScript contains zero or one <literal>timezone</literal> key.</para>
                 </formalpara>
                 <formalpara id="Runner.Verify.timezone.zoneinfo">
                     <title>Runner.Verify.timezone.zoneinfo</title>
@@ -245,6 +245,102 @@
                 <formalpara id="Runner.Verify.signingkey.ValidPath">
                     <title>Runner.Verify.signingkey.ValidPath</title>
                     <para>The system shall verify that the value of each <literal>signingkey</literal> key is either an absolute local path beginning with an ASCII backslash (<literal>/</literal>), or a valid URL utilising the HTTPS protocol.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.username">
+                    <title>Runner.Verify.username</title>
+                    <para>The system shall verify that the HorizonScript contains zero to 255 <literal>username</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.username.Unique">
+                    <title>Runner.Verify.username.Unique</title>
+                    <para>The system shall verify that the value of each <literal>username</literal> key is unique.</para>
+                </formalpara>
+                <formalpara id="Runnver.Verify.username.System">
+                    <title>Runner.Verify.username.System</title>
+                    <para>The system shall verify that the value of each <literal>username</literal> key does not match a system-defined account.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.username.Valid">
+                    <title>Runner.Verify.username.Valid</title>
+                    <para>The system shall verify that the value of each <literal>username</literal> key is a valid Linux user account name.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.useralias">
+                    <title>Runner.Verify.useralias</title>
+                    <para>The system shall verify that the HorizonScript contains a number of <literal>useralias</literal> keys equal or less than the number of <literal>username</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.useralias.Validity">
+                    <title>Runner.Verify.useralias.Validity</title>
+                    <para>The system shall verify that each <literal>useralias</literal> key has a valid form of two values in a space-separated tuple, with the second value reading to the end of the line (optionally containing spaces).</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.useralias.Name">
+                    <title>Runner.Verify.useralias.Name</title>
+                    <para>The system shall verify that the first value in each <literal>useralias</literal> key tuple is an account name specified in a <literal>username</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.useralias.Unique">
+                    <title>Runner.Verify.useralias.Unique</title>
+                    <para>The system shall verify that only one <literal>useralias</literal> key is specified per account name.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.userpw">
+                    <title>Runner.Verify.userpw</title>
+                    <para>The system shall verify that the HorizonScript contains a number of <literal>userpw</literal> keys equal or less than the number of <literal>username</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.userpw.Validity">
+                    <title>Runner.Verify.userpw.Validity</title>
+                    <para>The system shall verify that each <literal>userpw</literal> key has a valid form of two values in a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.userpw.Name">
+                    <title>Runner.Verify.userpw.Name</title>
+                    <para>The system shall verify that the first value in each <literal>userpw</literal> key tuple is an account name specified in a <literal>username</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.userpw.Unique">
+                    <title>Runner.Verify.userpw.Unique</title>
+                    <para>The system shall verify that only one <literal>userpw</literal> key is specified per account name.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.userpw.Crypt">
+                    <title>Runner.Verify.userpw.Crypt</title>
+                    <para>The system shall verify that the second value for each <literal>userpw</literal> key tuple is in the format: <literal>$</literal>, either <literal>2</literal> for Blowfish or <literal>6</literal> for SHA-512, <literal>$</literal>, and then variant data.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.usericon">
+                    <title>Runner.Verify.usericon</title>
+                    <para>The system shall verify that the HorizonScript contains a number of <literal>usericon</literal> keys equal or less than the number of <literal>username</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.usericon.Validity">
+                    <title>Runner.Verify.usericon.Validity</title>
+                    <para>The system shall verify that each <literal>usericon</literal> key has a valid form of two values in a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.usericon.Name">
+                    <title>Runner.Verify.usericon.Name</title>
+                    <para>The system shall verify that the first value in each <literal>usericon</literal> key tuple is an account name specified in a <literal>username</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.usericon.Unique">
+                    <title>Runner.Verify.usericon.Unique</title>
+                    <para>The system shall verify that only one <literal>usericon</literal> key is specified per account name.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.usericon.ValidPath">
+                    <title>Runner.Verify.usericon.ValidPath</title>
+                    <para>The system shall verify that the second value of each <literal>usericon</literal> key tuple is either an absolute local path beginning with an ASCII backslash (<literal>/</literal>), or a valid URL utilising the HTTP or HTTPS protocols.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.usergroups">
+                    <title>Runner.Verify.usergroups</title>
+                    <para>The system shall verify any <literal>usergroups</literal> keys contained in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.usergroups.Validity">
+                    <title>Runner.Verify.usergroups.Validity</title>
+                    <para>The system shall verify that each <literal>usergroups</literal> key has a valid form of two values in a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.usergroups.Name">
+                    <title>Runner.Verify.usergroups.Name</title>
+                    <para>The system shall verify that the first value in each <literal>usergroups</literal> key tuple is an account name specified in a <literal>username</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.usergroups.Count">
+                    <title>Runner.Verify.usergroups.Count</title>
+                    <para>The system shall verify that all <literal>usergroups</literal> key tuples for a specified account name specify a combined total of sixteen or fewer groups.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.usergroups.Unique">
+                    <title>Runner.Verify.usergroups.Unique</title>
+                    <para>The system shall verify that a group is specified only once for each account name.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.usergroups.Group">
+                    <title>Runner.Verify.usergroups.Group</title>
+                    <para>The system shall verify that each group specified is a valid system-defined group name.</para>
                 </formalpara>
             </section>
         </section>
