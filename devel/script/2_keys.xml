@@ -860,7 +860,7 @@ lvm_pv /dev/sda2
             </formalpara>
             <formalpara id="lvm_vg.format">
                 <title>Format</title>
-                <para>The <literal>lvm_vg</literal> key is a space-separated tuple of exactly two string values: a path to a valid block device containing an LVM physical volume, and a valid LVM volume group name.  A volume group will be created on the specified LVM physical volume with the specified name.  <literal>lvm_vg</literal> must appear exactly once per <literal>lvm_pv</literal> key.  It is invalid to specify a block device that does not contain an LVM physical volume.</para>
+                <para>The <literal>lvm_vg</literal> key is a space-separated tuple of exactly two string values: a path to a valid block device containing an LVM physical volume, and a valid LVM volume group name.  A volume group will be created on the specified LVM physical volume with the specified name.  It is invalid to specify a block device that does not contain an LVM physical volume.</para>
             </formalpara>
             <formalpara id="lvm_vg.default">
                 <title>Default</title>
