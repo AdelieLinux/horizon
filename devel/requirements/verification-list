@@ -25,12 +25,12 @@ Optional Keys
 Disk Partitioning Keys
 
 -   Sizing
-    diskid
-    disklabel
-    partition
-    lvm_pv
-    lvm_vg
-    lvm_lv
+✓   diskid
+✓   disklabel
+✓   partition
+✓   lvm_pv
+✓   lvm_vg
+✓   lvm_lv
     encrypt
     fs
     mount

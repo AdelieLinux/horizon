@@ -342,6 +342,118 @@
                     <title>Runner.Verify.usergroups.Group</title>
                     <para>The system shall verify that each group specified is a valid system-defined group name.</para>
                 </formalpara>
+                <formalpara id="Runner.Verify.diskid">
+                    <title>Runner.Verify.diskid</title>
+                    <para>The system shall verify any <literal>diskid</literal> keys contained in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.diskid.Validity">
+                    <title>Runner.Verify.diskid.Validity</title>
+                    <para>The system shall verify that each <literal>diskid</literal> key has a valid form of two values in a space-separated tuple, with the second value reading to the end of the line (optionally containing spaces).</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.diskid.Unique">
+                    <title>Runner.Verify.diskid.Unique</title>
+                    <para>The system shall verify that the first value of each <literal>diskid</literal> key tuple is unique in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.diskid.Block">
+                    <title>Runner.Verify.diskid.Block</title>
+                    <para>If the system is running in an installation environment, the system shall ensure that the first value of each <literal>diskid</literal> key tuple specifies a valid block device.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.disklabel">
+                    <title>Runner.Verify.disklabel</title>
+                    <para>The system shall verify any <literal>disklabel</literal> keys contained in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.disklabel.Validity">
+                    <title>Runner.Verify.disklabel.Validity</title>
+                    <para>The system shall verify that each <literal>disklabel</literal> key has a valid form of two values in a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.disklabel.Unique">
+                    <title>Runner.Verify.disklabel.Unique</title>
+                    <para>The system shall verify that the first value of each <literal>disklabel</literal> key tuple is unique in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.disklabel.Block">
+                    <title>Runner.Verify.disklabel.Block</title>
+                    <para>If the system is running in an installation environment, the system shall ensure that the first value of each <literal>disklabel</literal> key tuple specifies a valid block device.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.disklabel.LabelType">
+                    <title>Runner.Verify.disklabel.LabelType</title>
+                    <para>The system shall verify that the second value of each <literal>disklabel</literal> key tuple is one of the following three values: <literal>apm</literal>, <literal>mbr</literal>, or <literal>gpt</literal>.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.partition">
+                    <title>Runner.Verify.partition</title>
+                    <para>The system shall verify any <literal>partition</literal> keys contained in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.partition.Validity">
+                    <title>Runner.Verify.partition.Validity</title>
+                    <para>The system shall verify that each <literal>partition</literal> key has a valid form of three or four values in a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.partition.Validity.PartNo">
+                    <title>Runner.Verify.partition.Validity.PartNo</title>
+                    <para>The system shall verify that the second value of each <literal>partition</literal> key tuple is a valid positive whole integer.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.partition.Unique">
+                    <title>Runner.Verify.partition.Unique</title>
+                    <para>The system shall verify that the union of the first and second values in each <literal>partition</literal> key tuple are unique.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.partition.Block">
+                    <title>Runner.Verify.partition.Block</title>
+                    <para>If the system is running in an installation environment, the system shall ensure that the first value of each <literal>partition</literal> key tuple specifies a valid block device.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.partition.Size">
+                    <title>Runner.Verify.partition.Size</title>
+                    <para>The system shall verify that the third value in each <literal>partition</literal> key tuple specifies a valid size as described in <xref linkend="REF-5" />.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.partition.TypeCode">
+                    <title>Runner.Verify.partition.TypeCode</title>
+                    <para>If a <literal>partition</literal> key tuple contains a fourth value, the system shall verify that the fourth value of the <literal>partition</literal> key tuple is a valid type code, which is one of the following two values: <literal>boot</literal>, or <literal>esp</literal>.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_pv">
+                    <title>Runner.Verify.lvm_pv</title>
+                    <para>The system shall verify any <literal>lvm_pv</literal> keys contained in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_pv.Validity">
+                    <title>Runner.Verify.lvm_pv.Validity</title>
+                    <para>The system shall verify that the value of each <literal>lvm_pv</literal> is an absolute path to a device node.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_pv.Block">
+                    <title>Runner.Verify.lvm_pv.Block</title>
+                    <para>If the system is running in an installation environment, the system shall verify that the value of each <literal>lvm_pv</literal> key specifies a valid block device.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_vg">
+                    <title>Runner.Verify.lvm_vg</title>
+                    <para>The system shall verify any <literal>lvm_vg</literal> keys contained in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_vg.Validity">
+                    <title>Runner.Verify.lvm_vg.Validity</title>
+                    <para>The system shall verify that each <literal>lvm_vg</literal> key has a valid form of two values in a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_vg.Block">
+                    <title>Runner.Verify.lvm_vg.Block</title>
+                    <para>If the system is running in an installation environment, the system shall verify that the first value of each <literal>lvm_vg</literal> key tuple specifies a valid block device.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_vg.Name">
+                    <title>Runner.Verify.lvm_vg.Name</title>
+                    <para>The system shall verify that the second value of each <literal>lvm_vg</literal> key specifies a string that would be valid as an LVM volume group name.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_lv">
+                    <title>Runner.Verify.lvm_lv</title>
+                    <para>The system shall verify any <literal>lvm_lv</literal> keys contained in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_lv.Validity">
+                    <title>Runner.Verify.lvm_lv.Validity</title>
+                    <para>The system shall verify that each <literal>lvm_lv</literal> key has a valid form of three values in a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_lv.VolumeGroup">
+                    <title>Runner.Verify.lvm_lv.VolumeGroup</title>
+                    <para>If the system is running in an installation environment, the system shall verify that the first value of each <literal>lvm_lv</literal> key specifies a valid LVM volume group, or one specified in an <literal>lvm_vg</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_lv.Name">
+                    <title>Runner.Verify.lvm_lv.Name</title>
+                    <para>The system shall verify that the second value of each <literal>lvm_lv</literal> key specifies a string that would be valid as an LVM logical volume name.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.lvm_lv.Size">
+                    <title>Runner.Verify.lvm_lv.Size</title>
+                    <para>The system shall verify that the third value in each <literal>lvm_lv</literal> key tuple specifies a valid size as described in <xref linkend="REF-5" />.</para>
+                </formalpara>
             </section>
         </section>
         <section id="runner_execute">
