@@ -31,16 +31,16 @@ Disk Partitioning Keys
 ✓   lvm_pv
 ✓   lvm_vg
 ✓   lvm_lv
-    encrypt
-    fs
-    mount
+✓   encrypt
+✓   fs
+✓   mount
 
 Other
 
-    Packages present in repositories (runtime only)
+✓   Packages present in repositories (runtime only)
 
 Misc
 
     really should have a design spec for the CLI / GUI
-    should errors be more formally defined?  probably just waste of time tbh
-    COMMENTS, also blank lines
+-   should errors be more formally defined?  probably just waste of time tbh
+✓   COMMENTS, also blank lines

@@ -86,6 +86,10 @@
                     <title>Runner.Verify.Exception.Continue</title>
                     <para>The system shall support a mode where the system will continue verification after encountering a verification failure, to display all verification failures for a given HorizonScript.</para>
                 </formalpara>
+                <formalpara id="Runner.Verify.SkipBlanksAndComments">
+                    <title>Runner.Verify.SkipBlanksAndComments</title>
+                    <para>The system shall ignore any lines that are entirely blank, or start with the ASCII octothorpe (<literal>#</literal>) character.</para>
+                </formalpara>
                 <formalpara id="Runner.Verify.Required">
                     <title>Runner.Verify.Required</title>
                     <para>The system shall verify the presence of each required keyword in the HorizonScript: <literal>mount</literal>, <literal>network</literal>, <literal>hostname</literal>, <literal>pkginstall</literal>, and <literal>rootpw</literal>.</para>
@@ -453,6 +457,54 @@
                 <formalpara id="Runner.Verify.lvm_lv.Size">
                     <title>Runner.Verify.lvm_lv.Size</title>
                     <para>The system shall verify that the third value in each <literal>lvm_lv</literal> key tuple specifies a valid size as described in <xref linkend="REF-5" />.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.encrypt">
+                    <title>Runner.Verify.encrypt</title>
+                    <para>The system shall verify any <literal>encrypt</literal> keys contained in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.encrypt.Validity">
+                    <title>Runner.Verify.encrypt.Validity</title>
+                    <para>The system shall verify that the value of each <literal>encrypt</literal> key is a string value that is an absolute path to a device node, with an optional second value as a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.encrypt.Block">
+                    <title>Runner.Verify.encrypt.Block</title>
+                    <para>If the system is running in an installation environment, the system shall verify that the value of each <literal>encrypt</literal> key, and the first value of each <literal>encrypt</literal> key tuple, specifies a valid block device.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.fs">
+                    <title>Runner.Verify.fs</title>
+                    <para>The systemm shall verify any <literal>fs</literal> keys contained in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.fs.Validity">
+                    <title>Runner.Verify.fs.Validity</title>
+                    <para>The system shall verify that each <literal>fs</literal> key has a valid form of two values in a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.fs.Block">
+                    <title>Runner.Verify.fs.Block</title>
+                    <para>If the system is running in an installation environment, the system shall verify that the first value of each <literal>fs</literal> key tuple specifies a valid block device.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.fs.Type">
+                    <title>Runner.Verify.fs.Type</title>
+                    <para>The system shall verify that the second value of each <literal>fs</literal> key tuple specifies a valid file system supported by Horizon, using lower case characters.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.mount">
+                    <title>Runner.Verify.mount</title>
+                    <para>The system shall verify that the HorizonScript contains at least one valid <literal>mount</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.mount.Validity">
+                    <title>Runner.Verify.mount.Validity</title>
+                    <para>The system shall verify that each <literal>mount</literal> key has a valid form of two or three values in a space-separated tuple.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.mount.Block">
+                    <title>Runner.Verify.mount.Block</title>
+                    <para>If the system is running in an installation environment, the system shall verify that the first value of each <literal>mount</literal> key tuple specifies a valid block device.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.mount.Point">
+                    <title>Runner.Verify.mount.Point</title>
+                    <para>The system shall verify that the second value of each <literal>mount</literal> key specifies a valid mount point beginning with a <literal>/</literal>.</para>
+                </formalpara>
+                <formalpara id="Runner.Verify.PackageAvail">
+                    <title>Runner.Verify.PackageAvail</title>
+                    <para>If the system is running in a runtime environment, the system shall verify that all of the packages specified in <literal>pkginstall</literal> keys are available in the specified repositories; either the repositories specified in <literal>repository</literal> keys, or the system-default repositories if no <literal>repository</literal> keys have been specified.</para>
                 </formalpara>
             </section>
         </section>
