@@ -967,7 +967,7 @@ encrypt /dev/elaine/home oh. so. secret.
             </formalpara>
             <formalpara id="fs.format">
                 <title>Format</title>
-                <para>The <literal>fs</literal> key is a space-separated tuple of two string elements: a path to a valid block device, the type of file system to use  Valid file systems are:
+                <para>The <literal>fs</literal> key is a space-separated tuple of two string elements: a path to a valid block device, and the type of file system to use.  Valid file systems are:
                     <orderedlist id="fs.format.fses">
                         <listitem><para><literal>ext2</literal> &mdash; The ext2 file system, a non-journaled Linux filesystem.</para></listitem>
                         <listitem><para><literal>ext3</literal> &mdash; The ext3 file system, a journaled Linux filesystem.</para></listitem>
