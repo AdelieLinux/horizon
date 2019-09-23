@@ -157,13 +157,96 @@
             <title>Disk Partitioning Setup</title>
             <section id="ui_partition_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>The User must partition their hard disk drive to be able to install Adélie Linux to it.  The system will allow the User to do so, using automatic partitioning based on the platform and disk size, or allowing the User full control over partitioning.  (Priority: High)</para>
+                <para>The system will additionally allow the User to set up a dual-boot system, if the disk has enough free space to create the requisite partitions for an Adélie Linux installation.  (Priority: Medium)</para>
+                <para>The system will <emphasis>not</emphasis> allow the user to resize or delete existing partitions.</para>
+                <para>If the system is running in a runtime environment, the User must describe the disks and any operations to perform on them.</para>
             </section>
             <section id="ui_partition_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Partition">
+                    <title>UI.Partition</title>
+                    <para>The system shall allow the User to partition their block devices.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Runtime">
+                    <title>UI.Partition.Runtime</title>
+                    <para>If the system is running in a runtime environment, the system shall prompt the User to enter details about the block devices present on the target computer.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Runtime.DiskDetails">
+                    <title>UI.Partition.Runtime.DiskDetails</title>
+                    <para>The system shall prompt the User to enter the path to the block device, the size of the block device, and an optional identification string which can be used to ensure the proper block device is selected on the target computer.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Runtime.Labels">
+                    <title>UI.Partition.Runtime.Labels</title>
+                    <para>The system shall allow the User to choose whether to retain an existing disklabel on the block device, or create a new one.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Runtime.Labels.Type">
+                    <title>UI.Partition.Runtime.LabelType</title>
+                    <para>The type of the disklabel on the block device must be specified, and of type APM, MBR, or GPT.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Runtime.Partition">
+                    <title>UI.Partition.Runtime.Partition</title>
+                    <para>The system shall allow the User to create partitions on the specified block devices.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Runtime.Partition.ExistingLabel">
+                    <title>UI.Partition.Runtime.Partition.ExistingLabel</title>
+                    <para>If the User has specified to retain an existing disklabel on a block device, the system shall stress to the user that they may only create new partitions on the disk and must not specify existing partitions on the disk.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Runtime.FS">
+                    <title>UI.Partition.Runtime.FS</title>
+                    <para>The system shall allow the User to choose to create new file systems on any named block device, including partitions that may not have been specified (since they may already exist on the block device).</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Runtime.Mount">
+                    <title>UI.Partition.Runtime.Mount</title>
+                    <para>The system shall allow the User to choose what block devices to mount, and the mount point to use for each mounted block device.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Runtime.Mount.Options">
+                    <title>UI.Partition.Runtime.Mount.Options</title>
+                    <para>The system shall allow the User to specify custom mount options for each mounted block device.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install">
+                    <title>UI.Partition.Install</title>
+                    <para>If the system is running in an installation environment, the system shall gather details about available block devices on the computer.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.Ignore">
+                    <title>UI.Partition.Install.Ignore</title>
+                    <para>When gathering details about available block devices on the computer, the system shall ignore optical disc and tape drive units.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.Details">
+                    <title>UI.Partition.Install.Details</title>
+                    <para>The system shall gather the following details about available block devices: identification string (manufacturer, model), total size, current disklabel or file system (if any).</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.ExistingLabels">
+                    <title>UI.Partition.Install.ExistingLabels</title>
+                    <para>If the system contains one or more block devices with disklabels, the system shall gather the partition layout of each disklabel, and file system and type code information for each partition.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.ExistingOS">
+                    <title>UI.Partition.Install.ExistingOS</title>
+                    <para>The system shall use the <literal>os-prober</literal> tool to determine if any operating systems are currently installed on the computer.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.FreeSpace">
+                    <title>UI.Partition.Install.FreeSpace</title>
+                    <para>The system shall determine if any block device with existing disklabels has enough free space in the existing disklabel to create the requisite partitions needed for an installation of Adélie Linux.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.UserPrompt">
+                    <title>UI.Partition.Install.UserPrompt</title>
+                    <para>The system shall prompt the user for the desired partitioning action to take.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.UserPrompt.MultiDisk">
+                    <title>UI.Partition.Install.UserPrompt.MultiDisk</title>
+                    <para>If the computer has multiple available block devices, the system shall allow the User to choose which block device to use for installation, and display the appropriate screen based on the block device chosen.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.UserPrompt.SingleDisk">
+                    <title>UI.Partition.Install.UserPrompt.SingleDisk</title>
+                    <para>If the computer has only one available block device, the system shall display the appropriate screen based on that block device.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.UserPrompt.NoDisk">
+                    <title>UI.Partition.Install.UserPrompt.NoDisk</title>
+                    <para>If the computer has no available block device, the system shall inform the User that no block devices are available, and that installation cannot continue.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.UserPrompt.Unlabelled">
+                    <title>UI.Partition.Install.UserPrompt.Unlabelled</title>
+                    <para>If the block device contains no label, the system shall allow the User to choose an automatic disk label and partition layout based on the platform or specify their own partition layout.</para>
                 </formalpara>
             </section>
         </section>
