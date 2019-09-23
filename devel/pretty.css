@@ -1,0 +1,100 @@
+@import url("https://static.adelielinux.org/font/font-amal.css");
+
+html {
+	background: #eee;
+}
+
+body {
+	background: white;
+	box-shadow: 2px 2px 10px 2px rgba(0,0,0,.2);
+	font-family: 'Frank Ruhl Libre', Times, serif;
+	padding: 1em;
+}
+
+@media screen and (min-width: 1280px) {
+	body { margin: 0 18%; }
+}
+
+h1,h2,h3,h4,h5,h6,
+div.navheader,div.navfooter,
+div.toc,div.list-of-tables,div.list-of-examples {
+	font-family: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+div.othercredit {
+	font-size: smaller;
+}
+
+span.permalink {
+	font-size: smaller;
+	margin-left: 0.5em;
+}
+
+span.permalink>a {
+	color: #444;
+	text-decoration: none;
+}
+
+h2 {
+	margin-top: 3em;
+	margin-bottom: 0.2em;
+}
+
+h3 {
+	margin-top: 2.5em;
+	margin-bottom: 0.2em;
+}
+
+h4 {
+	margin-top: 2em;
+	margin-bottom: 0.2em;
+}
+
+h5 {
+	margin-top: 1.5em;
+	margin-bottom: 0.2em;
+}
+
+.command {
+	font-family: 'Liberation Mono',monospace;
+	font-size: 14px;
+}
+
+/* normalise size with command */
+p>code {
+	font-size: 14px;
+}
+
+.userinput {
+	font-style: italic;
+}
+
+code.prompt {
+	color: green;
+}
+
+em.parameter {
+	font-style: normal;
+}
+
+div.authorgroup {
+	padding-bottom: 2em;
+}
+
+div.authorgroup h3 {
+	margin-top: 0.5em;
+}
+
+h3.author { font-size: 1.1em; margin-bottom: 0; }
+
+div.section {
+	margin-top: -0.5em;
+}
+
+div.section div.titlepage {
+	margin-left: 0.5em;
+}
+
+div.section > * {
+	margin-left: 1.5em;
+}
