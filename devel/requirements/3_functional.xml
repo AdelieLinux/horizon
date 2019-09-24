@@ -246,7 +246,27 @@
                 </formalpara>
                 <formalpara id="UI.Partition.Install.UserPrompt.Unlabelled">
                     <title>UI.Partition.Install.UserPrompt.Unlabelled</title>
-                    <para>If the block device contains no label, the system shall allow the User to choose an automatic disk label and partition layout based on the platform or specify their own partition layout.</para>
+                    <para>If the block device contains no label, the system shall allow the User to choose an automatic disk label and partition layout based on the platform or to specify their own partition layout.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.UserPrompt.LabelledWithSpace">
+                    <title>UI.Partition.Install.UserPrompt.LabelledWithSpace</title>
+                    <para>If the block device contains a disklabel, and the disklabel has enough free space for a minimal installation based on the platform, the system shall allow the User to choose an automatic partition layout, to use the existing partition layout, to specify their own partition layout, or to remove the existing data and automatically label and partition the entire disk.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.UserPrompt.LabelledAndFull">
+                    <title>UI.Partition.Install.UserPrompt.LabelledAndFull</title>
+                    <para>If the block device contains a disklabel, and the disklabel is either full or does not have enough free space for a minimal installation based on the platform, the system shall allow the User to choose to use the existing partition layout, to specify their own partition layout, or to remove the existing data and automatically label and partition the entire disk.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.Automatic">
+                    <title>UI.Partition.Install.Automatic</title>
+                    <para>If the User chooses to use an automatic disklabel and/or partition layout on the block device, the system shall create the necessary partition layout as defined by the platform of the computer.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.Manual">
+                    <title>UI.Partition.Install.Manual</title>
+                    <para>If the User chooses to specify their own partition layout, the system shall allow the User to create partitions as desired.</para>
+                </formalpara>
+                <formalpara id="UI.Partition.Install.Mount">
+                    <title>UI.Partition.Install.Mount</title>
+                    <para>If the User chooses to specify their own partition layout, or to use the existing partition layout on the disk, the system shall allow the User to choose the mount points for any extant partitions.</para>
                 </formalpara>
             </section>
         </section>
