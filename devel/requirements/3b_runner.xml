@@ -692,13 +692,73 @@
                     <title>Runner.Execute.firmware.Repository</title>
                     <para>If no <literal>repository</literal> keys are specified in the HorizonScript, the system shall append the repository <literal>https://distfiles.apkfission.net/adelie-$VERSION/nonfree</literal> to the <literal>/etc/apk/repositories</literal> file in the target namespace, where <literal>$VERSION</literal> is the version of Adélie Linux being installed.</para>
                 </formalpara>
+                <formalpara id="Runner.Execute.netssid">
+                    <title>Runner.Execute.netssid</title>
+                    <para>The system shall write the wireless networking configuration specified by any <literal>netssid</literal> keys to the <literal>/etc/wpa_supplicant/wpa_supplicant.conf</literal> file in the target namespace.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.netaddress">
+                    <title>Runner.Execute.netaddress</title>
+                    <para>The system shall write the networking configuration specified by any <literal>netaddress</literal> keys to the <literal>/etc/conf.d/net</literal> file in the target namespace.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.netaddress.OpenRC">
+                    <title>Runner.Execute.netaddress.OpenRC</title>
+                    <para>This requirement is under discussion.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.nameserver">
+                    <title>Runner.Execute.nameserver</title>
+                    <para>If one or more <literal>nameserver</literal> keys are specified in the HorizonScript, the system shall write the nameservers specified to the <literal>/etc/resolv.conf</literal> file in the target namespace.</para>
+                </formalpara>
                 <formalpara id="Runner.Execute.network">
                     <title>Runner.Execute.network</title>
-                    <para>If the value of the <literal>network</literal> key is <literal>true</literal>, the system shall execute the <literal>netaddress</literal> key.</para>
+                    <para>If the value of the <literal>network</literal> key is <literal>true</literal>, the system shall execute the <literal>netssid</literal>, <literal>netaddress</literal>, and <literal>nameserver</literal> keys in the installation environment.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.network.netaddress">
+                    <title>Runner.Execute.network.netaddress</title>
+                    <para>The system shall use the networking configuration specified in any <literal>netaddress</literal> keys in the installation environment.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.network.netssid">
+                    <title>Runner.Execute.network.netssid</title>
+                    <para>If the value of the <literal>network</literal> key is <literal>true</literal>, the system shall use the wireless networking configuration specified in any <literal>netssid</literal> keys in the installation environment.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.network.nameserver">
+                    <title>Runner.Execute.network.nameserver</title>
+                    <para>If the value of the <literal>network</literal> key is <literal>true</literal>, the system shall use the nameservers specified in any <literal>nameserver</literal> keys in the installation environment.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.usericon">
+                    <title>Runner.Execute.usericon</title>
+                    <para>The system shall use the icons specified in any <literal>usericon</literal> key tuples for identification of users in user interface elements in the target namespace.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.usericon.Remote">
+                    <title>Runner.Execute.usericon.Remote</title>
+                    <para>If any <literal>usericon</literal> location is remote, the system shall download the contents of the remote file to the <literal>/usr/share/user-manager/avatars/remote/</literal> directory in the target namespace.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.signingkey">
+                    <title>Runner.Execute.signingkey</title>
+                    <para>If any <literal>signingkey</literal> key is specified in the HorizonScript, the system shall copy all specified files to the <literal>/etc/apk/keys/</literal> directory in the target namespace; otherwise, the system shall copy the default Adélie Linux signing keys to the <literal>/etc/apk/keys/</literal> directory in the target namespace.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.signingkey.Firmware">
+                    <title>Runner.Execute.signingkey.Firmware</title>
+                    <para>If the <literal>firmware</literal> key is specified in the HorizonScript, and the system is compiled with firmware support enabled, and the value of the <literal>firmware</literal> key is <literal>true</literal>, then the system shall copy the APK Fission signing key(s) to the <literal>/etc/apk/keys/</literal> directory in the target namespace.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.pkginstall">
+                    <title>Runner.Execute.pkginstall</title>
+                    <para>The system shall install all packages requested via the <literal>pkginstall</literal> key to the target namespace utilising the repositories configured in the target namespace.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.pkginstall.APKDB">
+                    <title>Runner.Execute.pkginstall.APKDB</title>
+                    <para>The system shall initialise the APK database in the target namespace before installing packages.</para>
                 </formalpara>
                 <formalpara id="Runner.Execute.timezone">
                     <title>Runner.Execute.timezone</title>
                     <para>If a <literal>timezone</literal> key is specified in the HorizonScript, the system shall set the timezone in the target namespace to the specified timezone; otherwise, the system shall set the timezone in the target namespace to UTC.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.timezone.Missing">
+                    <title>Runner.Execute.timezone.Missing</title>
+                    <para>If the zoneinfo file for the specified timezone is missing in the target namespace, but present in the installation environment, the system shall copy the zoneinfo file from the installation environment to the <literal>/etc/localtime</literal> file in the target namespace.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.Finish">
+                    <title>Runner.Execute.Finish</title>
+                    <para>The system shall notify the listening agent that the HorizonScript has executed successfully and that the target is installed.</para>
                 </formalpara>
             </section>
         </section>
