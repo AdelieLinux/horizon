@@ -546,7 +546,115 @@
                 </formalpara>
                 <formalpara id="Runner.Execute.diskid">
                     <title>Runner.Execute.diskid</title>
-                    <para></para>
+                    <para>The system shall verify that each block device specified in a <literal>diskid</literal> key tuple matches the identification string provided.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.diskid.Failure">
+                    <title>Runner.Execute.diskid.Failure</title>
+                    <para>If any block device fails the <literal>diskid</literal> identification string check, the system shall consider this a fatal error and stop execution of the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.disklabel">
+                    <title>Runner.Execute.disklabel</title>
+                    <para>The system shall create any disklabels specified in <literal>disklabel</literal> key tuples.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.disklabel.Overwrite">
+                    <title>Runner.Execute.disklabel.Overwrite</title>
+                    <para>If a disklabel already exists on the block device where a new disklabel will be written, the system shall erase the existing disklabel before creating the new disklabel.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.disklabel.Failure">
+                    <title>Runner.Execute.disklabel.Failure</title>
+                    <para>If a disklabel cannot be created due to an I/O error, or due to a non-existent block device, the system shall consider this a fatal error and stop execution of the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.partition">
+                    <title>Runner.Execute.partition</title>
+                    <para>The system shall create any partitions specified in <literal>partition</literal> key tuples.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.partition.Failure">
+                    <title>Runner.Execute.partition.Failure</title>
+                    <para>The system shall consider any failure to create a partition as a fatal error and stop execution of the HorizonScript, unless otherwise specified by a requirement in this tree.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.partition.Failure.Device">
+                    <title>Runner.Execute.partition.Failure.Device</title>
+                    <para>If a partition cannot be created due to an I/O error, or due to a non-existent block device, the system shall consider this condition a fatal error and stop execution of the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.partition.Failure.Numbering">
+                    <title>Runner.Execute.partition.Failure.Numbering</title>
+                    <para>The system shall consider a numbering error, defined as creating a partition with the same index as an existing partition or creating a partition with an invalid index for the block device's label, a fatal error and stop execution of the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.partition.Failure.Duplicate">
+                    <title>Runner.Execute.partition.Failure.Duplicate</title>
+                    <para>If the partition cannot be created because it already exists, and all properties are identical (index, size, type codes), the system shall continue as if the partitioning succeeded.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.encrypt.PVs">
+                    <title>Runner.Execute.encrypt.PVs</title>
+                    <para>If any <literal>lvm_pv</literal> keys are specified, and any <literal>encrypt</literal> keys specify the block device where an LVM physical volume will be created, the system shall execute the <literal>encrypt</literal> keys that correlate with <literal>lvm_pv</literal> keys before executing the <literal>lvm_pv</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.lvm_pv">
+                    <title>Runner.Execute.lvm_pv</title>
+                    <para>The system shall create any LVM physical volumes specified in <literal>lvm_pv</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.lvm_pv.Failure">
+                    <title>Runner.Execute.lvm_pv.Failure</title>
+                    <para>If a LVM physical volume cannot be created due to an I/O error, or due to a non-existent block device, the system shall consider this condition a fatal error and stop execution of the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.lvm_vg">
+                    <title>Runner.Execute.lvm_vg</title>
+                    <para>The system shall create any LVM volume groups specified in <literal>lvm_vg</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.lvm_vg.Duplicate">
+                    <title>Runner.Execute.lvm_vg.Duplicate</title>
+                    <para>If an LVM volume group with the specified name already exists on the computer, the system shall consider this condition a fatal error and stop execution of the HorizonScript unless the volume group is using the same physical volume as specified, in which case the system shall continue as if creation of the LVM volume group succeeded.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.lvm_vg.Failure">
+                    <title>Runner.Execute.lvm_vg.Failure</title>
+                    <para>If an LVM volume group cannot be created due to an I/O error, or due to a non-existent physical volume, the system shall consider this condition a fatal error and stop execution of the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.encrypt.LVs">
+                    <title>Runner.Execute.encrypt.LVs</title>
+                    <para>If any <literal>lvm_lv</literal> keys are specified, and any <literal>encrypt</literal> keys specify a LVM logical volume that will be created, the system shall execute the <literal>encrypt</literal> keys that correlate with <literal>lvm_lv</literal> keys before executing the <literal>lvm_lv</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.lvm_lv">
+                    <title>Runner.Execute.lvm_lv</title>
+                    <para>The system shall create any LVM logical volumes specified in <literal>lvm_lv</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.lvm_lv.Failure">
+                    <title>Runner.Execute.lvm_lv.Failure</title>
+                    <para>If an LVM logical volume cannot be created due to an I/O error, or due to a non-existent volume group, the system shall consider this condition a fatal error and stop execution of the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.encrypt">
+                    <title>Runner.Execute.encrypt</title>
+                    <para>The system shall create LUKS containers specified in <literal>encrypt</literal> keys.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.encrypt.Prompt">
+                    <title>Runner.Execute.encrypt.Prompt</title>
+                    <para>If an <literal>encrypt</literal> key does not specify a passphrase, the system shall prompt the User for a passphrase via the listening agent, following the specification in <xref linkend="runner_agent"/>.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.fs">
+                    <title>Runner.Execute.fs</title>
+                    <para>The system shall create file systems specified in <literal>fs</literal> key tuples.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.fs.Overwrite">
+                    <title>Runner.Execute.fs.Overwrite</title>
+                    <para>If a file system is present on the block device where a new file system is to be created, the system shall overwrite the existing file system.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.fs.Failure">
+                    <title>Runner.Execute.fs.Failure</title>
+                    <para>If a file system cannot be created due to an I/O error, or due to a non-existent block device, the system shall consider this condition a fatal error and stop execution of the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.mount">
+                    <title>Runner.Execute.mount</title>
+                    <para>The system shall mount the file systems specified in <literal>mount</literal> keys, under the <literal>/target</literal> namespace.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.mount.UnreadableFS">
+                    <title>Runner.Execute.mount.UnreadableFS</title>
+                    <para>If a block device specified in a <literal>mount</literal> key tuple has a file system that is unreadable by the computer, the system shall consider this condition a fatal error and stop execution of the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.mount.InvalidOption">
+                    <title>Runner.Execute.mount.InvalidOption</title>
+                    <para>If a mount option specified in a <literal>mount</literal> key tuple is invalid, and the file system successfully mounts without that option set, the system shall log a warning to the listening agent and proceed with installation.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.mount.Failure">
+                    <title>Runner.Execute.mount.Failure</title>
+                    <para>If a file system cannot be mounted due to an I/O error, or due to a non-existent block device, the system shall consider this condition a fatal error and stop execution of the HorizonScript.</para>
                 </formalpara>
             </section>
         </section>
