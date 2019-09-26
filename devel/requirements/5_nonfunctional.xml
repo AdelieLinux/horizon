@@ -28,5 +28,41 @@
             <title>SQA.Flexibility.FirmwareConf</title>
             <para>The firmware support described under the UI.Firmware.* requirements branch shall be disableable at run-time via a configuration setting.</para>
         </formalpara>
+        <formalpara id="SQA.Robustness.ScriptSync">
+            <title>SQA.Robustness.ScriptSync</title>
+            <para>The system shall provide a method to save the executed HorizonScript and log messages in the event of a fatal error.</para>
+        </formalpara>
+        <formalpara id="SQA.Usability.TTI.Experienced">
+            <title>SQA.Usability.TTI.Experienced</title>
+            <para>A User with experience installing other Linux distributions shall be able to complete the Horizon UI flow through <xref linkend="ui_perform" /> in less than 15 minutes.</para>
+        </formalpara>
+        <formalpara id="SQA.Usability.TTI.Green">
+            <title>SQA.Usability.TTI.Green</title>
+            <para>A User with no prior experience with Linux shall be able to complete the Horizon UI flow through <xref linkend="ui_perform" /> in less than one hour.</para>
+        </formalpara>
+        <formalpara id="SQA.Portability.Bitness">
+            <title>SQA.Portability.Bitness</title>
+            <para>A HorizonScript shall be readable on 32-bit and 64-bit computers regardless of what type of computer was used to create it.</para>
+        </formalpara>
+        <formalpara id="SQA.Portability.Endianness">
+            <title>SQA.Portability.Endianness</title>
+            <para>A HorizonScript shall be readable on big endian and little endian computers regardless of what type of computer was used to create it.</para>
+        </formalpara>
+        <formalpara id="SQA.Verifiability.BlockMock">
+            <title>SQA.Verifiability.BlockMock</title>
+            <para>The system shall support the ability to use "mock" block devices for purposes of testing and verification.</para>
+        </formalpara>
+        <formalpara id="SQA.Maintainability.Comments">
+            <title>SQA.Maintainability.Comments</title>
+            <para>All functions and methods in the system shall have a comment describing what action the function or method performs, and its inputs, outputs, and any side effects (if applicable).</para>
+        </formalpara>
+        <formalpara id="SQA.Maintainability.Methods">
+            <title>SQA.Maintainability.Methods</title>
+            <para>Each class in the system shall have no more than 20 methods.</para>
+        </formalpara>
+        <formalpara id="SQA.Maintainability.NoOPFuncs">
+            <title>SQA.Maintainability.NoOPFuncs</title>
+            <para>Each function or method in the system shall take no more than six input parameters.</para>
+        </formalpara>
     </section>
 </chapter>

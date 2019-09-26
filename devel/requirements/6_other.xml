@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <chapter label="6" id="other">
     <title>Other Requirements</title>
-    <para/>
+    <para>This chapter describes requirements that apply to the system but do not fit cleanly in other chapters.</para>
     <section id="documentation">
         <title>User Documentation</title>
         <formalpara id="UserDoc.JargonFree">
@@ -15,7 +15,34 @@
     </section>
     <section id="logging">
         <title>Logging Requirements</title>
-        <para/>
+        <formalpara id="Logging.Levels">
+            <title>Logging.Levels</title>
+            <para>The system shall have four levels of logging: Error, Warning, Information, Debug.</para>
+        </formalpara>
+        <formalpara id="Logging.Levels.Tiers">
+            <title>Logging.Levels.Tiers</title>
+            <para>The system shall treat each level of logging as containing the prior level: for example, a level of Warning will additionally contain all Error output.</para>
+        </formalpara>
+        <formalpara id="Logging.Levels.Default">
+            <title>Logging.Levels.Default</title>
+            <para>The system shall default to a logging level of Information unless a different logging level is chosen during invocation.</para>
+        </formalpara>
+        <formalpara id="Logging.ExtProcess">
+            <title>Logging.ExtProcess</title>
+            <para>The system shall log all processes executed, including binary path, arguments, and environment, in the Debug logging level.</para>
+        </formalpara>
+        <formalpara id="Logging.ExtProcess.ReturnCode">
+            <title>Logging.ExtProcess.ReturnCode</title>
+            <para>The system shall log all external process return codes, including name of binary and brief description of purpose of execution, in the Information log level.</para>
+        </formalpara>
+        <formalpara id="Logging.ExtProcess.ReturnCode.Error">
+            <title>Logging.ExtProcess.ReturnCode.Error</title>
+            <para>If the return code of an external process is non-zero, the system shall log the external process return code message in the Error log level.</para>
+        </formalpara>
+        <formalpara id="Logging.UIKeys">
+            <title>Logging.UIKeys</title>
+            <para>The Horizon UI system shall log the values it uses for each key as it gathers information in the Debug logging level.</para>
+        </formalpara>
     </section>
     <section id="i18n">
         <title>Internationalisation Requirements</title>
