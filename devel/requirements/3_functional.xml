@@ -781,7 +781,7 @@
                 </formalpara>
                 <formalpara id="Script.Key.usergroups">
                     <title>Script.Key.usergroups</title>
-                    <para><varname>usergroups</varname> &mdash; The groups to which the user account(s) will belong.  "users,lp,audio,cdrom,cdrw,usb,video,games" for normal users; add ",disk,wheel" for administrators.</para>
+                    <para><varname>usergroups</varname> &mdash; The groups to which the user account(s) will belong.  "users,lp,audio,cdrom,cdrw,scanner,camera,video,games" for normal users; add ",usb,kvm,ping,wheel" for administrators.</para>
                 </formalpara>
             </section>
         </section>
