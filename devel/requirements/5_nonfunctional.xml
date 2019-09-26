@@ -4,7 +4,45 @@
     <para/>
     <section id="performance">
         <title>Performance Requirements</title>
-        <para/>
+        <para>For the purposes of this section, the base hardware platforms shall be defined as follows.</para>
+        <variablelist>
+            <title>Base hardware platform, PowerPC</title>
+            <varlistentry>
+                <term>CPU</term>
+                <listitem><para>PowerPC "G3" 750 at 600 MHz</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>RAM</term>
+                <listitem><para>640 MB PC133</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Disk drive</term>
+                <listitem><para>40 GB PATA</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Optical drive</term>
+                <listitem><para>8X DVD-ROM drive</para></listitem>
+            </varlistentry>
+        </variablelist>
+        <variablelist>
+            <title>Base hardware platform, Intel</title>
+            <varlistentry>
+                <term>CPU</term>
+                <listitem><para>Pentium III at 550 MHz</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>RAM</term>
+                <listitem><para>256 MB PC133</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Disk drive</term>
+                <listitem><para>80 GB PATA</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Optical drive</term>
+                <listitem><para>24X CD-ROM drive</para></listitem>
+            </varlistentry>
+        </variablelist>
     </section>
     <section id="safety">
         <title>Safety Requirements</title>
