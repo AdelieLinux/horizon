@@ -966,10 +966,6 @@
                     <title>UI.Finish.Save.Error</title>
                     <para>If an error occurs while saving the HorizonScript and log files, the system shall display a message explaining the error, and allow the User to choose a different storage location.</para>
                 </formalpara>
-                <formalpara id="UI.Finish.RemoveMedia">
-                    <title>UI.Finish.RemoveMedia</title>
-                    <para>The system shall prompt the User to remove any installation media used, including optical media.</para>
-                </formalpara>
                 <formalpara id="UI.Finish.Buttons">
                     <title>UI.Finish.Buttons</title>
                     <para>The system shall only display a single button: Complete, which uses the same keyboard accelerator as the Next button.  The Complete button shall cause the system to reboot.</para>
@@ -977,6 +973,10 @@
                 <formalpara id="UI.Finish.Automatic">
                     <title>UI.Finish.Automatic</title>
                     <para>If the system is using a HorizonScript loaded from a file or network location, then the system shall automatically reboot the computer in 15 seconds.</para>
+                </formalpara>
+                <formalpara id="UI.Finish.RemoveMedia">
+                    <title>UI.Finish.RemoveMedia</title>
+                    <para>If the system is not using a HorizonScript loaded from a file or network location, then the system shall prompt the User to remove any installation media used, including optical media, as part of the shutdown routine.</para>
                 </formalpara>
             </section>
         </section>
