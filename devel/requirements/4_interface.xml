@@ -47,7 +47,7 @@
     </section>
     <section id="hardware">
         <title>Hardware Interfaces</title>
-        <para/>
+        <para>No direct hardware interfaces have been identified for this release of Project Horizon; all interfacing with hardware is done via other libraries as defined in the below <xref linkend="software" />.</para>
     </section>
     <section id="software">
         <title>External Software Interfaces</title>
@@ -100,5 +100,22 @@
     <section id="runner_agent">
         <title>Runner Listening Agent Interface</title>
         <para>The Horizon Runner Listening Agent Interface is the interface used to communicate progress.  The Horizon Runner will send messages to the Listening Agent using the interface defined here to note status messages, step completion, and any exceptions that occur during execution.  The Listening Agent may be an external application (such as the Horizon UI), a logging system, or even a serial port or TTY monitored by the user.  For this reason, automated parsing is a higher priority than sapient parsing, but sapient parsing still must be considered.</para>
+        <formalpara id="Agent.MessageFormat">
+            <title>Agent.MessageFormat</title>
+            <para>Messages sent by the Agent shall be in the following format:
+                <orderedlist id="Agent.MessageFormat.Items">
+                    <listitem><para>A timestamp, in ISO 8601 format;</para></listitem>
+                    <listitem><para>A tab character (<literal>\t</literal>);</para></listitem>
+                    <listitem><para>Message class: <literal>log</literal>, <literal>prompt</literal></para></listitem>
+                    <listitem><para>A tab character (<literal>\t</literal>);</para></listitem>
+                    <listitem><para>The message;</para></listitem>
+                    <listitem><para>A newline character (<literal>\n</literal>).</para></listitem>
+                </orderedlist>
+            </para>
+        </formalpara>
+        <formalpara id="Agent.Prompt">
+            <title>Agent.Prompt</title>
+            <para>When the Agent requires external input from the User, the system shall interpret the answer as an entire line sent to the Agent via STDIN terminated with a newline.</para>
+        </formalpara>
     </section>
 </chapter>
