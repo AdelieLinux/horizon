@@ -5,7 +5,7 @@
     <section id="performance">
         <title>Performance Requirements</title>
         <para>For the purposes of this section, the base hardware platforms shall be defined as follows.</para>
-        <variablelist>
+        <variablelist id="Performance.BasePPC">
             <title>Base hardware platform, PowerPC</title>
             <varlistentry>
                 <term>CPU</term>
@@ -24,7 +24,7 @@
                 <listitem><para>8X DVD-ROM drive</para></listitem>
             </varlistentry>
         </variablelist>
-        <variablelist>
+        <variablelist id="Performance.BaseIntel">
             <title>Base hardware platform, Intel</title>
             <varlistentry>
                 <term>CPU</term>
@@ -41,6 +41,87 @@
             <varlistentry>
                 <term>Optical drive</term>
                 <listitem><para>24X CD-ROM drive</para></listitem>
+            </varlistentry>
+        </variablelist>
+        <variablelist id="Performance.BootToX">
+            <title>Performance.BootToX</title>
+            <varlistentry>
+                <term>Ambition</term>
+                <listitem><para>Fast boot times for the installation environment.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Scale</term>
+                <listitem><para>Seconds elapsed between the kernel being loaded by GRUB and the display of the initial Horizon UI window accepting input.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Meter</term>
+                <listitem><para>Stopwatch testing performed five times on each base hardware platform.  Does not include <xref linkend="UI.Early.MultiGfx" />.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Must</term>
+                <listitem><para>70 seconds.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Plan</term>
+                <listitem><para>60 seconds.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Wish</term>
+                <listitem><para>45 seconds.</para></listitem>
+            </varlistentry>
+        </variablelist>
+        <variablelist id="Performance.ScreenChange">
+            <title>Performance.ScreenChange</title>
+            <varlistentry>
+                <term>Ambition</term>
+                <listitem><para>Responsiveness for screen changes in the Horizon UI.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Scale</term>
+                <listitem><para>Milliseconds elapsed between choosing the "Next" button in the Horizon UI and the next screen being displayed and able to accept input.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Meter</term>
+                <listitem><para>Printed statements to the stderr log including a timestamp when the system is aware of the Next button being pressed and when the system has fully loaded the next screen and is accepting input.  Test each screen through a complete installation flow on each base hardware platform ten times.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Must</term>
+                <listitem><para>1000 milliseconds for the worst case.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Plan</term>
+                <listitem><para>750 milliseconds for the worst case.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Wish</term>
+                <listitem><para>300 milliseconds for the worst case.</para></listitem>
+            </varlistentry>
+        </variablelist>
+        <variablelist id="Performance.Verification">
+            <title>Performance.Verification</title>
+            <varlistentry>
+                <term>Ambition</term>
+                <listitem><para>Fast verification of HorizonScript files.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Scale</term>
+                <listitem><para>Seconds elapsed between the start and completion of a verification job.  Test verification of "typical" installation scripts on each base hardware platform 50 times.  Do not include network resources in installation scripts.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Meter</term>
+                <listitem><para>Shell <command>time</command> built-in running the verification tool.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Must</term>
+                <listitem><para>5 seconds.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Plan</term>
+                <listitem><para>3 seconds.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>Wish</term>
+                <listitem><para>1 second or less.</para></listitem>
             </varlistentry>
         </variablelist>
     </section>
