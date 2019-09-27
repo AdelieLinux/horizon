@@ -46,6 +46,9 @@
     </section>
     <section id="i18n">
         <title>Internationalisation Requirements</title>
-        <para/>
+        <formalpara id="I18n.Meow">
+            <title>I18n.Meow</title>
+            <para>The Horizon UI system shall be implemented in English and at least one fake language for the purposes of ensuring that all strings are translatable.</para>
+        </formalpara>
     </section>
 </chapter>
