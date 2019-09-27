@@ -50,6 +50,7 @@
         <formalpara id="OE-Defined">
             <title>OE-Defined</title>
             <para>In this document, the term "installation environment" refers to the Horizon UI or Horizon Runner executing on the target computer that will install Adélie Linux.  The term "runtime environment" refers to the Horizon UI or Horizon Runner executing on a computer that is already running an existing OS.</para>
+        </formalpara>
         <formalpara id="OE-1">
             <title>OE-1</title>
             <para>Project Horizon shall run on any computer that is supported by the Easy Kernel and is using a Tier 1 supported CPU architecture as defined at <xref linkend="REF-2"/>.</para>
