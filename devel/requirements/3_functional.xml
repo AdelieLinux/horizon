@@ -269,6 +269,45 @@
                     <para>If the User chooses to specify their own partition layout, or to use the existing partition layout on the disk, the system shall allow the User to choose the mount points for any extant partitions.</para>
                 </formalpara>
             </section>
+            <section id="ui_partition_key">
+                <title>HorizonScript Keys</title>
+                <formalpara id="Script.Key.diskid">
+                    <title>Script.Key.diskid</title>
+                    <para><varname>diskid</varname> &mdash; The identification strings of the disk(s).</para>
+                </formalpara>
+                <formalpara id="Script.Key.disklabel">
+                    <title>Script.Key.disklabel</title>
+                    <para><varname>disklabel</varname> &mdash; Disklabels to create, if any.</para>
+                </formalpara>
+                <formalpara id="Script.Key.partition">
+                    <title>Script.Key.partition</title>
+                    <para><varname>partition</varname> &mdash; Partitions to create, if any.</para>
+                </formalpara>
+                <formalpara id="Script.Key.lvm_pv">
+                    <title>Script.Key.lvm_pv</title>
+                    <para><varname>lvm_pv</varname> &mdash; LVM PVs to create, if any.</para>
+                </formalpara>
+                <formalpara id="Script.Key.lvm_vg">
+                    <title>Script.Key.lvm_vg</title>
+                    <para><varname>lvm_vg</varname> &mdash; LVM VGs to create, if any.</para>
+                </formalpara>
+                <formalpara id="Script.Key.lvm_lv">
+                    <title>Script.Key.lvm_lv</title>
+                    <para><varname>lvm_lv</varname> &mdash; LVM LVs to create, if any.</para>
+                </formalpara>
+                <formalpara id="Script.Key.encrypt">
+                    <title>Script.Key.encrypt</title>
+                    <para><varname>encrypt</varname> &mdash; Block devices to encrypt, if any.</para>
+                </formalpara>
+                <formalpara id="Script.Key.fs">
+                    <title>Script.Key.fs</title>
+                    <para><varname>fs</varname> &mdash; File systems to create, if any.</para>
+                </formalpara>
+                <formalpara id="Script.Key.mount">
+                    <title>Script.Key.mount</title>
+                    <para><varname>mount</varname> &mdash; File systems to mount, including block device and mountpoint.</para>
+                </formalpara>
+            </section>
         </section>
         <section id="ui_firmware">
             <title>Firmware Setup</title>
