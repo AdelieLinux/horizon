@@ -127,11 +127,21 @@
     </section>
     <section id="safety">
         <title>Safety Requirements</title>
-        <para/>
+        <formalpara id="Safety.DiskLock.UI">
+            <title>Safety.DiskLock.UI</title>
+            <para>The Horizon UI system shall not write any data to any block device, except to save log files and/or an HorizonScript file explicitly requested to be saved by the User.</para>
+        </formalpara>
+        <formalpara id="Safety.DiskLock.Runner">
+            <title>Safety.DiskLock.Runner</title>
+            <para>The Horizon Runner system shall not write any data to any block device until the HorizonScript is fully validated.</para>
+        </formalpara>
     </section>
     <section id="security">
         <title>Security Requirements</title>
-        <para/>
+        <formalpara id="Security.PasswordHash">
+            <title>Security.PasswordHash</title>
+            <para>The Horizon UI system shall store passwords in memory in their hashed versions only, and securely clear the memory storage that contained plain-text passwords once the hash is stored.</para>
+        </formalpara>
     </section>
     <section id="sqa">
         <title>Software Quality Attributes</title>
