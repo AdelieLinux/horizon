@@ -106,7 +106,7 @@
                 <orderedlist id="Agent.MessageFormat.Items">
                     <listitem><para>A timestamp, in ISO 8601 format;</para></listitem>
                     <listitem><para>A tab character (<literal>\t</literal>);</para></listitem>
-                    <listitem><para>Message class: <literal>log</literal>, <literal>prompt</literal></para></listitem>
+                    <listitem><para>Message class: <literal>log</literal>, <literal>prompt</literal>, <literal>stepstart</literal>, <literal>stepend</literal></para></listitem>
                     <listitem><para>A tab character (<literal>\t</literal>);</para></listitem>
                     <listitem><para>The message;</para></listitem>
                     <listitem><para>A newline character (<literal>\n</literal>).</para></listitem>
