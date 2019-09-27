@@ -5,10 +5,6 @@
         <title>Purpose</title>
         <para>This document describes the functional and non-functional software requirements for release 1.0 of the Project Horizon system.  Unless otherwise noted, all requirements specified in this document are of high priority and required for release 1.0.</para>
     </section>
-    <section id="conventions">
-        <title>Document Conventions</title>
-        <para>TBD TODO: This section will be filled as more conventions are identified from work on this document.</para>
-    </section>
     <section id="audience">
         <title>Intended Audience</title>
         <para>This document is intended to be used by developers to implement Project Horizon 1.0.  This document is additionally intended to be used by the wider Adélie Linux community to determine how Project Horizon is designed, its intended purposes, and for development of future releases of Project Horizon.</para>
