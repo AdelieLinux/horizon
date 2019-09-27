@@ -671,6 +671,16 @@
                                     <entry><literal><package>vlc</package></literal></entry>
                                 </row>
                                 <row>
+                                    <entry>Development Tools</entry>
+                                    <entry>Tools used to create, build, and test software.</entry>
+                                    <entry><literal><package>build-tools</package></literal></entry>
+                                </row>
+                                <row>
+                                    <entry>Programming Environments</entry>
+                                    <entry>Interpreters, language tools, and other packages related to popular programming environments.</entry>
+                                    <entry><literal><package>gcc-gnat</package></literal> (Ada), <literal><package>gcc-go</package></literal> (Go), <literal><package>perl</package></literal>, <literal><package>python3</package></literal>, <literal><package>ruby</package></literal>, <literal><package>erlang</package></literal>, <literal><package>openjdk8-jdk</package></literal> (Java), <literal><package>php7</package></literal>, <literal><package>rust</package></literal>, <literal><package>node</package></literal>.</entry>
+                                </row>
+                                <row>
                                     <entry>KDE Applications</entry>
                                     <entry>A variety of applications including a word processor, media player, and many games.</entry>
                                     <entry><literal><package>kde</package></literal></entry>
