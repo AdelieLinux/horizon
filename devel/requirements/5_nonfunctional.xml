@@ -97,19 +97,19 @@
                 <listitem><para>300 milliseconds for the worst case.</para></listitem>
             </varlistentry>
         </variablelist>
-        <variablelist id="Performance.Verification">
-            <title>Performance.Verification</title>
+        <variablelist id="Performance.Validation">
+            <title>Performance.Validation</title>
             <varlistentry>
                 <term>Ambition</term>
-                <listitem><para>Fast verification of HorizonScript files.</para></listitem>
+                <listitem><para>Fast validation of HorizonScript files.</para></listitem>
             </varlistentry>
             <varlistentry>
                 <term>Scale</term>
-                <listitem><para>Seconds elapsed between the start and completion of a verification job.  Test verification of "typical" installation scripts on each base hardware platform 50 times.  Do not include network resources in installation scripts.</para></listitem>
+                <listitem><para>Seconds elapsed between the start and completion of a validation job.  Test validation of "typical" installation scripts on each base hardware platform 50 times.  Do not include network resources in installation scripts.</para></listitem>
             </varlistentry>
             <varlistentry>
                 <term>Meter</term>
-                <listitem><para>Shell <command>time</command> built-in running the verification tool.</para></listitem>
+                <listitem><para>Shell <command>time</command> built-in running the validation tool.</para></listitem>
             </varlistentry>
             <varlistentry>
                 <term>Must</term>
