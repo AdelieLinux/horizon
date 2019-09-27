@@ -47,7 +47,7 @@
     </section>
     <section id="hardware">
         <title>Hardware Interfaces</title>
-        <para>No direct hardware interfaces have been identified for this release of Project Horizon; all interfacing with hardware is done via other libraries as defined in the below <xref linkend="software" />.</para>
+        <para>No direct hardware interfaces have been identified for this release of Project Horizon; all interfacing with hardware is done via other libraries as defined below in <xref linkend="software" />.</para>
     </section>
     <section id="software">
         <title>External Software Interfaces</title>
