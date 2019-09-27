@@ -357,6 +357,10 @@
                     <title>UI.Network.Wireless.APs</title>
                     <para>The system shall display a list of access points in range of the wireless interface for the User to select from.</para>
                 </formalpara>
+                <formalpara id="UI.Network.Wireless.ReloadAPs">
+                    <title>UI.Network.Wireless.ReloadAPs</title>
+                    <para>The system shall allow the User to refresh the list of access points in range.</para>
+                </formalpara>
                 <formalpara id="UI.Network.Wireless.CustomAP">
                     <title>UI.Network.Wireless.CustomAP</title>
                     <para>The system shall allow the User to input a custom access point name.</para>
