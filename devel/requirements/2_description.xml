@@ -47,6 +47,9 @@
     </section>
     <section id="environment">
         <title>Operating Environment</title>
+        <formalpara id="OE-Defined">
+            <title>OE-Defined</title>
+            <para>In this document, the term "installation environment" refers to the Horizon UI or Horizon Runner executing on the target computer that will install Adélie Linux.  The term "runtime environment" refers to the Horizon UI or Horizon Runner executing on a computer that is already running an existing OS.</para>
         <formalpara id="OE-1">
             <title>OE-1</title>
             <para>Project Horizon shall run on any computer that is supported by the Easy Kernel and is using a Tier 1 supported CPU architecture as defined at <xref linkend="REF-2"/>.</para>
@@ -72,7 +75,7 @@
         </formalpara>
         <formalpara id="IC-3">
             <title>IC-3</title>
-            <para>The system shall use the Modular Crypt Format as described in <xref linkend="REF-3"/> and as implemented in the musl C library to encrypt passwords with the SHA-512 algorithm.</para>
+            <para>The system shall use the Modular Crypt Format as described in <xref linkend="REF-3"/> and as implemented in the musl C library to encrypt passwords with the SHA-512 and/or Blowfish algorithms.</para>
         </formalpara>
         <formalpara id="IC-4">
             <title>IC-4</title>
