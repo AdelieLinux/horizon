@@ -163,11 +163,11 @@
         </formalpara>
         <formalpara id="SQA.Usability.TTI.Experienced">
             <title>SQA.Usability.TTI.Experienced</title>
-            <para>A User with experience installing other Linux distributions shall be able to complete the Horizon UI flow through <xref linkend="ui_perform" /> in less than 15 minutes.</para>
+            <para>A User with experience installing other Linux distributions shall be able to complete the Horizon UI flow from language selection through <xref linkend="ui_perform" /> in less than 15 minutes.</para>
         </formalpara>
         <formalpara id="SQA.Usability.TTI.Green">
             <title>SQA.Usability.TTI.Green</title>
-            <para>A User with no prior experience with Linux shall be able to complete the Horizon UI flow through <xref linkend="ui_perform" /> in less than one hour.</para>
+            <para>A User with no prior experience with Linux shall be able to complete the Horizon UI flow from language selection through <xref linkend="ui_perform" /> in less than one hour.</para>
         </formalpara>
         <formalpara id="SQA.Portability.Bitness">
             <title>SQA.Portability.Bitness</title>
