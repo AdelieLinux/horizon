@@ -70,7 +70,7 @@
                 <title>Prerequisites</title>
                 <formalpara id="UI.Language.Prerequisites">
                     <title>UI.Language.Prerequisites</title>
-                    <para>The system must have more than one language translation available for use.</para>
+                    <para>The system must have more than one language translation available for use.  If only one language translation is available, the system shall skip display of this screen.</para>
                 </formalpara>
             </section>
             <section id="ui_language_req">
