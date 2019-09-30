@@ -502,6 +502,10 @@
                     <title>Runner.Validate.mount.Point</title>
                     <para>The system shall verify that the second value of each <literal>mount</literal> key tuple specifies a valid mount point beginning with a <literal>/</literal>.</para>
                 </formalpara>
+                <formalpara id="Runner.Validate.mount.Unique">
+                    <title>Runner.Validate.mount.Unique</title>
+                    <para>The system shall verify that the second value of each <literal>mount</literal> key is unique.</para>
+                </formalpara>
                 <formalpara id="Runner.Validate.mount.Root">
                     <title>Runner.Validate.mount.Root</title>
                     <para>The system shall verify that one <literal>mount</literal> key tuple specifies the root (<literal>/</literal>) mount.</para>
