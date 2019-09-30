@@ -104,7 +104,7 @@
             <title>Agent.MessageFormat</title>
             <para>Messages sent by the Agent shall be in the following format:
                 <orderedlist id="Agent.MessageFormat.Items">
-                    <listitem><para>A timestamp, in ISO 8601 format;</para></listitem>
+                    <listitem><para>A timestamp, in ISO 8601 format, with millisecond resolution;</para></listitem>
                     <listitem><para>A tab character (<literal>\t</literal>);</para></listitem>
                     <listitem><para>Message class: <literal>log</literal>, <literal>prompt</literal>, <literal>stepstart</literal>, <literal>stepend</literal></para></listitem>
                     <listitem><para>A tab character (<literal>\t</literal>);</para></listitem>
