@@ -262,7 +262,7 @@ firmware false
                         </para></listitem>
                         <listitem><para>Optionally, the default gateway.  The value specified must be a valid IP address of the same family as the IP address specified in item 3.</para></listitem>
                     </orderedlist>
-                    <literal>netaddress</literal> must not appear unless <literal>network</literal> is <literal>true</literal>.  If <literal>network</literal> is <literal>true</literal>, then <literal>netaddress</literal> must appear at least once, and may appear up to 255 times per interface.
+                    If <literal>network</literal> is <literal>true</literal>, then <literal>netaddress</literal> must appear at least once.  If <literal>network</literal> is <literal>false</literal>, the network configuration specified in <literal>netaddress</literal> will be written to the target computer but will not be used during installation.  <literal>netaddress</literal> may appear up to 255 times per interface.
                 </para>
             </formalpara>
             <formalpara id="netaddress.default">

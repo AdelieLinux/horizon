@@ -102,10 +102,6 @@
                     <title>Runner.Validate.network.netaddress</title>
                     <para>If the value in the HorizonScript for the <literal>network</literal> key is <literal>true</literal>, the system shall verify that at least one <literal>netaddress</literal> key is present.</para>
                 </formalpara>
-                <formalpara id="Runner.Validate.network.netaddress.NoNetwork">
-                    <title>Runner.Validate.network.netaddress.NoNetwork</title>
-                    <para>If the value in the HorizonScript for the <literal>network</literal> key is <literal>false</literal>, the system shall verify that no <literal>netaddress</literal> key is present.</para>
-                </formalpara>
                 <formalpara id="Runner.Validate.network.netaddress.Validity">
                     <title>Runner.Validate.network.netaddress.Validity</title>
                     <para>The system shall verify that each <literal>netaddress</literal> key has a valid form of at least two values in a space-separated tuple.</para>
