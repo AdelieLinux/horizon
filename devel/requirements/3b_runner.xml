@@ -712,6 +712,10 @@
                     <title>Runner.Execute.nameserver</title>
                     <para>If one or more <literal>nameserver</literal> keys are specified in the HorizonScript, the system shall write the nameservers specified to the <literal>/etc/resolv.conf</literal> file in the target namespace.</para>
                 </formalpara>
+                <formalpara id="Runner.Execute.nameserver.FQDN">
+                    <title>Runner.Execute.nameserver.FQDN</title>
+                    <para>If the <literal>hostname</literal> key contains a domain name part (at least one ASCII period <literal>.</literal> followed by at least one alphanumeric character), the system shall write the domain name to the <literal>/etc/resolv.conf</literal> file in the target namespace.</para>
+                </formalpara>
                 <formalpara id="Runner.Execute.network">
                     <title>Runner.Execute.network</title>
                     <para>If the value of the <literal>network</literal> key is <literal>true</literal>, the system shall execute the <literal>netssid</literal>, <literal>netaddress</literal>, and <literal>nameserver</literal> keys in the installation environment.</para>
