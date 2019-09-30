@@ -430,7 +430,7 @@
                 </formalpara>
                 <formalpara id="UI.Network.Automatic">
                     <title>UI.Network.Automatic</title>
-                    <para>If the User selected automatic addressing, the system shall attempt to obtain an IPv4 address via DHCP and an IPv6 address via Router Advertisement and DHCPv6.</para>
+                    <para>If the User selected automatic addressing, the system shall attempt to obtain an IPv4 address via DHCP and an IPv6 address via Router Solicitation and DHCPv6.</para>
                 </formalpara>
                 <formalpara id="UI.Network.Automatic.TimeOut">
                     <title>UI.Network.Automatic.TimeOut</title>
@@ -482,8 +482,8 @@
                                     <entry>The address of this computer</entry>
                                 </row>
                                 <row>
-                                    <entry>IPv6 network prefix</entry>
-                                    <entry>The prefix of the network</entry>
+                                    <entry>IPv6 network prefix length</entry>
+                                    <entry>The prefix length of the network</entry>
                                 </row>
                                 <row>
                                     <entry>IPv6 default gateway</entry>
@@ -710,6 +710,11 @@
                                     <entry>Individual window managers that are not part of a desktop environment.</entry>
                                     <entry><literal><package>awesome</package></literal>, <literal><package>fluxbox</package></literal>, <literal><package>i3wm</package></literal>, <literal><package>icewm</package></literal>, <literal><package>openbox</package></literal>, <literal><package>spectrwm</package></literal></entry>
                                 </row>
+                                <row>
+                                    <entry>Command Line Software</entry>
+                                    <entry>Popular utilities used on the command line.</entry>
+                                    <entry><literal><package>elinks</package></literal>, <literal><package>tmux</package></literal></entry>
+                                </row>
                             </tbody>
                             </tgroup>
                         </table>
@@ -717,7 +722,7 @@
                 </formalpara>
                 <formalpara id="UI.Packages.Size">
                     <title>UI.Packages.Size</title>
-                    <para>If the User has selected a package set or packages that will use more disk space than the computer has, the system shall prompt the User to confirm the selection and warn that installation may not be successful.</para>
+                    <para>If the User has selected a package set or packages that will use 80% of more of the computer's disk space selected for use with Adélie Linux, the system shall prompt the User to confirm the selection and warn that installation may not be successful.</para>
                 </formalpara>
             </section>
             <section id="ui_packages_key">
@@ -732,13 +737,17 @@
             <title>Boot Setup</title>
             <section id="ui_boot_meta">
                 <title>Description / Priority</title>
-                <para/>
+                <para>The User selects the kernel to use, if their platform requires kernel selection, and chooses boot parameters.</para>
             </section>
             <section id="ui_boot_req">
                 <title>Functional Requirements</title>
-                <formalpara>
-                    <title/>
-                    <para/>
+                <formalpara id="UI.Boot.Kernel.Choice">
+                    <title>UI.Boot.Kernel.Choice</title>
+                    <para>If the target platform requires a choice between multiple kernels, the system shall prompt the User to choose which kernel to use.</para>
+                </formalpara>
+                <formalpara id="UI.Boot.Kernel.Selection">
+                    <title>UI.Boot.Kernel.Selection</title>
+                    <para>The system shall add the platform's kernel, or the User's choice of kernel if the target platform requires a choice between multiple kernels, to the list of packages to install.</para>
                 </formalpara>
             </section>
         </section>
@@ -760,11 +769,11 @@
                 </formalpara>
                 <formalpara id="UI.Accounts.RootPW.Explain">
                     <title>UI.Accounts.RootPW.Explain</title>
-                    <para>The system shall explain to the User the important of keeping the root user's password secure, and written in a safe place, as it is used for system administration.</para>
+                    <para>The system shall explain to the User the importance of keeping the root user's password secure, and written in a safe place, as it is used for system administration.</para>
                 </formalpara>
                 <formalpara id="UI.Accounts.RootPW.Enable">
                     <title>UI.Accounts.RootPW.Enable</title>
-                    <para>The system shall enable the Next button when the root password and confirmation match and represent a valid password.</para>
+                    <para>The system shall enable the Next button when the root password and confirmation are non-blank and match.</para>
                 </formalpara>
                 <formalpara id="UI.Accounts.UserAcct">
                     <title>UI.Accounts.UserAcct</title>
@@ -780,7 +789,7 @@
                         <orderedlist id="UI.Accounts.UserAcct.AcctName.Default.Algo">
                             <listitem><para>If the User's name or alias contains no spaces, let the account name be the entire name or alias.</para></listitem>
                             <listitem><para>If the User's name or alias contains spaces, let the account name be the first character of each word that is not the last word, and the full last word.</para></listitem>
-                            <listitem><para>Transform the account name to a Latinised, lower-case form, as described by (Insert Unicode reference here).</para></listitem>
+                            <listitem><para>Transform the account name to a Latinised, lower-case form, as described by Unicode Normalization Form NFKC_Casefold.</para></listitem>
                             <listitem><para>If the account name is longer than 32 characters, truncate the account name to 32 characters.</para></listitem>
                         </orderedlist>
                     </para>
@@ -830,7 +839,7 @@
                 </formalpara>
                 <formalpara id="Script.Key.usericon">
                     <title>Script.Key.usericon</title>
-                    <para><varname>usericon</varname> &mdash; Path to the chosen icon for the account(s).</para>
+                    <para><varname>usericon</varname> &mdash; Absolute path in the target environment to the chosen icon for the account(s).</para>
                 </formalpara>
                 <formalpara id="Script.Key.usergroups">
                     <title>Script.Key.usergroups</title>
@@ -897,7 +906,7 @@
                 </formalpara>
                 <formalpara id="UI.Commit.Buttons">
                     <title>UI.Commit.Buttons</title>
-                    <para>The system shall remove the Cancel button, and the Next button shall be labelled Install.</para>
+                    <para>The system shall label the Next button as "Install", or its translation.</para>
                 </formalpara>
             </section>
         </section>
