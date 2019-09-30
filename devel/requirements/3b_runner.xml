@@ -128,7 +128,7 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.network.netaddress.Mask">
                     <title>Runner.Validate.network.netaddress.Mask</title>
-                    <para>If the second value of the <literal>netaddress</literal> key is <literal>static</literal>, the system shall ensure that the fourth value in the tuple is a valid prefix, in the form of a whole number between 1 and 32 inclusive if the third value is an IPv4 address, a whole number between 1 and 64 inclusive if the third value is an IPv6 address, or a network mask in the form of four octets separated by the period (<literal>.</literal>) symbol if the third value is an IPv4 address.</para>
+                    <para>If the second value of the <literal>netaddress</literal> key is <literal>static</literal>, the system shall ensure that the fourth value in the tuple is a valid prefix length, in the form of a whole number between 1 and 32 inclusive if the third value is an IPv4 address, a whole number between 1 and 128 inclusive if the third value is an IPv6 address, or a network mask in the form of four octets separated by the period (<literal>.</literal>) symbol if the third value is an IPv4 address.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.network.netaddress.Gateway">
                     <title>Runner.Validate.network.netaddress.Gateway</title>
@@ -143,7 +143,7 @@
                     <para>The system shall verify the validity of any present <literal>netssid</literal> key.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.network.netssid.Validity">
-                    <title>Runner.Validate.network.netaddress.Validity</title>
+                    <title>Runner.Validate.network.netssid.Validity</title>
                     <para>The system shall verify that each <literal>netssid</literal> key has a valid form of either three values or four values in a space-separated tuple.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.network.netssid.Interface">
@@ -177,6 +177,10 @@
                 <formalpara id="Runner.Validate.hostname.Length">
                     <title>Runner.Validate.hostname.Length</title>
                     <para>The system shall verify that the value for the <literal>hostname</literal> key does not exceed 320 characters in length.</para>
+                </formalpara>
+                <formalpara id="Runner.Validate.hostname.PartLength">
+                    <title>Runner.Validate.hostname.PartLength</title>
+                    <para>The system shall verify that the value for each part of the value of the <literal>hostname</literal> key, separated by an ASCII period (<literal>.</literal>), does not exceed 64 characters in length.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.pkginstall">
                     <title>Runner.Validate.pkginstall</title>
@@ -232,7 +236,7 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.repository.ValidPath">
                     <title>Runner.Validate.repository.ValidPath</title>
-                    <para>The system shall verify that the value of each <literal>repository</literal> key is either an absolute local path beginning with an ASCII backslash (<literal>/</literal>), or a valid URL utilising the HTTP or HTTPS protocols.</para>
+                    <para>The system shall verify that the value of each <literal>repository</literal> key is either an absolute local path beginning with an ASCII oblique (<literal>/</literal>), or a valid URL utilising the HTTP or HTTPS protocols.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.signingkey">
                     <title>Runner.Validate.signingkey</title>
@@ -240,7 +244,7 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.signingkey.ValidPath">
                     <title>Runner.Validate.signingkey.ValidPath</title>
-                    <para>The system shall verify that the value of each <literal>signingkey</literal> key is either an absolute local path beginning with an ASCII backslash (<literal>/</literal>), or a valid URL utilising the HTTPS protocol.</para>
+                    <para>The system shall verify that the value of each <literal>signingkey</literal> key is either an absolute local path beginning with an ASCII oblique (<literal>/</literal>), or a valid URL utilising the HTTPS protocol.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.username">
                     <title>Runner.Validate.username</title>
@@ -336,7 +340,7 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.usergroups.Group">
                     <title>Runner.Validate.usergroups.Group</title>
-                    <para>The system shall verify that each group specified is a valid system-defined group name.</para>
+                    <para>The system shall verify that each group specified is a valid system-defined group name that is present in the base system image <filename>/etc/group</filename> file.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.diskid">
                     <title>Runner.Validate.diskid</title>
@@ -412,7 +416,7 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.lvm_pv.Block">
                     <title>Runner.Validate.lvm_pv.Block</title>
-                    <para>If the system is running in an installation environment, the system shall verify that the value of each <literal>lvm_pv</literal> key specifies a valid block device.</para>
+                    <para>If the system is running in an installation environment, the system shall verify that the value of each <literal>lvm_pv</literal> key specifies a valid block device or a block device that will be created.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.lvm_vg">
                     <title>Runner.Validate.lvm_vg</title>
@@ -424,7 +428,11 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.lvm_vg.Block">
                     <title>Runner.Validate.lvm_vg.Block</title>
-                    <para>If the system is running in an installation environment, the system shall verify that the first value of each <literal>lvm_vg</literal> key tuple specifies a valid block device.</para>
+                    <para>If the system is running in an installation environment, the system shall verify that the first value of each <literal>lvm_vg</literal> key tuple specifies a valid block device or a block device that will be created.</para>
+                </formalpara>
+                <formalpara id="Runner.Validate.lvm_vg.PhysicalVolume">
+                    <title>Runner.Validate.lvm_vg.PhysicalVolume</title>
+                    <para>If the system is running in an installation environment, the system shall verify that the first value of each <literal>lvm_vg</literal> key tuple specifies a valid physical volume or a physical volume that will be created.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.lvm_vg.Name">
                     <title>Runner.Validate.lvm_vg.Name</title>
@@ -460,7 +468,7 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.encrypt.Block">
                     <title>Runner.Validate.encrypt.Block</title>
-                    <para>If the system is running in an installation environment, the system shall verify that the value of each <literal>encrypt</literal> key, and the first value of each <literal>encrypt</literal> key tuple, specifies a valid block device.</para>
+                    <para>If the system is running in an installation environment, the system shall verify that the value of each <literal>encrypt</literal> key, and the first value of each <literal>encrypt</literal> key tuple, specifies a valid block device or a block device that will be created.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.fs">
                     <title>Runner.Validate.fs</title>
@@ -472,7 +480,7 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.fs.Block">
                     <title>Runner.Validate.fs.Block</title>
-                    <para>If the system is running in an installation environment, the system shall verify that the first value of each <literal>fs</literal> key tuple specifies a valid block device.</para>
+                    <para>If the system is running in an installation environment, the system shall verify that the first value of each <literal>fs</literal> key tuple specifies a valid block device or a block device that will be created.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.fs.Type">
                     <title>Runner.Validate.fs.Type</title>
@@ -488,11 +496,15 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.mount.Block">
                     <title>Runner.Validate.mount.Block</title>
-                    <para>If the system is running in an installation environment, the system shall verify that the first value of each <literal>mount</literal> key tuple specifies a valid block device.</para>
+                    <para>If the system is running in an installation environment, the system shall verify that the first value of each <literal>mount</literal> key tuple specifies a valid block device or a block device that will be created.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.mount.Point">
                     <title>Runner.Validate.mount.Point</title>
-                    <para>The system shall verify that the second value of each <literal>mount</literal> key specifies a valid mount point beginning with a <literal>/</literal>.</para>
+                    <para>The system shall verify that the second value of each <literal>mount</literal> key tuple specifies a valid mount point beginning with a <literal>/</literal>.</para>
+                </formalpara>
+                <formalpara id="Runner.Validate.mount.Root">
+                    <title>Runner.Validate.mount.Root</title>
+                    <para>The system shall verify that one <literal>mount</literal> key tuple specifies the root (<literal>/</literal>) mount.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.PackageAvail">
                     <title>Runner.Validate.PackageAvail</title>
