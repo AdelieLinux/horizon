@@ -616,10 +616,6 @@
                     <title>Runner.Execute.lvm_vg.Failure</title>
                     <para>If an LVM volume group cannot be created due to an I/O error, or due to a non-existent physical volume, the system shall consider this condition a fatal error and stop execution of the HorizonScript.</para>
                 </formalpara>
-                <formalpara id="Runner.Execute.encrypt.LVs">
-                    <title>Runner.Execute.encrypt.LVs</title>
-                    <para>If any <literal>lvm_lv</literal> keys are specified, and any <literal>encrypt</literal> keys specify a LVM logical volume that will be created, the system shall execute the <literal>encrypt</literal> keys that correlate with <literal>lvm_lv</literal> keys before executing the <literal>lvm_lv</literal> keys.</para>
-                </formalpara>
                 <formalpara id="Runner.Execute.lvm_lv">
                     <title>Runner.Execute.lvm_lv</title>
                     <para>The system shall create any LVM logical volumes specified in <literal>lvm_lv</literal> keys.</para>
