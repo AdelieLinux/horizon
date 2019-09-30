@@ -762,7 +762,7 @@
                 </formalpara>
                 <formalpara id="Runner.Execute.timezone.Missing">
                     <title>Runner.Execute.timezone.Missing</title>
-                    <para>If the zoneinfo file for the specified timezone is missing in the target namespace, but present in the installation environment, the system shall copy the zoneinfo file from the installation environment to the <literal>/etc/localtime</literal> file in the target namespace.</para>
+                    <para>If the zoneinfo file for the specified timezone in the <literal>timezone</literal> key is missing in the target namespace, but present in the installation environment, the system shall copy the zoneinfo file from the installation environment to the <literal>/etc/localtime</literal> file in the target namespace.</para>
                 </formalpara>
                 <formalpara id="Runner.Execute.Finish">
                     <title>Runner.Execute.Finish</title>
