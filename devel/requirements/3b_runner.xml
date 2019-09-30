@@ -128,7 +128,7 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.network.netaddress.Mask">
                     <title>Runner.Validate.network.netaddress.Mask</title>
-                    <para>If the second value of the <literal>netaddress</literal> key is <literal>static</literal>, the system shall ensure that the fourth value in the tuple is a valid prefix length, in the form of a whole number between 1 and 32 inclusive if the third value is an IPv4 address, a whole number between 1 and 128 inclusive if the third value is an IPv6 address, or a network mask in the form of four octets separated by the period (<literal>.</literal>) symbol if the third value is an IPv4 address.</para>
+                    <para>If the second value of the <literal>netaddress</literal> key is <literal>static</literal>, the system shall ensure that the fourth value in the tuple is a valid prefix length, in the form of a whole number between 0 and 32 inclusive if the third value is an IPv4 address, a whole number between 0 and 128 inclusive if the third value is an IPv6 address, or a network mask in the form of four octets separated by the period (<literal>.</literal>) symbol if the third value is an IPv4 address.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.network.netaddress.Gateway">
                     <title>Runner.Validate.network.netaddress.Gateway</title>
