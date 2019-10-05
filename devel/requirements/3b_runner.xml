@@ -298,6 +298,10 @@
                     <title>Runner.Validate.userpw.Crypt</title>
                     <para>The system shall verify that the second value for each <literal>userpw</literal> key tuple is in the format: <literal>$</literal>, either <literal>2</literal> for Blowfish or <literal>6</literal> for SHA-512, <literal>$</literal>, and then variant data.</para>
                 </formalpara>
+                <formalpara id="Runner.Validate.userpw.None">
+                    <title>Runner.Validate.userpw.None</title>
+                    <para>If a <literal>username</literal> key exists with no matching <literal>userpw</literal> key tuple, the system shall display a warning message that the user account will have no passphrase set.</para>
+                </formalpara>
                 <formalpara id="Runner.Validate.usericon">
                     <title>Runner.Validate.usericon</title>
                     <para>The system shall verify that the HorizonScript contains a number of <literal>usericon</literal> keys equal or less than the number of <literal>username</literal> keys.</para>
