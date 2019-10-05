@@ -7,6 +7,12 @@
         <para>Project Horizon is a new system that provides computer users and administrators the ability to install the Adélie Linux operating system.  It is intended to replace the current manual installation procedure for the use cases identified in <citetitle pubwork="chapter"><xref linkend="REF-1"/> sections 1.2.2 and 1.4</citetitle>.</para>
         <para>It is expected over the next few years that Project Horizon will evolve with the Adélie family of software and services to provide a well-accepted libre environment for general purpose computing.</para>
     </section>
+    <section id="components">
+        <title>Project Components</title>
+        <para>Project Horizon contains two main components: the Horizon UI, which collects information about the desired target configuration from the user, and the Horizon Runner, which runs on the target computer and performs the installation.</para>
+        <para>The Horizon UI supports two different modes, or "envrionments".  The primary environment is the Installation Environment.  This is the environment when Horizon UI runs on the target computer and can collect information from the running computer about the target system.  The Installation Environment is our primary focus for development of Project Horizon release 1.0.  The secondary environment is the Runtime Envrionment.  This is the environment when Horizon UI is running on an administrator's computer and is not running on the target computer.  This environment does not allow collection of any information from the running computer, as it is not the target system.</para>
+        <para>The Horizon Runner is the component which takes as input a HorizonScript, and uses it to configure the target system.  It runs directly on the target system and can retrieve a HorizonScript from a local or remote location.</para>
+    </section>
     <section id="users">
         <title>User Classes and Characteristics</title>
         <para>The identified user classes are defined in <citetitle pubwork="section"><xref linkend="REF-1"/> section 1.4</citetitle>.  A summary of these classes is included below.</para>
@@ -53,11 +59,11 @@
         </formalpara>
         <formalpara id="OE-1">
             <title>OE-1</title>
-            <para>Project Horizon shall run on any computer that is supported by the Easy Kernel and is using a Tier 1 supported CPU architecture as defined at <xref linkend="REF-2"/>.</para>
+            <para>Horizon Runner shall run on any computer that is supported by the Easy Kernel and is using a Tier 1 supported CPU architecture as defined at <xref linkend="REF-2"/>.</para>
         </formalpara>
         <formalpara id="OE-2">
             <title>OE-2</title>
-            <para>Horizon UI shall run under the X11 display server with a screen resolution no smaller than 800x600.</para>
+            <para>Horizon UI shall run under the X11 display server with a screen resolution no smaller than 800x600 pixels.</para>
         </formalpara>
         <formalpara id="OE-3">
             <title>OE-3</title>
@@ -68,7 +74,7 @@
         <title>Implementation Constraints</title>
         <formalpara id="IC-1">
             <title>IC-1</title>
-            <para>Project Horizon code written in C-based languages shall conform to the Adélie Linux code style <!-- TBD TODO add xref -->.</para>
+            <para>Project Horizon code written in C-based languages shall conform to the Adélie Linux code style.</para>
         </formalpara>
         <formalpara id="IC-2">
             <title>IC-2</title>
