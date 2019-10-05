@@ -196,6 +196,10 @@
                     <title>UI.Partition.Runtime.FS</title>
                     <para>The system shall allow the User to choose to create new file systems on any named block device, including partitions that may not have been specified (since they may already exist on the block device).</para>
                 </formalpara>
+                <formalpara id="UI.Partition.Runtime.FS.Type">
+                    <title>UI.Partition.Runtime.FS.Type</title>
+                    <para>The system shall allow the User to choose which type of file system to create on the block device, and inform the User that Linux filesystems cannot be easily used from Windows or Mac OS.</para>
+                </formalpara>
                 <formalpara id="UI.Partition.Runtime.Mount">
                     <title>UI.Partition.Runtime.Mount</title>
                     <para>The system shall allow the User to choose what block devices to mount, and the mount point to use for each mounted block device.</para>
