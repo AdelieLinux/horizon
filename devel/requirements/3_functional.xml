@@ -551,6 +551,10 @@
                     <title>UI.SysMeta.DefaultTimezone</title>
                     <para>The system shall use UTC as the default time zone.</para>
                 </formalpara>
+                <formalpara id="UI.SysMeta.Timezone.RTC">
+                    <title>UI.SysMeta.Timezone.RTC</title>
+                    <para>If the system is running in an Installation Environment, and the system is an Intel machine, the system shall allow the User to select whether to store UTC or local time in the RTC, noting that local time is necessary to coexist with most Windows installations but could result in system instability.</para>
+                </formalpara>
                 <formalpara id="UI.SysMeta.Hostname">
                     <title>UI.SysMeta.Hostname</title>
                     <para>The system shall allow the User to input the host name of the computer.</para>
@@ -568,6 +572,10 @@
                 <formalpara id="UI.SysMeta.VerifyHostname">
                     <title>UI.SysMeta.VerifyHostname</title>
                     <para>The system shall ensure that the host name input by the User uses only valid characters for DNS names, and not accept characters that are invalid.</para>
+                </formalpara>
+                <formalpara id="UI.SysMeta.VerifyHostname.Info">
+                    <title>UI.SysMeta.VerifyHostname.Info</title>
+                    <para>The system shall inform the User which characters are valid, and provide feedback to the User when an invalid character is typed into the host name input field.</para>
                 </formalpara>
                 <formalpara id="UI.SysMeta.Enable">
                     <title>UI.SysMeta.Enable</title>
@@ -682,7 +690,7 @@
                                 <row>
                                     <entry>Programming Environments</entry>
                                     <entry>Interpreters, language tools, and other packages related to popular programming environments.</entry>
-                                    <entry><literal><package>gcc-gnat</package></literal> (Ada), <literal><package>gcc-go</package></literal> (Go), <literal><package>perl</package></literal>, <literal><package>python3</package></literal>, <literal><package>ruby</package></literal>, <literal><package>erlang</package></literal>, <literal><package>openjdk8-jdk</package></literal> (Java), <literal><package>php7</package></literal>, <literal><package>rust</package></literal>, <literal><package>node</package></literal>.</entry>
+                                    <entry><literal><package>gcc-gnat</package></literal> (Ada), <literal><package>gnucobol</package></literal> (COBOL), <literal><package>gcc-go</package></literal> (Go), <literal><package>perl</package></literal>, <literal><package>python3</package></literal>, <literal><package>ruby</package></literal>, <literal><package>erlang</package></literal>, <literal><package>openjdk8-jdk</package></literal> (Java), <literal><package>php7</package></literal>, <literal><package>rust</package></literal>, <literal><package>node</package></literal>.</entry>
                                 </row>
                                 <row>
                                     <entry>KDE Applications</entry>
@@ -723,6 +731,14 @@
                             </tgroup>
                         </table>
                     </para>
+                </formalpara>
+                <formalpara id="UI.Packages.Choices">
+                    <title>UI.Packages.Choices</title>
+                    <para>If the User chooses Custom from UI.Packages.SimpleSel, the system shall present the User with choices for the default shell (/bin/sh), init system (/sbin/init), and MTA.</para>
+                </formalpara>
+                <formalpara id="UI.Packages.Choices.Default">
+                    <title>UI.Packages.Choices.Default</title>
+                    <para>The system shall choose dash-binsh, s6-linux-init, and ssmtp as defaults for UI.Packages.Choices, and shall use these if the User did not choose Custom from UI.Packages.SimpleSel.</para>
                 </formalpara>
                 <formalpara id="UI.Packages.Size">
                     <title>UI.Packages.Size</title>
@@ -847,7 +863,7 @@
                 </formalpara>
                 <formalpara id="Script.Key.usergroups">
                     <title>Script.Key.usergroups</title>
-                    <para><varname>usergroups</varname> &mdash; The groups to which the user account(s) will belong.  "users,lp,audio,cdrom,cdrw,scanner,camera,video,games" for normal users; add ",usb,kvm,ping,wheel" for administrators.</para>
+                    <para><varname>usergroups</varname> &mdash; The groups to which the user account(s) will belong.  "users,lp,audio,cdrom,cdrw,scanner,camera,video,games" for normal users; add ",usb,kvm,wheel" for administrators.</para>
                 </formalpara>
             </section>
         </section>
@@ -969,7 +985,7 @@
                 <title>Functional Requirements</title>
                 <formalpara id="UI.Finish">
                     <title>UI.Finish</title>
-                    <para>The system shall display a screen congratulating the User on a successful installation of Adélie Linux.</para>
+                    <para>The system shall display a screen congratulating the User on a successful installation of Adélie Linux and that the next step is to reboot into the new Adélie Linux system.</para>
                 </formalpara>
                 <formalpara id="UI.Finish.Save">
                     <title>UI.Finish.Save</title>
