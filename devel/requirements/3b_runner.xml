@@ -108,7 +108,7 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.network.netaddress.Validity.Type">
                     <title>Runner.Validate.network.netaddress.Validity.Type</title>
-                    <para>The system shall verify that the second value in each <literal>netaddress</literal> tuple is either <literal>dhcp</literal> or <literal>static</literal>.</para>
+                    <para>The system shall verify that the second value in each <literal>netaddress</literal> tuple is either <literal>dhcp</literal>, <literal>slaac</literal>, or <literal>static</literal>.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.network.netaddress.Validity.DHCP">
                     <title>Runner.Validate.network.netaddress.Validity.DHCP</title>
