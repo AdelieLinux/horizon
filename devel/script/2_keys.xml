@@ -84,6 +84,10 @@ hostname gwyn.foxkit.internal
                 <title>Format</title>
                 <para>The <literal>pkginstall</literal> key is a space-separated list of APK packages.  They must be available in the repositories used during the installation process.  <literal>pkginstall</literal> must appear at least once in a HorizonScript.  There is no limit to the number of times <literal>pkginstall</literal> may be specified; each one will append to the list of packages to install.</para>
             </formalpara>
+            <formalpara id="pkginstall.default">
+                <title>Default</title>
+                <para>If no anchor package (adelie-core, adelie-base, adelie-base-posix, adelie-base-lsb) is specified in any <literal>pkginstall</literal> key, <literal>adelie-core</literal> will be added automatically.</para>
+            </formalpara>
             <formalpara id="pkginstall.examples">
                 <title>Examples</title>
                 <para>
@@ -153,7 +157,7 @@ rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59
             </formalpara>
             <formalpara id="language.default">
                 <title>Default</title>
-                <para>If the <literal>language</literal> key is not present, no setting will be defined for the <envar>LANG</envar> or <envar>LC_ALL</envar> environment variables.  Most software treats this as either "C.UTF-8" or "en_US.UTF-8".  No language packs will be installed for software that supports multiple language; due to English being the <emphasis role="italics">de facto</emphasis> language of software engineering, this implies all software will run in English.</para>
+                <para>If the <literal>language</literal> key is not present, no setting will be defined for the <envar>LANG</envar> environment variable.  Otherwise, this setting will be written to <filename>/etc/profile.d/00-language.sh</filename> for the definition of the <envar>LANG</envar> environment variable.  Most software treats this as either "C.UTF-8" or "en_US.UTF-8".  No language packs will be installed for software that supports multiple language; due to English being the <emphasis role="italics">de facto</emphasis> language of software engineering, this implies all software will run in English.</para>
             </formalpara>
             <formalpara id="language.examples">
                 <title>Examples</title>
@@ -257,7 +261,7 @@ firmware false
                         <listitem><para>The prefix or network mask.  The value must be either:
                                 <orderedlist id="netaddress.format.prefix_types">
                                     <listitem><para>A whole number in the range of 1-32 for IPv4 addresses, or 1-64 for IPv6 addresses.</para></listitem>
-                                    <listitem><para>An IPv4 network mask, in the format <literal><replaceable>octet</replaceable>.<replaceable>octet</replaceable>.<replaceable>octet</replaceable>.<replaceable>octet</replaceable></literal>.</para></listitem>
+                                    <listitem><para>An IPv4 network mask, in the format <literal><replaceable>octet</replaceable>.<replaceable>octet</replaceable>.<replaceable>octet</replaceable>.<replaceable>octet</replaceable></literal>.  This format cannot be used for IPv6 addresses.</para></listitem>
                                 </orderedlist>
                         </para></listitem>
                         <listitem><para>Optionally, the default gateway.  The value specified must be a valid IP address of the same family as the IP address specified in item 3.</para></listitem>
@@ -302,7 +306,7 @@ netaddress eth0 198.51.100.37 24 198.51.100.1
             </formalpara>
             <formalpara id="nameserver.format">
                 <title>Format</title>
-                <para>The <literal>nameserver</literal> key takes either an IPv4 address or IPv6 address.  Any other value is invalid.  The <literal>nameserver</literal> may appear up to four times in a HorizonScript, or be omitted.  It is valid to specify <literal>nameserver</literal> even if <literal>network</literal> is <literal>false</literal>, but name queries will not function properly without a network configuration.</para>
+                <para>The <literal>nameserver</literal> key takes either an IPv4 address or IPv6 address.  Any other value is invalid.  The <literal>nameserver</literal> may appear up to three times in a HorizonScript, or be omitted.  It is valid to specify <literal>nameserver</literal> even if <literal>network</literal> is <literal>false</literal>, but name queries will not function properly without a network configuration.</para>
             </formalpara>
             <formalpara id="nameserver.default">
                 <title>Default</title>

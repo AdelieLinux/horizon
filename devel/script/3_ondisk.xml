@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <chapter label="3" id="ondisk">
     <title>On-Disk Format</title>
-    <section id="TBD">
-        <title>TBD</title>
-        <para>TODO: you really thought we figured this out? :(</para>
-    </section>
+    <para>HorizonScript is a text file.  Empty lines are ignored.  If a line starts with an octothorpe or hash symbol (<literal>#</literal>), the line is ignored as a comment.  Whitespace preceding a key is not significant, but may not precede a comment.</para>
 </chapter>
