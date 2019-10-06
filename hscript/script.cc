@@ -12,18 +12,21 @@
 
 #include "script.hh"
 #include "disk.hh"
+#include "meta.hh"
+#include "network.hh"
+#include "user.hh"
 
 namespace Horizon {
 
 struct Script::ScriptPrivate {
     /*! Determines whether or not to enable networking. */
-    bool network;
+    std::unique_ptr<Horizon::Keys::Network> network;
     /*! The target system's hostname. */
-    std::string hostname;
+    std::unique_ptr<Horizon::Keys::Hostname> hostname;
     /*! The packages to install to the target system. */
     std::vector<std::string> packages;
     /*! The root shadow line. */
-    std::string rootpw;
+    std::unique_ptr<Horizon::Keys::RootPassphrase> rootpw;
     /*! Target system's mountpoints. */
     std::vector< std::unique_ptr<Horizon::Keys::Mount> > mounts;
 };
@@ -31,16 +34,16 @@ struct Script::ScriptPrivate {
 Script::Script() {
 }
 
-bool Script::load(std::string path) {
+const Script *Script::load(std::string, ScriptOptions) {
+    return nullptr;
 }
 
-bool Script::load(std::istream &stream) {
-}
-
-bool Script::parse() {
+const Script *Script::load(std::istream &, ScriptOptions) {
+    return nullptr;
 }
 
 bool Script::validate() {
+    return false;
 }
 
 }

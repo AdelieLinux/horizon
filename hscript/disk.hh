@@ -10,6 +10,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#ifndef __HSCRIPT_DISK_HH_
+#define __HSCRIPT_DISK_HH_
+
 #include "key.hh"
 
 namespace Horizon {
@@ -32,3 +35,5 @@ class Mount : public Key {
 
 }
 }
+
+#endif /* !__HSCRIPT_DISK_HH_ */

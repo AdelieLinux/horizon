@@ -10,10 +10,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#ifndef __HSCRIPT_USER_HH_
+#define __HSCRIPT_USER_HH_
+
 #include "key.hh"
 
 namespace Horizon {
 namespace Keys {
+
+class RootPassphrase : public Key {
+};
+
+class Username : public Key {
+};
 
 class UserAlias : public Key {
 };
@@ -29,3 +38,5 @@ class UserGroups : public Key {
 
 }
 }
+
+#endif /* !__HSCRIPT_USER_HH_ */

@@ -10,6 +10,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#ifndef __HSCRIPT_KEY_HH_
+#define __HSCRIPT_KEY_HH_
+
 #include <string>
 
 namespace Horizon {
@@ -21,17 +24,23 @@ namespace Keys {
  */
 class Key {
 public:
-    /*! Set the data associated with the Key. */
-    void setData(std::string data);
+    virtual ~Key();
+
+    /*! Create the Key object with the specified data as the entire value.
+     * @returns nullptr if data is unparsable, otherwise a pointer to a Key.
+     */
+    static Key *parseFromData(std::string) { return nullptr; }
 
     /*! Determines if the data associated with the Key is valid. */
-    bool validate();
+    virtual bool validate() = 0;
 
     /*! Executes the action associated with this Key.
-     * Will always return `false` if `validate` is `false`.
+     * @note Will always return `false` if `validate` is `false`.
      */
-    bool execute();
+    virtual bool execute() = 0;
 };
 
 }
 }
+
+#endif

@@ -10,10 +10,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#ifndef __HSCRIPT_NETWORK_HH_
+#define __HSCRIPT_NETWORK_HH_
+
 #include "key.hh"
 
 namespace Horizon {
 namespace Keys {
+
+class Network : public Key {
+public:
+    /*! Determine if networking is enabled. */
+    bool enabled();
+};
 
 class NetAddress : public Key {
 };
@@ -23,3 +32,5 @@ class NetSSID : public Key {
 
 }
 }
+
+#endif /* !__HSCRIPT_NETWORK_HH */

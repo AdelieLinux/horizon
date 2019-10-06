@@ -10,12 +10,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#ifndef __HSCRIPT_META_HH_
+#define __HSCRIPT_META_HH_
+
 #include "key.hh"
 
 namespace Horizon {
 namespace Keys {
 
-
+class Hostname : public Key {
+};
 
 }
 }
+
+#endif /* !__HSCRIPT_META_HH_ */
