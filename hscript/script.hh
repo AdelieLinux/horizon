@@ -29,9 +29,6 @@ public:
     /*! Determines if the HorizonScript is valid. */
     bool isValid();
 
-    /*! Returns a list of errors found while parsing and validating the script. */
-    std::vector<std::string> scriptErrors();
-
 private:
     struct ScriptPrivate;
     /*! Internal data. */
