@@ -21,9 +21,6 @@ namespace Keys {
  */
 class Key {
 public:
-    /*! Create an instance of the Key. */
-    static Key *create();
-
     /*! Set the data associated with the Key. */
     void setData(std::string data);
 

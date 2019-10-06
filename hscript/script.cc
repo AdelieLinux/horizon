@@ -11,10 +11,21 @@
  */
 
 #include "script.hh"
+#include "disk.hh"
 
 namespace Horizon {
 
 struct Script::ScriptPrivate {
+    /*! Determines whether or not to enable networking. */
+    bool network;
+    /*! The target system's hostname. */
+    std::string hostname;
+    /*! The packages to install to the target system. */
+    std::vector<std::string> packages;
+    /*! The root shadow line. */
+    std::string rootpw;
+    /*! Target system's mountpoints. */
+    std::vector< std::unique_ptr<Horizon::Keys::Mount> > mounts;
 };
 
 Script::Script() {
