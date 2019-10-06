@@ -15,8 +15,7 @@ set(HSCRIPT_SOURCE
 )
 
 set(HSCRIPT_INCLUDE
-	hscript/script.hh
-        hscript/keymanager.hh
+        hscript/script.hh
         hscript/key.hh
 )
 
