@@ -61,7 +61,7 @@ public:
     static const Script *load(std::istream &stream, ScriptOptions options = 0);
 
     /*! Determines if the HorizonScript is valid. */
-    bool validate();
+    bool validate() const;
 
 private:
     struct ScriptPrivate;

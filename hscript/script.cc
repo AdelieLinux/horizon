@@ -58,6 +58,7 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
     int lineno = 0;
     char nextline[LINE_MAX];
     const std::string delim(" \t");
+    bool any_error = false;
 
     while(sstream.getline(nextline, sizeof(nextline))) {
         lineno++;
@@ -77,10 +78,19 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
         key_end = line.find_first_of(delim, start);
         if(key_end == std::string::npos) {
             /* Key without value */
+            any_error = true;
             output_error("installfile:" + std::to_string(lineno),
                          "key '" + line.substr(start) + "' has no value",
                          "", (opts.test(Pretty)));
+            if(!opts.test(ScriptOptionFlags::KeepGoing)) {
+                break;
+            }
         }
+    }
+
+    if(any_error) {
+        delete the_script;
+        return nullptr;
     }
 
     if(sstream.fail() && !sstream.eof()) {
@@ -101,7 +111,7 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
     return the_script;
 }
 
-bool Script::validate() {
+bool Script::validate() const {
     return false;
 }
 
