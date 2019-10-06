@@ -1,0 +1,5 @@
+network true
+hostname test.machine
+pkginstall adelie-base
+rootpw $It's a password
+mount /dev/sda1 /

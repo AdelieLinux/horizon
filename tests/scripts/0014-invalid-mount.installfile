@@ -1,0 +1,5 @@
+network true
+hostname test.machine
+pkginstall adelie-base
+rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
+mount /

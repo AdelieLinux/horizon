@@ -1,0 +1,4 @@
+network true
+hostname test.machine
+pkginstall adelie-base
+mount /dev/sda1 /
