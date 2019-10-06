@@ -68,7 +68,7 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
         }
 
         const std::string line(nextline);
-        std::string::size_type start, key_end;
+        std::string::size_type start, key_end, value_begin;
         start = line.find_first_not_of(delim);
         if(start == std::string::npos) {
             /* This is a blank line; ignore it. */
@@ -76,11 +76,13 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
         }
 
         key_end = line.find_first_of(delim, start);
-        if(key_end == std::string::npos) {
+        value_begin = line.find_first_not_of(delim, key_end);
+        if(key_end == std::string::npos || value_begin == std::string::npos) {
             /* Key without value */
             any_error = true;
             output_error("installfile:" + std::to_string(lineno),
-                         "key '" + line.substr(start) + "' has no value",
+                         "key '" + line.substr(start, key_end) +
+                             "' has no value",
                          "", (opts.test(Pretty)));
             if(!opts.test(ScriptOptionFlags::KeepGoing)) {
                 break;
