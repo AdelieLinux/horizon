@@ -10,6 +10,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#include <fstream>
+#include <iostream>
 #include "script.hh"
 #include "disk.hh"
 #include "meta.hh"
@@ -34,11 +36,32 @@ struct Script::ScriptPrivate {
 Script::Script() {
 }
 
-const Script *Script::load(std::string, ScriptOptions) {
-    return nullptr;
+const Script *Script::load(std::string path, ScriptOptions opts) {
+    std::ifstream file;
+    std::string maybe_error;
+
+    file.exceptions(std::ios::badbit);
+    try {
+        file.open(path);
+    } catch(const std::ios::failure &error) {
+        maybe_error = error.what();
+    } catch(const std::exception &error) {
+        maybe_error = error.what();
+    }
+    if(!file) {
+        std::cerr << "Cannot open installfile at \"" << path << "\": ";
+        std::cerr << maybe_error;
+        std::cerr << std::endl;
+        return nullptr;
+    }
+
+    return Script::load(file, opts);
 }
 
 const Script *Script::load(std::istream &, ScriptOptions) {
+    Script *foo = new Script;
+    delete foo;
+    std::cout << "loaded" << std::endl;
     return nullptr;
 }
 

@@ -27,8 +27,10 @@ namespace Horizon {
 #define SCRIPT_USE_NETWORK  0x0002
 /*! Treat warnings as errors. */
 #define SCRIPT_STRICT_MODE  0x0004
-/*! This is an Installation Environment - validate more keys */
+/*! This is an Installation Environment - validate more keys. */
 #define SCRIPT_INSTALL_ENV  0x0008
+/*! "Pretty" output - used in interactive tooling only. */
+#define SCRIPT_PRETTY       0x0010
 
 
 typedef uint32_t ScriptOptions;
@@ -36,10 +38,10 @@ typedef uint32_t ScriptOptions;
 
 /*! Defines the Script class, which represents a HorizonScript. */
 class Script {
-public:
+private:
     /*! Initialise the Script class. */
     Script();
-
+public:
     /*! Load a HorizonScript from the specified path.
      * @param path      The path to load from.
      * @param options   Options to use for parsing, validation, and execution.
