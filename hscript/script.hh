@@ -12,10 +12,9 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace Horizon {
-
-struct ScriptPrivate;
 
 /*! Defines the Script class, which represents a HorizonScript. */
 class Script {
@@ -34,8 +33,9 @@ public:
     std::vector<std::string> scriptErrors();
 
 private:
+    struct ScriptPrivate;
     /*! Internal data. */
-    ScriptPrivate *internal;
+    const std::unique_ptr<ScriptPrivate> internal;
 };
 
 }

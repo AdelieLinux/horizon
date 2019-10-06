@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 #include "key.hh"
 
 namespace Horizon {
@@ -20,6 +21,11 @@ namespace Keys {
 /*! Manages the Key classes. */
 class KeyManager {
 private:
+    /*! Internal data class used by the KeyManager. */
+    struct ManagerPrivate;
+    /*! Internal data. */
+    const std::unique_ptr<ManagerPrivate> internal;
+
     /*! Create the key manager */
     KeyManager();
 public:
@@ -27,7 +33,7 @@ public:
     static const KeyManager *getKeyManager();
 
     /*! Add a new Key to the key manager. */
-    void addKey(std::string name, bool required, int max, Key*(*key_create_fn)(void));
+    void addKey(key_desc_t description);
 
     /*! Determines if a Key is recognised. */
     void hasKey(std::string name);
