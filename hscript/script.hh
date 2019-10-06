@@ -19,15 +19,24 @@ namespace Horizon {
 /*! Defines the Script class, which represents a HorizonScript. */
 class Script {
 public:
-    /*! Load a HorizonScript from the specified path and attempt to parse. */
-    Script(std::string path);
-    /*! Load a HorizonScript from the specified stream and attempt to parse. */
-    Script(std::istream &stream);
+    /*! Initialise the Script class. */
+    Script();
 
-    /*! Determines if the HorizonScript parsed correctly. */
-    bool isParsed();
+    /*! Load a HorizonScript from the specified path.
+     * @param path      The path to load from.
+     * @return true if the Script could be loaded; false otherwise.
+     */
+    bool load(std::string path);
+    /*! Load a HorizonScript from the specified stream.
+     * @param stream    The stream to load from.
+     * @return true if the Script could be loaded; false otherwise.
+     */
+    bool load(std::istream &stream);
+
+    /*! Parses the HorizonScript. */
+    bool parse();
     /*! Determines if the HorizonScript is valid. */
-    bool isValid();
+    bool validate();
 
 private:
     struct ScriptPrivate;
