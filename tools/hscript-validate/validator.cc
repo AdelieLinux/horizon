@@ -11,14 +11,23 @@
 
 #include "hscript/script.hh"
 #include "util/output.hh"
+#include "3rdparty/clipp.h"
 
 int main(int argc, char *argv[]) {
     const Horizon::Script *my_script;
     Horizon::ScriptOptions opts;
+    int result_code = EXIT_SUCCESS;
+    std::string installfile;
 
-    if(argc < 2) {
-        output_error("hscript-validate", "No installfile specified", "", true);
-        std::cerr << "Run `" << argv[0] << " --help` for usage information." << std::endl;
+    auto cli = (
+                clipp::value("installfile", installfile),
+                clipp::option("-k", "--keep-going").doc("Continue parsing after errors")(
+                    [&opts] { opts.set(Horizon::ScriptOptionFlags::KeepGoing); }
+                )
+    );
+    if(!clipp::parse(argc, argv, cli)) {
+        std::cout << "usage:" << std::endl;
+        std::cout << clipp::usage_lines(cli, "hscript-validate") << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -28,12 +37,19 @@ int main(int argc, char *argv[]) {
 
     opts.set(Horizon::ScriptOptionFlags::Pretty);
 
-    my_script = Horizon::Script::load(argv[1], opts);
+    my_script = Horizon::Script::load(installfile, opts);
     if(my_script == nullptr) {
         std::cout << "Could not load the specified script." << std::endl;
         return EXIT_FAILURE;
     }
-    delete my_script;
 
-    return EXIT_SUCCESS;
+    if(!my_script->validate()) {
+        output_error("installfile", "Script failed validation step.  Stop.", "", true);
+        result_code = EXIT_FAILURE;
+    } else {
+        output_info("installfile", "Script passed validation.", "", true);
+    }
+
+    delete my_script;
+    return result_code;
 }
