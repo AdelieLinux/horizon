@@ -16,24 +16,29 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <bitset>
 
 namespace Horizon {
 
 /**** Script option flags ****/
 
-/*! Don't stop after the first error. */
-#define SCRIPT_KEEP_GOING   0x0001
-/*! Ensure network resources are available. */
-#define SCRIPT_USE_NETWORK  0x0002
-/*! Treat warnings as errors. */
-#define SCRIPT_STRICT_MODE  0x0004
-/*! This is an Installation Environment - validate more keys. */
-#define SCRIPT_INSTALL_ENV  0x0008
-/*! "Pretty" output - used in interactive tooling only. */
-#define SCRIPT_PRETTY       0x0010
+enum ScriptOptionFlags {
+    /*! Don't stop after the first error. */
+    KeepGoing,
+    /*! Ensure network resources are available. */
+    UseNetwork,
+    /*! Treat warnings as errors. */
+    StrictMode,
+    /*! This is an Installation Environment - validate more keys. */
+    InstallEnvironment,
+    /*! "Pretty" output - used in interactive tooling only. */
+    Pretty,
+    /*! Count of flags */
+    NumFlags
+};
 
 
-typedef uint32_t ScriptOptions;
+typedef std::bitset<ScriptOptionFlags::NumFlags> ScriptOptions;
 
 
 /*! Defines the Script class, which represents a HorizonScript. */
@@ -61,7 +66,7 @@ public:
 private:
     struct ScriptPrivate;
     /*! Internal data. */
-    const std::unique_ptr<ScriptPrivate> internal;
+    ScriptPrivate *internal;
 };
 
 }

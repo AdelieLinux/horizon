@@ -10,5 +10,7 @@ pkg_check_modules(LIBUDEV REQUIRED libudev)
 pkg_check_modules(PARTED REQUIRED libparted)
 find_library(BCNM_LIBRARY REQUIRED wpactrl PATH_SUFFIXES bcnm)
 
+include_directories(.)
+
 add_subdirectory(hscript)
 add_subdirectory(tools)
