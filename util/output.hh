@@ -16,6 +16,28 @@
 #include <string>
 #include <iostream>
 
+/*! Bolds output on +stream+ if it's a TTY.
+ * @param pretty    Whether to act.
+ * @param stream    The stream to turn bold.
+ */
+inline void bold_if_pretty(bool pretty, std::ostream &stream) {
+    if(pretty) stream << "\033[0;1m";
+}
+
+/*! ANSI colour code on +stream+ if +pretty+.
+ * @param pretty    Whether to act.
+ * @param stream    The stream on which to colourise output.
+ * @param what      The colour code.
+ */
+inline void colour_if_pretty(bool pretty, std::ostream &stream,
+                             std::string what) {
+    if(pretty) stream << "\033[" + what + ";1m";
+}
+
+inline void reset_if_pretty(bool pretty, std::ostream &stream) {
+    if(pretty) stream << "\033[0m";
+}
+
 /*! Outputs a message of the specified +type+ to the log stream.
  * @param type      The type of message to output.
  * @param colour    The colourisation of the message.
@@ -28,11 +50,11 @@ inline void output_message(std::string type, std::string colour,
                            std::string where, std::string message,
                            std::string detail = "", bool pretty = false) {
     std::cerr << where << ": ";
-    if(pretty) std::cerr << "\033[" + colour + ";1m";
+    colour_if_pretty(pretty, std::cerr, colour);
     std::cerr << type << ": ";
-    if(pretty) std::cerr << "\033[0;1m";
+    bold_if_pretty(pretty, std::cerr);
     std::cerr << message;
-    if(pretty) std::cerr << "\033[0m";
+    reset_if_pretty(pretty, std::cerr);
     if(!detail.empty()) {
         std::cerr << ": " << detail;
     }

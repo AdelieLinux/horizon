@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
     Horizon::ScriptOptions opts;
     int result_code = EXIT_SUCCESS;
     std::string installfile;
+    using Horizon::ScriptOptionFlags;
 
     /* Default to pretty if we are using a TTY, unless -n specified. */
     if(isatty(1) && isatty(2)) {
@@ -28,10 +29,10 @@ int main(int argc, char *argv[]) {
     auto cli = (
                 clipp::value("installfile", installfile),
                 clipp::option("-k", "--keep-going").doc("Continue parsing after errors")(
-                    [&opts] { opts.set(Horizon::ScriptOptionFlags::KeepGoing); }
+                    [&opts] { opts.set(ScriptOptionFlags::KeepGoing); }
                 ),
                 clipp::option("-n", "--no-colour").doc("Do not 'prettify' output")(
-                    [&opts] { opts.reset(Horizon::ScriptOptionFlags::Pretty); }
+                    [&opts] { opts.reset(ScriptOptionFlags::Pretty); }
                 )
     );
     if(!clipp::parse(argc, argv, cli)) {
@@ -40,13 +41,9 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    if(opts.test(Horizon::ScriptOptionFlags::Pretty)) {
-        std::cout << "\033[1m";
-    }
+    bold_if_pretty(opts.test(ScriptOptionFlags::Pretty), std::cout);
     std::cout << "HorizonScript Validation Utility version 0.1.0";
-    if(opts.test(Horizon::ScriptOptionFlags::Pretty)) {
-        std::cout << "\033[0m";
-    }
+    reset_if_pretty(opts.test(ScriptOptionFlags::Pretty), std::cout);
     std::cout << std::endl;
     std::cout << "Copyright (c) 2019 Adélie Linux and contributors.  AGPL-3.0 license." << std::endl;
     std::cout << std::endl;
