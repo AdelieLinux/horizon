@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <set>
+
 #include "script.hh"
 #include "disk.hh"
 #include "meta.hh"
@@ -22,6 +24,26 @@
 #include "util/output.hh"
 
 #define LINE_MAX 512
+
+
+const std::set<std::string> valid_keys = {
+    "network", "hostname", "pkginstall", "rootpw",
+    "language", "keymap", "firmware",
+    "netaddress", "nameserver", "netssid",
+    "timezone", "repository", "signingkey",
+    "username", "useralias", "userpw", "usericon", "usergroups",
+    "diskid", "disklabel", "partition", "lvm_pv", "lvm_vg", "lvm_lv",
+    "encrypt", "fs", "mount"
+};
+
+
+/*! Determines if the specified +key+ has been defined in this version of
+ * HorizonScript.
+ */
+inline bool is_key(const std::string key) {
+    return valid_keys.find(key) != valid_keys.end();
+}
+
 
 namespace Horizon {
 
@@ -51,13 +73,6 @@ const Script *Script::load(const std::string path, const ScriptOptions opts) {
     }
 
     return Script::load(file, opts);
-}
-
-/*! Determines if the specified +key+ has been defined in this version of
- * HorizonScript.
- */
-bool is_key(std::string key) {
-    return true;
 }
 
 #define PARSER_ERROR(err_str) \

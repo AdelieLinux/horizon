@@ -29,7 +29,7 @@ public:
     /*! Create the Key object with the specified data as the entire value.
      * @returns nullptr if data is unparsable, otherwise a pointer to a Key.
      */
-    static Key *parseFromData(std::string) { return nullptr; }
+    static Key *parseFromData(std::string, int*, int*) { return nullptr; }
 
     /*! Determines if the data associated with the Key is valid. */
     virtual bool validate() = 0;
