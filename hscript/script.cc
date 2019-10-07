@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <set>
+#include <map>
 
 #include "script.hh"
 #include "disk.hh"
@@ -26,23 +26,41 @@
 #define LINE_MAX 512
 
 
-const std::set<std::string> valid_keys = {
-    "network", "hostname", "pkginstall", "rootpw",
-    "language", "keymap", "firmware",
-    "netaddress", "nameserver", "netssid",
-    "timezone", "repository", "signingkey",
-    "username", "useralias", "userpw", "usericon", "usergroups",
-    "diskid", "disklabel", "partition", "lvm_pv", "lvm_vg", "lvm_lv",
-    "encrypt", "fs", "mount"
+typedef Horizon::Keys::Key *(*key_parse_fn)(std::string, int, int*, int*);
+
+const std::map<std::string, key_parse_fn> valid_keys = {
+    {"network", &Horizon::Keys::Network::parseFromData},
+    {"hostname", &Horizon::Keys::Hostname::parseFromData},
+    {"pkginstall", &Horizon::Keys::PkgInstall::parseFromData},
+    {"rootpw", &Horizon::Keys::RootPassphrase::parseFromData},
+
+    {"language", &Horizon::Keys::Language::parseFromData},
+    {"keymap", &Horizon::Keys::Keymap::parseFromData},
+    {"firmware", &Horizon::Keys::Firmware::parseFromData},
+    {"timezone", &Horizon::Keys::Timezone::parseFromData},
+    {"repository", &Horizon::Keys::Repository::parseFromData},
+    {"signingkey", &Horizon::Keys::SigningKey::parseFromData},
+
+    {"netaddress", &Horizon::Keys::NetAddress::parseFromData},
+    {"nameserver", &Horizon::Keys::Nameserver::parseFromData},
+    {"netssid", &Horizon::Keys::NetSSID::parseFromData},
+
+    {"username", &Horizon::Keys::Username::parseFromData},
+    {"useralias", &Horizon::Keys::UserAlias::parseFromData},
+    {"userpw", &Horizon::Keys::UserPassphrase::parseFromData},
+    {"usericon", &Horizon::Keys::UserIcon::parseFromData},
+    {"usergroups", &Horizon::Keys::UserGroups::parseFromData},
+
+    {"diskid", &Horizon::Keys::DiskId::parseFromData},
+    {"disklabel", &Horizon::Keys::DiskLabel::parseFromData},
+    {"partition", &Horizon::Keys::Partition::parseFromData},
+    {"lvm_pv", &Horizon::Keys::LVMPhysical::parseFromData},
+    {"lvm_vg", &Horizon::Keys::LVMGroup::parseFromData},
+    {"lvm_lv", &Horizon::Keys::LVMVolume::parseFromData},
+    {"encrypt", &Horizon::Keys::Encrypt::parseFromData},
+    {"fs", &Horizon::Keys::Filesystem::parseFromData},
+    {"mount", &Horizon::Keys::Mount::parseFromData}
 };
-
-
-/*! Determines if the specified +key+ has been defined in this version of
- * HorizonScript.
- */
-inline bool is_key(const std::string key) {
-    return valid_keys.find(key) != valid_keys.end();
-}
 
 
 namespace Horizon {
@@ -89,6 +107,7 @@ const Script *Script::load(const std::string path, const ScriptOptions opts) {
                    warn_str, "", (opts.test(Pretty)));
 
 const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
+    using namespace Horizon::Keys;
     Script *the_script = new Script;
 
     int lineno = 0;
@@ -123,7 +142,7 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
         /* Normalise key to lower-case */
         std::transform(key.begin(), key.end(), key.begin(), ::tolower);
 
-        if(!is_key(key)) {
+        if(valid_keys.find(key) == valid_keys.end()) {
             /* Invalid key */
             if(opts.test(StrictMode)) {
                 PARSER_ERROR("key '" + key + "' is not defined")
@@ -131,6 +150,12 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
                 PARSER_WARNING("key '" + key + "' is not defined")
             }
             continue;
+        }
+
+        Key *key_obj = valid_keys.at(key)(line.substr(value_begin), lineno,
+                                          &errors, &warnings);
+        if(!key_obj) {
+            PARSER_ERROR("value for key '" + key + "' was invalid")
         }
     }
 
