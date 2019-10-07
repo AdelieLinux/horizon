@@ -34,6 +34,10 @@ inline void colour_if_pretty(bool pretty, std::ostream &stream,
     if(pretty) stream << "\033[" + what + ";1m";
 }
 
+/*! Reset all formatting on +stream+ if +pretty+.
+ * @param pretty    Whether to act.
+ * @param stream    The stream on which to reset formatting.
+ */
 inline void reset_if_pretty(bool pretty, std::ostream &stream) {
     if(pretty) stream << "\033[0m";
 }
