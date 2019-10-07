@@ -114,6 +114,21 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
         }
     }
 
+    if(sstream.fail() && !sstream.eof()) {
+        output_error("installfile:" + std::to_string(lineno + 1),
+                     "line exceeds maximum length",
+                     "Maximum length for line is " + std::to_string(LINE_MAX),
+                     (opts.test(Pretty)));
+        errors++;
+    }
+
+    if(sstream.bad() && !sstream.eof()) {
+        output_error("installfile:" + std::to_string(lineno),
+                     "I/O error reading installfile", "",
+                     (opts.test(Pretty)));
+        errors++;
+    }
+
     output_message("parser", "0", "installfile",
                    std::to_string(errors) + " error(s), " +
                    std::to_string(warnings) + " warning(s).",
@@ -122,24 +137,9 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
     if(errors > 0) {
         delete the_script;
         return nullptr;
+    } else {
+        return the_script;
     }
-
-    if(sstream.fail() && !sstream.eof()) {
-        output_error("installfile:" + std::to_string(lineno + 1),
-                     "line exceeds maximum length",
-                     "Maximum length for line is " + std::to_string(LINE_MAX),
-                     (opts.test(Pretty)));
-        delete the_script;
-        return nullptr;
-    }
-
-    if(sstream.bad() && !sstream.eof()) {
-        output_error("installfile:" + std::to_string(lineno),
-                     "I/O error reading installfile", "",
-                     (opts.test(Pretty)));
-    }
-
-    return the_script;
 }
 
 bool Script::validate() const {
