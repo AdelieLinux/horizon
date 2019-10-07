@@ -60,12 +60,17 @@ bool is_key(std::string key) {
 }
 
 #define PARSER_ERROR(err_str) \
-    any_error = true;\
+    errors++;\
     output_error("installfile:" + std::to_string(lineno),\
                  err_str, "", (opts.test(Pretty)));\
     if(!opts.test(ScriptOptionFlags::KeepGoing)) {\
         break;\
     }
+
+#define PARSER_WARNING(warn_str) \
+    warnings++;\
+    output_warning("installfile:" + std::to_string(lineno),\
+                   warn_str, "", (opts.test(Pretty)));
 
 const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
     Script *the_script = new Script;
@@ -73,7 +78,7 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
     int lineno = 0;
     char nextline[LINE_MAX];
     const std::string delim(" \t");
-    bool any_error = false;
+    int errors = 0, warnings = 0;
 
     while(sstream.getline(nextline, sizeof(nextline))) {
         lineno++;
@@ -99,19 +104,22 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
             PARSER_ERROR("key '" + key + "' has no value")
         }
 
-        if(!is_key(line.substr(start, key_end))) {
+        if(!is_key(key)) {
             /* Invalid key */
             if(opts.test(StrictMode)) {
                 PARSER_ERROR("key '" + key + "' is not defined")
             } else {
-                output_warning("installfile:" + std::to_string(lineno),
-                               "key '" + key + "' is not defined", "",
-                               opts.test(Pretty));
+                PARSER_WARNING("key '" + key + "' is not defined")
             }
         }
     }
 
-    if(any_error) {
+    output_message("parser", "0", "installfile",
+                   std::to_string(errors) + " error(s), " +
+                   std::to_string(warnings) + " warning(s).",
+                   "", opts.test(Pretty));
+
+    if(errors > 0) {
         delete the_script;
         return nullptr;
     }
