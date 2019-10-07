@@ -42,7 +42,7 @@ Script::Script() {
     internal = new ScriptPrivate;
 }
 
-const Script *Script::load(std::string path, ScriptOptions opts) {
+const Script *Script::load(const std::string path, const ScriptOptions opts) {
     std::ifstream file(path);
     if(!file) {
         output_error(path, "Cannot open installfile", "",
@@ -73,7 +73,7 @@ bool is_key(std::string key) {
     output_warning("installfile:" + std::to_string(lineno),\
                    warn_str, "", (opts.test(Pretty)));
 
-const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
+const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
     Script *the_script = new Script;
 
     int lineno = 0;

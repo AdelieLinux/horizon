@@ -52,13 +52,13 @@ public:
      * @param options   Options to use for parsing, validation, and execution.
      * @return true if the Script could be loaded; false otherwise.
      */
-    static const Script *load(std::string path, ScriptOptions options = 0);
+    static const Script *load(const std::string path, const ScriptOptions options = 0);
     /*! Load a HorizonScript from the specified stream.
      * @param stream    The stream to load from.
      * @param options   Options to use for parsing, validation, and execution.
      * @return true if the Script could be loaded; false otherwise.
      */
-    static const Script *load(std::istream &stream, ScriptOptions options = 0);
+    static const Script *load(std::istream &stream, const ScriptOptions options = 0);
 
     /*! Determines if the HorizonScript is valid. */
     bool validate() const;
