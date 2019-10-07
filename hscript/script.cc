@@ -52,6 +52,21 @@ const Script *Script::load(std::string path, ScriptOptions opts) {
     return Script::load(file, opts);
 }
 
+/*! Determines if the specified +key+ has been defined in this version of
+ * HorizonScript.
+ */
+bool is_key(std::string key) {
+    return true;
+}
+
+#define PARSER_ERROR(err_str) \
+    any_error = true;\
+    output_error("installfile:" + std::to_string(lineno),\
+                 err_str, "", (opts.test(Pretty)));\
+    if(!opts.test(ScriptOptionFlags::KeepGoing)) {\
+        break;\
+    }
+
 const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
     Script *the_script = new Script;
 
@@ -68,6 +83,7 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
         }
 
         const std::string line(nextline);
+        std::string key;
         std::string::size_type start, key_end, value_begin;
         start = line.find_first_not_of(delim);
         if(start == std::string::npos) {
@@ -77,15 +93,20 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
 
         key_end = line.find_first_of(delim, start);
         value_begin = line.find_first_not_of(delim, key_end);
+        key = line.substr(start, key_end);
         if(key_end == std::string::npos || value_begin == std::string::npos) {
             /* Key without value */
-            any_error = true;
-            output_error("installfile:" + std::to_string(lineno),
-                         "key '" + line.substr(start, key_end) +
-                             "' has no value",
-                         "", (opts.test(Pretty)));
-            if(!opts.test(ScriptOptionFlags::KeepGoing)) {
-                break;
+            PARSER_ERROR("key '" + key + "' has no value")
+        }
+
+        if(!is_key(line.substr(start, key_end))) {
+            /* Invalid key */
+            if(opts.test(StrictMode)) {
+                PARSER_ERROR("key '" + key + "' is not defined")
+            } else {
+                output_warning("installfile:" + std::to_string(lineno),
+                               "key '" + key + "' is not defined", "",
+                               opts.test(Pretty));
             }
         }
     }
