@@ -27,6 +27,18 @@ class DiskLabel : public Key {
 class Partition : public Key {
 };
 
+class Encrypt : public Key {
+};
+
+class LVMPhysical : public Key {
+};
+
+class LVMGroup : public Key {
+};
+
+class LVMVolume : public Key {
+};
+
 class Filesystem : public Key {
 };
 

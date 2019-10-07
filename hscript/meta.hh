@@ -21,6 +21,27 @@ namespace Keys {
 class Hostname : public Key {
 };
 
+class PkgInstall : public Key {
+};
+
+class Language : public Key {
+};
+
+class Keymap : public Key {
+};
+
+class Firmware : public Key {
+};
+
+class Timezone : public Key {
+};
+
+class Repository : public Key {
+};
+
+class SigningKey : public Key {
+};
+
 }
 }
 

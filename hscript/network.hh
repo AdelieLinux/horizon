@@ -27,6 +27,9 @@ public:
 class NetAddress : public Key {
 };
 
+class Nameserver : public Key {
+};
+
 class NetSSID : public Key {
 };
 
