@@ -117,14 +117,14 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
     if(sstream.fail() && !sstream.eof()) {
         output_error("installfile:" + std::to_string(lineno + 1),
                      "line exceeds maximum length",
-                     "Maximum length for line is " + std::to_string(LINE_MAX),
+                     "Maximum line length is " + std::to_string(LINE_MAX),
                      (opts.test(Pretty)));
         errors++;
     }
 
     if(sstream.bad() && !sstream.eof()) {
         output_error("installfile:" + std::to_string(lineno),
-                     "I/O error reading installfile", "",
+                     "I/O error while reading installfile", "",
                      (opts.test(Pretty)));
         errors++;
     }
