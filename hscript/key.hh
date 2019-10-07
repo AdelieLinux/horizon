@@ -27,9 +27,14 @@ public:
     virtual ~Key();
 
     /*! Create the Key object with the specified data as the entire value.
+     * @param data      The value associated with the key.
+     * @param lineno    The line number where the key occurs.
+     * @param errors    Output variable: if not nullptr, ++ on each error.
+     * @param warnings  Output variable: if not nullptr, ++ on each warning.
      * @returns nullptr if data is unparsable, otherwise a pointer to a Key.
      */
-    static Key *parseFromData(std::string, int*, int*) { return nullptr; }
+    static Key *parseFromData(std::string data, int lineno, int *errors,
+                              int *warnings) { return nullptr; }
 
     /*! Determines if the data associated with the Key is valid. */
     virtual bool validate() = 0;
