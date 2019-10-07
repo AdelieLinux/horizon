@@ -10,6 +10,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include "script.hh"
@@ -104,6 +105,9 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
             PARSER_ERROR("key '" + key + "' has no value")
         }
 
+        /* Normalise key to lower-case */
+        std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+
         if(!is_key(key)) {
             /* Invalid key */
             if(opts.test(StrictMode)) {
@@ -111,6 +115,7 @@ const Script *Script::load(std::istream &sstream, ScriptOptions opts) {
             } else {
                 PARSER_WARNING("key '" + key + "' is not defined")
             }
+            continue;
         }
     }
 
