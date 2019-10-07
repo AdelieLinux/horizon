@@ -33,6 +33,9 @@ int main(int argc, char *argv[]) {
                 ),
                 clipp::option("-n", "--no-colour").doc("Do not 'prettify' output")(
                     [&opts] { opts.reset(ScriptOptionFlags::Pretty); }
+                ),
+                clipp::option("-s", "--strict").doc("Strict parsing")(
+                    [&opts] { opts.set(ScriptOptionFlags::StrictMode); }
                 )
     );
     if(!clipp::parse(argc, argv, cli)) {
