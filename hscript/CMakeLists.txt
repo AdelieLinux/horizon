@@ -1,6 +1,7 @@
 set(HSCRIPT_SOURCE
 	script.cc
         key.cc
+        network.cc
 )
 
 set(HSCRIPT_INCLUDE

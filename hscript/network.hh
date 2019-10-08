@@ -14,14 +14,18 @@
 #define __HSCRIPT_NETWORK_HH_
 
 #include "key.hh"
+#include "util/output.hh"
 
 namespace Horizon {
 namespace Keys {
 
-class Network : public Key {
+class Network : public BooleanKey {
+private:
+    Network(bool _value) : BooleanKey(_value) {}
 public:
-    /*! Determine if networking is enabled. */
-    bool enabled();
+    static Key *parseFromData(const std::string data, int lineno, int *errors,
+                              int *warnings);
+    bool execute() override;
 };
 
 class NetAddress : public Key {
