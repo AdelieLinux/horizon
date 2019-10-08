@@ -12,8 +12,11 @@
 
 #include <algorithm>
 #include "key.hh"
+#include "util/output.hh"
 
-bool Horizon::Keys::BooleanKey::parse(const std::string what, bool *out) {
+bool Horizon::Keys::BooleanKey::parse(const std::string what,
+                                      const std::string where,
+                                      const std::string key, bool *out) {
     std::string lower;
     std::transform(what.begin(), what.end(), lower.begin(), ::tolower);
 
@@ -22,6 +25,8 @@ bool Horizon::Keys::BooleanKey::parse(const std::string what, bool *out) {
     } else if(lower == "false" || lower == "no" || lower == "0") {
         *out = false;
     } else {
+        output_error(where, key + ": expected 'true' or 'false'",
+                     "'" + what + "' is not a valid Boolean value");
         return false;
     }
     return true;

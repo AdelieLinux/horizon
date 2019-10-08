@@ -63,10 +63,13 @@ protected:
 
     /*! Parse a string into a boolean.
      * @param what      The string to attempt parsing.
+     * @param where     The location of the key.
+     * @param key       The name of the key.
      * @param out       Output variable: will contain the value.
      * @returns true if value is parsed successfully, false otherwise.
      */
-    static bool parse(const std::string what, bool *out);
+    static bool parse(const std::string what, const std::string where,
+                      const std::string key, bool *out);
 public:
     /*! Determines if the Key is set or not.
      * @returns true if the Key is truthy, false otherwise.

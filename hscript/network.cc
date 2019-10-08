@@ -17,10 +17,8 @@ using namespace Horizon::Keys;
 Key *Network::parseFromData(const std::string data, int lineno, int *errors,
                             int *warnings) {
     bool value;
-    if(!BooleanKey::parse(data, &value)) {
-        output_error("installfile:" + std::to_string(lineno),
-                     "network: expected 'true' or 'false'",
-                     "'" + data + "' is not a valid Boolean value");
+    if(!BooleanKey::parse(data, "installfile:" + std::to_string(lineno),
+                          "network", &value)) {
         if(errors) *errors += 1;
         return nullptr;
     }
