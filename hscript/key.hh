@@ -1,5 +1,5 @@
 /*
- * key.hh - Definition of the base Key class
+ * key.hh - Definition of the base Key classes
  * libhscript, the HorizonScript library for
  * Project Horizon
  *
@@ -24,7 +24,7 @@ namespace Keys {
  */
 class Key {
 public:
-    virtual ~Key();
+    virtual ~Key() {}
 
     /*! Create the Key object with the specified data as the entire value.
      * @param data      The value associated with the key.
@@ -33,8 +33,12 @@ public:
      * @param warnings  Output variable: if not nullptr, ++ on each warning.
      * @returns nullptr if data is unparsable, otherwise a pointer to a Key.
      */
-    static Key *parseFromData(std::string data, int lineno, int *errors,
-                              int *warnings) { return nullptr; }
+#define UNUSED __attribute__((unused))
+    static Key *parseFromData(const std::string data UNUSED, int lineno UNUSED,
+                              int *errors UNUSED, int *warnings UNUSED) {
+        return nullptr;
+    }
+#undef UNUSED
 
     /*! Determines if the data associated with the Key is valid. */
     virtual bool validate() = 0;
@@ -43,6 +47,34 @@ public:
      * @note Will always return `false` if `validate` is `false`.
      */
     virtual bool execute() = 0;
+};
+
+
+/*! Base Key class that parses and handles Boolean values.
+ * All values passed in are lowercased.  Delimiters are not allowed.
+ * Truthy values: "true" "yes" "1"
+ * Falsy values: "false" "no" "0"
+ * Any other values will be considered invalid.
+ */
+class BooleanKey : public Key {
+protected:
+    BooleanKey(bool my_value) : value(my_value) {}
+    bool value;
+
+    /*! Parse a string into a boolean.
+     * @param what      The string to attempt parsing.
+     * @param out       Output variable: will contain the value.
+     * @returns true if value is parsed successfully, false otherwise.
+     */
+    static bool parse(const std::string what, bool *out);
+public:
+    /*! Determines if the Key is set or not.
+     * @returns true if the Key is truthy, false otherwise.
+     */
+    bool test() const { return this->value; }
+
+    /*! Key will fail to init if valid is invalid. */
+    bool validate() override;
 };
 
 }

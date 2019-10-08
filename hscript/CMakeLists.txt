@@ -1,5 +1,6 @@
 set(HSCRIPT_SOURCE
 	script.cc
+        key.cc
 )
 
 set(HSCRIPT_INCLUDE
