@@ -17,7 +17,7 @@
 bool Horizon::Keys::BooleanKey::parse(const std::string what,
                                       const std::string where,
                                       const std::string key, bool *out) {
-    std::string lower;
+    std::string lower(what.size(), 0);
     std::transform(what.begin(), what.end(), lower.begin(), ::tolower);
 
     if(lower == "true" || lower == "yes" || lower == "1") {
