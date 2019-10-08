@@ -21,11 +21,11 @@ namespace Keys {
 
 class Network : public BooleanKey {
 private:
-    Network(bool _value) : BooleanKey(_value) {}
+    Network(int _line, bool _value) : BooleanKey(_line, _value) {}
 public:
     static Key *parseFromData(const std::string data, int lineno, int *errors,
                               int *warnings);
-    bool execute() override;
+    bool execute() const override;
 };
 
 class NetAddress : public Key {

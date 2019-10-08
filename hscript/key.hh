@@ -23,6 +23,10 @@ namespace Keys {
  * return a different type of data.  For example, `network` may return `bool`.
  */
 class Key {
+protected:
+    /*! The line number where this Key appeared. */
+    int line;
+    Key(int _line) : line(_line) {}
 public:
     virtual ~Key() {}
 
@@ -41,12 +45,14 @@ public:
 #undef UNUSED
 
     /*! Determines if the data associated with the Key is valid. */
-    virtual bool validate() = 0;
+    virtual bool validate() const = 0;
 
     /*! Executes the action associated with this Key.
      * @note Will always return `false` if `validate` is `false`.
      */
-    virtual bool execute() = 0;
+    virtual bool execute() const = 0;
+
+    int lineno() const { return this->line; }
 };
 
 
@@ -58,7 +64,7 @@ public:
  */
 class BooleanKey : public Key {
 protected:
-    BooleanKey(bool my_value) : value(my_value) {}
+    BooleanKey(int _line, bool my_value) : Key(_line), value(my_value) {}
     bool value;
 
     /*! Parse a string into a boolean.
@@ -77,7 +83,7 @@ public:
     bool test() const { return this->value; }
 
     /*! Key will fail to init if valid is invalid. */
-    bool validate() override;
+    bool validate() const override;
 };
 
 }

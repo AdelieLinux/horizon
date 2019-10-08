@@ -76,7 +76,45 @@ struct Script::ScriptPrivate {
     std::unique_ptr<Horizon::Keys::RootPassphrase> rootpw;
     /*! Target system's mountpoints. */
     std::vector< std::unique_ptr<Horizon::Keys::Mount> > mounts;
+
+    /*! Store +key_obj+ representing the key +key_name+.
+     * @param key_name      The name of the key that is being stored.
+     * @param key_obj       The Key object associated with the key.
+     * @param errors        Output parameter: if given, incremented on error.
+     * @param warnings      Output parameter: if given, incremented on warning.
+     */
+    bool store_key(const std::string key_name, Keys::Key *key_obj, int lineno,
+                   int *errors, int *warnings) {
+        if(key_name == "network") {
+            if(this->network) {
+                std::string err_str("previous value was ");
+                err_str += this->network->test() ? "true" : "false";
+                err_str += " at installfile:";
+                err_str += std::to_string(this->network->lineno());
+                if(errors) *errors += 1;
+                output_error("installfile:" + std::to_string(lineno),
+                             "'network' key has already been specified",
+                             err_str);
+                return false;
+            }
+            std::unique_ptr<Keys::Network> net(dynamic_cast<Keys::Network *>(key_obj));
+            this->network = std::move(net);
+            return true;
+        } else if(key_name == "hostname") {
+            /*! TODO: implement */
+            return false;
+        } else if(key_name == "pkginstall") {
+            /*! TODO: implement */
+            return false;
+        } else if(key_name == "rootpw") {
+            /*! TODO: implement */
+            return false;
+        } else {
+            return false;
+        }
+    }
 };
+
 
 Script::Script() {
     internal = new ScriptPrivate;
@@ -156,6 +194,13 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
                                           &errors, &warnings);
         if(!key_obj) {
             PARSER_ERROR("value for key '" + key + "' was invalid")
+            continue;
+        }
+
+        if(!the_script->internal->store_key(key, key_obj, lineno, &errors,
+                                            &warnings)) {
+            PARSER_ERROR("stopping due to prior errors")
+            continue;
         }
     }
 

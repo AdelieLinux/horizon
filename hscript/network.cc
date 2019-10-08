@@ -22,9 +22,9 @@ Key *Network::parseFromData(const std::string data, int lineno, int *errors,
         if(errors) *errors += 1;
         return nullptr;
     }
-    return new Network(value);
+    return new Network(lineno, value);
 }
 
-bool Network::execute() {
+bool Network::execute() const {
     return false;
 }

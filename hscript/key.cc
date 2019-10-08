@@ -32,7 +32,7 @@ bool Horizon::Keys::BooleanKey::parse(const std::string what,
     return true;
 }
 
-bool Horizon::Keys::BooleanKey::validate() {
+bool Horizon::Keys::BooleanKey::validate() const {
     /* Key will fail init if it is not valid, so this is always a no-op. */
     return true;
 }
