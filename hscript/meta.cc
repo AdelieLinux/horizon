@@ -19,8 +19,7 @@ using namespace Horizon::Keys;
 Key *Hostname::parseFromData(const std::string data, int lineno, int *errors,
                              int *warnings) {
     std::regex valid_re("[A-Za-z0-9.]*");
-    bool valid = std::regex_match(data, valid_re);
-    if(!valid) {
+    if(!std::regex_match(data, valid_re)) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
                      "hostname: expected machine or DNS name",
@@ -38,4 +37,32 @@ bool Hostname::validate() const {
 bool Hostname::execute() const {
     /* Write the hostname to /etc/hostname in the target environment. */
     return false;
+}
+
+
+Key *PkgInstall::parseFromData(const std::string data, int lineno, int *errors,
+                               int *warnings) {
+    std::regex valid_pkg("[0-9A-Za-z_-]*((>?<|[<>]?=|[~>])[0-9A-Za-z-_.]+)?");
+    std::string next_pkg;
+    std::istringstream stream(data);
+    std::set<std::string> all_pkgs;
+
+    while(stream >> next_pkg) {
+        if(!std::regex_match(next_pkg, valid_pkg)) {
+            if(errors) *errors += 1;
+            output_error("installfile:" + std::to_string(lineno),
+                         "pkginstall: expected package name",
+                         "'" + next_pkg + "' is not a valid package or atom");
+            return nullptr;
+        }
+        if(all_pkgs.find(next_pkg) != all_pkgs.end()) {
+            if(warnings) *warnings += 1;
+            output_warning("installfile:" + std::to_string(lineno),
+                           "pkginstall: package '" + next_pkg +
+                           "' is already in the target package set");
+            continue;
+        }
+        all_pkgs.insert(next_pkg);
+    }
+    return new PkgInstall(lineno, all_pkgs);
 }

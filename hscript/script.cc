@@ -14,6 +14,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <set>
 
 #include "script.hh"
 #include "disk.hh"
@@ -71,7 +72,7 @@ struct Script::ScriptPrivate {
     /*! The target system's hostname. */
     std::unique_ptr<Horizon::Keys::Hostname> hostname;
     /*! The packages to install to the target system. */
-    std::vector<std::string> packages;
+    std::set<std::string> packages;
     /*! The root shadow line. */
     std::unique_ptr<Horizon::Keys::RootPassphrase> rootpw;
     /*! Target system's mountpoints. */
@@ -82,16 +83,18 @@ struct Script::ScriptPrivate {
      * @param key_obj       The Key object associated with the key.
      * @param errors        Output parameter: if given, incremented on error.
      * @param warnings      Output parameter: if given, incremented on warning.
+     * @param opts          Script parsing options.
      */
     bool store_key(const std::string key_name, Keys::Key *key_obj, int lineno,
-                   int *errors, int *warnings) {
+                   int *errors, int *warnings, ScriptOptions opts) {
 #define DUPLICATE_ERROR(OBJ, KEY, OLD_VAL) \
     std::string err_str("previous value was ");\
     err_str += OLD_VAL;\
     err_str += " at installfile:" + std::to_string(OBJ->lineno());\
     if(errors) *errors += 1;\
     output_error("installfile:" + std::to_string(lineno),\
-                 "duplicate value for key '" + KEY + "'", err_str);
+                 "duplicate value for key '" + KEY + "'", err_str,\
+                 opts.test(Pretty));
 
         if(key_name == "network") {
             if(this->network) {
@@ -116,8 +119,16 @@ struct Script::ScriptPrivate {
             this->hostname = std::move(name);
             return true;
         } else if(key_name == "pkginstall") {
-            /*! TODO: implement */
-            return false;
+            Keys::PkgInstall *install = dynamic_cast<Keys::PkgInstall *>(key_obj);
+            for(auto &pkg : install->packages()) {
+                if(opts.test(StrictMode) && packages.find(pkg) != packages.end()) {
+                    output_warning("installfile:" + std::to_string(lineno),
+                                   "package '" + pkg + "' has already been specified",
+                                   "", opts.test(Pretty));
+                }
+                packages.insert(pkg);
+            }
+            return true;
         } else if(key_name == "rootpw") {
             /*! TODO: implement */
             return false;
@@ -215,7 +226,7 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
         }
 
         if(!the_script->internal->store_key(key, key_obj, lineno, &errors,
-                                            &warnings)) {
+                                            &warnings, opts)) {
             PARSER_ERROR("stopping due to prior errors")
             continue;
         }

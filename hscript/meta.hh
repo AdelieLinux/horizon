@@ -14,6 +14,7 @@
 #define __HSCRIPT_META_HH_
 
 #include <string>
+#include <set>
 #include "key.hh"
 
 namespace Horizon {
@@ -33,6 +34,17 @@ public:
 };
 
 class PkgInstall : public Key {
+private:
+    const std::set<std::string> _pkgs;
+    PkgInstall(int _line, const std::set<std::string> my_pkgs) : Key(_line),
+        _pkgs(my_pkgs) {}
+public:
+    static Key *parseFromData(const std::string data, int lineno, int *errors,
+                              int *warnings);
+    const std::set<std::string> packages() const { return _pkgs; }
+    bool validate() const override { return true; }
+    bool execute() const override { return true; }
+
 };
 
 class Language : public Key {
