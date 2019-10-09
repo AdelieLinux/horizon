@@ -45,16 +45,16 @@ public:
 
 };
 
-class Language : public Key {
+class Language : public StringKey {
 };
 
-class Keymap : public Key {
+class Keymap : public StringKey {
 };
 
-class Firmware : public Key {
+class Firmware : public BooleanKey {
 };
 
-class Timezone : public Key {
+class Timezone : public StringKey {
 };
 
 class Repository : public Key {
