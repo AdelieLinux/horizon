@@ -28,7 +28,7 @@ protected:
     int line;
     Key(int _line) : line(_line) {}
 public:
-    virtual ~Key() {}
+    virtual ~Key();
 
     /*! Create the Key object with the specified data as the entire value.
      * @param data      The value associated with the key.
