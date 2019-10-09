@@ -121,9 +121,13 @@ struct Script::ScriptPrivate {
         } else if(key_name == "rootpw") {
             /*! TODO: implement */
             return false;
+        } else if(key_name == "mount") {
+            /*! TODO: implement */
+            return false;
         } else {
             return false;
         }
+#undef DUPLICATE_ERROR
     }
 };
 
@@ -231,6 +235,30 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
                      (opts.test(Pretty)));
         errors++;
     }
+
+    /* Ensure no required keys are missing. */
+#define MISSING_ERROR(key) \
+    output_error("installfile:" + std::to_string(lineno),\
+                 "expected value for key '" + key + "'",\
+                 "this key is required", (opts.test(Pretty)));\
+    errors++;
+
+    if(!the_script->internal->network) {
+        MISSING_ERROR(std::string("network"))
+    }
+    if(!the_script->internal->hostname) {
+        MISSING_ERROR(std::string("hostname"))
+    }
+    if(the_script->internal->packages.size() == 0) {
+        MISSING_ERROR(std::string("pkginstall"))
+    }
+    if(!the_script->internal->rootpw) {
+        MISSING_ERROR(std::string("rootpw"))
+    }
+    if(the_script->internal->mounts.size() == 0) {
+        MISSING_ERROR(std::string("mount"))
+    }
+#undef MISSING_ERROR
 
     output_message("parser", "0", "installfile",
                    std::to_string(errors) + " error(s), " +
