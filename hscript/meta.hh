@@ -13,12 +13,23 @@
 #ifndef __HSCRIPT_META_HH_
 #define __HSCRIPT_META_HH_
 
+#include <string>
 #include "key.hh"
 
 namespace Horizon {
 namespace Keys {
 
 class Hostname : public Key {
+private:
+    const std::string _name;
+    Hostname(int _line, const std::string my_name) : Key(_line),
+        _name(my_name) {}
+public:
+    static Key *parseFromData(const std::string data, int lineno, int *errors,
+                              int *warnings);
+    const std::string name() const { return this->_name; }
+    bool validate() const override;
+    bool execute() const override;
 };
 
 class PkgInstall : public Key {

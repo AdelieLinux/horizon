@@ -85,24 +85,36 @@ struct Script::ScriptPrivate {
      */
     bool store_key(const std::string key_name, Keys::Key *key_obj, int lineno,
                    int *errors, int *warnings) {
+#define DUPLICATE_ERROR(OBJ, KEY, OLD_VAL) \
+    std::string err_str("previous value was ");\
+    err_str += OLD_VAL;\
+    err_str += " at installfile:" + std::to_string(OBJ->lineno());\
+    if(errors) *errors += 1;\
+    output_error("installfile:" + std::to_string(lineno),\
+                 "duplicate value for key '" + KEY + "'", err_str);
+
         if(key_name == "network") {
             if(this->network) {
-                std::string err_str("previous value was ");
-                err_str += this->network->test() ? "true" : "false";
-                err_str += " at installfile:";
-                err_str += std::to_string(this->network->lineno());
-                if(errors) *errors += 1;
-                output_error("installfile:" + std::to_string(lineno),
-                             "duplicate value for key 'network'",
-                             err_str);
+                DUPLICATE_ERROR(this->network, std::string("network"),
+                                this->network->test() ? "true" : "false")
                 return false;
             }
-            std::unique_ptr<Keys::Network> net(dynamic_cast<Keys::Network *>(key_obj));
+            std::unique_ptr<Keys::Network> net(
+                        dynamic_cast<Keys::Network *>(key_obj)
+            );
             this->network = std::move(net);
             return true;
         } else if(key_name == "hostname") {
-            /*! TODO: implement */
-            return false;
+            if(this->hostname) {
+                DUPLICATE_ERROR(this->hostname, std::string("hostname"),
+                                this->hostname->name())
+                return false;
+            }
+            std::unique_ptr<Keys::Hostname> name(
+                        dynamic_cast<Keys::Hostname *>(key_obj)
+            );
+            this->hostname = std::move(name);
+            return true;
         } else if(key_name == "pkginstall") {
             /*! TODO: implement */
             return false;

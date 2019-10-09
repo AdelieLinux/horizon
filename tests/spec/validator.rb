@@ -50,6 +50,16 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
             run_validate
             expect(last_command_started).to have_output(SUCCESS_OUTPUT)
         end
+        it "requires keys to have values" do
+            use_fixture '0015-keys-without-values.installfile'
+            run_validate ' --keep-going'
+            expect(last_command_started).to have_output(/5 error(s)/)
+        end
+        it "fails on lines over maximum line length" do
+            use_fixture '0017-line-too-long.installfile'
+            run_validate
+            expect(last_command_started).to have_output(/error: .*length/)
+        end
         context "required keys" do
             it "fails without a 'network' key" do
                 use_fixture '0006-no-network.installfile'
@@ -73,6 +83,28 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
             end
             it "fails without a 'mount' key" do
                 use_fixture '0010-no-mount.installfile'
+                run_validate
+                expect(last_command_started).to have_output(/error: .*mount.*/)
+            end
+        end
+        context "values" do
+            it "fails with an invalid 'network' value" do
+                use_fixture '0011-invalid-network.installfile'
+                run_validate
+                expect(last_command_started).to have_output(/error: .*network.*/)
+            end
+            it "fails with an invalid 'hostname' value" do
+                use_fixture '0012-invalid-hostname.installfile'
+                run_validate
+                expect(last_command_started).to have_output(/error: .*hostname.*/)
+            end
+            it "fails with an invalid 'rootpw' value" do
+                use_fixture '0013-invalid-rootpw.installfile'
+                run_validate
+                expect(last_command_started).to have_output(/error: .*rootpw.*/)
+            end
+            it "fails with an invalid 'mount' value" do
+                use_fixture '0014-invalid-mount.installfile'
                 run_validate
                 expect(last_command_started).to have_output(/error: .*mount.*/)
             end
