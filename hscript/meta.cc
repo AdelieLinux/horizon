@@ -42,7 +42,7 @@ bool Hostname::execute() const {
 
 Key *PkgInstall::parseFromData(const std::string data, int lineno, int *errors,
                                int *warnings) {
-    std::regex valid_pkg("[0-9A-Za-z_-]*((>?<|[<>]?=|[~>])[0-9A-Za-z-_.]+)?");
+    std::regex valid_pkg("[0-9A-Za-z_.-]*((>?<|[<>]?=|[~>])[0-9A-Za-z-_.]+)?");
     std::string next_pkg;
     std::istringstream stream(data);
     std::set<std::string> all_pkgs;
