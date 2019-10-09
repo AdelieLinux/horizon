@@ -122,12 +122,14 @@ struct Script::ScriptPrivate {
             Keys::PkgInstall *install = dynamic_cast<Keys::PkgInstall *>(key_obj);
             for(auto &pkg : install->packages()) {
                 if(opts.test(StrictMode) && packages.find(pkg) != packages.end()) {
+                    if(warnings) *warnings += 1;
                     output_warning("installfile:" + std::to_string(lineno),
                                    "package '" + pkg + "' has already been specified",
                                    "", opts.test(Pretty));
                 }
                 packages.insert(pkg);
             }
+            delete install;
             return true;
         } else if(key_name == "rootpw") {
             /*! TODO: implement */
