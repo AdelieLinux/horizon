@@ -1,0 +1,5 @@
+network true
+hostname test.machine
+pkginstall adelie-base musl>1.1.23-r5 konsole=19.12.0-r0 libxxf86vm>=1.1.4-r2 openssh-server<7.9_p1-r4 help2man-doc=1.47.10-r0 perl-encode-jisx0213>0.04-r0 font-adobe-100dpi polkit-qt-1=0.113.0-r0 libssl1.0=1.0.2t-r0
+rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
+mount /dev/sda1 /

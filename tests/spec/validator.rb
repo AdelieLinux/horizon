@@ -24,12 +24,13 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
         end
     end
     context "on invalid keys" do
-        before(:each) { use_fixture '0016-invalid-key.installfile' }
         it "warns on invalid keys by default" do
+            use_fixture '0016-invalid-key.installfile'
             run_validate
             expect(last_command_started).to have_output(/warning: .*chat.* not defined/)
         end
         it "errors on invalid keys in strict mode" do
+            use_fixture '0016-invalid-key.installfile'
             run_validate ' --strict'
             expect(last_command_started).to have_output(/error: .*chat.* not defined/)
         end
@@ -53,7 +54,7 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
         it "requires keys to have values" do
             use_fixture '0015-keys-without-values.installfile'
             run_validate ' --keep-going'
-            expect(last_command_started).to have_output(/5 error\(s\)/)
+            expect(last_command_started).to have_output(/2 error\(s\)/)
         end
         it "fails on lines over maximum line length" do
             use_fixture '0017-line-too-long.installfile'
@@ -124,6 +125,18 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 use_fixture '0020-duplicate-rootpw.installfile'
                 run_validate
                 expect(last_command_started).to have_output(/error: .*duplicate.*rootpw/)
+            end
+        end
+        context "package specifications" do
+            it "works with all types of package atoms" do
+                use_fixture '0022-all-kinds-of-atoms.installfile'
+                run_validate
+                expect(last_command_started).to have_output(SUCCESS_OUTPUT)
+            end
+            it "does not accept invalid package atoms" do
+                use_fixture '0023-pkginstall-invalid-modifier.installfile'
+                run_validate
+                expect(last_command_started).to have_output(/error: .*expected package.*/)
             end
         end
     end

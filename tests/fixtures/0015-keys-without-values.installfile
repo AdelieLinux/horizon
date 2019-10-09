@@ -1,5 +1,7 @@
-network 
-hostname
-pkginstall
+network true
+hostname test.machine
+pkginstall adelie-base
 rootpw 
-mount
+mount /dev/sda1 /
+username
+useralias 
