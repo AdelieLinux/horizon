@@ -18,7 +18,7 @@ using namespace Horizon::Keys;
 
 Key *Hostname::parseFromData(const std::string data, int lineno, int *errors,
                              int *warnings) {
-    std::regex valid_re("[A-Za-z0-9.]*");
+    std::regex valid_re("[A-Za-z0-9-_.]*");
     if(!std::regex_match(data, valid_re)) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
