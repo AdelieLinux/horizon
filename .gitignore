@@ -1,4 +1,11 @@
+# Build artifacts
 build
+
+# Doc output
 devel/requirements/html
 devel/script/html
 devel/vision/html
+
+# RSpec
+tests/spec/examples.txt
+tests/tmp
