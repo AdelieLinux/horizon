@@ -64,8 +64,8 @@ public:
  */
 class BooleanKey : public Key {
 protected:
-    BooleanKey(int _line, bool my_value) : Key(_line), value(my_value) {}
     bool value;
+    BooleanKey(int _line, bool my_value) : Key(_line), value(my_value) {}
 
     /*! Parse a string into a boolean.
      * @param what      The string to attempt parsing.
@@ -83,6 +83,23 @@ public:
     bool test() const { return this->value; }
 
     /*! Key will fail to init if valid is invalid. */
+    bool validate() const override;
+};
+
+
+/*! Base Key class that parses and handles single string values. */
+class StringKey : public Key {
+protected:
+    std::string _value;
+    StringKey(int _line, std::string my_str) : Key(_line), _value(my_str) {}
+
+public:
+    /*! Retrieve the value of this key. */
+    const std::string value() const { return this->_value; }
+
+    /*! By default, key will be considered valid since it parsed.
+     * This method should be overridden when further consideration is needed.
+     */
     bool validate() const override;
 };
 
