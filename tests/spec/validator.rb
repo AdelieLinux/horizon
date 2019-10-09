@@ -10,7 +10,7 @@ def use_fixture(fixture)
     copy '%/' + fixture, IFILE_PATH
 end
 
-SUCCESS_OUTPUT = /0 error\(s\), 0 warning\(s\)/
+PARSER_SUCCESS = /parser: 0 error\(s\), 0 warning\(s\)/
 
 RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
     context "argument passing" do
@@ -43,24 +43,24 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
         it "successfully reads a basic installfile" do
             use_fixture '0001-basic.installfile'
             run_validate
-            expect(last_command_started).to have_output(SUCCESS_OUTPUT)
+            expect(last_command_started).to have_output(PARSER_SUCCESS)
         end
         # HorizonScript Specification, ch 3.
         it "handles comments" do
             use_fixture '0002-basic-commented.installfile'
             run_validate
-            expect(last_command_started).to have_output(SUCCESS_OUTPUT)
+            expect(last_command_started).to have_output(PARSER_SUCCESS)
         end
         # HorizonScript Specification, ch 3.
         it "handles blank lines and indentation" do
             use_fixture '0003-basic-whitespace.installfile'
             run_validate
-            expect(last_command_started).to have_output(SUCCESS_OUTPUT)
+            expect(last_command_started).to have_output(PARSER_SUCCESS)
         end
         it "requires keys to have values" do
             use_fixture '0015-keys-without-values.installfile'
             run_validate ' --keep-going'
-            expect(last_command_started).to have_output(/2 error\(s\)/)
+            expect(last_command_started).to have_output(/parser: 2 error\(s\)/)
         end
         # XXX: no requirement.
         it "fails on lines over maximum line length" do
@@ -178,7 +178,7 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
             it "works with all types of package atoms" do
                 use_fixture '0022-all-kinds-of-atoms.installfile'
                 run_validate
-                expect(last_command_started).to have_output(SUCCESS_OUTPUT)
+                expect(last_command_started).to have_output(PARSER_SUCCESS)
             end
             it "does not accept invalid package atoms" do
                 use_fixture '0023-pkginstall-invalid-modifier.installfile'
