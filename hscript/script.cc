@@ -239,24 +239,24 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
     /* Ensure all required keys are present. */
 #define MISSING_ERROR(key) \
     output_error("installfile:" + std::to_string(lineno),\
-                 "expected value for key '" + key + "'",\
+                 "expected value for key '" + std::string(key) + "'",\
                  "this key is required", (opts.test(Pretty)));\
     errors++;
 
     if(!the_script->internal->network) {
-        MISSING_ERROR(std::string("network"))
+        MISSING_ERROR("network")
     }
     if(!the_script->internal->hostname) {
-        MISSING_ERROR(std::string("hostname"))
+        MISSING_ERROR("hostname")
     }
     if(the_script->internal->packages.size() == 0) {
-        MISSING_ERROR(std::string("pkginstall"))
+        MISSING_ERROR("pkginstall")
     }
     if(!the_script->internal->rootpw) {
-        MISSING_ERROR(std::string("rootpw"))
+        MISSING_ERROR("rootpw")
     }
     if(the_script->internal->mounts.size() == 0) {
-        MISSING_ERROR(std::string("mount"))
+        MISSING_ERROR("mount")
     }
 #undef MISSING_ERROR
 
