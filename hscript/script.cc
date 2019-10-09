@@ -126,6 +126,7 @@ struct Script::ScriptPrivate {
                     output_warning("installfile:" + std::to_string(lineno),
                                    "package '" + pkg + "' has already been specified",
                                    "", opts.test(Pretty));
+                    continue;
                 }
                 packages.insert(pkg);
             }
