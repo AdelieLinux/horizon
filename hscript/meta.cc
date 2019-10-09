@@ -1,5 +1,5 @@
 /*
- * metadata.cc - Implementation of the Key classes for system metadata
+ * meta.cc - Implementation of the Key classes for system metadata
  * libhscript, the HorizonScript library for
  * Project Horizon
  *

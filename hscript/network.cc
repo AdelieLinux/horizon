@@ -1,5 +1,5 @@
 /*
- * network.cc - Implementation of the network Key classes
+ * network.cc - Implementation of the Key classes for network configuration
  * libhscript, the HorizonScript library for
  * Project Horizon
  *

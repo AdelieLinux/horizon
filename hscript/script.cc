@@ -1,5 +1,5 @@
 /*
- * script.hh - Implementation of the Script class
+ * script.cc - Implementation of the Script class
  * libhscript, the HorizonScript library for
  * Project Horizon
  *

@@ -1,5 +1,5 @@
 /*
- * network.hh - Definition of the network Key classes
+ * network.hh - Definition of the Key classes for network configuration
  * libhscript, the HorizonScript library for
  * Project Horizon
  *

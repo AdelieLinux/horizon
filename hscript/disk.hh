@@ -1,5 +1,5 @@
 /*
- * disk.hh - Definition of the disk Key classes
+ * disk.hh - Definition of the Key classes for disk manipulation
  * libhscript, the HorizonScript library for
  * Project Horizon
  *

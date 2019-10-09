@@ -1,5 +1,6 @@
 set(HSCRIPT_SOURCE
 	script.cc
+        disk.cc
         key.cc
         meta.cc
         network.cc
