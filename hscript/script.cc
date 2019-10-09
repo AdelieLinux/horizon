@@ -187,6 +187,7 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
         if(key_end == std::string::npos || value_begin == std::string::npos) {
             /* Key without value */
             PARSER_ERROR("key '" + key + "' has no value")
+            continue;
         }
 
         /* Normalise key to lower-case */
