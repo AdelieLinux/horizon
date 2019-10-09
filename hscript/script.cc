@@ -93,7 +93,7 @@ struct Script::ScriptPrivate {
                 err_str += std::to_string(this->network->lineno());
                 if(errors) *errors += 1;
                 output_error("installfile:" + std::to_string(lineno),
-                             "'network' key has already been specified",
+                             "duplicate value for key 'network'",
                              err_str);
                 return false;
             }

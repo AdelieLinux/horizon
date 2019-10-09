@@ -77,5 +77,22 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 expect(last_command_started).to have_output(/error: .*mount.*/)
             end
         end
+        context "unique keys" do
+            it "fails with a duplicate 'network' key" do
+                use_fixture '0018-duplicate-network.installfile'
+                run_validate
+                expect(last_command_started).to have_output(/error: .*duplicate.*network/)
+            end
+            it "fails with a duplicate 'hostname' key" do
+                use_fixture '0019-duplicate-hostname.installfile'
+                run_validate
+                expect(last_command_started).to have_output(/error: .*duplicate.*hostname/)
+            end
+            it "fails with a duplicate 'rootpw' key" do
+                use_fixture '0020-duplicate-rootpw.installfile'
+                run_validate
+                expect(last_command_started).to have_output(/error: .*duplicate.*rootpw/)
+            end
+        end
     end
 end
