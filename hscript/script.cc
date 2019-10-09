@@ -143,8 +143,11 @@ struct Script::ScriptPrivate {
             this->rootpw = std::move(name);
             return true;
         } else if(key_name == "mount") {
-            /*! TODO: implement */
-            return false;
+            std::unique_ptr<Keys::Mount> mount(
+                        dynamic_cast<Keys::Mount *>(key_obj)
+            );
+            this->mounts.push_back(std::move(mount));
+            return true;
         } else {
             return false;
         }
@@ -309,6 +312,9 @@ bool Script::validate() const {
             /* TODO: Runner.Validate.mount.Block. */
         }
     }
+
+    output_message("validator", "0", "installfile",
+                   std::to_string(failures) + " failure(s).", "");
     return (failures == 0);
 }
 

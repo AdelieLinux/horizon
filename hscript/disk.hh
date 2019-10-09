@@ -43,6 +43,26 @@ class Filesystem : public Key {
 };
 
 class Mount : public Key {
+private:
+    const std::string _block;
+    const std::string _mountpoint;
+    const std::string _opts;
+
+    Mount(int _line, std::string my_block, std::string my_mountpoint,
+          std::string my_opts = "") : Key(_line), _block(my_block),
+        _mountpoint(my_mountpoint), _opts(my_opts) {}
+public:
+    /*! Retrieve the block device to which this mount pertains. */
+    const std::string device() const { return this->_block; }
+    /*! Retrieve the mountpoint for this mount. */
+    const std::string mountpoint() const { return this->_mountpoint; }
+    /*! Retrieve the mount options for this mount, if any. */
+    const std::string options() const { return this->_opts; }
+
+    static Key *parseFromData(const std::string data, int lineno, int *errors,
+                              int *warnings);
+    bool validate() const override;
+    bool execute() const override;
 };
 
 }
