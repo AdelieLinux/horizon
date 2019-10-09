@@ -10,7 +10,7 @@ def use_fixture(fixture)
     copy '%/' + fixture, IFILE_PATH
 end
 
-SUCCESS_OUTPUT = '0 error(s), 0 warning(s)'
+SUCCESS_OUTPUT = /0 error\(s\), 0 warning\(s\)/
 
 RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
     context "argument passing" do
@@ -53,7 +53,7 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
         it "requires keys to have values" do
             use_fixture '0015-keys-without-values.installfile'
             run_validate ' --keep-going'
-            expect(last_command_started).to have_output(/5 error(s)/)
+            expect(last_command_started).to have_output(/5 error\(s\)/)
         end
         it "fails on lines over maximum line length" do
             use_fixture '0017-line-too-long.installfile'
