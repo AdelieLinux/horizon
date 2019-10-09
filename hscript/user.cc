@@ -17,7 +17,8 @@ using namespace Horizon::Keys;
 
 Key *RootPassphrase::parseFromData(const std::string data, int lineno,
                                    int *errors, int *warnings) {
-    if(data.size() < 5 || data[0] != '$' || data[2] != '$') {
+    if(data.size() < 5 || data[0] != '$' || (data[1] != '2' && data[1] != '6')
+            || data[2] != '$') {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
                      "rootpw: value is not a crypt-style encrypted passphrase");

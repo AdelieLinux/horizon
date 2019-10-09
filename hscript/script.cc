@@ -93,8 +93,7 @@ struct Script::ScriptPrivate {
     err_str += " at installfile:" + std::to_string(OBJ->lineno());\
     if(errors) *errors += 1;\
     output_error("installfile:" + std::to_string(lineno),\
-                 "duplicate value for key '" + KEY + "'", err_str,\
-                 opts.test(Pretty));
+                 "duplicate value for key '" + KEY + "'", err_str);
 
         if(key_name == "network") {
             if(this->network) {
@@ -125,7 +124,7 @@ struct Script::ScriptPrivate {
                     if(warnings) *warnings += 1;
                     output_warning("installfile:" + std::to_string(lineno),
                                    "package '" + pkg + "' has already been specified",
-                                   "", opts.test(Pretty));
+                                   "");
                     continue;
                 }
                 packages.insert(pkg);
@@ -161,8 +160,7 @@ Script::Script() {
 const Script *Script::load(const std::string path, const ScriptOptions opts) {
     std::ifstream file(path);
     if(!file) {
-        output_error(path, "Cannot open installfile", "",
-                     (opts.test(Pretty)));
+        output_error(path, "Cannot open installfile", "");
         return nullptr;
     }
 
@@ -172,7 +170,7 @@ const Script *Script::load(const std::string path, const ScriptOptions opts) {
 #define PARSER_ERROR(err_str) \
     errors++;\
     output_error("installfile:" + std::to_string(lineno),\
-                 err_str, "", (opts.test(Pretty)));\
+                 err_str, "");\
     if(!opts.test(ScriptOptionFlags::KeepGoing)) {\
         break;\
     }
@@ -180,7 +178,7 @@ const Script *Script::load(const std::string path, const ScriptOptions opts) {
 #define PARSER_WARNING(warn_str) \
     warnings++;\
     output_warning("installfile:" + std::to_string(lineno),\
-                   warn_str, "", (opts.test(Pretty)));
+                   warn_str, "");
 
 const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
     using namespace Horizon::Keys;
@@ -246,15 +244,13 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
     if(sstream.fail() && !sstream.eof()) {
         output_error("installfile:" + std::to_string(lineno + 1),
                      "line exceeds maximum length",
-                     "Maximum line length is " + std::to_string(LINE_MAX),
-                     (opts.test(Pretty)));
+                     "Maximum line length is " + std::to_string(LINE_MAX));
         errors++;
     }
 
     if(sstream.bad() && !sstream.eof()) {
         output_error("installfile:" + std::to_string(lineno),
-                     "I/O error while reading installfile", "",
-                     (opts.test(Pretty)));
+                     "I/O error while reading installfile", "");
         errors++;
     }
 
@@ -262,7 +258,7 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
 #define MISSING_ERROR(key) \
     output_error("installfile:" + std::to_string(lineno),\
                  "expected value for key '" + std::string(key) + "'",\
-                 "this key is required", (opts.test(Pretty)));\
+                 "this key is required");\
     errors++;
 
     if(!the_script->internal->network) {
@@ -284,8 +280,7 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
 
     output_message("parser", "0", "installfile",
                    std::to_string(errors) + " error(s), " +
-                   std::to_string(warnings) + " warning(s).",
-                   "", opts.test(Pretty));
+                   std::to_string(warnings) + " warning(s).", "");
 
     if(errors > 0) {
         delete the_script;

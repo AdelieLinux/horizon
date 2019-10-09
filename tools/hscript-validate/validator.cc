@@ -14,6 +14,8 @@
 #include "util/output.hh"
 #include "3rdparty/clipp.h"
 
+bool pretty = false;
+
 int main(int argc, char *argv[]) {
     const Horizon::Script *my_script;
     Horizon::ScriptOptions opts;
@@ -23,7 +25,7 @@ int main(int argc, char *argv[]) {
 
     /* Default to pretty if we are using a TTY, unless -n specified. */
     if(isatty(1) && isatty(2)) {
-        opts.set(Horizon::ScriptOptionFlags::Pretty);
+        pretty = true;
     }
 
     auto cli = (
@@ -32,7 +34,7 @@ int main(int argc, char *argv[]) {
                     [&opts] { opts.set(ScriptOptionFlags::KeepGoing); }
                 ),
                 clipp::option("-n", "--no-colour").doc("Do not 'prettify' output")(
-                    [&opts] { opts.reset(ScriptOptionFlags::Pretty); }
+                    [] { pretty = false; }
                 ),
                 clipp::option("-s", "--strict").doc("Strict parsing")(
                     [&opts] { opts.set(ScriptOptionFlags::StrictMode); }
@@ -44,9 +46,9 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    bold_if_pretty(opts.test(ScriptOptionFlags::Pretty), std::cout);
+    bold_if_pretty(std::cout);
     std::cout << "HorizonScript Validation Utility version 0.1.0";
-    reset_if_pretty(opts.test(ScriptOptionFlags::Pretty), std::cout);
+    reset_if_pretty(std::cout);
     std::cout << std::endl;
     std::cout << "Copyright (c) 2019 Adélie Linux and contributors.  AGPL-3.0 license." << std::endl;
     std::cout << std::endl;
@@ -58,10 +60,10 @@ int main(int argc, char *argv[]) {
     }
 
     if(!my_script->validate()) {
-        output_error("installfile", "Script failed validation step.  Stop.", "", true);
+        output_error("installfile", "Script failed validation step.  Stop.", "");
         result_code = EXIT_FAILURE;
     } else {
-        output_info("installfile", "Script passed validation.", "", true);
+        output_info("installfile", "Script passed validation.", "");
     }
 
     delete my_script;
