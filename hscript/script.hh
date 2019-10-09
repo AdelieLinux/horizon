@@ -46,6 +46,7 @@ class Script {
 private:
     /*! Initialise the Script class. */
     Script();
+    ScriptOptions opts;
 public:
     /*! Load a HorizonScript from the specified path.
      * @param path      The path to load from.

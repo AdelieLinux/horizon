@@ -286,12 +286,30 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
         delete the_script;
         return nullptr;
     } else {
+        the_script->opts = opts;
         return the_script;
     }
 }
 
 bool Script::validate() const {
-    return false;
+    int failures = 0;
+    if(!this->internal->network->validate()) failures++;
+    if(!this->internal->hostname->validate()) failures++;
+    if(!this->internal->rootpw->validate()) failures++;
+    for(auto &mount : this->internal->mounts) {
+        if(!mount->validate()) {
+            failures++;
+            continue;
+        }
+        /* TODO requirements to implement:
+         * Runner.Validate.mount.Unique.
+         * Runner.Validate.mount.Root.
+         */
+        if(this->opts.test(InstallEnvironment)) {
+            /* TODO: Runner.Validate.mount.Block. */
+        }
+    }
+    return (failures == 0);
 }
 
 }
