@@ -18,16 +18,24 @@
 namespace Horizon {
 namespace Keys {
 
-class RootPassphrase : public Key {
+class RootPassphrase : public StringKey {
+private:
+    RootPassphrase(int _line, const std::string my_pw) :
+        StringKey(_line, my_pw) {}
+public:
+    static Key *parseFromData(const std::string data, int lineno, int *errors,
+                              int *warnings);
+    bool validate() const override;
+    bool execute() const override;
 };
 
-class Username : public Key {
+class Username : public StringKey {
 };
 
 class UserAlias : public Key {
 };
 
-class UserPassphrase : public Key {
+class UserPassphrase : public StringKey {
 };
 
 class UserIcon : public Key {

@@ -20,15 +20,13 @@
 namespace Horizon {
 namespace Keys {
 
-class Hostname : public Key {
+class Hostname : public StringKey {
 private:
-    const std::string _name;
-    Hostname(int _line, const std::string my_name) : Key(_line),
-        _name(my_name) {}
+    Hostname(int _line, const std::string my_name) :
+        StringKey(_line, my_name) {}
 public:
     static Key *parseFromData(const std::string data, int lineno, int *errors,
                               int *warnings);
-    const std::string name() const { return this->_name; }
     bool validate() const override;
     bool execute() const override;
 };

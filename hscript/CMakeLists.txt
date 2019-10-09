@@ -3,6 +3,7 @@ set(HSCRIPT_SOURCE
         key.cc
         meta.cc
         network.cc
+        user.cc
 )
 
 set(HSCRIPT_INCLUDE

@@ -110,7 +110,7 @@ struct Script::ScriptPrivate {
         } else if(key_name == "hostname") {
             if(this->hostname) {
                 DUPLICATE_ERROR(this->hostname, std::string("hostname"),
-                                this->hostname->name())
+                                this->hostname->value())
                 return false;
             }
             std::unique_ptr<Keys::Hostname> name(
@@ -133,8 +133,16 @@ struct Script::ScriptPrivate {
             delete install;
             return true;
         } else if(key_name == "rootpw") {
-            /*! TODO: implement */
-            return false;
+            if(this->rootpw) {
+                DUPLICATE_ERROR(this->rootpw, std::string("rootpw"),
+                                "an encrypted passphrase")
+                return false;
+            }
+            std::unique_ptr<Keys::RootPassphrase> name(
+                        dynamic_cast<Keys::RootPassphrase *>(key_obj)
+            );
+            this->rootpw = std::move(name);
+            return true;
         } else if(key_name == "mount") {
             /*! TODO: implement */
             return false;
