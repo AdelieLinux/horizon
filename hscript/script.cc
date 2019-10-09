@@ -236,7 +236,7 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
         errors++;
     }
 
-    /* Ensure no required keys are missing. */
+    /* Ensure all required keys are present. */
 #define MISSING_ERROR(key) \
     output_error("installfile:" + std::to_string(lineno),\
                  "expected value for key '" + key + "'",\
