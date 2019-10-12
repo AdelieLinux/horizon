@@ -60,7 +60,7 @@ bool Hostname::validate(ScriptOptions) const {
         }
     } while(next_dot != this->_value.size());
 
-    return any_failure;
+    return !any_failure;
 }
 
 bool Hostname::execute(ScriptOptions) const {
