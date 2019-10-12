@@ -113,7 +113,7 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 expect(last_command_started).to have_output(/error: .*network.*/)
             end
             # Runner.Validate.hostname.
-            context "fails with an invalid 'hostname' value" do
+            context "for 'hostname' key" do
                 # Runner.Validate.hostname.Chars.
                 it "with invalid characters" do
                     use_fixture '0012-invalid-hostname.installfile'
@@ -146,41 +146,49 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 run_validate
                 expect(last_command_started).to have_output(/error: .*rootpw.*/)
             end
-            # Runner.Validate.mount.
-            it "fails with an invalid 'mount' value" do
-                use_fixture '0014-invalid-mount.installfile'
-                run_validate
-                expect(last_command_started).to have_output(/error: .*mount.*/)
-            end
-            # Runner.Validate.mount.
-            it "fails with too many values in 'mount' tuple" do
-                use_fixture '0029-mount-too-many.installfile'
-                run_validate
-                expect(last_command_started).to have_output(/error: .*mount.*elements/)
-            end
-            # Runner.Validate.mount.
-            it "fails with too few values in 'mount' tuple" do
-                use_fixture '0030-mount-too-few.installfile'
-                run_validate
-                expect(last_command_started).to have_output(/error: .*mount.*elements/)
-            end
-            # Runner.Validate.mount.Block.
-            it "fails with a 'mount' value that has no block device" do
-                use_fixture '0027-mount-invalid-dev.installfile'
-                run_validate
-                expect(last_command_started).to have_output(/error: .*mount.*device/)
-            end
-            # Runner.Validate.mount.Point.
-            it "fails with a 'mount' value that has an invalid mountpoint" do
-                use_fixture '0028-mount-non-absolute.installfile'
-                run_validate
-                expect(last_command_started).to have_output(/error: .*mount.*path/)
-            end
-            # Runner.Validate.mount.Unique.
-            it "fails with two root 'mount' keys" do
-                use_fixture '0021-duplicate-root-mount.installfile'
-                run_validate
-                expect(last_command_started).to have_output(/error: .*mount.*duplicate/)
+            context "for 'mount' key" do
+                # Runner.Validate.mount.
+                it "fails with an invalid value" do
+                    use_fixture '0014-invalid-mount.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*mount.*/)
+                end
+                # Runner.Validate.mount.Validity.
+                it "fails with too many values in 'mount' tuple" do
+                    use_fixture '0029-mount-too-many.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*mount.*elements/)
+                end
+                # Runner.Validate.mount.Validity.
+                it "fails with too few values in 'mount' tuple" do
+                    use_fixture '0030-mount-too-few.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*mount.*elements/)
+                end
+                # Runner.Validate.mount.Block.
+                it "fails with a 'mount' value that has no block device" do
+                    use_fixture '0027-mount-invalid-dev.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*mount.*device/)
+                end
+                # Runner.Validate.mount.Point.
+                it "fails with a 'mount' value that has an invalid mountpoint" do
+                    use_fixture '0028-mount-non-absolute.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*mount.*path/)
+                end
+                # Runner.Validate.mount.Unique.
+                it "fails with two root 'mount' keys" do
+                    use_fixture '0021-duplicate-root-mount.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*mount.*duplicate/)
+                end
+                # Runner.Validate.mount.Root.
+                it "fails without a root 'mount' key" do
+                    use_fixture '0031-mount-nonroot.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*mount.*root/)
+                end
             end
         end
         context "unique keys" do
