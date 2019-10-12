@@ -65,7 +65,7 @@ public:
  */
 class BooleanKey : public Key {
 protected:
-    bool value;
+    const bool value;
     BooleanKey(int _line, bool my_value) : Key(_line), value(my_value) {}
 
     /*! Parse a string into a boolean.
@@ -91,7 +91,7 @@ public:
 /*! Base Key class that parses and handles single string values. */
 class StringKey : public Key {
 protected:
-    std::string _value;
+    const std::string _value;
     StringKey(int _line, std::string my_str) : Key(_line), _value(my_str) {}
 
 public:
