@@ -33,6 +33,8 @@ enum ScriptOptionFlags {
     InstallEnvironment,
     /*! "Pretty" output - used in interactive tooling only. */
     Pretty,
+    /*! Just print commands that would be run, for testing/debug */
+    Simulate,
     /*! Count of flags */
     NumFlags
 };
@@ -66,6 +68,9 @@ public:
 
     /*! Determines if the HorizonScript is valid. */
     bool validate() const;
+
+    /*! Executes the HorizonScript. */
+    bool execute() const;
 
 private:
     struct ScriptPrivate;

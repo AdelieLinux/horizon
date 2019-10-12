@@ -378,4 +378,21 @@ bool Script::validate() const {
     return (failures == 0);
 }
 
+bool Script::execute() const {
+    bool success;
+
+    /* Runner.Execute.Verify */
+    output_step_start("validate");
+    success = this->validate();
+    output_step_end("validate");
+    if(!success) {
+        /* Runner.Execute.Verify.Failure */
+        output_error("validator", "The HorizonScript failed validation.",
+                     "Check the output from the validator.");
+        return false;
+    }
+
+    return false;
+}
+
 }
