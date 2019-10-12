@@ -74,13 +74,13 @@ bool Hostname::execute(ScriptOptions opts) const {
          * That's fine, because we have a limit of 64 chars per segment.
          * Assuming a dot is present, just chop at the first dot. */
         std::string::size_type dot = this->_value.find_first_of('.');
-        if(dot == std::string::npos) {
+        if(dot == std::string::npos || dot >= 64) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "hostname: nodename too long",
                          "Linux requires nodename to be <= 64 characters.");
             return false;
         }
-        std::copy_n(this->_value.cbegin(), dot, actual.begin());
+        std::copy_n(this->_value.cbegin(), dot - 1, actual.begin());
     } else {
         actual = this->_value;
     }
