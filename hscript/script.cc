@@ -349,6 +349,7 @@ bool Script::validate() const {
                      "You need to specify at least one address to enable "
                      "networking.");
     }
+
     for(auto &address : this->internal->addresses) {
         if(!address->validate(this->opts)) {
             failures++;
