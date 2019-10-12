@@ -78,6 +78,9 @@ struct Script::ScriptPrivate {
     /*! Target system's mountpoints. */
     std::vector< std::unique_ptr<Horizon::Keys::Mount> > mounts;
 
+    /*! Network addressing configuration */
+    std::vector< std::unique_ptr<Horizon::Keys::NetAddress> > addresses;
+
     /*! Store +key_obj+ representing the key +key_name+.
      * @param key_name      The name of the key that is being stored.
      * @param key_obj       The Key object associated with the key.
@@ -147,6 +150,12 @@ struct Script::ScriptPrivate {
                         dynamic_cast<Keys::Mount *>(key_obj)
             );
             this->mounts.push_back(std::move(mount));
+            return true;
+        } else if(key_name == "netaddress") {
+            std::unique_ptr<Keys::NetAddress> addr(
+                        dynamic_cast<Keys::NetAddress *>(key_obj)
+            );
+            this->addresses.push_back(std::move(addr));
             return true;
         } else {
             return false;
@@ -299,6 +308,7 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
 bool Script::validate() const {
     int failures = 0;
     std::set<std::string> seen_mounts;
+    std::map<const std::string, int> seen_iface;
 
     if(!this->internal->network->validate(this->opts)) failures++;
     if(!this->internal->hostname->validate(this->opts)) failures++;
@@ -316,7 +326,7 @@ bool Script::validate() const {
             output_error("installfile:" + std::to_string(mount->lineno()),
                          "mount: mountpoint " + mount->mountpoint() +
                          " has already been specified; " + mount->device() +
-                         " is a duplicate", "");
+                         " is a duplicate");
         }
         seen_mounts.insert(mount->mountpoint());
         if(this->opts.test(InstallEnvironment)) {
@@ -327,7 +337,35 @@ bool Script::validate() const {
     /* Runner.Validate.mount.Root */
     if(seen_mounts.find("/") == seen_mounts.end()) {
         failures++;
-        output_error("installfile:0", "mount: no root mount specified", "");
+        output_error("installfile:0", "mount: no root mount specified");
+    }
+
+    /* Runner.Validate.network.netaddress */
+    if(this->internal->network->test() &&
+       this->internal->addresses.size() == 0) {
+        failures++;
+        output_error("installfile:0",
+                     "networking requested but no 'netaddress' defined",
+                     "You need to specify at least one address to enable "
+                     "networking.");
+    }
+    for(auto &address : this->internal->addresses) {
+        if(!address->validate(this->opts)) {
+            failures++;
+        }
+
+        /* Runner.Validate.network.netaddress.Count */
+        if(seen_iface.find(address->iface()) == seen_iface.end()) {
+            seen_iface.insert(std::make_pair(address->iface(), 1));
+        } else {
+            seen_iface[address->iface()] += 1;
+            if(seen_iface[address->iface()] > 255) {
+                failures++;
+                output_error("installfile:" + std::to_string(address->lineno()),
+                             "netaddress: interface '" + address->iface() +
+                             "' has too many addresses assigned");
+            }
+        }
     }
 
     output_message("validator", "0", "installfile",
