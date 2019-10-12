@@ -55,6 +55,20 @@ inline void output_time() {
     std::cerr << std::setfill('0') << std::setw(3) << millis.count();
 }
 
+/*! Outputs that +step+ is beginning execution. */
+inline void output_step_start(std::string step) {
+    output_time();
+    std::cerr << "\tstep-start\t";
+    std::cerr << step << std::endl;
+}
+
+/*! Outputs that +step+ is finishing execution. */
+inline void output_step_end(std::string step) {
+    output_time();
+    std::cerr << "\tstep-end\t";
+    std::cerr << step << std::endl;
+}
+
 /*! Outputs a message of the specified +type+ to the log stream.
  * @param type      The type of message to output.
  * @param colour    The colourisation of the message.
