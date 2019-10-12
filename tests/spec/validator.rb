@@ -138,6 +138,12 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*hostname.*/)
                 end
+                # Runner.Validate.hostname.
+                it "with dot at end of domain" do
+                    use_fixture '0032-hostname-ends-with-dot.installfile'
+                    run_validate
+                    expect(last_command_started).to_not have_output(/error: .*hostname.*/)
+                end
             end
             # Runner.Validate.rootpw.
             # Runner.Validate.rootpw.Crypt.

@@ -31,7 +31,36 @@ Key *Hostname::parseFromData(const std::string data, int lineno, int *errors,
 
 bool Hostname::validate(ScriptOptions) const {
     /* Validate that the name is a valid machine or DNS name */
-    return false;
+    bool any_failure = false;
+    std::string::size_type last_dot = 0, next_dot = 0;
+
+    if(!isalpha(this->_value[0])) {
+        any_failure = true;
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "hostname: must start with alphabetical character");
+    }
+
+    if(this->_value.size() > 320) {
+        any_failure = true;
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "hostname: value too long",
+                     "valid host names must be less than 320 characters");
+    }
+
+    do {
+        next_dot = this->_value.find_first_of('.', next_dot + 1);
+        if(next_dot == std::string::npos) {
+            next_dot = this->_value.size();
+        }
+        if(next_dot - last_dot > 64) {
+            any_failure = true;
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "hostname: component too long",
+                         "each component must be less than 64 characters");
+        }
+    } while(next_dot != this->_value.size());
+
+    return any_failure;
 }
 
 bool Hostname::execute(ScriptOptions) const {
