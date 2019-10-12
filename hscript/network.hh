@@ -25,7 +25,7 @@ private:
 public:
     static Key *parseFromData(const std::string data, int lineno, int *errors,
                               int *warnings);
-    bool execute() const override;
+    bool execute(ScriptOptions) const override;
 };
 
 class NetAddress : public Key {

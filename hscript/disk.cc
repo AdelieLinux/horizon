@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <string>
+#include <unistd.h>
 #include "disk.hh"
 #include "util/output.hh"
 
@@ -63,10 +64,17 @@ Key *Mount::parseFromData(const std::string data, int lineno, int *errors,
     return new Mount(lineno, dev, where, opt);
 }
 
-bool Mount::validate() const {
-    return false;
+bool Mount::validate(ScriptOptions options) const {
+    /* We only validate if running in an Installation Environment. */
+    if(!options.test(InstallEnvironment)) return true;
+
+    /* XXX TODO: This will fail validation if the block device does not
+     * already exist.  However, we must take in to account that block devices
+     * may not yet exist during the script validation phase.  This check may
+     * need to happen in Script::validate like the Uniqueness tests. */
+    return(access(this->mountpoint().c_str(), F_OK));
 }
 
-bool Mount::execute() const {
+bool Mount::execute(ScriptOptions) const {
     return false;
 }

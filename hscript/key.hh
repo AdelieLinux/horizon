@@ -14,6 +14,7 @@
 #define __HSCRIPT_KEY_HH_
 
 #include <string>
+#include "script.hh"
 
 namespace Horizon {
 namespace Keys {
@@ -45,12 +46,12 @@ public:
 #undef UNUSED
 
     /*! Determines if the data associated with the Key is valid. */
-    virtual bool validate() const = 0;
+    virtual bool validate(ScriptOptions) const = 0;
 
     /*! Executes the action associated with this Key.
      * @note Will always return `false` if `validate` is `false`.
      */
-    virtual bool execute() const = 0;
+    virtual bool execute(ScriptOptions) const = 0;
 
     int lineno() const { return this->line; }
 };
@@ -83,7 +84,7 @@ public:
     bool test() const { return this->value; }
 
     /*! Key will fail to init if valid is invalid. */
-    bool validate() const override;
+    bool validate(ScriptOptions) const override;
 };
 
 
@@ -100,7 +101,7 @@ public:
     /*! By default, key will be considered valid since it parsed.
      * This method should be overridden when further consideration is needed.
      */
-    bool validate() const override;
+    bool validate(ScriptOptions) const override;
 };
 
 }

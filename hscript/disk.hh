@@ -61,8 +61,8 @@ public:
 
     static Key *parseFromData(const std::string data, int lineno, int *errors,
                               int *warnings);
-    bool validate() const override;
-    bool execute() const override;
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 }

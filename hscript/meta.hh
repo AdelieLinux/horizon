@@ -27,8 +27,8 @@ private:
 public:
     static Key *parseFromData(const std::string data, int lineno, int *errors,
                               int *warnings);
-    bool validate() const override;
-    bool execute() const override;
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 class PkgInstall : public Key {
@@ -40,8 +40,8 @@ public:
     static Key *parseFromData(const std::string data, int lineno, int *errors,
                               int *warnings);
     const std::set<std::string> packages() const { return _pkgs; }
-    bool validate() const override { return true; }
-    bool execute() const override { return true; }
+    bool validate(ScriptOptions) const override { return true; }
+    bool execute(ScriptOptions) const override { return true; }
 
 };
 

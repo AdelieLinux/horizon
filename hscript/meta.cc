@@ -29,12 +29,12 @@ Key *Hostname::parseFromData(const std::string data, int lineno, int *errors,
     return new Hostname(lineno, data);
 }
 
-bool Hostname::validate() const {
+bool Hostname::validate(ScriptOptions) const {
     /* Validate that the name is a valid machine or DNS name */
     return false;
 }
 
-bool Hostname::execute() const {
+bool Hostname::execute(ScriptOptions) const {
     /* Write the hostname to /etc/hostname in the target environment. */
     return false;
 }

@@ -296,21 +296,36 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
 
 bool Script::validate() const {
     int failures = 0;
-    if(!this->internal->network->validate()) failures++;
-    if(!this->internal->hostname->validate()) failures++;
-    if(!this->internal->rootpw->validate()) failures++;
+    std::set<std::string> seen_mounts;
+
+    if(!this->internal->network->validate(this->opts)) failures++;
+    if(!this->internal->hostname->validate(this->opts)) failures++;
+    if(!this->internal->rootpw->validate(this->opts)) failures++;
+
     for(auto &mount : this->internal->mounts) {
-        if(!mount->validate()) {
+        if(!mount->validate(this->opts)) {
             failures++;
             continue;
         }
-        /* TODO requirements to implement:
-         * Runner.Validate.mount.Unique.
-         * Runner.Validate.mount.Root.
-         */
-        if(this->opts.test(InstallEnvironment)) {
-            /* TODO: Runner.Validate.mount.Block. */
+
+        /* Runner.Validate.mount.Unique */
+        if(seen_mounts.find(mount->mountpoint()) != seen_mounts.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(mount->lineno()),
+                         "mount: mountpoint " + mount->mountpoint() +
+                         " has already been specified; " + mount->device() +
+                         " is a duplicate", "");
         }
+        seen_mounts.insert(mount->mountpoint());
+        if(this->opts.test(InstallEnvironment)) {
+            /* TODO: Runner.Validate.mount.Block for not-yet-created devs. */
+        }
+    }
+
+    /* Runner.Validate.mount.Root */
+    if(seen_mounts.find("/") == seen_mounts.end()) {
+        failures++;
+        output_error("installfile:0", "mount: no root mount specified", "");
     }
 
     output_message("validator", "0", "installfile",

@@ -27,10 +27,10 @@ Key *RootPassphrase::parseFromData(const std::string data, int lineno,
     return new RootPassphrase(lineno, data);
 }
 
-bool RootPassphrase::validate() const {
+bool RootPassphrase::validate(ScriptOptions) const {
     return false;
 }
 
-bool RootPassphrase::execute() const {
+bool RootPassphrase::execute(ScriptOptions) const {
     return false;
 }

@@ -25,6 +25,6 @@ Key *Network::parseFromData(const std::string data, int lineno, int *errors,
     return new Network(lineno, value);
 }
 
-bool Network::execute() const {
+bool Network::execute(ScriptOptions) const {
     return false;
 }

@@ -35,12 +35,12 @@ bool Horizon::Keys::BooleanKey::parse(const std::string what,
     return true;
 }
 
-bool Horizon::Keys::BooleanKey::validate() const {
+bool Horizon::Keys::BooleanKey::validate(ScriptOptions) const {
     /* Key will fail init if it is not valid, so this is always a no-op. */
     return true;
 }
 
-bool Horizon::Keys::StringKey::validate() const {
+bool Horizon::Keys::StringKey::validate(ScriptOptions) const {
     /* Key will fail init if it is not valid, so this is always a no-op. */
     return true;
 }
