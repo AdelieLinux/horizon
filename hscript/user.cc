@@ -28,7 +28,8 @@ Key *RootPassphrase::parseFromData(const std::string data, int lineno,
 }
 
 bool RootPassphrase::validate(ScriptOptions) const {
-    return false;
+    /* XXX TODO: not sure what other validation we can / should do here. */
+    return true;
 }
 
 bool RootPassphrase::execute(ScriptOptions) const {
