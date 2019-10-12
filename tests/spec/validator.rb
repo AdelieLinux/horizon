@@ -337,6 +337,19 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*netaddress.*addresses/)
                 end
             end
+            context "for 'repository' key" do
+                it "succeeds with basic repositories" do
+                    use_fixture '0055-repository-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with invalid repository URL" do
+                    use_fixture '0056-repository-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*repository/)
+                end
+            end
         end
         context "unique keys" do
             # Runner.Validate.network.

@@ -81,6 +81,9 @@ struct Script::ScriptPrivate {
     /*! Network addressing configuration */
     std::vector< std::unique_ptr<Horizon::Keys::NetAddress> > addresses;
 
+    /*! APK repositories */
+    std::vector< std::unique_ptr<Horizon::Keys::Repository> > repos;
+
     /*! Store +key_obj+ representing the key +key_name+.
      * @param key_name      The name of the key that is being stored.
      * @param key_obj       The Key object associated with the key.
@@ -156,6 +159,12 @@ struct Script::ScriptPrivate {
                         dynamic_cast<Keys::NetAddress *>(key_obj)
             );
             this->addresses.push_back(std::move(addr));
+            return true;
+        } else if(key_name == "repository") {
+            std::unique_ptr<Keys::Repository> repo(
+                        dynamic_cast<Keys::Repository *>(key_obj)
+            );
+            this->repos.push_back(std::move(repo));
             return true;
         } else {
             return false;
@@ -373,6 +382,47 @@ bool Script::validate() const {
         }
     }
 
+    if(this->internal->repos.size() == 0) {
+        Keys::Repository *sys_key = dynamic_cast<Keys::Repository *>(
+            Horizon::Keys::Repository::parseFromData(
+                "https://distfiles.adelielinux.org/adelie/stable/system", 0,
+                nullptr, nullptr
+            )
+        );
+        if(!sys_key) {
+            output_error("internal", "failed to create default system repository");
+            return false;
+        }
+        std::unique_ptr<Keys::Repository> sys_repo(sys_key);
+        this->internal->repos.push_back(std::move(sys_repo));
+        Keys::Repository *user_key = dynamic_cast<Keys::Repository *>(
+            Horizon::Keys::Repository::parseFromData(
+                "https://distfiles.adelielinux.org/adelie/stable/user", 0,
+                nullptr, nullptr
+            )
+        );
+        if(!user_key) {
+            output_error("internal", "failed to create default user repository");
+            return false;
+        }
+        std::unique_ptr<Keys::Repository> user_repo(user_key);
+        this->internal->repos.push_back(std::move(user_repo));
+    }
+
+    for(auto &repo : this->internal->repos) {
+        if(!repo->validate(this->opts)) {
+            failures++;
+        }
+    }
+
+    if(this->internal->repos.size() > 10) {
+        failures++;
+        output_error("installfile:" +
+                     std::to_string(this->internal->repos[11]->lineno()),
+                     "repository: too many repositories specified",
+                     "You may only specify up to 10 repositories.");
+    }
+
     output_log("validator", "0", "installfile",
                std::to_string(failures) + " failure(s).", "");
     return (failures == 0);
@@ -392,15 +442,33 @@ bool Script::execute() const {
         return false;
     }
 
-    output_step_start("metadata");
-    if(!this->internal->hostname->execute(opts) ||
-       !this->internal->rootpw->execute(opts)) {
-        output_error("metadata", "The HorizonScript failed to execute",
-                     "Check the log file for more details.");
+#define EXECUTE_FAILURE(phase) \
+    output_error("pre-metadata", "The HorizonScript failed to execute",\
+                 "Check the log file for more details.")
+
+    output_step_start("pre-metadata");
+    if(!this->internal->hostname->execute(opts)) {
+        EXECUTE_FAILURE("pre-metadata");
         return false;
     }
-    output_step_end("metadata");
-    return false;
+    output_step_end("pre-metadata");
+
+    output_step_start("pkgdb");
+    for(auto &repo : this->internal->repos) {
+        if(!repo->execute(opts)) {
+            EXECUTE_FAILURE("pkgdb");
+            return false;
+        }
+    }
+    output_step_end("pkgdb");
+
+    output_step_start("post-metadata");
+    if(!this->internal->rootpw->execute(opts)) {
+        EXECUTE_FAILURE("post-metadata");
+        return false;
+    }
+    output_step_end("post-metadata");
+    return true;
 }
 
 }

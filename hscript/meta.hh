@@ -57,7 +57,15 @@ class Firmware : public BooleanKey {
 class Timezone : public StringKey {
 };
 
-class Repository : public Key {
+class Repository : public StringKey {
+private:
+    Repository(int _line, const std::string my_url) :
+        StringKey(_line, my_url) {}
+public:
+    static Key *parseFromData(const std::string data, int lineno, int *errors,
+                              int *warnings);
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 class SigningKey : public Key {

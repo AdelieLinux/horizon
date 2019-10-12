@@ -19,7 +19,7 @@
 using namespace Horizon::Keys;
 
 Key *Hostname::parseFromData(const std::string data, int lineno, int *errors,
-                             int *warnings) {
+                             int *) {
     std::regex valid_re("[A-Za-z0-9-_.]*");
     if(!std::regex_match(data, valid_re)) {
         if(errors) *errors += 1;
@@ -141,4 +141,40 @@ Key *PkgInstall::parseFromData(const std::string data, int lineno, int *errors,
         all_pkgs.insert(next_pkg);
     }
     return new PkgInstall(lineno, all_pkgs);
+}
+
+Key *Repository::parseFromData(const std::string data, int lineno, int *errors,
+                               int *) {
+    if(data.empty() || (data[0] != '/' && data.compare(0, 4, "http"))) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "repository: must be absolute path or HTTP(S) URL");
+        return nullptr;
+    }
+    return new Repository(lineno, data);
+}
+
+bool Repository::validate(ScriptOptions) const {
+    /* TODO XXX: Ensure URL is accessible if networking is available */
+    return true;
+}
+
+bool Repository::execute(ScriptOptions opts) const {
+    /* Runner.Execute.repository. */
+    if(opts.test(Simulate)) {
+        output_info("installfile:" + std::to_string(this->lineno()),
+                    "repository: write '" + this->value() +
+                    "' to /etc/apk/repositories");
+    } else {
+        std::ofstream repo_f("/target/etc/apk/repositories",
+                             std::ios_base::ate);
+        if(!repo_f) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "repository: could not open /etc/apk/repositories "
+                         "for writing");
+            return false;
+        }
+        repo_f << this->value() << std::endl;
+    }
+    return true;
 }
