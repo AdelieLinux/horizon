@@ -28,3 +28,16 @@ Key *Network::parseFromData(const std::string data, int lineno, int *errors,
 bool Network::execute(ScriptOptions) const {
     return false;
 }
+
+Key *NetAddress::parseFromData(const std::string data, int lineno, int *errors,
+                               int *warnings) {
+    return nullptr;
+}
+
+bool NetAddress::validate(ScriptOptions) const {
+    return false;
+}
+
+bool NetAddress::execute(ScriptOptions) const {
+    return false;
+}
