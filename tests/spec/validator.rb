@@ -222,7 +222,7 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 it "requires 'netaddress' to have at least two elements" do
                     use_fixture '0036-netaddress-too-few.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*require/)
                 end
                 # Runner.Validate.netaddress.Validity.Type.
                 it "fails on invalid address type" do
@@ -234,19 +234,19 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 it "fails on extraneous elements in DHCP mode" do
                     use_fixture '0038-netaddress-invalid-dhcp.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*dhcp/)
                 end
                 # Runner.Validate.netaddress.Validity.Static.
                 it "fails on extraneous elements in static mode" do
                     use_fixture '0039-netaddress-static-too-many.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*too many/)
                 end
                 # Runner.Validate.netaddress.Validity.Static.
                 it "fails on too few elements in static mode" do
                     use_fixture '0040-netaddress-static-too-few.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*require/)
                 end
                 # Runner.Validate.netaddress.Validity.Address.
                 it "succeeds with valid IPv4 address specification" do
