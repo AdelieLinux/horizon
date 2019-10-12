@@ -296,9 +296,9 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
     }
 #undef MISSING_ERROR
 
-    output_message("parser", "0", "installfile",
-                   std::to_string(errors) + " error(s), " +
-                   std::to_string(warnings) + " warning(s).", "");
+    output_log("parser", "0", "installfile",
+               std::to_string(errors) + " error(s), " +
+               std::to_string(warnings) + " warning(s).", "");
 
     if(errors > 0) {
         delete the_script;
@@ -373,8 +373,8 @@ bool Script::validate() const {
         }
     }
 
-    output_message("validator", "0", "installfile",
-                   std::to_string(failures) + " failure(s).", "");
+    output_log("validator", "0", "installfile",
+               std::to_string(failures) + " failure(s).", "");
     return (failures == 0);
 }
 

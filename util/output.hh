@@ -17,6 +17,8 @@ extern bool pretty;
 
 #include <string>
 #include <iostream>
+#include <chrono>
+#include <iomanip>
 
 /*! Bolds output on +stream+ if pretty output is desired.
  * @param stream    The stream to turn bold.
@@ -40,6 +42,19 @@ inline void reset_if_pretty(std::ostream &stream) {
     if(pretty) stream << "\033[0m";
 }
 
+/*! Print the ISO 8601 timestamp with millisecond resolution.
+ * @note See Agent.MessageFormat.
+ */
+inline void output_time() {
+    using namespace std::chrono;
+    auto now = system_clock::now();
+    auto millis = duration_cast<milliseconds>(now.time_since_epoch()) % 1000;
+    auto time = system_clock::to_time_t(now);
+    std::tm utc = *std::gmtime(&time);
+    std::cerr << std::put_time(&utc, "%FT%T") << ".";
+    std::cerr << std::setfill('0') << std::setw(3) << millis.count();
+}
+
 /*! Outputs a message of the specified +type+ to the log stream.
  * @param type      The type of message to output.
  * @param colour    The colourisation of the message.
@@ -47,9 +62,10 @@ inline void reset_if_pretty(std::ostream &stream) {
  * @param message   The message.
  * @param detail    Additional detail for the message, if available.
  */
-inline void output_message(std::string type, std::string colour,
-                           std::string where, std::string message,
-                           std::string detail = "") {
+inline void output_log(std::string type, std::string colour, std::string where,
+                       std::string message, std::string detail = "") {
+    output_time();
+    std::cerr << "\tlog\t";
     std::cerr << where << ": ";
     colour_if_pretty(std::cerr, colour);
     std::cerr << type << ": ";
@@ -69,7 +85,7 @@ inline void output_message(std::string type, std::string colour,
  */
 inline void output_error(std::string where, std::string message,
                          std::string detail = "") {
-    output_message("error", "31", where, message, detail);
+    output_log("error", "31", where, message, detail);
 }
 
 /*! Outputs a warning message.
@@ -79,7 +95,7 @@ inline void output_error(std::string where, std::string message,
  */
 inline void output_warning(std::string where, std::string message,
                            std::string detail = "") {
-    output_message("warning", "33", where, message, detail);
+    output_log("warning", "33", where, message, detail);
 }
 
 /*! Outputs an informational message.
@@ -89,7 +105,7 @@ inline void output_warning(std::string where, std::string message,
  */
 inline void output_info(std::string where, std::string message,
                         std::string detail = "") {
-    output_message("info", "36", where, message, detail);
+    output_log("info", "36", where, message, detail);
 }
 
 #endif /* !__HORIZON_OUTPUT_HH_ */
