@@ -387,11 +387,19 @@ bool Script::execute() const {
     output_step_end("validate");
     if(!success) {
         /* Runner.Execute.Verify.Failure */
-        output_error("validator", "The HorizonScript failed validation.",
+        output_error("validator", "The HorizonScript failed validation",
                      "Check the output from the validator.");
         return false;
     }
 
+    output_step_start("metadata");
+    if(!this->internal->hostname->execute(opts) ||
+       !this->internal->rootpw->execute(opts)) {
+        output_error("metadata", "The HorizonScript failed to execute",
+                     "Check the log file for more details.");
+        return false;
+    }
+    output_step_end("metadata");
     return false;
 }
 

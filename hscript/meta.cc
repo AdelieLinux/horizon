@@ -10,7 +10,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#include <fstream>
 #include <regex>
+#include <unistd.h>
 #include "meta.hh"
 #include "util/output.hh"
 
@@ -63,9 +65,54 @@ bool Hostname::validate(ScriptOptions) const {
     return !any_failure;
 }
 
-bool Hostname::execute(ScriptOptions) const {
-    /* Write the hostname to /etc/hostname in the target environment. */
-    return false;
+bool Hostname::execute(ScriptOptions opts) const {
+    /* Set the hostname of the target computer */
+    std::string actual;
+
+    if(this->_value.size() > 64) {
+        /* Linux has a nodename limit of 64 characters.
+         * That's fine, because we have a limit of 64 chars per segment.
+         * Assuming a dot is present, just chop at the first dot. */
+        std::string::size_type dot = this->_value.find_first_of('.');
+        if(dot == std::string::npos) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "hostname: nodename too long",
+                         "Linux requires nodename to be <= 64 characters.");
+            return false;
+        }
+        std::copy_n(this->_value.cbegin(), dot, actual.begin());
+    } else {
+        actual = this->_value;
+    }
+
+    /* Runner.Execute.hostname. */
+    if(opts.test(Simulate)) {
+        output_info("installfile:" + std::to_string(this->lineno()),
+                    "hostname: set hostname to '" + actual + "'");
+    } else {
+        if(sethostname(actual.c_str(), actual.size()) == -1) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "hostname: failed to set host name",
+                         std::string(strerror(errno)));
+            return false;
+        }
+    }
+
+    /* Runner.Execute.hostname.Write. */
+    if(opts.test(Simulate)) {
+        output_info("installfile:" + std::to_string(this->lineno()),
+                    "hostname: write '" + actual + "' to /etc/hostname");
+    } else {
+        std::ofstream hostname_f("/target/etc/hostname");
+        if(!hostname_f) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "hostname: could not open /etc/hostname for writing");
+            return false;
+        }
+        hostname_f << actual;
+    }
+
+    return true;
 }
 
 
