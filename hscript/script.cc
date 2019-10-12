@@ -219,7 +219,7 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
 
         key_end = line.find_first_of(delim, start);
         value_begin = line.find_first_not_of(delim, key_end);
-        key = line.substr(start, key_end);
+        key = line.substr(start, (key_end - start));
         if(key_end == std::string::npos || value_begin == std::string::npos) {
             /* Key without value */
             PARSER_ERROR("key '" + key + "' has no value")

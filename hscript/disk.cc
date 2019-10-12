@@ -38,7 +38,7 @@ Key *Mount::parseFromData(const std::string data, int lineno, int *errors,
     opt_pos = data.find_first_of(' ', where_pos);
 
     dev = data.substr(0, where_pos);
-    where = data.substr(where_pos + 1, opt_pos);
+    where = data.substr(where_pos + 1, (opt_pos - where_pos - 1));
     if(opt_pos != std::string::npos) {
         opt = data.substr(opt_pos);
     }
