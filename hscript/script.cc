@@ -169,6 +169,10 @@ Script::Script() {
     internal = new ScriptPrivate;
 }
 
+Script::~Script() {
+    delete internal;
+}
+
 const Script *Script::load(const std::string path, const ScriptOptions opts) {
     std::ifstream file(path);
     if(!file) {

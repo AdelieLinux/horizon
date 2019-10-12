@@ -48,6 +48,9 @@ private:
     Script();
     ScriptOptions opts;
 public:
+    /*! Free resources associated with the Script. */
+    ~Script();
+
     /*! Load a HorizonScript from the specified path.
      * @param path      The path to load from.
      * @param options   Options to use for parsing, validation, and execution.
