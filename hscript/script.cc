@@ -264,20 +264,22 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
                  "this key is required");\
     errors++;
 
-    if(!the_script->internal->network) {
-        MISSING_ERROR("network")
-    }
-    if(!the_script->internal->hostname) {
-        MISSING_ERROR("hostname")
-    }
-    if(the_script->internal->packages.size() == 0) {
-        MISSING_ERROR("pkginstall")
-    }
-    if(!the_script->internal->rootpw) {
-        MISSING_ERROR("rootpw")
-    }
-    if(the_script->internal->mounts.size() == 0) {
-        MISSING_ERROR("mount")
+    if(errors == 0) {
+        if(!the_script->internal->network) {
+            MISSING_ERROR("network")
+        }
+        if(!the_script->internal->hostname) {
+            MISSING_ERROR("hostname")
+        }
+        if(the_script->internal->packages.size() == 0) {
+            MISSING_ERROR("pkginstall")
+        }
+        if(!the_script->internal->rootpw) {
+            MISSING_ERROR("rootpw")
+        }
+        if(the_script->internal->mounts.size() == 0) {
+            MISSING_ERROR("mount")
+        }
     }
 #undef MISSING_ERROR
 
