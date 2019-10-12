@@ -228,7 +228,7 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 it "fails on invalid address type" do
                     use_fixture '0037-netaddress-invalid-type.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*type/)
                 end
                 # Runner.Validate.netaddress.Validity.DHCP.
                 it "fails on extraneous elements in DHCP mode" do
@@ -266,13 +266,13 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 it "fails with invalid IPv4 address specification" do
                     use_fixture '0043-netaddress-invalid-static4.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*address/)
                 end
                 # Runner.Validate.netaddress.Validity.Address.
                 it "fails with invalid IPv6 address specification" do
                     use_fixture '0044-netaddress-invalid-static6.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*address/)
                 end
                 # Runner.Validate.netaddress.Validity.Mask.
                 it "fails with invalid IPv4 prefix length" do
@@ -284,7 +284,7 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 it "fails with invalid IPv6 prefix length" do
                     use_fixture '0046-netaddress-invalid-prefix6.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*prefix/)
                 end
                 # Runner.Validate.netaddress.Validity.Mask.
                 it "fails with invalid IPv4 network mask" do
@@ -310,31 +310,31 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 it "fails with invalid IPv4 gateway" do
                     use_fixture '0050-netaddress-bad-gateway4.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*gateway/)
                 end
                 # Runner.Validate.netaddress.Validity.Gateway.
                 it "fails with invalid IPv6 gateway" do
                     use_fixture '0051-netaddress-bad-gateway6.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*gateway/)
                 end
                 # Runner.Validate.netaddress.Validity.Gateway.
                 it "fails with mismatched IPv4/v6 gateway" do
                     use_fixture '0052-netaddress-bad-gateway46.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*gateway/)
                 end
                 # Runner.Validate.netaddress.Validity.Gateway.
                 it "fails with mismatched IPv6/v4 gateway" do
                     use_fixture '0053-netaddress-bad-gateway64.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*gateway/)
                 end
                 # Runner.Validate.netaddress.Validity.Count.
                 it "fails with too many addresses" do
                     use_fixture '0054-huge-netaddress.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                    expect(last_command_started).to have_output(/error: .*netaddress.*addresses/)
                 end
             end
         end
