@@ -11,6 +11,7 @@ def use_fixture(fixture)
 end
 
 PARSER_SUCCESS = /parser: 0 error\(s\), 0 warning\(s\)/
+VALIDATOR_SUCCESS = /validator: 0 failure\(s\)/
 
 RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
     context "argument passing" do
@@ -106,11 +107,13 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
             end
         end
         context "values" do
-            # Runner.Validate.network.
-            it "fails with an invalid 'network' value" do
-                use_fixture '0011-invalid-network.installfile'
-                run_validate
-                expect(last_command_started).to have_output(/error: .*network.*/)
+            context "for 'network' key" do
+                # Runner.Validate.network.
+                it "fails with an invalid 'network' value" do
+                    use_fixture '0011-invalid-network.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*network.*/)
+                end
             end
             # Runner.Validate.hostname.
             context "for 'hostname' key" do
@@ -194,6 +197,144 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                     use_fixture '0031-mount-nonroot.installfile'
                     run_validate
                     expect(last_command_started).to have_output(/error: .*mount.*root/)
+                end
+            end
+            context "for 'netaddress' key" do
+                # Runner.Validate.network. / Runner.Validate.netaddress.
+                it "requires 'netaddress' when 'network' is true" do
+                    use_fixture '0033-network-without-netaddress.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                it "allows 'netaddress' when 'network' is false" do
+                    use_fixture '0034-nonetwork-with-netaddress.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with simple 'netaddress' (DHCP on eth0)" do
+                    use_fixture '0035-network-with-netaddress.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                # Runner.Validate.netaddress.Validity.
+                it "requires 'netaddress' to have at least two elements" do
+                    use_fixture '0036-netaddress-too-few.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Type.
+                it "fails on invalid address type" do
+                    use_fixture '0037-netaddress-invalid-type.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.DHCP.
+                it "fails on extraneous elements in DHCP mode" do
+                    use_fixture '0038-netaddress-invalid-dhcp.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Static.
+                it "fails on extraneous elements in static mode" do
+                    use_fixture '0039-netaddress-static-too-many.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Static.
+                it "fails on too few elements in static mode" do
+                    use_fixture '0040-netaddress-static-too-few.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Address.
+                it "succeeds with valid IPv4 address specification" do
+                    use_fixture '0041-netaddress-valid-static4.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                # Runner.Validate.netaddress.Validity.Address.
+                it "succeeds with valid IPv6 address specification" do
+                    use_fixture '0042-netaddress-valid-static6.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                # Runner.Validate.netaddress.Validity.Address.
+                it "fails with invalid IPv4 address specification" do
+                    use_fixture '0043-netaddress-invalid-static4.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Address.
+                it "fails with invalid IPv6 address specification" do
+                    use_fixture '0044-netaddress-invalid-static6.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Mask.
+                it "fails with invalid IPv4 prefix length" do
+                    use_fixture '0045-netaddress-invalid-prefix4.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Mask.
+                it "fails with invalid IPv6 prefix length" do
+                    use_fixture '0046-netaddress-invalid-prefix6.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Mask.
+                it "fails with invalid IPv4 network mask" do
+                    use_fixture '0047-netaddress-invalid-mask.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Gateway.
+                it "succeeds with valid IPv4 gateway" do
+                    use_fixture '0048-netaddress-gateway4.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                # Runner.Validate.netaddress.Validity.Gateway.
+                it "succeeds with valid IPv6 gateway" do
+                    use_fixture '0049-netaddress-gateway6.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                # Runner.Validate.netaddress.Validity.Gateway.
+                it "fails with invalid IPv4 gateway" do
+                    use_fixture '0050-netaddress-bad-gateway4.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Gateway.
+                it "fails with invalid IPv6 gateway" do
+                    use_fixture '0051-netaddress-bad-gateway6.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Gateway.
+                it "fails with mismatched IPv4/v6 gateway" do
+                    use_fixture '0052-netaddress-bad-gateway46.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Gateway.
+                it "fails with mismatched IPv6/v4 gateway" do
+                    use_fixture '0053-netaddress-bad-gateway64.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
+                end
+                # Runner.Validate.netaddress.Validity.Count.
+                it "fails with too many addresses" do
+                    use_fixture '0054-huge-netaddress.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*/)
                 end
             end
         end

@@ -1,4 +1,6 @@
-network false
+network true
+# 61 as a typo for 16
+netaddress eth0 172.16.1.11 61
 hostname test.machine
 pkginstall adelie-base
 rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/

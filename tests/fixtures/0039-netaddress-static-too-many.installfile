@@ -1,4 +1,5 @@
-network false
+network true
+netaddress eth1 static 127.0.0.1 255.0.0.0 127.0.0.2 255.0.0.0 127.0.0.3 255.0.0.0
 hostname test.machine
 pkginstall adelie-base
 rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
