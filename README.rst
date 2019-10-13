@@ -31,6 +31,7 @@ auditable, secure, and fast.
    :target: https://code.foxkit.us/adelie/horizon/pipelines
 
 .. image:: https://code.foxkit.us/adelie/horizon/badges/master/coverage.svg
+   :target: https://horizon.adelielinux.org/coverage/
 
 .. image:: https://img.shields.io/codacy/grade/fcca720981ee4646aa7e5b4f2f124aa4.svg
    :target: https://app.codacy.com/project/awilfox/horizon/dashboard
@@ -144,7 +145,7 @@ Contributing
 See the CONTIRIBUTING.rst_ file in the same directory as this README for
 more details on how to contribute to Project Horizon.
 
-.. _CONTRIBUTING.rst: CONTRIBUTING.rst
+.. _CONTRIBUTING.rst: ./CONTRIBUTING.rst
 
 
 
