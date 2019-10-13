@@ -1,0 +1,16 @@
+image: ruby:2.5
+
+build:
+  stage: build
+  script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make -j
+
+test:
+  stage: test
+  script:
+  - cd tests
+  - PATH=../build/tools/hscript-validate:$PATH rspec spec/validator.rb
+
