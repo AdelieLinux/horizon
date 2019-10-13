@@ -18,7 +18,7 @@ test:
   - PATH=../build/tools/hscript-validate:$PATH rspec --format RspecJunitFormatter --out rspec-validator.xml spec/validator.rb
   - PATH=../build/tools/hscript-simulate:$PATH rspec --format RspecJunitFormatter --out rspec-simulator.xml spec/simulator.rb
   - cd ..
-  - lcov --exclude '/usr/include/c++/*' --exclude '3rdparty/*' --capture --directory build --output-file coverage.info
+  - lcov --exclude '/usr/include/c++/*' --exclude '*/3rdparty/*' --capture --directory build --output-file coverage.info
   - genhtml coverage.info --output-directory cov_html
   - printf 'coverage %s\n' $(lcov --summary coverage.info | grep lines | cut -d ' ' -f4) > metrics.txt
   coverage: '/lines.+: \d+.\d+%/'
