@@ -27,3 +27,21 @@ test:
     reports:
       junit: tests/rspec-*.xml
       metrics: metrics.txt
+
+pages:
+  stage: deploy
+  dependencies:
+  - test
+  script:
+  - mkdir public
+  - mv cov_html public/coverage
+  - cd devel
+  - make
+  - mv requirements/html ../public/requirements
+  - mv script/html ../public/script
+  - mv vision/html ../public/vision
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
