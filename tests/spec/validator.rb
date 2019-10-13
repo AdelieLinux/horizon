@@ -240,6 +240,12 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*netaddress.*dhcp/)
                 end
+                # Runner.Validate.netaddress.Validity.DHCP.
+                it "fails on extraneous elements in SLAAC mode" do
+                    use_fixture '0058-netaddress-invalid-slaac.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*slaac/)
+                end
                 # Runner.Validate.netaddress.Validity.Static.
                 it "fails on extraneous elements in static mode" do
                     use_fixture '0039-netaddress-static-too-many.installfile'
@@ -275,6 +281,12 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 # Runner.Validate.netaddress.Validity.Address.
                 it "fails with invalid IPv6 address specification" do
                     use_fixture '0044-netaddress-invalid-static6.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*address/)
+                end
+                # Runner.Validate.netaddress.Validity.Address.
+                it "fails with invalid address" do
+                    use_fixture '0059-netaddress-invalid-address.installfile'
                     run_validate
                     expect(last_command_started).to have_output(/error: .*netaddress.*address/)
                 end
