@@ -89,6 +89,7 @@ bool Hostname::execute(ScriptOptions opts) const {
     if(opts.test(Simulate)) {
         output_info("installfile:" + std::to_string(this->lineno()),
                     "hostname: set hostname to '" + actual + "'");
+        std::cout << "hostname " << actual << std::endl;
     } else {
         if(sethostname(actual.c_str(), actual.size()) == -1) {
             output_error("installfile:" + std::to_string(this->lineno()),
@@ -102,6 +103,8 @@ bool Hostname::execute(ScriptOptions opts) const {
     if(opts.test(Simulate)) {
         output_info("installfile:" + std::to_string(this->lineno()),
                     "hostname: write '" + actual + "' to /etc/hostname");
+        std::cout << "printf '%s' " << actual << " > /target/etc/hostname"
+                  << std::endl;
     } else {
         std::ofstream hostname_f("/target/etc/hostname");
         if(!hostname_f) {
@@ -165,6 +168,8 @@ bool Repository::execute(ScriptOptions opts) const {
         output_info("installfile:" + std::to_string(this->lineno()),
                     "repository: write '" + this->value() +
                     "' to /etc/apk/repositories");
+        std::cout << "echo '" << this->value() <<
+                     "' >> /target/etc/apk/repositories" << std::endl;
     } else {
         std::ofstream repo_f("/target/etc/apk/repositories",
                              std::ios_base::ate);

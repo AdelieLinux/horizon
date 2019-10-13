@@ -45,12 +45,16 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    bold_if_pretty(std::cout);
-    std::cout << "HorizonScript Simulation Utility version 0.1.0";
-    reset_if_pretty(std::cout);
-    std::cout << std::endl;
-    std::cout << "Copyright (c) 2019 Adélie Linux and contributors.  AGPL-3.0 license." << std::endl;
-    std::cout << std::endl;
+    if(isatty(1)) {
+        bold_if_pretty(std::cout);
+        std::cout << "HorizonScript Simulation Utility version 0.1.0";
+        reset_if_pretty(std::cout);
+        std::cout << std::endl;
+        std::cout << "Copyright (c) 2019 Adélie Linux and contributors.  AGPL-3.0 license." << std::endl;
+        std::cout << std::endl;
+    } else {
+        std::cout << "#!/bin/sh" << std::endl << std::endl;
+    }
 
     my_script = Horizon::Script::load(installfile, opts);
     if(my_script == nullptr) {
