@@ -443,7 +443,7 @@ bool Script::execute() const {
     }
 
 #define EXECUTE_FAILURE(phase) \
-    output_error("pre-metadata", "The HorizonScript failed to execute",\
+    output_error(phase, "The HorizonScript failed to execute",\
                  "Check the log file for more details.")
 
     output_step_start("pre-metadata");
