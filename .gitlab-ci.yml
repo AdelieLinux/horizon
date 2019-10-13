@@ -5,7 +5,7 @@ build:
   script:
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON
   - make -j4
   artifacts:
     paths:
@@ -15,5 +15,15 @@ test:
   stage: test
   script:
   - cd tests
-  - PATH=../build/tools/hscript-validate:$PATH rspec spec/validator.rb
-
+  - PATH=../build/tools/hscript-validate:$PATH rspec --format RspecJunitFormatter --out rspec-validator.xml spec/validator.rb
+  - cd ..
+  - lcov --exclude '/usr/include/c++/*' --exclude '3rdparty/*' --capture --directory build --output-file coverage.info
+  - genhtml coverage.info --output-directory cov_html
+  - printf 'coverage %s\n' $(lcov --summary ../coverage.info | grep lines | cut -d ' ' -f4) > metrics.txt
+  coverage: '/lines.+: \d+.\d+%/'
+  artifacts:
+    paths:
+    - cov_html
+    reports:
+      junit: rspec-*.xml
+      metrics: metrics.txt
