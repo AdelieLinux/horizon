@@ -27,6 +27,9 @@ auditable, secure, and fast.
 .. image:: https://img.shields.io/badge/license-AGPL3-lightgrey.svg
    :target: LICENSE-code
 
+.. image:: https://img.shields.io/gitlab/pipeline/adelie/horizon?gitlab_url=https%3A%2F%2Fcode.foxkit.us%2F
+   :target: https://code.foxkit.us/adelie/horizon/pipelines
+
 
 
 Introduction
