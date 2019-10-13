@@ -15,6 +15,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <sstream>
 
 #include "script.hh"
 #include "disk.hh"
