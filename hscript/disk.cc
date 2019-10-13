@@ -72,7 +72,7 @@ bool Mount::validate(ScriptOptions options) const {
      * already exist.  However, we must take in to account that block devices
      * may not yet exist during the script validation phase.  This check may
      * need to happen in Script::validate like the Uniqueness tests. */
-    return(access(this->mountpoint().c_str(), F_OK));
+    return(access(this->device().c_str(), F_OK));
 }
 
 bool Mount::execute(ScriptOptions) const {
