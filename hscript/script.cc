@@ -446,6 +446,21 @@ bool Script::execute() const {
     output_error(phase, "The HorizonScript failed to execute",\
                  "Check the log file for more details.")
 
+    output_step_start("disk");
+    /* Sort by mountpoint.
+     * This ensures that any subdirectory mounts come after their parent. */
+    std::sort(this->internal->mounts.begin(), this->internal->mounts.end(),
+              [](std::unique_ptr<Keys::Mount> const &e1, std::unique_ptr<Keys::Mount> const &e2) {
+        return e1->mountpoint() < e2->mountpoint();
+    });
+    for(auto &mount : this->internal->mounts) {
+        if(!mount->execute(opts)) {
+            EXECUTE_FAILURE("disk");
+            return false;
+        }
+    }
+    output_step_end("disk");
+
     output_step_start("pre-metadata");
     if(!this->internal->hostname->execute(opts)) {
         EXECUTE_FAILURE("pre-metadata");
