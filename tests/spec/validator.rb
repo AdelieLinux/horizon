@@ -303,6 +303,18 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*netaddress.*prefix/)
                 end
                 # Runner.Validate.netaddress.Validity.Mask.
+                it "fails with non-numeric IPv4 prefix length" do
+                    use_fixture '0060-netaddress-invalid-prefix4.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*prefix/)
+                end
+                # Runner.Validate.netaddress.Validity.Mask.
+                it "fails with non-numeric IPv6 prefix length" do
+                    use_fixture '0061-netaddress-invalid-prefix6.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*prefix/)
+                end
+                # Runner.Validate.netaddress.Validity.Mask.
                 it "fails with invalid IPv4 network mask" do
                     use_fixture '0047-netaddress-invalid-mask.installfile'
                     run_validate

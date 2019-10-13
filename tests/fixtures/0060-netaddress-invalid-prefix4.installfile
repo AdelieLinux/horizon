@@ -1,6 +1,6 @@
 network true
-# 61 as a typo for 16
-netaddress eth0 static 172.16.1.11 61
+# qy as typo for 16 (qwerty key row)
+netaddress eth0 static 172.16.1.11 qy
 hostname test.machine
 pkginstall adelie-base
 rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
