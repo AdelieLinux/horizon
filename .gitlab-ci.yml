@@ -3,7 +3,6 @@ image: ruby:2.5
 build:
   stage: build
   script:
-  - apk add parted-dev eudev-dev
   - mkdir build
   - cd build
   - cmake ..
