@@ -220,3 +220,21 @@ bool NetAddress::validate(ScriptOptions) const {
 bool NetAddress::execute(ScriptOptions) const {
     return false;
 }
+
+Key *NetSSID::parseFromData(const std::string &data, int lineno, int *errors,
+                            int *warnings) {
+    std::string iface, ssid, passphrase;
+    return new NetSSID(lineno, iface, ssid, SecurityType::None, passphrase);
+}
+
+bool NetSSID::validate(ScriptOptions options) const {
+    /* Runner.Validate.network.netssid.Interface */
+    if(options.test(InstallEnvironment)) {
+        return false;
+    }
+    return true;
+}
+
+bool NetSSID::execute(ScriptOptions) const {
+    return false;
+}

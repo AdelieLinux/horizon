@@ -81,6 +81,7 @@ struct Script::ScriptPrivate {
 
     /*! Network addressing configuration */
     std::vector< std::unique_ptr<Horizon::Keys::NetAddress> > addresses;
+    std::vector< std::unique_ptr<Horizon::Keys::NetSSID> > ssids;
 
     /*! APK repositories */
     std::vector< std::unique_ptr<Horizon::Keys::Repository> > repos;
@@ -160,6 +161,12 @@ struct Script::ScriptPrivate {
                         dynamic_cast<Keys::NetAddress *>(key_obj)
             );
             this->addresses.push_back(std::move(addr));
+            return true;
+        } else if(key_name == "netssid") {
+            std::unique_ptr<Keys::NetSSID> ssid(
+                        dynamic_cast<Keys::NetSSID *>(key_obj)
+            );
+            this->ssids.push_back(std::move(ssid));
             return true;
         } else if(key_name == "repository") {
             std::unique_ptr<Keys::Repository> repo(
@@ -383,6 +390,13 @@ bool Script::validate() const {
         }
     }
 
+    /* Runner.Validate.network.netssid */
+    for(auto &ssid : this->internal->ssids) {
+        if(!ssid->validate(this->opts)) {
+            failures++;
+        }
+    }
+
     if(this->internal->repos.size() == 0) {
         Keys::Repository *sys_key = dynamic_cast<Keys::Repository *>(
             Horizon::Keys::Repository::parseFromData(
@@ -470,16 +484,37 @@ bool Script::execute() const {
         EXECUTE_FAILURE("pre-metadata");
         return false;
     }
-    output_step_end("pre-metadata");
 
-    /**************** PKGDB ****************/
-    output_step_start("pkgdb");
     for(auto &repo : this->internal->repos) {
         if(!repo->execute(opts)) {
-            EXECUTE_FAILURE("pkgdb");
+            EXECUTE_FAILURE("pre-metadata");
             return false;
         }
     }
+    output_step_end("pre-metadata");
+
+    /**************** NETWORK ****************/
+    output_step_start("net");
+    for(auto &ssid : this->internal->ssids) {
+        if(!ssid->execute(opts)) {
+            EXECUTE_FAILURE("net");
+            /* "Soft" error.  Not fatal. */
+        }
+    }
+    for(auto &addr : this->internal->addresses) {
+        if(!addr->execute(opts)) {
+            EXECUTE_FAILURE("net");
+            /* "Soft" error.  Not fatal. */
+        }
+    }
+    if(!this->internal->network->execute(opts)) {
+        EXECUTE_FAILURE("net");
+        return false;
+    }
+    output_step_end("net");
+
+    /**************** PKGDB ****************/
+    output_step_start("pkgdb");
 
     /* Runner.Execute.pkginstall.APKDB */
     output_info("internal", "initialising APK");

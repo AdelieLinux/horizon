@@ -57,11 +57,11 @@ public:
     /*! Retrieve the interface to which this 'netaddress' key is associated. */
     const std::string iface() const { return this->_iface; }
     /*! Retrieve the address type of this 'netadress' key. */
-    const AddressType type() const { return this->_type; }
+    AddressType type() const { return this->_type; }
     /*! Retrieve the static address, if any. */
     const std::string address() const { return this->_address; }
     /*! Retreive the prefix length for the static address. */
-    const uint8_t prefix() const { return this->_prefix; }
+    uint8_t prefix() const { return this->_prefix; }
     /*! Retrieve the gateway, if any. */
     const std::string gateway() const { return this->_gw; }
 
@@ -73,6 +73,39 @@ class Nameserver : public Key {
 };
 
 class NetSSID : public Key {
+public:
+    /*! The type of security used by the SSID. */
+    enum SecurityType {
+        None,
+        WEP,
+        WPA
+    };
+private:
+    const std::string _iface;
+    const std::string _ssid;
+    const SecurityType _sec;
+    const std::string _pw;
+
+    NetSSID(int _line, const std::string &_if, const std::string &_s,
+            SecurityType _t, const std::string &_p) : Key(_line), _iface(_if),
+        _ssid(_s), _sec(_t), _pw(_p) {}
+public:
+    static Key *parseFromData(const std::string &data, int lineno, int *errors,
+                              int *warnings);
+
+    /*! Retrieve the interface to which this 'netssid' key is associated. */
+    const std::string iface() const { return this->_iface; }
+    /*! Retrieve the named SSID for this 'netssid' key. */
+    const std::string ssid() const { return this->_ssid; }
+    /*! Retrieve the security type of this 'netssid' key. */
+    SecurityType type() const { return this->_sec; }
+    /*! Retrieve the passphrase for this 'netssid' key.
+     * @note Only valid if type() is not None.
+     */
+    const std::string passphrase() const { return this->_pw; }
+
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 }
