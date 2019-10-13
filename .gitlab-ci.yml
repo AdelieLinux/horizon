@@ -40,6 +40,7 @@ pages:
   - mv requirements/html ../public/requirements
   - mv script/html ../public/script
   - mv vision/html ../public/vision
+  - cp index.html ../public/
   artifacts:
     paths:
     - public
