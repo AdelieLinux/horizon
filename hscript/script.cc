@@ -446,11 +446,13 @@ bool Script::execute() const {
     output_error(phase, "The HorizonScript failed to execute",\
                  "Check the log file for more details.")
 
+    /**************** DISK SETUP ****************/
     output_step_start("disk");
     /* Sort by mountpoint.
      * This ensures that any subdirectory mounts come after their parent. */
     std::sort(this->internal->mounts.begin(), this->internal->mounts.end(),
-              [](std::unique_ptr<Keys::Mount> const &e1, std::unique_ptr<Keys::Mount> const &e2) {
+              [](std::unique_ptr<Keys::Mount> const &e1,
+                 std::unique_ptr<Keys::Mount> const &e2) {
         return e1->mountpoint() < e2->mountpoint();
     });
     for(auto &mount : this->internal->mounts) {
@@ -461,6 +463,7 @@ bool Script::execute() const {
     }
     output_step_end("disk");
 
+    /**************** PRE PACKAGE METADATA ****************/
     output_step_start("pre-metadata");
     if(!this->internal->hostname->execute(opts)) {
         EXECUTE_FAILURE("pre-metadata");
@@ -468,6 +471,7 @@ bool Script::execute() const {
     }
     output_step_end("pre-metadata");
 
+    /**************** PKGDB ****************/
     output_step_start("pkgdb");
     for(auto &repo : this->internal->repos) {
         if(!repo->execute(opts)) {
@@ -475,8 +479,42 @@ bool Script::execute() const {
             return false;
         }
     }
+
+    /* Runner.Execute.pkginstall.APKDB */
+    output_info("internal", "initialising APK");
+    if(opts.test(Simulate)) {
+        std::cout << "apk --root /target --initdb add" << std::endl;
+    } else {
+        if(system("apk --root /target --initdb add") != 0) {
+            EXECUTE_FAILURE("pkgdb");
+            return false;
+        }
+    }
+
+    /* Runner.Execute.pkginstall */
+    output_info("internal", "installing packages to target");
+    std::ostringstream pkg_list;
+    for(auto &pkg : this->internal->packages) {
+        pkg_list << pkg << " ";
+    }
+    if(opts.test(Simulate)) {
+        std::cout << "apk --root /target update" << std::endl;
+        std::cout << "apk --root /target add " << pkg_list.str() << std::endl;
+    } else {
+        if(system("apk --root /target update") != 0) {
+            EXECUTE_FAILURE("pkgdb");
+            return false;
+        }
+        std::string apk_invoc = "apk --root /target add " + pkg_list.str();
+        if(system(apk_invoc.c_str()) != 0) {
+            EXECUTE_FAILURE("pkgdb");
+            return false;
+        }
+    }
+
     output_step_end("pkgdb");
 
+    /**************** POST PACKAGE METADATA ****************/
     output_step_start("post-metadata");
     if(!this->internal->rootpw->execute(opts)) {
         EXECUTE_FAILURE("post-metadata");
