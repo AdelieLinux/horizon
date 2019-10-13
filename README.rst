@@ -16,10 +16,10 @@
  Documentation: CC BY-NC-SA open source license.
 
 
-.. image:: https://code.foxkit.us/adelie/horizon/raw/master/assets/horizon-huge.png
+.. image:: https://code.foxkit.us/adelie/horizon/raw/master/assets/horizon-256.png
    :target: https://horizon.adelielinux.org/
-   :alt: Project Horizon
    :align: center
+   :alt: Project Horizon
 
 
 Project Horizon is the next-generation installation system for Adélie Linux.
@@ -30,9 +30,9 @@ auditable, secure, and fast.
    :target: ircs://irc.interlinked.me:6697/#Adelie-Support
    :alt: Chat with us on IRC: irc.interlinked.me #Adelie-Support
 
-.. image:: https://img.shields.io/badge/license-AGPL3-lightgrey.svg
+.. image:: https://img.shields.io/badge/license-AGPLv3-lightgrey.svg
    :target: LICENSE-code
-   :alt: Licensed under AGPL 3
+   :alt: Licensed under AGPLv3
 
 .. image:: https://img.shields.io/gitlab/pipeline/adelie/horizon?gitlab_url=https%3A%2F%2Fcode.foxkit.us%2F
    :target: https://code.foxkit.us/adelie/horizon/pipelines
