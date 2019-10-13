@@ -39,8 +39,9 @@ public:
      * @returns nullptr if data is unparsable, otherwise a pointer to a Key.
      */
 #define UNUSED __attribute__((unused))
-    static Key *parseFromData(const std::string data UNUSED, int lineno UNUSED,
-                              int *errors UNUSED, int *warnings UNUSED) {
+    static Key *parseFromData(const std::string &data UNUSED,
+                              int lineno UNUSED, int *errors UNUSED,
+                              int *warnings UNUSED) {
         return nullptr;
     }
 #undef UNUSED
@@ -75,8 +76,8 @@ protected:
      * @param out       Output variable: will contain the value.
      * @returns true if value is parsed successfully, false otherwise.
      */
-    static bool parse(const std::string what, const std::string where,
-                      const std::string key, bool *out);
+    static bool parse(const std::string &what, const std::string &where,
+                      const std::string &key, bool *out);
 public:
     /*! Determines if the Key is set or not.
      * @returns true if the Key is truthy, false otherwise.
@@ -92,7 +93,8 @@ public:
 class StringKey : public Key {
 protected:
     const std::string _value;
-    StringKey(int _line, std::string my_str) : Key(_line), _value(my_str) {}
+    StringKey(int _line, const std::string &my_str) :
+        Key(_line), _value(my_str) {}
 
 public:
     /*! Retrieve the value of this key. */

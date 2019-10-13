@@ -23,7 +23,7 @@ class Network : public BooleanKey {
 private:
     Network(int _line, bool _value) : BooleanKey(_line, _value) {}
 public:
-    static Key *parseFromData(const std::string data, int lineno, int *errors,
+    static Key *parseFromData(const std::string &data, int lineno, int *errors,
                               int *warnings);
     bool execute(ScriptOptions) const override;
 };
@@ -46,12 +46,12 @@ private:
     const uint8_t _prefix;
     const std::string _gw;
 
-    NetAddress(const int _line, const std::string _i, const AddressType _t,
-               const std::string _a, const uint8_t _p, const std::string _g) :
+    NetAddress(const int _line, const std::string &_i, const AddressType &_t,
+               const std::string &_a, const uint8_t _p, const std::string &_g) :
         Key(_line), _iface(_i), _type(_t), _address(_a), _prefix(_p), _gw(_g)
     {}
 public:
-    static Key *parseFromData(const std::string data, int lineno, int *errors,
+    static Key *parseFromData(const std::string &data, int lineno, int *errors,
                               int *warnings);
 
     /*! Retrieve the interface to which this 'netaddress' key is associated. */

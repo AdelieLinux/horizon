@@ -18,7 +18,7 @@
 
 using namespace Horizon::Keys;
 
-Key *Hostname::parseFromData(const std::string data, int lineno, int *errors,
+Key *Hostname::parseFromData(const std::string &data, int lineno, int *errors,
                              int *) {
     std::regex valid_re("[A-Za-z0-9-_.]*");
     if(!std::regex_match(data, valid_re)) {
@@ -119,7 +119,7 @@ bool Hostname::execute(ScriptOptions opts) const {
 }
 
 
-Key *PkgInstall::parseFromData(const std::string data, int lineno, int *errors,
+Key *PkgInstall::parseFromData(const std::string &data, int lineno, int *errors,
                                int *warnings) {
     std::regex valid_pkg("[0-9A-Za-z+_.-]*((>?<|[<>]?=|[~>])[0-9A-Za-z-_.]+)?");
     std::string next_pkg;
@@ -146,7 +146,7 @@ Key *PkgInstall::parseFromData(const std::string data, int lineno, int *errors,
     return new PkgInstall(lineno, all_pkgs);
 }
 
-Key *Repository::parseFromData(const std::string data, int lineno, int *errors,
+Key *Repository::parseFromData(const std::string &data, int lineno, int *errors,
                                int *) {
     if(data.empty() || (data[0] != '/' && data.compare(0, 4, "http"))) {
         if(errors) *errors += 1;

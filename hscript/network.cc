@@ -17,7 +17,7 @@
 
 using namespace Horizon::Keys;
 
-Key *Network::parseFromData(const std::string data, int lineno, int *errors,
+Key *Network::parseFromData(const std::string &data, int lineno, int *errors,
                             int *warnings) {
     bool value;
     if(!BooleanKey::parse(data, "installfile:" + std::to_string(lineno),
@@ -32,7 +32,7 @@ bool Network::execute(ScriptOptions) const {
     return false;
 }
 
-Key *NetAddress::parseFromData(const std::string data, int lineno, int *errors,
+Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
                                int *warnings) {
     long elements = std::count(data.cbegin(), data.cend(), ' ') + 1;
     std::string::size_type type_pos, addr_pos, prefix_pos, gw_pos, next_end;

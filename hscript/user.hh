@@ -23,7 +23,7 @@ private:
     RootPassphrase(int _line, const std::string my_pw) :
         StringKey(_line, my_pw) {}
 public:
-    static Key *parseFromData(const std::string data, int lineno, int *errors,
+    static Key *parseFromData(const std::string &data, int lineno, int *errors,
                               int *warnings);
     bool validate(ScriptOptions) const override;
     bool execute(ScriptOptions) const override;

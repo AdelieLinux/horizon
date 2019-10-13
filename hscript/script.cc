@@ -28,7 +28,7 @@
 #define LINE_MAX 512
 
 
-typedef Horizon::Keys::Key *(*key_parse_fn)(std::string, int, int*, int*);
+typedef Horizon::Keys::Key *(*key_parse_fn)(const std::string &, int, int*, int*);
 
 const std::map<std::string, key_parse_fn> valid_keys = {
     {"network", &Horizon::Keys::Network::parseFromData},

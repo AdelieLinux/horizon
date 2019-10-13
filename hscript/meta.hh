@@ -25,7 +25,7 @@ private:
     Hostname(int _line, const std::string my_name) :
         StringKey(_line, my_name) {}
 public:
-    static Key *parseFromData(const std::string data, int lineno, int *errors,
+    static Key *parseFromData(const std::string &data, int lineno, int *errors,
                               int *warnings);
     bool validate(ScriptOptions) const override;
     bool execute(ScriptOptions) const override;
@@ -37,7 +37,7 @@ private:
     PkgInstall(int _line, const std::set<std::string> my_pkgs) : Key(_line),
         _pkgs(my_pkgs) {}
 public:
-    static Key *parseFromData(const std::string data, int lineno, int *errors,
+    static Key *parseFromData(const std::string &data, int lineno, int *errors,
                               int *warnings);
     const std::set<std::string> packages() const { return _pkgs; }
     bool validate(ScriptOptions) const override { return true; }
@@ -62,7 +62,7 @@ private:
     Repository(int _line, const std::string my_url) :
         StringKey(_line, my_url) {}
 public:
-    static Key *parseFromData(const std::string data, int lineno, int *errors,
+    static Key *parseFromData(const std::string &data, int lineno, int *errors,
                               int *warnings);
     bool validate(ScriptOptions) const override;
     bool execute(ScriptOptions) const override;

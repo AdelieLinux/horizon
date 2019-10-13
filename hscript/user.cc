@@ -15,7 +15,7 @@
 
 using namespace Horizon::Keys;
 
-Key *RootPassphrase::parseFromData(const std::string data, int lineno,
+Key *RootPassphrase::parseFromData(const std::string &data, int lineno,
                                    int *errors, int *warnings) {
     if(data.size() < 5 || data[0] != '$' || (data[1] != '2' && data[1] != '6')
             || data[2] != '$') {

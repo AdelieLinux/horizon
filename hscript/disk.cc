@@ -18,7 +18,7 @@
 
 using namespace Horizon::Keys;
 
-Key *Mount::parseFromData(const std::string data, int lineno, int *errors,
+Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
                           int *warnings) {
     std::string dev, where, opt;
     std::string::size_type where_pos, opt_pos;
