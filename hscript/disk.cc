@@ -75,6 +75,21 @@ bool Mount::validate(ScriptOptions options) const {
     return(access(this->device().c_str(), F_OK));
 }
 
-bool Mount::execute(ScriptOptions) const {
-    return false;
+bool Mount::execute(ScriptOptions options) const {
+    const std::string actual_mount = "/target" + this->mountpoint();
+
+    if(options.test(Simulate)) {
+        output_info("installfile:" + std::to_string(this->lineno()),
+                    "mount: mounting " + this->device() + " on " +
+                    this->mountpoint());
+        std::cout << "mount ";
+        if(!this->options().empty()) {
+            std::cout << "-o " << this->options() << " ";
+        }
+        std::cout << this->device() << " " << actual_mount << std::endl;
+        return true;
+    }
+
+    /* mount */
+    return true;
 }
