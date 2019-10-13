@@ -16,6 +16,14 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
             run_command 'hscript-simulate'
             expect(last_command_started).to have_output(/usage/)
         end
+        it "supports Strict Mode" do
+            run_command 'hscript-simulate foo -s'
+            expect(last_command_started).to_not have_output(/usage/)
+        end
+        it "doesn't output ANSI colours when instructed not to" do
+            run_command 'hscript-simulate foo -n'
+            expect(last_command_started).to_not have_output(/\033/)
+        end
         it "doesn't output ANSI colours when redirected" do
             run_command 'hscript-simulate foo 2>/dev/null'
             expect(last_command_started).to_not have_output(/\033/)
