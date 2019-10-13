@@ -16,6 +16,11 @@
  Documentation: CC BY-NC-SA open source license.
 
 
+.. image:: https://code.foxkit.us/adelie/horizon/raw/master/assets/horizon-huge.png
+   :target: https://horizon.adelielinux.org/
+   :alt: Project Horizon
+   :align: center
+
 
 Project Horizon is the next-generation installation system for Adélie Linux.
 It provides everyone with tools that make installation easy, inspectable,
@@ -23,18 +28,23 @@ auditable, secure, and fast.
 
 .. image:: https://img.shields.io/badge/chat-on%20IRC-blue.svg
    :target: ircs://irc.interlinked.me:6697/#Adelie-Support
+   :alt: Chat with us on IRC: irc.interlinked.me #Adelie-Support
 
 .. image:: https://img.shields.io/badge/license-AGPL3-lightgrey.svg
    :target: LICENSE-code
+   :alt: Licensed under AGPL 3
 
 .. image:: https://img.shields.io/gitlab/pipeline/adelie/horizon?gitlab_url=https%3A%2F%2Fcode.foxkit.us%2F
    :target: https://code.foxkit.us/adelie/horizon/pipelines
+   :alt: Click for build status
 
 .. image:: https://code.foxkit.us/adelie/horizon/badges/master/coverage.svg
    :target: https://horizon.adelielinux.org/coverage/
+   :alt: Click for code coverage report
 
 .. image:: https://img.shields.io/codacy/grade/fcca720981ee4646aa7e5b4f2f124aa4.svg
    :target: https://app.codacy.com/project/awilfox/horizon/dashboard
+   :alt: Codacy code grade: A
 
 
 
@@ -77,6 +87,11 @@ Repository Layout
 =================
 
 Project Horizon is laid out into multiple directories for ease of maintenance.
+
+``assets``: Graphics and icons
+``````````````````````````````
+The ``assets`` directory contains UI and graphic files.
+
 
 ``build``: Build system artefacts
 `````````````````````````````````
