@@ -30,6 +30,9 @@ auditable, secure, and fast.
 .. image:: https://img.shields.io/gitlab/pipeline/adelie/horizon?gitlab_url=https%3A%2F%2Fcode.foxkit.us%2F
    :target: https://code.foxkit.us/adelie/horizon/pipelines
 
+.. image:: https://img.shields.io/codacy/grade/fcca720981ee4646aa7e5b4f2f124aa4.svg
+   :target: https://app.codacy.com/project/awilfox/horizon/dashboard
+
 
 
 Introduction
