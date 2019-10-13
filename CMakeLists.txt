@@ -10,7 +10,17 @@ pkg_check_modules(LIBUDEV REQUIRED libudev)
 pkg_check_modules(PARTED REQUIRED libparted)
 find_library(BCNM_LIBRARY REQUIRED wpactrl PATH_SUFFIXES bcnm)
 
+option(BUILD_TOOLS "Enable building of tools (Validator, Simulator, etc)" ON)
+option(COVERAGE "Build for code coverage tests (slow)" OFF)
+
+IF(COVERAGE)
+    SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} --coverage")
+    SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
+ENDIF(COVERAGE)
+
 include_directories(.)
 
 add_subdirectory(hscript)
-add_subdirectory(tools)
+IF(BUILD_TOOLS)
+    add_subdirectory(tools)
+ENDIF(BUILD_TOOLS)
