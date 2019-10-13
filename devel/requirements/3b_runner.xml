@@ -672,22 +672,6 @@
                     <title>Runner.Execute.hostname.Write</title>
                     <para>The system shall write the hostname of the computer to the <literal>/etc/hostname</literal> file in the target namespace.</para>
                 </formalpara>
-                <formalpara id="Runner.Execute.rootpw">
-                    <title>Runner.Execute.rootpw</title>
-                    <para>The system shall set the root password in the target namespace to the value specified in the <literal>rootpw</literal> key.</para>
-                </formalpara>
-                <formalpara id="Runner.Execute.language">
-                    <title>Runner.Execute.language</title>
-                    <para>If a <literal>language</literal> key is specified in the HorizonScript, the system shall add a script to <literal>/etc/profile.d</literal> setting the <varname>LANG</varname> environment variable to the value of the <literal>language</literal> key.</para>
-                </formalpara>
-                <formalpara id="Runner.Execute.keymap">
-                    <title>Runner.Execute.keymap</title>
-                    <para>If a <literal>keymap</literal> key is specified in the HorizonScript, the system shall set the <varname>XKBLAYOUT</varname> variable in the <literal>/etc/default/keyboard</literal> file in the target namespace to value of the <literal>keymap</literal> key.</para>
-                </formalpara>
-                <formalpara id="Runner.Execute.UserAccounts">
-                    <title>Runner.Execute.UserAccounts</title>
-                    <para>The system shall configure user accounts in the target namespace as specified in keys <literal>username</literal>, <literal>useralias</literal>, <literal>userpw</literal>, and <literal>usergroups</literal>.</para>
-                </formalpara>
                 <formalpara id="Runner.Execute.repository">
                     <title>Runner.Execute.repository</title>
                     <para>If one or more <literal>repository</literal> keys are specified in the HorizonScript, the system shall write the repository locations to the <literal>/etc/apk/repositories</literal> file in the target namespace; otherwise, the system shall write the default repository locations to the <literal>/etc/apk/repositories</literal> file in the target namespace.</para>
@@ -759,6 +743,22 @@
                 <formalpara id="Runner.Execute.pkginstall.APKDB">
                     <title>Runner.Execute.pkginstall.APKDB</title>
                     <para>The system shall initialise the APK database in the target namespace before installing packages.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.rootpw">
+                    <title>Runner.Execute.rootpw</title>
+                    <para>The system shall set the root password in the target namespace to the value specified in the <literal>rootpw</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.language">
+                    <title>Runner.Execute.language</title>
+                    <para>If a <literal>language</literal> key is specified in the HorizonScript, the system shall add a script to <literal>/etc/profile.d</literal> setting the <varname>LANG</varname> environment variable to the value of the <literal>language</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.keymap">
+                    <title>Runner.Execute.keymap</title>
+                    <para>If a <literal>keymap</literal> key is specified in the HorizonScript, the system shall set the <varname>XKBLAYOUT</varname> variable in the <literal>/etc/default/keyboard</literal> file in the target namespace to value of the <literal>keymap</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.UserAccounts">
+                    <title>Runner.Execute.UserAccounts</title>
+                    <para>The system shall configure user accounts in the target namespace as specified in keys <literal>username</literal>, <literal>useralias</literal>, <literal>userpw</literal>, and <literal>usergroups</literal>.</para>
                 </formalpara>
                 <formalpara id="Runner.Execute.timezone">
                     <title>Runner.Execute.timezone</title>
