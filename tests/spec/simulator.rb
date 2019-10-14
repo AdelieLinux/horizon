@@ -43,6 +43,15 @@ mount /dev/gwyn/home /target/home
 mount /dev/sda2 /target/usr
 mount /dev/gwyn/source /target/usr/src")
         end
+        it "handles options correctly" do
+            use_fixture '0075-mount-options.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("
+mount /dev/sda1 /target/
+mount -o relatime /dev/gwyn/home /target/home
+mount /dev/sda2 /target/usr
+mount -o noatime /dev/gwyn/source /target/usr/src")
+        end
     end
     context "simulating 'hostname' execution" do
         it "sets the hostname properly" do
