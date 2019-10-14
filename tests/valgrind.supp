@@ -20,3 +20,13 @@
    fun:__libc_start_init
    obj:/lib/ld-musl-*
 }
+# broken x86_64 mess (musl dbg symbols don't have do_init_fini symbol)
+{
+   clipp:ctor
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:_start_c
+   obj:/lib/ld-musl-*
+}
