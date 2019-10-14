@@ -392,8 +392,9 @@ bool Script::validate() const {
 
     /* Runner.Validate.network.netssid */
     for(auto &ssid : this->internal->ssids) {
-        ssid->validate(this->opts);
-        /* Failure is not fatal per spec. */
+        if(!ssid->validate(this->opts)) {
+            failures++;
+        }
     }
 
     if(this->internal->repos.size() == 0) {

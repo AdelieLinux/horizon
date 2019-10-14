@@ -324,11 +324,17 @@ bool NetSSID::validate(ScriptOptions options) const {
                this->_iface.size());
         errno = 0;
         if(ioctl(my_sock, SIOCGIWNAME, &request) == -1) {
-            if(errno == EOPNOTSUPP) {
+            switch(errno)
+            {
+            case EOPNOTSUPP:
                 output_warning("installfile:" + std::to_string(this->lineno()),
                                "netssid: interface specified is not wireless");
-                return false;
-            } else {
+                return true;
+            case ENODEV:
+                output_warning("installfile:" + std::to_string(this->lineno()),
+                               "netssid: specified interface does not exist");
+                return true;
+            default:
                 output_error("installfile:" + std::to_string(this->lineno()),
                              "netssid: error communicating with wireless device");
                 return false;
