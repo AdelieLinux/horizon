@@ -164,6 +164,19 @@ Key *PkgInstall::parseFromData(const std::string &data, int lineno, int *errors,
     return new PkgInstall(lineno, all_pkgs);
 }
 
+
+bool PkgInstall::validate(ScriptOptions) const {
+    /* Any validation errors would have occurred above. */
+    return true;  /* LCOV_EXCL_LINE */
+}
+
+
+bool PkgInstall::execute(ScriptOptions) const {
+    /* Package installation is handled in Script::execute. */
+    return true;  /* LCOV_EXCL_LINE */
+}
+
+
 Key *Repository::parseFromData(const std::string &data, int lineno, int *errors,
                                int *) {
     if(data.empty() || (data[0] != '/' && data.compare(0, 4, "http"))) {

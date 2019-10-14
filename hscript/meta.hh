@@ -40,9 +40,8 @@ public:
     static Key *parseFromData(const std::string &data, int lineno, int *errors,
                               int *warnings);
     const std::set<std::string> packages() const { return _pkgs; }
-    bool validate(ScriptOptions) const override { return true; }
-    bool execute(ScriptOptions) const override { return true; }
-
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 class Language : public StringKey {
