@@ -83,6 +83,29 @@ help using or installing Adélie Linux, see `our Help Centre on the Web`_.
 
 
 
+Build Requirements
+==================
+
+To build the entirety of Project Horizon, you will need:
+
+* Qt 5 (Core; Widgets) (qt5-qtbase-dev)
+
+* GNU Parted development files (parted-dev)
+
+* libudev development files (eudev-dev)
+
+* BCNM
+
+To run the test suite, you will additionally need:
+
+* RSpec (ruby-rspec)
+
+* Aruba
+
+* Valgrind (valgrind)
+
+
+
 Repository Layout
 =================
 
