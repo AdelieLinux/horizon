@@ -37,20 +37,29 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
         it "mounts directories in tree order" do
             use_fixture '0057-many-mounts.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("
-mount /dev/sda1 /target/
+            expect(last_command_started.stdout).to include("mount /dev/sda1 /target/
+mkdir -p /target/etc
+printf '%s\\t%s\\t%s\\t%s\\t0\\t1\\n' /dev/sda1 / auto defaults >> /target/etc/fstab
 mount /dev/gwyn/home /target/home
+printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/home /home auto defaults >> /target/etc/fstab
 mount /dev/sda2 /target/usr
-mount /dev/gwyn/source /target/usr/src")
+printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/sda2 /usr auto defaults >> /target/etc/fstab
+mount /dev/gwyn/source /target/usr/src
+printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto defaults >> /target/etc/fstab")
         end
         it "handles options correctly" do
             use_fixture '0075-mount-options.installfile'
             run_simulate
             expect(last_command_started.stdout).to include("
 mount /dev/sda1 /target/
+mkdir -p /target/etc
+printf '%s\\t%s\\t%s\\t%s\\t0\\t1\\n' /dev/sda1 / auto defaults >> /target/etc/fstab
 mount -o relatime /dev/gwyn/home /target/home
+printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/home /home auto relatime >> /target/etc/fstab
 mount /dev/sda2 /target/usr
-mount -o noatime /dev/gwyn/source /target/usr/src")
+printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/sda2 /usr auto defaults >> /target/etc/fstab
+mount -o noatime /dev/gwyn/source /target/usr/src
+printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> /target/etc/fstab")
         end
     end
     context "simulating 'hostname' execution" do
