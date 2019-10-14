@@ -30,6 +30,9 @@ int main(int argc, char *argv[]) {
 
     auto cli = (
                 clipp::value("installfile", installfile),
+                clipp::option("-i", "--install").doc("Set Installation Environment flag (DANGEROUS)")(
+                    [&opts] { opts.set(ScriptOptionFlags::InstallEnvironment); }
+                ),
                 clipp::option("-k", "--keep-going").doc("Continue parsing after errors")(
                     [&opts] { opts.set(ScriptOptionFlags::KeepGoing); }
                 ),

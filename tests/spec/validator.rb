@@ -19,6 +19,10 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
             run_command 'hscript-validate'
             expect(last_command_started).to have_output(/usage/)
         end
+        it "accepts -i flag" do
+            run_command 'hscript-validate foo -i'
+            expect(last_command_started).to_not have_output(/usage/)
+        end
         it "doesn't output ANSI colours when instructed not to" do
             run_command 'hscript-validate foo -n'
             expect(last_command_started).to_not have_output(/\033/)
