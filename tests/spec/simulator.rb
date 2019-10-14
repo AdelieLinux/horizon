@@ -33,7 +33,7 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
             expect(last_command_started.stdout).to start_with("#!/bin/sh")
         end
     end
-    context "simulating 'mount' flags" do
+    context "simulating 'mount' execution" do
         it "mounts directories in tree order" do
             use_fixture '0057-many-mounts.installfile'
             run_simulate
@@ -42,6 +42,21 @@ mount /dev/sda1 /target/
 mount /dev/gwyn/home /target/home
 mount /dev/sda2 /target/usr
 mount /dev/gwyn/source /target/usr/src")
+        end
+    end
+    context "simulating 'hostname' execution" do
+        it "sets the hostname properly" do
+            use_fixture '0074-hostname-large.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("hostname heartbreak-is-the-national-anthem")
+            use_fixture '0001-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("hostname test.machine")
+        end
+        it "sets the domain name properly" do
+            use_fixture '0074-hostname-large.installfile'
+            run_simulate
+            expect(last_command_started.stderr).to include("set domain name 'we-sing-it-proudly.new-romantics.club'")
         end
     end
 end
