@@ -319,6 +319,7 @@ bool NetSSID::validate(ScriptOptions options) const {
                          "netssid: can't open socket", ::strerror(errno));
             return false;
         }
+        memset(&request, 0, sizeof(request));
         memcpy(&request.ifr_ifrn.ifrn_name, this->_iface.c_str(),
                this->_iface.size());
         errno = 0;
