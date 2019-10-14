@@ -11,8 +11,11 @@
  */
 
 #include <algorithm>
-#include <arpa/inet.h>
-#include <net/if.h>
+#include <arpa/inet.h>          /* inet_pton */
+#include <linux/wireless.h>     /* struct iwreq */
+#include <string.h>             /* strerror */
+#include <sys/ioctl.h>          /* ioctl, ioctl numbers */
+#include <unistd.h>             /* close */
 #include "network.hh"
 #include "util/output.hh"
 
@@ -309,7 +312,29 @@ Key *NetSSID::parseFromData(const std::string &data, int lineno, int *errors,
 bool NetSSID::validate(ScriptOptions options) const {
     /* Runner.Validate.network.netssid.Interface */
     if(options.test(InstallEnvironment)) {
-        return false;
+        struct iwreq request;
+        int my_sock = ::socket(AF_INET, SOCK_STREAM, 0);
+        if(my_sock == -1) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "netssid: can't open socket", ::strerror(errno));
+            return false;
+        }
+        memcpy(&request.ifr_ifrn.ifrn_name, this->_iface.c_str(),
+               this->_iface.size());
+        errno = 0;
+        if(ioctl(my_sock, SIOCGIWNAME, &request) == -1) {
+            if(errno == EOPNOTSUPP) {
+                output_warning("installfile:" + std::to_string(this->lineno()),
+                               "netssid: interface specified is not wireless");
+                return false;
+            } else {
+                output_error("installfile:" + std::to_string(this->lineno()),
+                             "netssid: error communicating with wireless device");
+                return false;
+            }
+        }
+        ::close(my_sock);
+        return true;
     }
     return true;
 }
