@@ -365,6 +365,74 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*netaddress.*addresses/)
                 end
             end
+            context "for 'netssid' key" do
+                it "succeeds with simple SSID, no security" do
+                    use_fixture '0062-netssid-simple-none.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with simple SSID, WEP security" do
+                    use_fixture '0063-netssid-simple-wep.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with simple SSID, WPA security" do
+                    use_fixture '0064-netssid-simple-wpa.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with complex SSID, no security" do
+                    use_fixture '0065-netssid-spaces-none.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with complex SSID, WEP security" do
+                    use_fixture '0066-netssid-spaces-wep.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with complex SSID, WPA security" do
+                    use_fixture '0067-netssid-spaces-wpa.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with invalid interface name" do
+                    use_fixture '0068-netssid-invalid-iface.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netssid.*interface/)
+                end
+                it "fails with raw / unquoted SSID" do
+                    use_fixture '0069-netssid-unquoted.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netssid.*quote/)
+                end
+                it "fails with SSID without terminating quote" do
+                    use_fixture '0070-netssid-syntax-error.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netssid.*unterminated/)
+                end
+                it "fails with missing passphrase" do
+                    use_fixture '0071-netssid-missing-pw.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netssid.*expected/)
+                end
+                it "fails with missing SSID" do
+                    use_fixture '0072-netssid-missing-ssid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netssid.*expected/)
+                end
+                it "fails with invalid security type" do
+                    use_fixture '0073-netssid-invalid-type.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netssid.*security/)
+                end
+            end
             context "for 'repository' key" do
                 it "succeeds with basic repositories" do
                     use_fixture '0055-repository-basic.installfile'

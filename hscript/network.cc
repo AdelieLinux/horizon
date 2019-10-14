@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <arpa/inet.h>
+#include <net/if.h>
 #include "network.hh"
 #include "util/output.hh"
 
@@ -223,8 +224,86 @@ bool NetAddress::execute(ScriptOptions) const {
 
 Key *NetSSID::parseFromData(const std::string &data, int lineno, int *errors,
                             int *warnings) {
-    std::string iface, ssid, passphrase;
-    return new NetSSID(lineno, iface, ssid, SecurityType::None, passphrase);
+    std::string iface, ssid, secstr, passphrase;
+    SecurityType type;
+    std::string::size_type start, pos, next;
+
+    /* Since SSIDs can have spaces in them, we can't just naively count
+     * spaces to figure a count of elements.  We have to do all the hard
+     * parsing up front. :( */
+    start = data.find_first_of(' ');
+    if(start == std::string::npos) {
+        /* ok this is just ridiculous then */
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "netssid: at least three elements expected");
+        return nullptr;
+    }
+
+    iface = data.substr(0, start);
+    if(iface.length() > IFNAMSIZ) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "netssid: interface name '" + iface + "' is invalid",
+                     "interface names must be 16 characters or less");
+        return nullptr;
+    }
+
+    if(data[start + 1] != '"') {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "netssid: malformed SSID", "SSIDs must be quoted");
+        return nullptr;
+    }
+
+    pos = data.find_first_of('"', start + 2);
+    if(pos == std::string::npos) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "netssid: unterminated SSID");
+        return nullptr;
+    }
+
+    ssid = data.substr(start + 2, pos - start - 2);
+
+    if(data.length() < pos + 5) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "netssid: security type expected");
+        return nullptr;
+    }
+    start = data.find_first_of(' ', pos + 1);
+    next = pos = data.find_first_of(' ', start + 1);
+    /* pos may be npos if type is none.  that is fine. */
+    if(pos != std::string::npos) {
+        next = pos - start - 1;
+    }
+    secstr = data.substr(start + 1, next);
+    if(secstr == "none") {
+        type = SecurityType::None;
+    } else if(secstr == "wep") {
+        type = SecurityType::WEP;
+    } else if(secstr == "wpa") {
+        type = SecurityType::WPA;
+    } else {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "netssid: unknown security type '" + secstr + "'",
+                     "expected one of 'none', 'wep', or 'wpa'");
+        return nullptr;
+    }
+
+    if(type != SecurityType::None) {
+        if(pos == std::string::npos || data.length() < pos + 2) {
+            if(errors) *errors += 1;
+            output_error("installfile:" + std::to_string(lineno),
+                         "netssid: expected passphrase for security type '" +
+                         secstr + "'");
+            return nullptr;
+        }
+        passphrase = data.substr(pos + 1);
+    }
+    return new NetSSID(lineno, iface, ssid, type, passphrase);
 }
 
 bool NetSSID::validate(ScriptOptions options) const {
