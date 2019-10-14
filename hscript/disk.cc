@@ -39,8 +39,8 @@ Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
 
     dev = data.substr(0, where_pos);
     where = data.substr(where_pos + 1, (opt_pos - where_pos - 1));
-    if(opt_pos != std::string::npos) {
-        opt = data.substr(opt_pos);
+    if(opt_pos != std::string::npos && data.length() > opt_pos + 1) {
+        opt = data.substr(opt_pos + 1);
     }
 
     if(dev.compare(0, 4, "/dev")) {
