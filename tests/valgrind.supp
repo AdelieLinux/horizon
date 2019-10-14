@@ -1,0 +1,22 @@
+# musl ldpath file stuff (upstream this into valgrind apk someday)
+{
+   musl:ldpath
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   fun:getdelim
+   ...
+   fun:__dls3
+   obj:/lib/ld-musl-*
+}
+# CLIPP global ctor in .init
+{
+   clipp:ctor
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:do_init_fini
+   fun:__libc_start_init
+   obj:/lib/ld-musl-*
+}
