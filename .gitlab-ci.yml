@@ -34,6 +34,7 @@ valgrind:
   script:
   - valgrind build/tools/hscript-validate/hscript-validate tests/fixtures/0001-basic.installfile
   - valgrind build/tools/hscript-simulate/hscript-simulate tests/fixtures/0001-basic.installfile
+  - exit 0
 
 pages:
   stage: deploy
