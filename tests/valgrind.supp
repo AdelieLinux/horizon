@@ -28,5 +28,4 @@
    fun:malloc
    ...
    fun:_start_c
-   obj:/lib/ld-musl-*
 }
