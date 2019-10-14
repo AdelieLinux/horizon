@@ -60,6 +60,7 @@ bool Hostname::validate(ScriptOptions) const {
                          "hostname: component too long",
                          "each component must be less than 64 characters");
         }
+        last_dot = next_dot;
     } while(next_dot != this->_value.size());
 
     return !any_failure;
@@ -68,19 +69,19 @@ bool Hostname::validate(ScriptOptions) const {
 bool Hostname::execute(ScriptOptions opts) const {
     /* Set the hostname of the target computer */
     std::string actual;
+    std::string::size_type dot = this->_value.find_first_of('.');
 
     if(this->_value.size() > 64) {
         /* Linux has a nodename limit of 64 characters.
          * That's fine, because we have a limit of 64 chars per segment.
          * Assuming a dot is present, just chop at the first dot. */
-        std::string::size_type dot = this->_value.find_first_of('.');
         if(dot == std::string::npos || dot >= 64) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "hostname: nodename too long",
                          "Linux requires nodename to be <= 64 characters.");
             return false;
         }
-        std::copy_n(this->_value.cbegin(), dot - 1, actual.begin());
+        actual = this->_value.substr(0, dot);
     } else {
         actual = this->_value;
     }
