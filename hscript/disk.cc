@@ -11,8 +11,14 @@
  */
 
 #include <algorithm>
+#include <blkid/blkid.h>    /* blkid_get_tag_value */
+#include <cstring>          /* strerror */
+#include <fstream>
 #include <string>
-#include <unistd.h>
+#include <sys/mount.h>      /* mount */
+#include <sys/stat.h>       /* mkdir */
+#include <sys/types.h>      /* S_* */
+#include <unistd.h>         /* access */
 #include "disk.hh"
 #include "util/output.hh"
 
@@ -77,19 +83,79 @@ bool Mount::validate(ScriptOptions options) const {
 
 bool Mount::execute(ScriptOptions options) const {
     const std::string actual_mount = "/target" + this->mountpoint();
+    const char *fstype = nullptr;
 
+    /* We have to get the filesystem for the node. */
     if(options.test(Simulate)) {
-        output_info("installfile:" + std::to_string(this->lineno()),
-                    "mount: mounting " + this->device() + " on " +
-                    this->mountpoint());
+        fstype = "auto";
+    } else {
+        fstype = blkid_get_tag_value(nullptr, "TYPE", this->device().c_str());
+        if(fstype == nullptr) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "mount: cannot determine filesystem type for device",
+                         this->device());
+            return false;
+        }
+    }
+
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "mount: mounting " + this->device() + " on " +
+                this->mountpoint());
+    if(options.test(Simulate)) {
         std::cout << "mount ";
         if(!this->options().empty()) {
             std::cout << "-o " << this->options() << " ";
         }
         std::cout << this->device() << " " << actual_mount << std::endl;
-        return true;
+    } else {
+        /* mount */
+        if(mount(this->device().c_str(), actual_mount.c_str(), fstype, 0,
+                 this->options().c_str()) != 0) {
+            output_warning("installfile:" + std::to_string(this->lineno()),
+                           "mount: error mounting " + this->mountpoint() +
+                           "with options; retrying without", strerror(errno));
+            if(mount(this->device().c_str(), actual_mount.c_str(), fstype, 0,
+                     nullptr) != 0) {
+                output_error("installfile:" + std::to_string(this->lineno()),
+                             "mount: error mounting " + this->mountpoint() +
+                             "without options", strerror(errno));
+                return false;
+            }
+        }
     }
 
-    /* mount */
+    /* Handle fstab.  We're guaranteed to have a /target since mount has
+     * already ran and /target is the first mount done.
+     */
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "mount: adding " + this->mountpoint() + " to /etc/fstab");
+    char pass = (this->mountpoint() == "/" ? '1' : '0');
+    const std::string fstab_opts = (this->options().empty() ?
+                                        "defaults" : this->options());
+    if(options.test(Simulate)) {
+        if(this->mountpoint() == "/") {
+            std::cout << "mkdir -p /target/etc" << std::endl;
+        }
+        std::cout << "printf '%s\\t%s\\t%s\\t%s\\t0\\t" << pass << "\\"
+                  << "n' " << this->device() << " " << this->mountpoint()
+                  << " " << fstype << " " << fstab_opts
+                  << " >> /target/etc/fstab" << std::endl;
+    } else {
+        if(this->mountpoint() == "/") {
+            /* failure of mkdir will be handled in the !fstab_f case */
+            mkdir("/target/etc",
+                  S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+        }
+        std::ofstream fstab_f("/target/etc/fstab");
+        if(!fstab_f) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "mount: failure opening /etc/fstab for writing");
+            return false;
+        }
+        fstab_f << this->device() << "\t" << this->mountpoint() << "\t"
+                << fstype << "\t" << fstab_opts << "\t0\t" << pass
+                << std::endl;
+    }
+
     return true;
 }
