@@ -10,6 +10,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#include <assert.h>
 #include <fstream>
 #include <regex>
 #include <unistd.h>
@@ -75,12 +76,7 @@ bool Hostname::execute(ScriptOptions opts) const {
         /* Linux has a nodename limit of 64 characters.
          * That's fine, because we have a limit of 64 chars per segment.
          * Assuming a dot is present, just chop at the first dot. */
-        if(dot == std::string::npos || dot >= 64) {
-            output_error("installfile:" + std::to_string(this->lineno()),
-                         "hostname: nodename too long",
-                         "Linux requires nodename to be <= 64 characters.");
-            return false;
-        }
+        assert(dot <= 64);
         actual = this->_value.substr(0, dot);
     } else {
         actual = this->_value;
