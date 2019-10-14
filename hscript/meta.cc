@@ -116,6 +116,27 @@ bool Hostname::execute(ScriptOptions opts) const {
         hostname_f << actual;
     }
 
+    /* The second condition ensures that it isn't a single dot that simply
+     * terminates the nodename. */
+    if(dot != std::string::npos && this->_value.length() > dot + 1) {
+        const std::string domain(this->_value.substr(dot + 1));
+        if(opts.test(Simulate)) {
+            output_info("installfile:" + std::to_string(this->lineno()),
+                        "hostname: set domain name '" + domain + "'");
+            std::cout << "printf 'dns_domain_lo=\"" << domain
+                      << "\"\\" << "n' >> /target/etc/conf.d/net" << std::endl;
+        } else {
+            std::ofstream net_conf_f("/target/etc/conf.d/net");
+            if(!net_conf_f) {
+                output_error("installfile:" + std::to_string(this->lineno()),
+                             "hostname: could not open /etc/conf.d/net for "
+                             "writing");
+                return false;
+            }
+            net_conf_f << "dns_domain_lo\"" << domain << "\"" << std::endl;
+        }
+    }
+
     return true;
 }
 
