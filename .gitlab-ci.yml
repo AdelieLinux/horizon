@@ -29,6 +29,12 @@ test:
       junit: tests/rspec-*.xml
       metrics: metrics.txt
 
+valgrind:
+  stage: test
+  script:
+  - valgrind build/tools/hscript-validate/hscript-validate tests/fixtures/0001-basic.installfile
+  - valgrind build/tools/hscript-simulate/hscript-simulate tests/fixtures/0001-basic.installfile
+
 pages:
   stage: deploy
   dependencies:
