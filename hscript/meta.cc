@@ -137,9 +137,11 @@ bool Hostname::execute(ScriptOptions opts) const {
 }
 
 
+static std::regex valid_pkg("[0-9A-Za-z+_.-]*((>?<|[<>]?=|[~>])[0-9A-Za-z-_.]+)?");
+
+
 Key *PkgInstall::parseFromData(const std::string &data, int lineno, int *errors,
                                int *warnings) {
-    std::regex valid_pkg("[0-9A-Za-z+_.-]*((>?<|[<>]?=|[~>])[0-9A-Za-z-_.]+)?");
     std::string next_pkg;
     std::istringstream stream(data);
     std::set<std::string> all_pkgs;
