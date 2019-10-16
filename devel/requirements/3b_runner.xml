@@ -710,7 +710,7 @@
                 </formalpara>
                 <formalpara id="Runner.Execute.network.netaddress">
                     <title>Runner.Execute.network.netaddress</title>
-                    <para>The system shall use the networking configuration specified in any <literal>netaddress</literal> keys in the installation environment.</para>
+                    <para>If the value of the <literal>network</literal> key is <literal>true</literal>, the system shall use the networking configuration specified in any <literal>netaddress</literal> keys in the installation environment.</para>
                 </formalpara>
                 <formalpara id="Runner.Execute.network.netssid">
                     <title>Runner.Execute.network.netssid</title>
