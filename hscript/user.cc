@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <cstring>
 #include <fstream>
+#include <sstream>
 #include <time.h>
 #include "user.hh"
 #include "util/output.hh"
