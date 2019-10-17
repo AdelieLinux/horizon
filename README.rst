@@ -104,6 +104,16 @@ To run the test suite, you will additionally need:
 
 * Valgrind (valgrind)
 
+If you wish to build Project Horizon statically (not common), you may add
+'-static' to all target_link_libraries directives.  There is not yet a CMake
+option to enable this behaviour, because it is not easy to test.
+
+For full operation, Project Horizon requires the following packages to be
+present on the computer where it runs (either the Runtime or Installation
+Environment):
+
+* tzdata (`timezone` key validation and execution)
+
 
 
 Repository Layout
