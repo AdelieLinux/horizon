@@ -33,7 +33,8 @@ Key *Network::parseFromData(const std::string &data, int lineno, int *errors,
 }
 
 bool Network::execute(ScriptOptions) const {
-    return false;
+    /* The network key, by itself, does nothing. */
+    return true;
 }
 
 Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
