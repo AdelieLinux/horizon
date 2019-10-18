@@ -205,6 +205,7 @@ struct Script::ScriptPrivate {
         } else if(key_name == "username") {
 
             if(accounts.size() >= 255) {
+                if(errors) *errors += 1;
                 output_error("installfile:" + std::to_string(lineno),
                              "username: too many users",
                              "you may only specify 255 users");
@@ -223,6 +224,7 @@ struct Script::ScriptPrivate {
 
 #define GET_USER_DETAIL(OBJ, KEY) \
     if(accounts.find(OBJ->username()) == accounts.end()) {\
+        if(errors) *errors += 1;\
         output_error("installfile:" + std::to_string(lineno),\
                      std::string(KEY) + ": account name " + OBJ->username() +\
                      " is unknown");\
