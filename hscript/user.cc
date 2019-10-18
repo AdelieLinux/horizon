@@ -42,8 +42,8 @@ bool RootPassphrase::execute(ScriptOptions options) const {
             std::to_string(time(nullptr) / 86400) + ":0:::::";
 
     if(options.test(Simulate)) {
-        std::cout << "(printf '" << root_line << "\\"
-                  << "n'; cat /target/etc/shadow | sed '1d') > /tmp/shadow"
+        std::cout << "(printf '" << root_line << "\\" << "n'; "
+                  << "cat /target/etc/shadow | sed '1d') > /tmp/shadow"
                   << std::endl
                   << "mv /tmp/shadow /target/etc/shadow" << std::endl
                   << "chown root:shadow /target/etc/shadow" << std::endl
