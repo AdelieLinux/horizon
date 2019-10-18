@@ -83,26 +83,26 @@ bool Hostname::execute(ScriptOptions opts) const {
     }
 
     /* Runner.Execute.hostname. */
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "hostname: set hostname to '" + actual + "'");
     if(opts.test(Simulate)) {
-        output_info("installfile:" + std::to_string(this->lineno()),
-                    "hostname: set hostname to '" + actual + "'");
         std::cout << "hostname " << actual << std::endl;
-    } else {
+    } else { /* LCOV_EXCL_START */
         if(sethostname(actual.c_str(), actual.size()) == -1) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "hostname: failed to set host name",
                          std::string(strerror(errno)));
             return false;
         }
-    }
+    } /* LCOV_EXCL_STOP */
 
     /* Runner.Execute.hostname.Write. */
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "hostname: write '" + actual + "' to /etc/hostname");
     if(opts.test(Simulate)) {
-        output_info("installfile:" + std::to_string(this->lineno()),
-                    "hostname: write '" + actual + "' to /etc/hostname");
         std::cout << "printf '%s' " << actual << " > /target/etc/hostname"
                   << std::endl;
-    } else {
+    } else { /* LCOV_EXCL_START */
         std::ofstream hostname_f("/target/etc/hostname");
         if(!hostname_f) {
             output_error("installfile:" + std::to_string(this->lineno()),
@@ -110,15 +110,15 @@ bool Hostname::execute(ScriptOptions opts) const {
             return false;
         }
         hostname_f << actual;
-    }
+    } /* LCOV_EXCL_STOP */
 
     /* The second condition ensures that it isn't a single dot that simply
      * terminates the nodename. */
     if(dot != std::string::npos && this->_value.length() > dot + 1) {
         const std::string domain(this->_value.substr(dot + 1));
+        output_info("installfile:" + std::to_string(this->lineno()),
+                    "hostname: set domain name '" + domain + "'");
         if(opts.test(Simulate)) {
-            output_info("installfile:" + std::to_string(this->lineno()),
-                        "hostname: set domain name '" + domain + "'");
             std::cout << "printf 'dns_domain_lo=\"" << domain
                       << "\"\\" << "n' >> /target/etc/conf.d/net" << std::endl;
         } else {
@@ -167,16 +167,18 @@ Key *PkgInstall::parseFromData(const std::string &data, int lineno, int *errors,
 }
 
 
+/* LCOV_EXCL_START */
 bool PkgInstall::validate(ScriptOptions) const {
     /* Any validation errors would have occurred above. */
-    return true;  /* LCOV_EXCL_LINE */
+    return true;
 }
 
 
 bool PkgInstall::execute(ScriptOptions) const {
     /* Package installation is handled in Script::execute. */
-    return true;  /* LCOV_EXCL_LINE */
+    return true;
 }
+/* LCOV_EXCL_STOP */
 
 
 Key *Repository::parseFromData(const std::string &data, int lineno, int *errors,
@@ -197,22 +199,27 @@ bool Repository::validate(ScriptOptions) const {
 
 bool Repository::execute(ScriptOptions opts) const {
     /* Runner.Execute.repository. */
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "repository: write '" + this->value() +
+                "' to /etc/apk/repositories");
     if(opts.test(Simulate)) {
-        output_info("installfile:" + std::to_string(this->lineno()),
-                    "repository: write '" + this->value() +
-                    "' to /etc/apk/repositories");
         std::cout << "echo '" << this->value() <<
                      "' >> /target/etc/apk/repositories" << std::endl;
-    } else {
-        std::ofstream repo_f("/target/etc/apk/repositories",
-                             std::ios_base::ate);
-        if(!repo_f) {
-            output_error("installfile:" + std::to_string(this->lineno()),
-                         "repository: could not open /etc/apk/repositories "
-                         "for writing");
-            return false;
-        }
-        repo_f << this->value() << std::endl;
+        return true;
     }
+
+    /* LCOV_EXCL_START */
+    std::ofstream repo_f("/target/etc/apk/repositories",
+                         std::ios_base::ate);
+    if(!repo_f) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "repository: could not open /etc/apk/repositories "
+                     "for writing");
+        return false;
+    }
+
+    repo_f << this->value() << std::endl;
+
     return true;
+    /* LCOV_EXCL_STOP */
 }

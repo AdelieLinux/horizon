@@ -63,7 +63,7 @@ bool DiskId::validate(ScriptOptions options) const {
     return true;
 }
 
-bool DiskId::execute(ScriptOptions options) const {
+bool DiskId::execute(ScriptOptions) const {
     return false;
 }
 
@@ -131,7 +131,7 @@ bool Mount::execute(ScriptOptions options) const {
     /* We have to get the filesystem for the node. */
     if(options.test(Simulate)) {
         fstype = "auto";
-    } else {
+    } else { /* LCOV_EXCL_START */
         fstype = blkid_get_tag_value(nullptr, "TYPE", this->device().c_str());
         if(fstype == nullptr) {
             output_error("installfile:" + std::to_string(this->lineno()),
@@ -139,7 +139,7 @@ bool Mount::execute(ScriptOptions options) const {
                          this->device());
             return false;
         }
-    }
+    } /* LCOV_EXCL_STOP */
 
     output_info("installfile:" + std::to_string(this->lineno()),
                 "mount: mounting " + this->device() + " on " +
@@ -150,7 +150,7 @@ bool Mount::execute(ScriptOptions options) const {
             std::cout << "-o " << this->options() << " ";
         }
         std::cout << this->device() << " " << actual_mount << std::endl;
-    } else {
+    } else { /* LCOV_EXCL_START */
         /* mount */
         if(mount(this->device().c_str(), actual_mount.c_str(), fstype, 0,
                  this->options().c_str()) != 0) {
@@ -165,7 +165,7 @@ bool Mount::execute(ScriptOptions options) const {
                 return false;
             }
         }
-    }
+    } /* LCOV_EXCL_STOP */
 
     /* Handle fstab.  We're guaranteed to have a /target since mount has
      * already ran and /target is the first mount done.
@@ -183,7 +183,7 @@ bool Mount::execute(ScriptOptions options) const {
                   << "n' " << this->device() << " " << this->mountpoint()
                   << " " << fstype << " " << fstab_opts
                   << " >> /target/etc/fstab" << std::endl;
-    } else {
+    } else { /* LCOV_EXCL_START */
         if(this->mountpoint() == "/") {
             /* failure of mkdir will be handled in the !fstab_f case */
             mkdir("/target/etc",
@@ -198,7 +198,7 @@ bool Mount::execute(ScriptOptions options) const {
         fstab_f << this->device() << "\t" << this->mountpoint() << "\t"
                 << fstype << "\t" << fstab_opts << "\t0\t" << pass
                 << std::endl;
-    }
+    } /* LCOV_EXCL_STOP */
 
     return true;
 }
