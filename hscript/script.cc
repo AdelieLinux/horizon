@@ -272,6 +272,7 @@ struct Script::ScriptPrivate {
             GET_USER_DETAIL(grp, "usergroups")
             detail->groups.push_back(std::move(grp));
             return true;
+#undef GET_USER_DETAIL
 
         } else {
             return false;
