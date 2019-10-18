@@ -30,38 +30,40 @@
 
 typedef Horizon::Keys::Key *(*key_parse_fn)(const std::string &, int, int*, int*);
 
+using namespace Horizon::Keys;
+
 const std::map<std::string, key_parse_fn> valid_keys = {
-    {"network", &Horizon::Keys::Network::parseFromData},
-    {"hostname", &Horizon::Keys::Hostname::parseFromData},
-    {"pkginstall", &Horizon::Keys::PkgInstall::parseFromData},
-    {"rootpw", &Horizon::Keys::RootPassphrase::parseFromData},
+    {"network", &Network::parseFromData},
+    {"hostname", &Hostname::parseFromData},
+    {"pkginstall", &PkgInstall::parseFromData},
+    {"rootpw", &RootPassphrase::parseFromData},
 
-    {"language", &Horizon::Keys::Language::parseFromData},
-    {"keymap", &Horizon::Keys::Keymap::parseFromData},
-    {"firmware", &Horizon::Keys::Firmware::parseFromData},
-    {"timezone", &Horizon::Keys::Timezone::parseFromData},
-    {"repository", &Horizon::Keys::Repository::parseFromData},
-    {"signingkey", &Horizon::Keys::SigningKey::parseFromData},
+    {"language", &Language::parseFromData},
+    {"keymap", &Keymap::parseFromData},
+    {"firmware", &Firmware::parseFromData},
+    {"timezone", &Timezone::parseFromData},
+    {"repository", &Repository::parseFromData},
+    {"signingkey", &SigningKey::parseFromData},
 
-    {"netaddress", &Horizon::Keys::NetAddress::parseFromData},
-    {"nameserver", &Horizon::Keys::Nameserver::parseFromData},
-    {"netssid", &Horizon::Keys::NetSSID::parseFromData},
+    {"netaddress", &NetAddress::parseFromData},
+    {"nameserver", &Nameserver::parseFromData},
+    {"netssid", &NetSSID::parseFromData},
 
-    {"username", &Horizon::Keys::Username::parseFromData},
-    {"useralias", &Horizon::Keys::UserAlias::parseFromData},
-    {"userpw", &Horizon::Keys::UserPassphrase::parseFromData},
-    {"usericon", &Horizon::Keys::UserIcon::parseFromData},
-    {"usergroups", &Horizon::Keys::UserGroups::parseFromData},
+    {"username", &Username::parseFromData},
+    {"useralias", &UserAlias::parseFromData},
+    {"userpw", &UserPassphrase::parseFromData},
+    {"usericon", &UserIcon::parseFromData},
+    {"usergroups", &UserGroups::parseFromData},
 
-    {"diskid", &Horizon::Keys::DiskId::parseFromData},
-    {"disklabel", &Horizon::Keys::DiskLabel::parseFromData},
-    {"partition", &Horizon::Keys::Partition::parseFromData},
-    {"lvm_pv", &Horizon::Keys::LVMPhysical::parseFromData},
-    {"lvm_vg", &Horizon::Keys::LVMGroup::parseFromData},
-    {"lvm_lv", &Horizon::Keys::LVMVolume::parseFromData},
-    {"encrypt", &Horizon::Keys::Encrypt::parseFromData},
-    {"fs", &Horizon::Keys::Filesystem::parseFromData},
-    {"mount", &Horizon::Keys::Mount::parseFromData}
+    {"diskid", &DiskId::parseFromData},
+    {"disklabel", &DiskLabel::parseFromData},
+    {"partition", &Partition::parseFromData},
+    {"lvm_pv", &LVMPhysical::parseFromData},
+    {"lvm_vg", &LVMGroup::parseFromData},
+    {"lvm_lv", &LVMVolume::parseFromData},
+    {"encrypt", &Encrypt::parseFromData},
+    {"fs", &Filesystem::parseFromData},
+    {"mount", &Mount::parseFromData}
 };
 
 
@@ -69,37 +71,37 @@ namespace Horizon {
 
 /*! Describes a user account. */
 struct UserDetail {
-    std::unique_ptr<Horizon::Keys::Username> name;
-    std::unique_ptr<Horizon::Keys::UserAlias> alias;
-    std::unique_ptr<Horizon::Keys::UserPassphrase> passphrase;
-    std::unique_ptr<Horizon::Keys::UserIcon> icon;
-    std::vector< std::unique_ptr<Horizon::Keys::UserGroups> > groups;
+    std::unique_ptr<Username> name;
+    std::unique_ptr<UserAlias> alias;
+    std::unique_ptr<UserPassphrase> passphrase;
+    std::unique_ptr<UserIcon> icon;
+    std::vector< std::unique_ptr<UserGroups> > groups;
 };
 
 struct Script::ScriptPrivate {
     /*! Determines whether or not to enable networking. */
-    std::unique_ptr<Horizon::Keys::Network> network;
+    std::unique_ptr<Network> network;
     /*! The target system's hostname. */
-    std::unique_ptr<Horizon::Keys::Hostname> hostname;
+    std::unique_ptr<Hostname> hostname;
     /*! The packages to install to the target system. */
     std::set<std::string> packages;
     /*! The root shadow line. */
-    std::unique_ptr<Horizon::Keys::RootPassphrase> rootpw;
+    std::unique_ptr<RootPassphrase> rootpw;
     /*! Target system's mountpoints. */
-    std::vector< std::unique_ptr<Horizon::Keys::Mount> > mounts;
+    std::vector< std::unique_ptr<Mount> > mounts;
 
     /*! Network addressing configuration */
-    std::vector< std::unique_ptr<Horizon::Keys::NetAddress> > addresses;
-    std::vector< std::unique_ptr<Horizon::Keys::NetSSID> > ssids;
+    std::vector< std::unique_ptr<NetAddress> > addresses;
+    std::vector< std::unique_ptr<NetSSID> > ssids;
 
     /*! APK repositories */
-    std::vector< std::unique_ptr<Horizon::Keys::Repository> > repos;
+    std::vector< std::unique_ptr<Repository> > repos;
 
     /*! User account information */
     std::map< std::string, std::unique_ptr<UserDetail> > accounts;
 
     /*! Disk identification keys */
-    std::vector< std::unique_ptr<Horizon::Keys::DiskId> > diskids;
+    std::vector< std::unique_ptr<DiskId> > diskids;
 
     /*! Store +key_obj+ representing the key +key_name+.
      * @param key_name      The name of the key that is being stored.
@@ -110,6 +112,49 @@ struct Script::ScriptPrivate {
      */
     bool store_key(const std::string key_name, Keys::Key *obj, int lineno,
                    int *errors, int *warnings, ScriptOptions opts) {
+        if(key_name == "network") {
+            return store_network(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "hostname") {
+            return store_hostname(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "pkginstall") {
+            return store_pkginstall(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "rootpw") {
+            return store_rootpw(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "mount") {
+            std::unique_ptr<Mount> mount(dynamic_cast<Mount *>(obj));
+            this->mounts.push_back(std::move(mount));
+            return true;
+        } else if(key_name == "netaddress") {
+            std::unique_ptr<NetAddress> addr(dynamic_cast<NetAddress *>(obj));
+            this->addresses.push_back(std::move(addr));
+            return true;
+        } else if(key_name == "netssid") {
+            std::unique_ptr<NetSSID> ssid(dynamic_cast<NetSSID *>(obj));
+            this->ssids.push_back(std::move(ssid));
+            return true;
+        } else if(key_name == "repository") {
+            std::unique_ptr<Repository> repo(dynamic_cast<Repository *>(obj));
+            this->repos.push_back(std::move(repo));
+            return true;
+        } else if(key_name == "diskid") {
+            std::unique_ptr<DiskId> diskid(dynamic_cast<DiskId *>(obj));
+            this->diskids.push_back(std::move(diskid));
+            return true;
+        } else if(key_name == "username") {
+            return store_username(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "useralias") {
+            return store_useralias(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "userpw") {
+            return store_userpw(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "usericon") {
+            return store_usericon(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "usergroups") {
+            return store_usergroups(obj, lineno, errors, warnings, opts);
+        } else {
+            return false;
+        }
+    }
+
 #define DUPLICATE_ERROR(OBJ, KEY, OLD_VAL) \
     std::string err_str("previous value was ");\
     err_str += OLD_VAL;\
@@ -119,108 +164,79 @@ struct Script::ScriptPrivate {
                  "duplicate value for key '" + std::string(KEY) + "'",\
                  err_str);
 
-        using namespace Horizon::Keys;
+    bool store_network(Keys::Key* obj, int lineno, int *errors, int *warnings,
+                       ScriptOptions opts) {
+        if(this->network) {
+            DUPLICATE_ERROR(this->network, "network",
+                            this->network->test() ? "true" : "false")
+            return false;
+        }
+        std::unique_ptr<Network> net(dynamic_cast<Network *>(obj));
+        this->network = std::move(net);
+        return true;
+    }
 
-        if(key_name == "network") {
+    bool store_hostname(Keys::Key* obj, int lineno, int *errors, int *warnings,
+                        ScriptOptions opts) {
+        if(this->hostname) {
+            DUPLICATE_ERROR(this->hostname, "hostname",
+                            this->hostname->value())
+            return false;
+        }
+        std::unique_ptr<Hostname> name(dynamic_cast<Hostname *>(obj));
+        this->hostname = std::move(name);
+        return true;
+    }
 
-            if(this->network) {
-                DUPLICATE_ERROR(this->network, "network",
-                                this->network->test() ? "true" : "false")
-                return false;
+    bool store_pkginstall(Keys::Key* obj, int lineno, int *errors,
+                          int *warnings, ScriptOptions opts) {
+        PkgInstall *install = dynamic_cast<PkgInstall *>(obj);
+        for(auto &pkg : install->packages()) {
+            if(opts.test(StrictMode) && packages.find(pkg) != packages.end()) {
+                if(warnings) *warnings += 1;
+                output_warning("installfile:" + std::to_string(lineno),
+                               "pkginstall: package '" + pkg +
+                               "' has already been specified");
+                continue;
             }
-            std::unique_ptr<Network> net(dynamic_cast<Network *>(obj));
-            this->network = std::move(net);
-            return true;
+            packages.insert(pkg);
+        }
+        delete install;
+        return true;
+    }
 
-        } else if(key_name == "hostname") {
+    bool store_rootpw(Keys::Key* obj, int lineno, int *errors, int *warnings,
+                      ScriptOptions opts) {
+        if(this->rootpw) {
+            DUPLICATE_ERROR(this->rootpw, std::string("rootpw"),
+                            "an encrypted passphrase")
+            return false;
+        }
+        std::unique_ptr<RootPassphrase> r(dynamic_cast<RootPassphrase *>(obj));
+        this->rootpw = std::move(r);
+        return true;
+    }
 
-            if(this->hostname) {
-                DUPLICATE_ERROR(this->hostname, "hostname",
-                                this->hostname->value())
-                return false;
-            }
-            std::unique_ptr<Hostname> name(dynamic_cast<Hostname *>(obj));
-            this->hostname = std::move(name);
-            return true;
-
-        } else if(key_name == "pkginstall") {
-
-            PkgInstall *install = dynamic_cast<PkgInstall *>(obj);
-            for(auto &pkg : install->packages()) {
-                if(opts.test(StrictMode) && packages.find(pkg) != packages.end()) {
-                    if(warnings) *warnings += 1;
-                    output_warning("installfile:" + std::to_string(lineno),
-                                   "pkginstall: package '" + pkg +
-                                   "' has already been specified");
-                    continue;
-                }
-                packages.insert(pkg);
-            }
-            delete install;
-            return true;
-
-        } else if(key_name == "rootpw") {
-
-            if(this->rootpw) {
-                DUPLICATE_ERROR(this->rootpw, std::string("rootpw"),
-                                "an encrypted passphrase")
-                return false;
-            }
-            std::unique_ptr<RootPassphrase> name(
-                        dynamic_cast<RootPassphrase *>(obj)
-            );
-            this->rootpw = std::move(name);
-            return true;
-
-        } else if(key_name == "mount") {
-
-            std::unique_ptr<Mount> mount(dynamic_cast<Mount *>(obj));
-            this->mounts.push_back(std::move(mount));
-            return true;
-
-        } else if(key_name == "netaddress") {
-
-            std::unique_ptr<NetAddress> addr(dynamic_cast<NetAddress *>(obj));
-            this->addresses.push_back(std::move(addr));
-            return true;
-
-        } else if(key_name == "netssid") {
-
-            std::unique_ptr<NetSSID> ssid(dynamic_cast<NetSSID *>(obj));
-            this->ssids.push_back(std::move(ssid));
-            return true;
-
-        } else if(key_name == "repository") {
-
-            std::unique_ptr<Repository> repo(dynamic_cast<Repository *>(obj));
-            this->repos.push_back(std::move(repo));
-            return true;
-
-        } else if(key_name == "diskid") {
-
-            std::unique_ptr<DiskId> diskid(dynamic_cast<DiskId *>(obj));
-            this->diskids.push_back(std::move(diskid));
-            return true;
-
-        } else if(key_name == "username") {
-
-            if(accounts.size() >= 255) {
-                if(errors) *errors += 1;
-                output_error("installfile:" + std::to_string(lineno),
-                             "username: too many users",
-                             "you may only specify 255 users");
-                return false;
-            }
-            std::unique_ptr<Username> name(dynamic_cast<Username *>(obj));
-            if(accounts.find(name->value()) != accounts.end()) {
-                DUPLICATE_ERROR((*accounts.find(name->value())).second->name,
-                                "username", "assigned")
-                return false;
-            }
-            std::unique_ptr<UserDetail> detail(new UserDetail);
-            detail->name = std::move(name);
-            accounts.insert(std::make_pair(name->value(), std::move(detail)));
-            return true;
+    bool store_username(Keys::Key *obj, int lineno, int *errors, int *warnings,
+                        ScriptOptions opts) {
+        if(accounts.size() >= 255) {
+            if(errors) *errors += 1;
+            output_error("installfile:" + std::to_string(lineno),
+                         "username: too many users",
+                         "you may only specify 255 users");
+            return false;
+        }
+        std::unique_ptr<Username> name(dynamic_cast<Username *>(obj));
+        if(accounts.find(name->value()) != accounts.end()) {
+            DUPLICATE_ERROR((*accounts.find(name->value())).second->name,
+                            "username", "assigned")
+            return false;
+        }
+        std::unique_ptr<UserDetail> detail(new UserDetail);
+        detail->name = std::move(name);
+        accounts.insert(std::make_pair(name->value(), std::move(detail)));
+        return true;
+    }
 
 #define GET_USER_DETAIL(OBJ, KEY) \
     if(accounts.find(OBJ->username()) == accounts.end()) {\
@@ -232,54 +248,53 @@ struct Script::ScriptPrivate {
     }\
     UserDetail *detail = (*accounts.find(OBJ->username())).second.get();
 
-        } else if(key_name == "useralias") {
-
-            std::unique_ptr<UserAlias> alias(dynamic_cast<UserAlias *>(obj));
-            GET_USER_DETAIL(alias, "useralias")
-            if(detail->alias) {
-                DUPLICATE_ERROR(detail->alias, "useralias", detail->alias->alias())
-                return false;
-            }
-            detail->alias = std::move(alias);
-            return true;
-
-        } else if(key_name == "userpw") {
-
-            std::unique_ptr<UserPassphrase> pw(dynamic_cast<UserPassphrase *>(obj));
-            GET_USER_DETAIL(pw, "userpw")
-            if(detail->passphrase) {
-                DUPLICATE_ERROR(detail->passphrase, "userpw",
-                                "an encrypted passphrase")
-                return false;
-            }
-            detail->passphrase = std::move(pw);
-            return true;
-
-        } else if(key_name == "usericon") {
-
-            std::unique_ptr<UserIcon> icon(dynamic_cast<UserIcon *>(obj));
-            GET_USER_DETAIL(icon, "usericon")
-            if(detail->icon) {
-                DUPLICATE_ERROR(detail->icon, "usericon", detail->icon->icon())
-                return false;
-            }
-            detail->icon = std::move(icon);
-            return true;
-
-        } else if(key_name == "usergroups") {
-
-            std::unique_ptr<UserGroups> grp(dynamic_cast<UserGroups *>(obj));
-            GET_USER_DETAIL(grp, "usergroups")
-            detail->groups.push_back(std::move(grp));
-            return true;
-#undef GET_USER_DETAIL
-
-        } else {
+    bool store_useralias(Keys::Key* obj, int lineno, int *errors,
+                         int *warnings, ScriptOptions opts) {
+        std::unique_ptr<UserAlias> alias(dynamic_cast<UserAlias *>(obj));
+        GET_USER_DETAIL(alias, "useralias")
+        if(detail->alias) {
+            DUPLICATE_ERROR(detail->alias, "useralias", detail->alias->alias())
             return false;
         }
+        detail->alias = std::move(alias);
+        return true;
+    }
+
+    bool store_userpw(Keys::Key *obj, int lineno, int *errors, int *warnings,
+                      ScriptOptions opts) {
+        std::unique_ptr<UserPassphrase> pw(dynamic_cast<UserPassphrase *>(obj));
+        GET_USER_DETAIL(pw, "userpw")
+        if(detail->passphrase) {
+            DUPLICATE_ERROR(detail->passphrase, "userpw",
+                            "an encrypted passphrase")
+            return false;
+        }
+        detail->passphrase = std::move(pw);
+        return true;
+    }
+
+    bool store_usericon(Keys::Key *obj, int lineno, int *errors, int *warnings,
+                        ScriptOptions opts) {
+        std::unique_ptr<UserIcon> icon(dynamic_cast<UserIcon *>(obj));
+        GET_USER_DETAIL(icon, "usericon")
+        if(detail->icon) {
+            DUPLICATE_ERROR(detail->icon, "usericon", detail->icon->icon())
+            return false;
+        }
+        detail->icon = std::move(icon);
+        return true;
+    }
+
+    bool store_usergroups(Keys::Key* obj, int lineno, int *errors,
+                          int *warnings, ScriptOptions opts) {
+        std::unique_ptr<UserGroups> grp(dynamic_cast<UserGroups *>(obj));
+        GET_USER_DETAIL(grp, "usergroups")
+        detail->groups.push_back(std::move(grp));
+        return true;
+    }
+#undef GET_USER_DETAIL
 
 #undef DUPLICATE_ERROR
-    }
 };
 
 
