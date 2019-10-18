@@ -13,12 +13,30 @@
 #include <assert.h>
 #include <cstring>
 #include <fstream>
+#include <set>
 #include <sstream>
 #include <time.h>
 #include "user.hh"
 #include "util/output.hh"
 
 using namespace Horizon::Keys;
+
+const static std::set<std::string> system_names = {
+    "root", "bin", "daemon", "adm", "lp", "sync", "shutdown", "halt", "mail",
+    "news", "uucp", "operator", "man", "postmaster", "cron", "ftp", "sshd",
+    "at", "squid", "xfs", "games", "postgres", "cyrus", "vpopmail", "utmp",
+    "catchlog", "alias", "qmaild", "qmailp", "qmailq", "qmailr", "qmails",
+    "qmaill", "ntp", "smmsp", "guest", "nobody"
+};
+
+const static std::set<std::string> system_groups = {
+    "root", "bin", "daemon", "sys", "adm", "tty", "disk", "lp", "mem", "kmem",
+    "wheel", "floppy", "mail", "news", "uucp", "man", "cron", "console",
+    "audio", "cdrom", "dialout", "ftp", "sshd", "input", "at", "tape", "video",
+    "netdev", "readproc", "squid", "xfs", "kvm", "games", "shadow", "postgres",
+    "cdrw", "usb", "vpopmail", "users", "catchlog", "ntp", "nofiles", "qmail",
+    "qmaill", "smmsp", "locate", "abuild", "utmp", "ping", "nogroup", "nobody"
+};
 
 Key *RootPassphrase::parseFromData(const std::string &data, int lineno,
                                    int *errors, int *warnings) {
@@ -84,4 +102,74 @@ bool RootPassphrase::execute(ScriptOptions options) const {
     new_shadow << shadow_stream.str();
     return true;
     /* LCOV_EXCL_STOP */
+}
+
+
+Key *Username::parseFromData(const std::string &data, int lineno, int *errors,
+                             int *warnings) {
+    return nullptr;
+}
+
+bool Username::validate(ScriptOptions) const {
+    return false;
+}
+
+bool Username::execute(ScriptOptions) const {
+    return false;
+}
+
+
+Key *UserAlias::parseFromData(const std::string &data, int lineno, int *errors,
+                              int *warnings) {
+    return nullptr;
+}
+
+bool UserAlias::validate(ScriptOptions) const {
+    return false;
+}
+
+bool UserAlias::execute(ScriptOptions) const {
+    return false;
+}
+
+
+Key *UserPassphrase::parseFromData(const std::string &data, int lineno,
+                                   int *errors, int *warnings) {
+    return nullptr;
+}
+
+bool UserPassphrase::validate(ScriptOptions) const {
+    return false;
+}
+
+bool UserPassphrase::execute(ScriptOptions) const {
+    return false;
+}
+
+
+Key *UserIcon::parseFromData(const std::string &data, int lineno, int *errors,
+                             int *warnings) {
+    return nullptr;
+}
+
+bool UserIcon::validate(ScriptOptions) const {
+    return false;
+}
+
+bool UserIcon::execute(ScriptOptions) const {
+    return false;
+}
+
+
+Key *UserGroups::parseFromData(const std::string &data, int lineno,
+                               int *errors, int *warnings) {
+    return nullptr;
+}
+
+bool UserGroups::validate(ScriptOptions) const {
+    return false;
+}
+
+bool UserGroups::execute(ScriptOptions) const {
+    return false;
 }
