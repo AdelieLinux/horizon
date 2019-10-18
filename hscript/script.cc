@@ -88,12 +88,12 @@ struct Script::ScriptPrivate {
 
     /*! Store +key_obj+ representing the key +key_name+.
      * @param key_name      The name of the key that is being stored.
-     * @param key_obj       The Key object associated with the key.
+     * @param obj           The Key object associated with the key.
      * @param errors        Output parameter: if given, incremented on error.
      * @param warnings      Output parameter: if given, incremented on warning.
      * @param opts          Script parsing options.
      */
-    bool store_key(const std::string key_name, Keys::Key *key_obj, int lineno,
+    bool store_key(const std::string key_name, Keys::Key *obj, int lineno,
                    int *errors, int *warnings, ScriptOptions opts) {
 #define DUPLICATE_ERROR(OBJ, KEY, OLD_VAL) \
     std::string err_str("previous value was ");\
@@ -103,15 +103,15 @@ struct Script::ScriptPrivate {
     output_error("installfile:" + std::to_string(lineno),\
                  "duplicate value for key '" + KEY + "'", err_str);
 
+        using namespace Horizon::Keys;
+
         if(key_name == "network") {
             if(this->network) {
                 DUPLICATE_ERROR(this->network, std::string("network"),
                                 this->network->test() ? "true" : "false")
                 return false;
             }
-            std::unique_ptr<Keys::Network> net(
-                        dynamic_cast<Keys::Network *>(key_obj)
-            );
+            std::unique_ptr<Network> net(dynamic_cast<Network *>(obj));
             this->network = std::move(net);
             return true;
         } else if(key_name == "hostname") {
@@ -120,19 +120,17 @@ struct Script::ScriptPrivate {
                                 this->hostname->value())
                 return false;
             }
-            std::unique_ptr<Keys::Hostname> name(
-                        dynamic_cast<Keys::Hostname *>(key_obj)
-            );
+            std::unique_ptr<Hostname> name(dynamic_cast<Hostname *>(obj));
             this->hostname = std::move(name);
             return true;
         } else if(key_name == "pkginstall") {
-            Keys::PkgInstall *install = dynamic_cast<Keys::PkgInstall *>(key_obj);
+            PkgInstall *install = dynamic_cast<PkgInstall *>(obj);
             for(auto &pkg : install->packages()) {
                 if(opts.test(StrictMode) && packages.find(pkg) != packages.end()) {
                     if(warnings) *warnings += 1;
                     output_warning("installfile:" + std::to_string(lineno),
-                                   "package '" + pkg + "' has already been specified",
-                                   "");
+                                   "pkginstall: package '" + pkg +
+                                   "' has already been specified");
                     continue;
                 }
                 packages.insert(pkg);
@@ -145,33 +143,25 @@ struct Script::ScriptPrivate {
                                 "an encrypted passphrase")
                 return false;
             }
-            std::unique_ptr<Keys::RootPassphrase> name(
-                        dynamic_cast<Keys::RootPassphrase *>(key_obj)
+            std::unique_ptr<RootPassphrase> name(
+                        dynamic_cast<RootPassphrase *>(obj)
             );
             this->rootpw = std::move(name);
             return true;
         } else if(key_name == "mount") {
-            std::unique_ptr<Keys::Mount> mount(
-                        dynamic_cast<Keys::Mount *>(key_obj)
-            );
+            std::unique_ptr<Mount> mount(dynamic_cast<Mount *>(obj));
             this->mounts.push_back(std::move(mount));
             return true;
         } else if(key_name == "netaddress") {
-            std::unique_ptr<Keys::NetAddress> addr(
-                        dynamic_cast<Keys::NetAddress *>(key_obj)
-            );
+            std::unique_ptr<NetAddress> addr(dynamic_cast<NetAddress *>(obj));
             this->addresses.push_back(std::move(addr));
             return true;
         } else if(key_name == "netssid") {
-            std::unique_ptr<Keys::NetSSID> ssid(
-                        dynamic_cast<Keys::NetSSID *>(key_obj)
-            );
+            std::unique_ptr<NetSSID> ssid(dynamic_cast<NetSSID *>(obj));
             this->ssids.push_back(std::move(ssid));
             return true;
         } else if(key_name == "repository") {
-            std::unique_ptr<Keys::Repository> repo(
-                        dynamic_cast<Keys::Repository *>(key_obj)
-            );
+            std::unique_ptr<Repository> repo(dynamic_cast<Repository *>(obj));
             this->repos.push_back(std::move(repo));
             return true;
         } else {
