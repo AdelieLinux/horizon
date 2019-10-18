@@ -16,13 +16,56 @@
 #include <fstream>
 #include <string>
 #include <sys/mount.h>      /* mount */
-#include <sys/stat.h>       /* mkdir */
+#include <sys/stat.h>       /* mkdir, stat */
 #include <sys/types.h>      /* S_* */
 #include <unistd.h>         /* access */
 #include "disk.hh"
 #include "util/output.hh"
 
 using namespace Horizon::Keys;
+
+Key *DiskId::parseFromData(const std::string &data, int lineno, int *errors,
+                           int *warnings) {
+    std::string block, ident;
+    std::string::size_type block_end = data.find_first_of(' ');
+    if(block_end == std::string::npos) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "diskid: expected an identification string",
+                     "valid format for diskid is: [block] [id-string]");
+        return nullptr;
+    }
+
+    block = data.substr(0, block_end);
+    ident = data.substr(block_end + 1);
+    return new DiskId(lineno, block, ident);
+}
+
+bool DiskId::validate(ScriptOptions options) const {
+    /* We only validate if running in an Installation Environment. */
+    if(!options.test(InstallEnvironment)) return true;
+
+    /* Unlike 'mount', 'diskid' *does* require that the block device exist
+     * before installation begins.  This test is always valid. */
+    struct stat blk_stat;
+    const char *block_c = _block.c_str();
+    if(access(block_c, F_OK) != 0 || stat(block_c, &blk_stat) != 0) {
+        output_error("installfile:" + std::to_string(line),
+                     "diskid: error opening device " + _block,
+                     strerror(errno));
+        return false;
+    }
+    if(!S_ISBLK(blk_stat.st_mode)) {
+        output_error("installfile:" + std::to_string(line),
+                     "diskid: " + _block + " is not a valid block device");
+        return false;
+    }
+    return true;
+}
+
+bool DiskId::execute(ScriptOptions options) const {
+    return false;
+}
 
 Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
                           int *warnings) {

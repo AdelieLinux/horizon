@@ -450,6 +450,40 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*repository/)
                 end
             end
+            context "for 'diskid' key" do
+                it "succeeds with basic disk identification" do
+                    use_fixture '0076-diskid-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "requires an identification string" do
+                    use_fixture '0077-diskid-missing-id.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*diskid.*expected/)
+                end
+                it "succeeds with present disk" do
+                    use_fixture '0078-diskid-diskid-loop0.installfile'
+                    run_validate ' -i'
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with non-present disk" do
+                    use_fixture '0079-diskid-enoent.installfile'
+                    run_validate ' -i'
+                    expect(last_command_started).to have_output(/No such file or directory/)
+                end
+                it "fails with non-disk file" do
+                    use_fixture '0080-diskid-tmp.installfile'
+                    run_validate ' -i'
+                    expect(last_command_started).to have_output(/error: .*diskid.*block/)
+                end
+                it "fails with a duplicate identification device" do
+                    use_fixture '0081-diskid-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*diskid.*already/)
+                end
+            end
         end
         context "unique keys" do
             # Runner.Validate.network.

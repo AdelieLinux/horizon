@@ -19,6 +19,21 @@ namespace Horizon {
 namespace Keys {
 
 class DiskId : public Key {
+private:
+    const std::string _block;
+    const std::string _ident;
+
+    DiskId(int _line, const std::string &my_block, const std::string &my_i) :
+        Key(_line), _block(my_block), _ident(my_i) {}
+public:
+    /*! Retrieve the block device that this key identifies. */
+    const std::string device() const { return this->_block; }
+    /*! Retrieve the identification for the block device. */
+    const std::string ident() const { return this->_ident; }
+
+    static Key *parseFromData(const std::string &, int, int*, int*);
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 class DiskLabel : public Key {
@@ -60,8 +75,7 @@ public:
     /*! Retrieve the mount options for this mount, if any. */
     const std::string options() const { return this->_opts; }
 
-    static Key *parseFromData(const std::string &data, int lineno, int *errors,
-                              int *warnings);
+    static Key *parseFromData(const std::string &, int, int*, int*);
     bool validate(ScriptOptions) const override;
     bool execute(ScriptOptions) const override;
 };

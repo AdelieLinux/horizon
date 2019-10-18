@@ -86,6 +86,9 @@ struct Script::ScriptPrivate {
     /*! APK repositories */
     std::vector< std::unique_ptr<Horizon::Keys::Repository> > repos;
 
+    /*! Disk identification keys */
+    std::vector< std::unique_ptr<Horizon::Keys::DiskId> > diskids;
+
     /*! Store +key_obj+ representing the key +key_name+.
      * @param key_name      The name of the key that is being stored.
      * @param obj           The Key object associated with the key.
@@ -163,6 +166,10 @@ struct Script::ScriptPrivate {
         } else if(key_name == "repository") {
             std::unique_ptr<Repository> repo(dynamic_cast<Repository *>(obj));
             this->repos.push_back(std::move(repo));
+            return true;
+        } else if(key_name == "diskid") {
+            std::unique_ptr<DiskId> diskid(dynamic_cast<DiskId *>(obj));
+            this->diskids.push_back(std::move(diskid));
             return true;
         } else {
             return false;
@@ -318,12 +325,28 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
 
 bool Script::validate() const {
     int failures = 0;
-    std::set<std::string> seen_mounts;
+    std::set<std::string> seen_diskids, seen_mounts;
     std::map<const std::string, int> seen_iface;
 
     if(!this->internal->network->validate(this->opts)) failures++;
     if(!this->internal->hostname->validate(this->opts)) failures++;
     if(!this->internal->rootpw->validate(this->opts)) failures++;
+
+    for(auto &diskid : this->internal->diskids) {
+        if(!diskid->validate(this->opts)) {
+            failures++;
+            continue;
+        }
+
+        /* Runner.Validate.diskid.Unique */
+        if(seen_diskids.find(diskid->device()) != seen_diskids.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(diskid->lineno()),
+                         "diskid: device " + diskid->device() +
+                         " has already been identified");
+        }
+        seen_diskids.insert(diskid->device());
+    }
 
     for(auto &mount : this->internal->mounts) {
         if(!mount->validate(this->opts)) {
