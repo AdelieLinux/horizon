@@ -253,6 +253,7 @@ struct Script::ScriptPrivate {
                          int *warnings, ScriptOptions opts) {
         std::unique_ptr<UserAlias> alias(dynamic_cast<UserAlias *>(obj));
         GET_USER_DETAIL(alias, "useralias")
+        /* REQ: Runner.Validate.useralias.Unique */
         if(detail->alias) {
             DUPLICATE_ERROR(detail->alias, "useralias", detail->alias->alias())
             return false;
@@ -265,6 +266,7 @@ struct Script::ScriptPrivate {
                       ScriptOptions opts) {
         std::unique_ptr<UserPassphrase> pw(dynamic_cast<UserPassphrase *>(obj));
         GET_USER_DETAIL(pw, "userpw")
+        /* REQ: Runner.Validate.userpw.Unique */
         if(detail->passphrase) {
             DUPLICATE_ERROR(detail->passphrase, "userpw",
                             "an encrypted passphrase")
@@ -278,6 +280,7 @@ struct Script::ScriptPrivate {
                         ScriptOptions opts) {
         std::unique_ptr<UserIcon> icon(dynamic_cast<UserIcon *>(obj));
         GET_USER_DETAIL(icon, "usericon")
+        /* REQ: Runner.Validate.usericon.Unique */
         if(detail->icon) {
             DUPLICATE_ERROR(detail->icon, "usericon", detail->icon->icon())
             return false;
@@ -317,6 +320,8 @@ const Script *Script::load(const std::string path, const ScriptOptions opts) {
     return Script::load(file, opts);
 }
 
+
+const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
 #define PARSER_ERROR(err_str) \
     errors++;\
     output_error("installfile:" + std::to_string(lineno),\
@@ -330,8 +335,8 @@ const Script *Script::load(const std::string path, const ScriptOptions opts) {
     output_warning("installfile:" + std::to_string(lineno),\
                    warn_str, "");
 
-const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
     using namespace Horizon::Keys;
+
     Script *the_script = new Script;
 
     int lineno = 0;
@@ -441,60 +446,21 @@ const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
         the_script->opts = opts;
         return the_script;
     }
+
+#undef PARSER_WARNING
+#undef PARSER_ERROR
 }
+
 
 bool Script::validate() const {
     int failures = 0;
     std::set<std::string> seen_diskids, seen_mounts;
     std::map<const std::string, int> seen_iface;
 
+    /* REQ: Runner.Validate.network */
     if(!this->internal->network->validate(this->opts)) failures++;
-    if(!this->internal->hostname->validate(this->opts)) failures++;
-    if(!this->internal->rootpw->validate(this->opts)) failures++;
 
-    for(auto &diskid : this->internal->diskids) {
-        if(!diskid->validate(this->opts)) {
-            failures++;
-            continue;
-        }
-
-        /* Runner.Validate.diskid.Unique */
-        if(seen_diskids.find(diskid->device()) != seen_diskids.end()) {
-            failures++;
-            output_error("installfile:" + std::to_string(diskid->lineno()),
-                         "diskid: device " + diskid->device() +
-                         " has already been identified");
-        }
-        seen_diskids.insert(diskid->device());
-    }
-
-    for(auto &mount : this->internal->mounts) {
-        if(!mount->validate(this->opts)) {
-            failures++;
-            continue;
-        }
-
-        /* Runner.Validate.mount.Unique */
-        if(seen_mounts.find(mount->mountpoint()) != seen_mounts.end()) {
-            failures++;
-            output_error("installfile:" + std::to_string(mount->lineno()),
-                         "mount: mountpoint " + mount->mountpoint() +
-                         " has already been specified; " + mount->device() +
-                         " is a duplicate");
-        }
-        seen_mounts.insert(mount->mountpoint());
-        if(this->opts.test(InstallEnvironment)) {
-            /* TODO: Runner.Validate.mount.Block for not-yet-created devs. */
-        }
-    }
-
-    /* Runner.Validate.mount.Root */
-    if(seen_mounts.find("/") == seen_mounts.end()) {
-        failures++;
-        output_error("installfile:0", "mount: no root mount specified");
-    }
-
-    /* Runner.Validate.network.netaddress */
+    /* REQ: Runner.Validate.network.netaddress */
     if(this->internal->network->test() &&
        this->internal->addresses.size() == 0) {
         failures++;
@@ -503,13 +469,12 @@ bool Script::validate() const {
                      "You need to specify at least one address to enable "
                      "networking.");
     }
-
     for(auto &address : this->internal->addresses) {
         if(!address->validate(this->opts)) {
             failures++;
         }
 
-        /* Runner.Validate.network.netaddress.Count */
+        /* REQ: Runner.Validate.network.netaddress.Count */
         if(seen_iface.find(address->iface()) == seen_iface.end()) {
             seen_iface.insert(std::make_pair(address->iface(), 1));
         } else {
@@ -523,13 +488,25 @@ bool Script::validate() const {
         }
     }
 
-    /* Runner.Validate.network.netssid */
+    /* REQ: Runner.Validate.network.netssid */
     for(auto &ssid : this->internal->ssids) {
         if(!ssid->validate(this->opts)) {
             failures++;
         }
     }
 
+    /* REQ: Runner.Validate.hostname */
+    if(!this->internal->hostname->validate(this->opts)) failures++;
+
+    /* REQ: Runner.Validate.rootpw */
+    if(!this->internal->rootpw->validate(this->opts)) failures++;
+
+    /* language */
+    /* keymap */
+    /* firmware */
+    /* timezone */
+
+    /* REQ: Script.repository */
     if(this->internal->repos.size() == 0) {
         Keys::Repository *sys_key = dynamic_cast<Keys::Repository *>(
             Horizon::Keys::Repository::parseFromData(
@@ -557,12 +534,12 @@ bool Script::validate() const {
         this->internal->repos.push_back(std::move(user_repo));
     }
 
+    /* REQ: Runner.Validate.repository */
     for(auto &repo : this->internal->repos) {
         if(!repo->validate(this->opts)) {
             failures++;
         }
     }
-
     if(this->internal->repos.size() > 10) {
         failures++;
         output_error("installfile:" +
@@ -571,20 +548,120 @@ bool Script::validate() const {
                      "You may only specify up to 10 repositories.");
     }
 
+    /* signingkey */
+
+    for(auto &acct : this->internal->accounts) {
+        UserDetail *detail = acct.second.get();
+        /* REQ: Runner.Validate.username */
+        if(!detail->name->validate(this->opts)) {
+            failures++;
+        }
+
+        /* REQ: Runner.Validate.useralias */
+        if(detail->alias && !detail->alias->validate(this->opts)) {
+            failures++;
+        }
+
+        /* REQ: Runner.Validate.userpw */
+        if(detail->passphrase && !detail->passphrase->validate(this->opts)) {
+            failures++;
+        }
+
+        /* REQ: Runner.Validate.usericon */
+        if(detail->icon && !detail->icon->validate(this->opts)) {
+            failures++;
+        }
+
+        if(detail->groups.size() > 0) {
+            std::set<std::string> seen_groups;
+            for(auto &group : detail->groups) {
+                /* REQ: Runner.Validate.usergroups */
+                if(!group->validate(this->opts)) {
+                    failures++;
+                }
+
+                /* REQ: Runner.Validate.usergroups.Unique */
+                const std::set<std::string> these = group->groups();
+                if(!std::all_of(these.begin(), these.end(),
+                    [&seen_groups](std::string elem) {
+                        return seen_groups.find(elem) == seen_groups.end();
+                    })
+                ) {
+                    output_error("installfile:" + std::to_string(group->lineno()),
+                                 "usergroups: group specified twice");
+                    failures++;
+                }
+            }
+
+            /* REQ: Runner.Validate.usergroups.Count */
+            if(seen_groups.size() > 16) {
+                output_error("installfile:0",
+                             "usergroups: " + acct.first + " is a member of " +
+                             "more than 16 groups");
+                failures++;
+            }
+        }
+    }
+
+    /* REQ: Runner.Validate.diskid */
+    for(auto &diskid : this->internal->diskids) {
+        if(!diskid->validate(this->opts)) {
+            failures++;
+            continue;
+        }
+
+        /* REQ: Runner.Validate.diskid.Unique */
+        if(seen_diskids.find(diskid->device()) != seen_diskids.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(diskid->lineno()),
+                         "diskid: device " + diskid->device() +
+                         " has already been identified");
+        }
+        seen_diskids.insert(diskid->device());
+    }
+
+    /* REQ: Runner.Validate.mount */
+    for(auto &mount : this->internal->mounts) {
+        if(!mount->validate(this->opts)) {
+            failures++;
+            continue;
+        }
+
+        /* REQ: Runner.Validate.mount.Unique */
+        if(seen_mounts.find(mount->mountpoint()) != seen_mounts.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(mount->lineno()),
+                         "mount: mountpoint " + mount->mountpoint() +
+                         " has already been specified; " + mount->device() +
+                         " is a duplicate");
+        }
+        seen_mounts.insert(mount->mountpoint());
+        if(this->opts.test(InstallEnvironment)) {
+            /* TODO: Runner.Validate.mount.Block for not-yet-created devs. */
+        }
+    }
+
+    /* REQ: Runner.Validate.mount.Root */
+    if(seen_mounts.find("/") == seen_mounts.end()) {
+        failures++;
+        output_error("installfile:0", "mount: no root mount specified");
+    }
+
     output_log("validator", "0", "installfile",
                std::to_string(failures) + " failure(s).", "");
     return (failures == 0);
 }
 
+
 bool Script::execute() const {
     bool success;
 
-    /* Runner.Execute.Verify */
+    /* REQ: Runner.Execute.Verify */
     output_step_start("validate");
     success = this->validate();
     output_step_end("validate");
     if(!success) {
-        /* Runner.Execute.Verify.Failure */
+        /* REQ: Runner.Execute.Verify.Failure */
         output_error("validator", "The HorizonScript failed validation",
                      "Check the output from the validator.");
         return false;
@@ -649,7 +726,7 @@ bool Script::execute() const {
     /**************** PKGDB ****************/
     output_step_start("pkgdb");
 
-    /* Runner.Execute.pkginstall.APKDB */
+    /* REQ: Runner.Execute.pkginstall.APKDB */
     output_info("internal", "initialising APK");
     if(opts.test(Simulate)) {
         std::cout << "apk --root /target --initdb add" << std::endl;
@@ -660,7 +737,7 @@ bool Script::execute() const {
         }
     }
 
-    /* Runner.Execute.pkginstall */
+    /* REQ: Runner.Execute.pkginstall */
     output_info("internal", "installing packages to target");
     std::ostringstream pkg_list;
     for(auto &pkg : this->internal->packages) {
