@@ -567,6 +567,15 @@ bool Script::validate() const {
             failures++;
         }
 
+        /* REQ: Runner.Validate.userpw.None */
+        if(!detail->passphrase) {
+            int line = detail->name->lineno();
+            output_warning("installfile:" + std::to_string(line),
+                           "username: " + acct.first +
+                           " has no set passphrase",
+                           "This account will not be able to log in.");
+        }
+
         /* REQ: Runner.Validate.usericon */
         if(detail->icon && !detail->icon->validate(this->opts)) {
             failures++;

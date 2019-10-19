@@ -568,6 +568,50 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*duplicate.*useralias/)
                 end
             end
+            context "'userpw'" do
+                # Runner.Validate.userpw.
+                it "succeeds with username/passphrase combinations" do
+                    use_fixture '0091-userpw-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                # Runner.Validate.userpw.Validity.
+                it "requires a passphrase to be provided" do
+                    use_fixture '0092-userpw-without-pw.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*userpw.*required/)
+                end
+                # Runner.Validate.userpw.Name.
+                it "fails with a username that wasn't given" do
+                    use_fixture '0093-userpw-unknown-name.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*userpw.*name/)
+                end
+                # Runner.Validate.userpw.Unique.
+                it "fails with more than one passphrase for an account" do
+                    use_fixture '0094-userpw-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*duplicate.*userpw/)
+                end
+                # Runner.Validate.userpw.Crypt.
+                it "fails with a plain-text password" do
+                    use_fixture '0095-userpw-plaintext.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*userpw.*crypt/)
+                end
+                it "fails with an invalid encryption algorithm" do
+                    use_fixture '0096-userpw-md5.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*userpw.*crypt/)
+                end
+                # Runner.Validate.userpw.None.
+                it "warns when an account doesn't have a passphrase" do
+                    use_fixture '0097-userpw-missing.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/warning: .*passphrase/)
+                end
+            end
         end
         context "package specifications" do
             # no requirements for these, but I think obvious.

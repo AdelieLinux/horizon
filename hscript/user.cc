@@ -100,14 +100,28 @@ static bool is_valid_name (const char *name)
 
 /* End above copyright ^ */
 
+/*! Determine if a string is a valid crypt passphrase
+ * @param pw        The string to test for validity.
+ * @param key       The name of key being validated ('rootpw', 'userpw', ...)
+ * @param lineno    The line number where the key occurs.
+ * @returns true if +pw+ is a valid crypt passphrase; false otherwise.
+ */
+static bool string_is_crypt(const std::string &pw, const std::string &key,
+                            int lineno) {
+    if(pw.size() < 5 || pw[0] != '$' || (pw[1] != '2' && pw[1] != '6')
+            || pw[2] != '$') {
+        output_error("installfile:" + std::to_string(lineno),
+                     key + ": value is not a crypt-style encrypted passphrase");
+        return false;
+    }
+    return true;
+}
+
 
 Key *RootPassphrase::parseFromData(const std::string &data, int lineno,
                                    int *errors, int *warnings) {
-    if(data.size() < 5 || data[0] != '$' || (data[1] != '2' && data[1] != '6')
-            || data[2] != '$') {
+    if(!string_is_crypt(data, "rootpw", lineno)) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "rootpw: value is not a crypt-style encrypted passphrase");
         return nullptr;
     }
     return new RootPassphrase(lineno, data);
@@ -219,11 +233,28 @@ bool UserAlias::execute(ScriptOptions) const {
 
 Key *UserPassphrase::parseFromData(const std::string &data, int lineno,
                                    int *errors, int *warnings) {
-    return nullptr;
+    /* REQ: Runner.Validate.userpw.Validity */
+    const std::string::size_type sep = data.find_first_of(' ');
+    if(sep == std::string::npos || data.length() == sep + 1) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "userpw: passphrase is required",
+                     "expected format is: userpw [username] [crypt...]");
+        return nullptr;
+    }
+
+    std::string passphrase = data.substr(sep + 1);
+    if(!string_is_crypt(passphrase, "userpw", lineno)) {
+        if(errors) *errors += 1;
+        return nullptr;
+    }
+
+    return new UserPassphrase(lineno, data.substr(0, sep), data.substr(sep + 1));
 }
 
 bool UserPassphrase::validate(ScriptOptions) const {
-    return false;
+    /* If it's parseable, it's valid. */
+    return true;
 }
 
 bool UserPassphrase::execute(ScriptOptions) const {
