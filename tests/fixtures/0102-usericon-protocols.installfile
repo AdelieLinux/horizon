@@ -1,0 +1,15 @@
+network false
+hostname test.machine
+pkginstall adelie-base
+rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
+mount /dev/sda1 /
+username chris
+usericon chris http://www.adelielinux.org/
+username kayla
+usericon kayla HTTPS://www.adelielinux.org/
+username meg
+usericon meg /usr/share/user-manager/avatars/circles/Cat.png
+username steph
+usericon steph tftp://192.168.1.1/avatar
+username amanda
+usericon amanda SmB://stuff:pw@10.4.1.1/c$/mypicture

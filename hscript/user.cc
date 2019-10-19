@@ -17,6 +17,7 @@
 #include <sstream>
 #include <time.h>
 #include "user.hh"
+#include "util/net.hh"
 #include "util/output.hh"
 
 using namespace Horizon::Keys;
@@ -264,11 +265,30 @@ bool UserPassphrase::execute(ScriptOptions) const {
 
 Key *UserIcon::parseFromData(const std::string &data, int lineno, int *errors,
                              int *warnings) {
-    return nullptr;
+    /* REQ: Runner.Validate.usericon.Validity */
+    const std::string::size_type sep = data.find_first_of(' ');
+    if(sep == std::string::npos || data.length() == sep + 1) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "usericon: icon is required",
+                     "expected format is: usericon [username] [path|url]");
+        return nullptr;
+    }
+
+    std::string icon_path = data.substr(sep + 1);
+    if(icon_path[0] != '/' && !is_valid_url(icon_path)) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "usericon: path must be absolute path or valid URL");
+        return nullptr;
+    }
+
+    return new UserIcon(lineno, data.substr(0, sep), icon_path);
 }
 
 bool UserIcon::validate(ScriptOptions) const {
-    return false;
+    /* TODO XXX: ensure URL is accessible */
+    return true;
 }
 
 bool UserIcon::execute(ScriptOptions) const {

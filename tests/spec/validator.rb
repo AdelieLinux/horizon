@@ -612,6 +612,45 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/warning: .*passphrase/)
                 end
             end
+            context "'usericon'" do
+                # Runner.Validate.usericon.
+                it "succeeds with a valid icon/account pair" do
+                    use_fixture '0098-usericon-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                # Runner.Validate.usericon.Validity.
+                it "requires a path to be provided" do
+                    use_fixture '0099-usericon-without-icon.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*usericon.*required/)
+                end
+                # Runner.Validate.usericon.Name.
+                it "fails with a username that wasn't given" do
+                    use_fixture '0100-usericon-unknown-name.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*usericon.*name/)
+                end
+                # Runner.Validate.usericon.Unique.
+                it "fails with multiple icons associated with a single account" do
+                    use_fixture '0101-usericon-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*duplicate.*usericon/)
+                end
+                # Runner.Validate.usericon.ValidPath.
+                it "succeeds with all supported protocols" do
+                    use_fixture '0102-usericon-protocols.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with an unsupported protocol" do
+                    use_fixture '0103-usericon-gopher.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*usericon.*URL/)
+                end
+            end
         end
         context "package specifications" do
             # no requirements for these, but I think obvious.
