@@ -234,7 +234,8 @@ struct Script::ScriptPrivate {
         }
         std::unique_ptr<UserDetail> detail(new UserDetail);
         detail->name = std::move(name);
-        accounts.insert(std::make_pair(name->value(), std::move(detail)));
+        accounts.insert(std::make_pair(detail->name->value(),
+                                       std::move(detail)));
         return true;
     }
 
