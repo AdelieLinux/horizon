@@ -13,8 +13,8 @@ end
 PARSER_SUCCESS = /parser: 0 error\(s\), 0 warning\(s\)/
 VALIDATOR_SUCCESS = /validator: 0 failure\(s\)/
 
-RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
-    context "argument passing" do
+RSpec.describe 'HorizonScript validation', :type => :aruba do
+    context "Utility argument passing" do
         it "requires an installfile to be specified" do
             run_command 'hscript-validate'
             expect(last_command_started).to have_output(/usage/)
@@ -32,7 +32,7 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
             expect(last_command_started).to_not have_output(/\033/)
         end
     end
-    context "on invalid keys" do
+    context "with invalid keys" do
         # No requirement - but was noted in the original draft vision doc as
         # desireable because it allows future expansion while retaining some
         # compatibility.
@@ -510,21 +510,30 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
         end
         context "user account keys:" do
             context "'username'" do
+                # Runner.Validate.username.
                 it "succeeds with multiple usernames" do
                     use_fixture '0082-username-basic.installfile'
                     run_validate
                     expect(last_command_started).to have_output(PARSER_SUCCESS)
                     expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
                 end
+                # Runner.Validate.username.Unique.
                 it "fails with duplicate usernames" do
                     use_fixture '0083-username-duplicate.installfile'
                     run_validate
                     expect(last_command_started).to have_output(/error: .*duplicate.*username/)
                 end
+                # Runner.Validate.username.System.
                 it "fails with a system username" do
                     use_fixture '0084-username-system.installfile'
                     run_validate
                     expect(last_command_started).to have_output(/error: .*username.*system/)
+                end
+                # Runner.Validate.username.
+                it "fails with more than 255 usernames" do
+                    use_fixture '0085-all-the-username.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*username.*too many/)
                 end
             end
         end
