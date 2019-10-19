@@ -1,7 +1,7 @@
 # This file contains comments.
 
 # And blank lines.
-network true
+network false
 
 hostname test.machine
 pkginstall adelie-base
