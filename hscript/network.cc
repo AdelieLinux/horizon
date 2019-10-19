@@ -37,6 +37,7 @@ bool Network::execute(ScriptOptions) const {
     return true;
 }
 
+
 Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
                                int *warnings) {
     long elements = std::count(data.cbegin(), data.cend(), ' ') + 1;
@@ -226,6 +227,7 @@ bool NetAddress::execute(ScriptOptions) const {
     return false;
 }
 
+
 Key *NetSSID::parseFromData(const std::string &data, int lineno, int *errors,
                             int *warnings) {
     std::string iface, ssid, secstr, passphrase;
@@ -311,40 +313,43 @@ Key *NetSSID::parseFromData(const std::string &data, int lineno, int *errors,
 }
 
 bool NetSSID::validate(ScriptOptions options) const {
-    /* Runner.Validate.network.netssid.Interface */
-    if(options.test(InstallEnvironment)) {
-        struct iwreq request;
-        int my_sock = ::socket(AF_INET, SOCK_STREAM, 0);
-        if(my_sock == -1) {
-            output_error("installfile:" + std::to_string(this->lineno()),
-                         "netssid: can't open socket", ::strerror(errno));
-            return false;
-        }
-        memset(&request, 0, sizeof(request));
-        memcpy(&request.ifr_ifrn.ifrn_name, this->_iface.c_str(),
-               this->_iface.size());
-        errno = 0;
-        if(ioctl(my_sock, SIOCGIWNAME, &request) == -1) {
-            switch(errno)
-            {
-            case EOPNOTSUPP:
-                output_warning("installfile:" + std::to_string(this->lineno()),
-                               "netssid: interface specified is not wireless");
-                return true;
-            case ENODEV:
-                output_warning("installfile:" + std::to_string(this->lineno()),
-                               "netssid: specified interface does not exist");
-                return true;
-            default:
-                output_error("installfile:" + std::to_string(this->lineno()),
-                             "netssid: error communicating with wireless device");
-                return false;
-            }
-        }
-        ::close(my_sock);
+    /* REQ: Runner.Validate.network.netssid.Interface */
+    if(!options.test(InstallEnvironment)) {
         return true;
     }
+
+    /* LCOV_EXCL_START */
+    struct iwreq request;
+    int my_sock = ::socket(AF_INET, SOCK_STREAM, 0);
+    if(my_sock == -1) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "netssid: can't open socket", ::strerror(errno));
+        return false;
+    }
+    memset(&request, 0, sizeof(request));
+    memcpy(&request.ifr_ifrn.ifrn_name, this->_iface.c_str(),
+           this->_iface.size());
+    errno = 0;
+    if(ioctl(my_sock, SIOCGIWNAME, &request) == -1) {
+        switch(errno)
+        {
+        case EOPNOTSUPP:
+            output_warning("installfile:" + std::to_string(this->lineno()),
+                           "netssid: specified interface is not wireless");
+            return true;
+        case ENODEV:
+            output_warning("installfile:" + std::to_string(this->lineno()),
+                           "netssid: specified interface does not exist");
+            return true;
+        default:
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "netssid: error communicating with wireless device");
+            return false;
+        }
+    }
+    ::close(my_sock);
     return true;
+    /* LCOV_EXCL_STOP */
 }
 
 bool NetSSID::execute(ScriptOptions) const {

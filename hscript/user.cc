@@ -132,6 +132,8 @@ bool RootPassphrase::execute(ScriptOptions options) const {
         return true;
     }
 
+    /* LCOV_EXCL_START */
+    /* This was tested on gwyn during development. */
     std::ifstream old_shadow("/target/etc/shadow");
     if(!old_shadow) {
         output_error("installfile:" + std::to_string(this->lineno()),
@@ -139,8 +141,6 @@ bool RootPassphrase::execute(ScriptOptions options) const {
         return false;
     }
 
-    /* LCOV_EXCL_START */
-    /* This was tested on gwyn during development. */
     std::stringstream shadow_stream;
     char shadow_line[200];
     /* Discard root. */
