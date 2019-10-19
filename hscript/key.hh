@@ -39,11 +39,13 @@ public:
      * @returns nullptr if data is unparsable, otherwise a pointer to a Key.
      */
 #define UNUSED __attribute__((unused))
+    /* LCOV_EXCL_START */
     static Key *parseFromData(const std::string &data UNUSED,
                               int lineno UNUSED, int *errors UNUSED,
                               int *warnings UNUSED) {
         return nullptr;
     }
+    /* LCOV_EXCL_STOP */
 #undef UNUSED
 
     /*! Determines if the data associated with the Key is valid. */

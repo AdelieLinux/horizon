@@ -121,7 +121,7 @@ bool Hostname::execute(ScriptOptions opts) const {
         if(opts.test(Simulate)) {
             std::cout << "printf 'dns_domain_lo=\"" << domain
                       << "\"\\" << "n' >> /target/etc/conf.d/net" << std::endl;
-        } else {
+        } else { /* LCOV_EXCL_START */
             std::ofstream net_conf_f("/target/etc/conf.d/net");
             if(!net_conf_f) {
                 output_error("installfile:" + std::to_string(this->lineno()),
@@ -130,7 +130,7 @@ bool Hostname::execute(ScriptOptions opts) const {
                 return false;
             }
             net_conf_f << "dns_domain_lo\"" << domain << "\"" << std::endl;
-        }
+        } /* LCOV_EXCL_STOP */
     }
 
     return true;
