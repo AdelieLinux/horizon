@@ -107,11 +107,21 @@ bool RootPassphrase::execute(ScriptOptions options) const {
 
 Key *Username::parseFromData(const std::string &data, int lineno, int *errors,
                              int *warnings) {
-    return nullptr;
-}
+    if(data.find_first_of(' ') != std::string::npos) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "username: invalid username specified");
+        return nullptr;
+    }
 
-bool Username::validate(ScriptOptions) const {
-    return false;
+    if(system_names.find(data) != system_names.end()) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "username: " + data + " is a reserved system username");
+        return nullptr;
+    }
+
+    return new Username(lineno, data);
 }
 
 bool Username::execute(ScriptOptions) const {

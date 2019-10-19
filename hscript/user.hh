@@ -36,7 +36,6 @@ private:
         StringKey(_line, name) {}
 public:
     static Key *parseFromData(const std::string &, int, int*, int*);
-    bool validate(ScriptOptions) const override;
     bool execute(ScriptOptions) const override;
 };
 

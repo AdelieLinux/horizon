@@ -53,18 +53,21 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
             use_fixture '0001-basic.installfile'
             run_validate
             expect(last_command_started).to have_output(PARSER_SUCCESS)
+            expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
         end
         # HorizonScript Specification, ch 3.
         it "handles comments" do
             use_fixture '0002-basic-commented.installfile'
             run_validate
             expect(last_command_started).to have_output(PARSER_SUCCESS)
+            expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
         end
         # HorizonScript Specification, ch 3.
         it "handles blank lines and indentation" do
             use_fixture '0003-basic-whitespace.installfile'
             run_validate
             expect(last_command_started).to have_output(PARSER_SUCCESS)
+            expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
         end
         it "requires keys to have values" do
             use_fixture '0015-keys-without-values.installfile'
@@ -505,12 +508,33 @@ RSpec.describe 'HorizonScript Validation Utility', :type => :aruba do
                 expect(last_command_started).to have_output(/error: .*duplicate.*rootpw/)
             end
         end
+        context "user account keys:" do
+            context "'username'" do
+                it "succeeds with multiple usernames" do
+                    use_fixture '0082-username-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with duplicate usernames" do
+                    use_fixture '0083-username-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*duplicate.*username/)
+                end
+                it "fails with a system username" do
+                    use_fixture '0084-username-system.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*username.*system/)
+                end
+            end
+        end
         context "package specifications" do
             # no requirements for these, but I think obvious.
             it "works with all types of package atoms" do
                 use_fixture '0022-all-kinds-of-atoms.installfile'
                 run_validate
                 expect(last_command_started).to have_output(PARSER_SUCCESS)
+                expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
             end
             it "does not accept invalid package atoms" do
                 use_fixture '0023-pkginstall-invalid-modifier.installfile'
