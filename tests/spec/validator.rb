@@ -535,6 +535,38 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*username.*too many/)
                 end
+                it "fails with an invalid username" do
+                    use_fixture '0086-username-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*username.*invalid/)
+                end
+            end
+            context "'useralias'" do
+                # Runner.Validate.useralias.
+                it "succeeds with usernames with aliases" do
+                    use_fixture '0087-useralias-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                # Runner.Validate.useralias.Validity.
+                it "requires an alias to be provided" do
+                    use_fixture '0088-useralias-without-alias.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*useralias.*required/)
+                end
+                # Runner.Validate.useralias.Name.
+                it "fails with a username that wasn't given" do
+                    use_fixture '0089-useralias-unknown-name.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*useralias.*name/)
+                end
+                # Runner.Validate.useralias.Unique.
+                it "fails with a duplicated alias" do
+                    use_fixture '0090-useralias-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*duplicate.*useralias/)
+                end
             end
         end
         context "package specifications" do
