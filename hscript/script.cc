@@ -110,7 +110,7 @@ struct Script::ScriptPrivate {
      * @param warnings      Output parameter: if given, incremented on warning.
      * @param opts          Script parsing options.
      */
-    bool store_key(const std::string key_name, Keys::Key *obj, int lineno,
+    bool store_key(const std::string &key_name, Keys::Key *obj, int lineno,
                    int *errors, int *warnings, ScriptOptions opts) {
         if(key_name == "network") {
             return store_network(obj, lineno, errors, warnings, opts);
