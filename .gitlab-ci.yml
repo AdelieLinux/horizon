@@ -32,6 +32,7 @@ test:
 valgrind:
   stage: test
   script:
+  - cd build
   - CTEST_OUTPUT_ON_FAILURE=TRUE ctest -L Valgrind
 
 pages:
