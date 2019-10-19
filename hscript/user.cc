@@ -114,6 +114,7 @@ Key *Username::parseFromData(const std::string &data, int lineno, int *errors,
         return nullptr;
     }
 
+    /* REQ: Runner.Validate.username.System */
     if(system_names.find(data) != system_names.end()) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
