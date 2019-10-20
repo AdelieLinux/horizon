@@ -28,28 +28,9 @@ IF(COVERAGE)
 ENDIF(COVERAGE)
 
 include_directories(.)
+enable_testing()
 
 add_subdirectory(hscript)
 IF(BUILD_TOOLS)
     add_subdirectory(tools)
-ENDIF(BUILD_TOOLS)
-
-enable_testing()
-IF(BUILD_TOOLS)
-    add_test(NAME "RSpecValidator"
-        COMMAND rspec spec/validator.rb
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)
-    set_property(TEST "RSpecValidator"
-        PROPERTY ENVIRONMENT "PATH=$PATH:${CMAKE_CURRENT_BINARY_DIR}/tools/hscript-validate")
-    add_test(NAME "RSpecSimulator"
-        COMMAND rspec spec/simulator.rb
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)
-    set_property(TEST "RSpecSimulator"
-        PROPERTY ENVIRONMENT "PATH=$PATH:${CMAKE_CURRENT_BINARY_DIR}/tools/hscript-simulate")
-    IF(VALGRIND)
-    add_test(NAME "ValgrindValidator"
-        COMMAND valgrind ${CMAKE_CURRENT_BINARY_DIR}/tools/hscript-validate/hscript-validate tests/fixtures/0001-basic.installfile)
-    add_test(NAME "ValgrindSimulator"
-        COMMAND valgrind ${CMAKE_CURRENT_BINARY_DIR}/tools/hscript-simulate/hscript-simulate tests/fixtures/0001-basic.installfile)
-    ENDIF(VALGRIND)
 ENDIF(BUILD_TOOLS)
