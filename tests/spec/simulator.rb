@@ -11,7 +11,10 @@ def use_fixture(fixture)
 end
 
 Aruba.configure do |config|
-    config.fixtures_directories = %w(fixtures)
+    config.fixtures_directory = "fixtures" if respond_to? :fixtures_directory=
+    config.fixtures_directories = %w(fixtures) if respond_to? :fixtures_directories=
+    config.keep_ansi = true if respond_to? :keep_ansi=
+    config.remove_ansi_escape_sequences = false if respond_to? :remove_ansi_escape_sequences=
 end
 
 RSpec.describe 'HorizonScript Simulator', :type => :aruba do
