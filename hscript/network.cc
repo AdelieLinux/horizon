@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <arpa/inet.h>          /* inet_pton */
+#include <cstring>              /* memcpy */
 #ifdef HAS_INSTALL_ENV
 #   include <linux/wireless.h>     /* struct iwreq */
 #   include <string.h>             /* strerror */
