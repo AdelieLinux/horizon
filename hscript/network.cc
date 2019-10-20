@@ -17,6 +17,9 @@
 #   include <string.h>             /* strerror */
 #   include <sys/ioctl.h>          /* ioctl, ioctl numbers */
 #   include <unistd.h>             /* close */
+#else
+/*! The size of Linux interface names. */
+#   define IFNAMSIZ 16
 #endif
 #include "network.hh"
 #include "util/output.hh"

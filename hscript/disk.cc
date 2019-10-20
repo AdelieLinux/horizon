@@ -47,6 +47,7 @@ bool DiskId::validate(ScriptOptions options) const {
     /* We only validate if running in an Installation Environment. */
     if(!options.test(InstallEnvironment)) return true;
 
+#ifdef HAS_INSTALL_ENV
     /* Unlike 'mount', 'diskid' *does* require that the block device exist
      * before installation begins.  This test is always valid. */
     struct stat blk_stat;
@@ -62,6 +63,7 @@ bool DiskId::validate(ScriptOptions options) const {
                      "diskid: " + _block + " is not a valid block device");
         return false;
     }
+#endif /* HAS_INSTALL_ENV */
     return true;
 }
 
