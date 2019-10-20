@@ -15,6 +15,7 @@
 #include <fstream>
 #include <string>
 #ifdef HAS_INSTALL_ENV
+#   include <assert.h>         /* assert */
 #   include <blkid/blkid.h>    /* blkid_get_tag_value */
 #   include <libudev.h>        /* udev_* */
 #   include <sys/mount.h>      /* mount */
@@ -76,8 +77,15 @@ bool DiskId::execute(ScriptOptions options) const {
     struct udev *udev;
     struct udev_device *device;
     const char *serial;
-    /* XXX this is *horrible* */
-    const char *syspath = ("/sys/block/" + _block.substr(5)).c_str();
+    struct stat blk_stat;
+    const char *block_c = _block.c_str();
+    if(stat(block_c, &blk_stat) != 0) {
+        output_error("installfile:" + std::to_string(line),
+                     "diskid: error opening device " + _block,
+                     strerror(errno));
+        return false;
+    }
+    assert(S_ISBLK(blk_stat.st_mode));
 
     udev = udev_new();
     if(!udev) {
@@ -86,7 +94,7 @@ bool DiskId::execute(ScriptOptions options) const {
                      "cannot read disk information");
         return false;
     }
-    device = udev_device_new_from_syspath(udev, syspath);
+    device = udev_device_new_from_devnum(udev, 'b', blk_stat.st_rdev);
     if(!device) {
         udev_unref(udev);
         output_error("installfile:" + std::to_string(line),
