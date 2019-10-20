@@ -171,8 +171,8 @@ struct Script::ScriptPrivate {
                  "duplicate value for key '" + std::string(KEY) + "'",\
                  err_str);
 
-    bool store_network(Keys::Key* obj, int lineno, int *errors, int *warnings,
-                       ScriptOptions opts) {
+    bool store_network(Keys::Key* obj, int lineno, int *errors, int *,
+                       ScriptOptions) {
         if(this->network) {
             DUPLICATE_ERROR(this->network, "network",
                             this->network->test() ? "true" : "false")
@@ -183,8 +183,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_hostname(Keys::Key* obj, int lineno, int *errors, int *warnings,
-                        ScriptOptions opts) {
+    bool store_hostname(Keys::Key* obj, int lineno, int *errors, int *,
+                        ScriptOptions) {
         if(this->hostname) {
             DUPLICATE_ERROR(this->hostname, "hostname",
                             this->hostname->value())
@@ -212,8 +212,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_rootpw(Keys::Key* obj, int lineno, int *errors, int *warnings,
-                      ScriptOptions opts) {
+    bool store_rootpw(Keys::Key* obj, int lineno, int *errors, int *,
+                      ScriptOptions) {
         if(this->rootpw) {
             DUPLICATE_ERROR(this->rootpw, std::string("rootpw"),
                             "an encrypted passphrase")
@@ -224,8 +224,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_firmware(Keys::Key *obj, int lineno, int *errors, int *warnings,
-                        ScriptOptions opts) {
+    bool store_firmware(Keys::Key *obj, int lineno, int *errors, int *,
+                        ScriptOptions) {
         std::unique_ptr<Firmware> f(dynamic_cast<Firmware *>(obj));
 #ifdef NON_LIBRE_FIRMWARE
         if(this->firmware) {
@@ -241,8 +241,8 @@ struct Script::ScriptPrivate {
 #endif
     }
 
-    bool store_username(Keys::Key *obj, int lineno, int *errors, int *warnings,
-                        ScriptOptions opts) {
+    bool store_username(Keys::Key *obj, int lineno, int *errors, int *,
+                        ScriptOptions) {
         if(accounts.size() >= 255) {
             if(errors) *errors += 1;
             output_error("installfile:" + std::to_string(lineno),
@@ -274,7 +274,7 @@ struct Script::ScriptPrivate {
     UserDetail *detail = (*accounts.find(OBJ->username())).second.get();
 
     bool store_useralias(Keys::Key* obj, int lineno, int *errors,
-                         int *warnings, ScriptOptions opts) {
+                         int *, ScriptOptions) {
         std::unique_ptr<UserAlias> alias(dynamic_cast<UserAlias *>(obj));
         GET_USER_DETAIL(alias, "useralias")
         /* REQ: Runner.Validate.useralias.Unique */
@@ -286,8 +286,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_userpw(Keys::Key *obj, int lineno, int *errors, int *warnings,
-                      ScriptOptions opts) {
+    bool store_userpw(Keys::Key *obj, int lineno, int *errors, int *,
+                      ScriptOptions) {
         std::unique_ptr<UserPassphrase> pw(dynamic_cast<UserPassphrase *>(obj));
         GET_USER_DETAIL(pw, "userpw")
         /* REQ: Runner.Validate.userpw.Unique */
@@ -300,8 +300,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_usericon(Keys::Key *obj, int lineno, int *errors, int *warnings,
-                        ScriptOptions opts) {
+    bool store_usericon(Keys::Key *obj, int lineno, int *errors, int *,
+                        ScriptOptions) {
         std::unique_ptr<UserIcon> icon(dynamic_cast<UserIcon *>(obj));
         GET_USER_DETAIL(icon, "usericon")
         /* REQ: Runner.Validate.usericon.Unique */
@@ -314,7 +314,7 @@ struct Script::ScriptPrivate {
     }
 
     bool store_usergroups(Keys::Key* obj, int lineno, int *errors,
-                          int *warnings, ScriptOptions opts) {
+                          int *, ScriptOptions) {
         std::unique_ptr<UserGroups> grp(dynamic_cast<UserGroups *>(obj));
         GET_USER_DETAIL(grp, "usergroups")
         detail->groups.push_back(std::move(grp));
@@ -726,6 +726,24 @@ bool Script::execute() const {
 
     /**************** DISK SETUP ****************/
     output_step_start("disk");
+    /* REQ: Runner.Execute.diskid */
+    for(auto &diskid : this->internal->diskids) {
+        if(!diskid->execute(opts)) {
+            EXECUTE_FAILURE("disk");
+            return false;
+        }
+    }
+
+    /* disklabel */
+    /* partition */
+    /* encrypt PVs */
+    /* lvm_pv */
+    /* lvm_vg */
+    /* lvm_lv */
+    /* encrypt */
+    /* fs */
+
+    /* REQ: Runner.Execute.mount */
     /* Sort by mountpoint.
      * This ensures that any subdirectory mounts come after their parent. */
     std::sort(this->internal->mounts.begin(), this->internal->mounts.end(),

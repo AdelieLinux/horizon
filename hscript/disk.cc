@@ -16,6 +16,7 @@
 #include <string>
 #ifdef HAS_INSTALL_ENV
 #   include <blkid/blkid.h>    /* blkid_get_tag_value */
+#   include <libudev.h>        /* udev_* */
 #   include <sys/mount.h>      /* mount */
 #   include <sys/stat.h>       /* mkdir, stat */
 #   include <sys/types.h>      /* S_* */
@@ -67,8 +68,43 @@ bool DiskId::validate(ScriptOptions options) const {
     return true;
 }
 
-bool DiskId::execute(ScriptOptions) const {
-    return false;
+bool DiskId::execute(ScriptOptions options) const {
+    bool match = false;
+    if(!options.test(InstallEnvironment)) return true;
+
+#ifdef HAS_INSTALL_ENV
+    struct udev *udev;
+    struct udev_device *device;
+    const char *serial;
+
+    udev = udev_new();
+    if(!udev) {
+        output_error("installfile:" + std::to_string(line),
+                     "diskid: failed to communicate with udevd",
+                     "cannot read disk information");
+        return false;
+    }
+    device = udev_device_new_from_syspath(udev, _block.c_str());
+    if(!device) {
+        udev_unref(udev);
+        output_error("installfile:" + std::to_string(line),
+                     "diskid: failed to communicate with udevd",
+                     "cannot read disk information");
+        return false;
+    }
+
+    serial = udev_device_get_property_value(device, "ID_SERIAL");
+    /* If we can't get the serial for this device, it's not a disk */
+    if(serial) {
+        std::string full_str(serial);
+        match = (full_str.find(_ident) != std::string::npos);
+    }
+
+    udev_device_unref(device);
+    udev_unref(udev);
+#endif /* HAS_INSTALL_ENV */
+
+    return match;
 }
 
 Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,

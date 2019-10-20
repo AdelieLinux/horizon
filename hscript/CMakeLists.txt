@@ -21,7 +21,7 @@ ENDIF(INSTALL)
 add_library(hscript ${HSCRIPT_LIBRARY_TYPE} ${HSCRIPT_SOURCE})
 target_compile_features(hscript PRIVATE cxx_nullptr)
 target_compile_features(hscript PUBLIC cxx_unicode_literals)
-target_link_libraries(hscript ${BLKID_LIBRARIES})
+target_link_libraries(hscript ${BLKID_LIBRARIES} ${LIBUDEV_LIBRARIES})
 
 install(TARGETS hscript DESTINATION lib)
 install(FILES ${HSCRIPT_INCLUDE} DESTINATION include/hscript)
