@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
     /* Default to pretty if we are using a TTY, unless -n specified. */
     if(isatty(1) && isatty(2)) {
-        pretty = true;
+        pretty = true;  /* LCOV_EXCL_LINE */
     }
 
     opts.set(ScriptOptionFlags::Simulate);
@@ -53,10 +53,10 @@ int main(int argc, char *argv[]) {
     std::cout << "HorizonScript Simulation Utility version 0.1.0";
     reset_if_pretty(std::cout);
     std::cout << std::endl;
-    if(isatty(1)) {
+    if(isatty(1)) {  /* LCOV_EXCL_START */
         std::cout << "Copyright (c) 2019 Adélie Linux and contributors.  AGPL-3.0 license." << std::endl;
         std::cout << std::endl;
-    }
+    }  /* LCOV_EXCL_STOP */
 
     my_script = Horizon::Script::load(installfile, opts);
     if(my_script == nullptr) {

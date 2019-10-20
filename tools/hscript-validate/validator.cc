@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
     /* Default to pretty if we are using a TTY, unless -n specified. */
     if(isatty(1) && isatty(2)) {
-        pretty = true;
+        pretty = true;  /* LCOV_EXCL_LINE */
     }
 
     auto cli = (
