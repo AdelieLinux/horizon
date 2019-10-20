@@ -51,11 +51,11 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
-end
 
-Aruba.configure do |config|
+  Aruba.configure do |config|
     config.fixtures_directories = %w(fixtures)
     config.remove_ansi_escape_sequences = false if respond_to? :remove_ansi_escape_sequences=
+  end
 end
 
 IFILE_PATH = 'installfile'
