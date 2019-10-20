@@ -33,7 +33,7 @@ valgrind:
   stage: test
   script:
   - cd build
-  - CTEST_OUTPUT_ON_FAILURE=TRUE ctest -L '^Valgrind'
+  - CTEST_OUTPUT_ON_FAILURE=TRUE ctest -R 'Valgrind*'
 
 pages:
   stage: deploy
