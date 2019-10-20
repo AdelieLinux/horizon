@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <fstream>
 #include <regex>
+#include <sstream>
 #ifdef HAS_INSTALL_ENV
 #   include <unistd.h>
 #endif /* HAS_INSTALL_ENV */

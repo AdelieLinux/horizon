@@ -12,7 +12,13 @@ set(HSCRIPT_INCLUDE
 	key.hh
 )
 
-add_library(hscript SHARED ${HSCRIPT_SOURCE})
+IF(INSTALL)
+set(HSCRIPT_LIBRARY_TYPE SHARED)
+ELSE(INSTALL)
+set(HSCRIPT_LIBRARY_TYPE STATIC)
+ENDIF(INSTALL)
+
+add_library(hscript ${HSCRIPT_LIBRARY_TYPE} ${HSCRIPT_SOURCE})
 target_compile_features(hscript PRIVATE cxx_nullptr)
 target_compile_features(hscript PUBLIC cxx_unicode_literals)
 target_link_libraries(hscript ${BLKID_LIBRARIES})
