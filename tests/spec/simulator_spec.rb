@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 def run_simulate(extra = '')
     run_command 'hscript-simulate ' + IFILE_PATH + extra
 end

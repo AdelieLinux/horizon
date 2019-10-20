@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 def run_validate(extra = '')
     run_command 'hscript-validate ' + IFILE_PATH + extra
 end
