@@ -15,12 +15,12 @@ option(BUILD_TOOLS "Enable building of tools (Validator, Simulator, etc)" ON)
 option(COVERAGE "Build for code coverage tests (slow)" OFF)
 option(VALGRIND "Run Valgrind during test phase" OFF)
 
-option(FIRMWARE "Support loading and installation of non-libre firmware (DANGEROUS)" OFF)
-mark_as_advanced(FORCE FIRMWARE)
+option(UNSUPPORTED_NONFREE_FIRMWARE "Support loading and installation of non-libre firmware (DANGEROUS)" OFF)
+mark_as_advanced(FORCE UNSUPPORTED_NONFREE_FIRMWARE)
 
-IF(FIRMWARE)
+IF(UNSUPPORTED_NONFREE_FIRMWARE)
     add_definitions(-DNON_LIBRE_FIRMWARE)
-ENDIF(FIRMWARE)
+ENDIF(UNSUPPORTED_NONFREE_FIRMWARE)
 
 IF(COVERAGE)
     SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} --coverage")
