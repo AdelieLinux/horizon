@@ -16,14 +16,14 @@ test:
   script:
   - cd tests
   - PATH=../build/tools/hscript-validate:../build/tools/hscript-simulate:$PATH rspec --format RspecJunitFormatter --out rspec.xml
-  - cd ..
+  - cd ../build
   - make lcov_report
   - make lcov_html
   - printf 'coverage %s\n' $(lcov --summary horizon.coverage | grep lines | cut -d ' ' -f4) > metrics.txt
   coverage: '/lines.+: \d+.\d+%/'
   artifacts:
     paths:
-    - cov_html
+    - build/cov_html
     - tests/rspec.xml
     reports:
       junit: tests/rspec.xml
@@ -41,7 +41,7 @@ pages:
   - test
   script:
   - mkdir public
-  - mv cov_html public/coverage
+  - mv build/cov_html public/coverage
   - cd devel
   - make
   - mv requirements/html ../public/requirements
