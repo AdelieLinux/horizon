@@ -651,6 +651,50 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*usericon.*URL/)
                 end
             end
+            context "'usergroups'" do
+                # Runner.Validate.usergroups.
+                it "succeeds with a valid account/group set" do
+                    use_fixture '0104-usergroups-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                # Runner.Validate.usergroups.Validity.
+                it "requires at least one group to be provided" do
+                    use_fixture '0105-usergroups-without-groups.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*usergroups.*required/)
+                end
+                it "correctly errors when only a , is given" do
+                    use_fixture '0106-usergroups-comma.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*usergroups.*invalid/)
+                end
+                # Runner.Validate.usergroups.Name.
+                it "fails with a username that wasn't given" do
+                    use_fixture '0107-usergroups-unknown-name.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*usergroups.*name/)
+                end
+                # Runner.Validate.usergroups.Count.
+                it "fails with more than 16 groups for a single name" do
+                    use_fixture '0108-jumbo-usergroups.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*usergroups.*16/)
+                end
+                # Runner.Validate.usergroups.Group.
+                it "fails with an unknown group name" do
+                    use_fixture '0109-usergroups-unknown.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*usergroups.*group/)
+                end
+                # Runner.Validate.usergroups.Unique.
+                it "fails with the same group specified twice" do
+                    use_fixture '0110-usergroups-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*usergroups.*duplicate/)
+                end
+            end
         end
         context "package specifications" do
             # no requirements for these, but I think obvious.

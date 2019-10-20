@@ -298,11 +298,46 @@ bool UserIcon::execute(ScriptOptions) const {
 
 Key *UserGroups::parseFromData(const std::string &data, int lineno,
                                int *errors, int *warnings) {
-    return nullptr;
+    /* REQ: Runner.Validate.usergroups.Validity */
+    const std::string::size_type sep = data.find_first_of(' ');
+    if(sep == std::string::npos || data.length() == sep + 1) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "usergroups: at least one group is required",
+                     "expected format is: usergroups [user] [group(,...)]");
+        return nullptr;
+    }
+
+    std::set<std::string> group_set;
+    char next_group[17];
+    std::istringstream stream(data.substr(sep + 1));
+    while(stream.getline(next_group, 17, ',')) {
+        std::string group(next_group);
+        /* REQ: Runner.Validate.usergroups.Group */
+        if(system_groups.find(group) == system_groups.end()) {
+            if(errors) *errors += 1;
+            output_error("installfile:" + std::to_string(lineno),
+                         "usergroups: group name '" + group + "' is invalid",
+                         "group is not a recognised system group");
+            return nullptr;
+        }
+        group_set.insert(group);
+    }
+    /* REQ: Runner.Validate.usergroups.Group */
+    if(stream.fail() && !stream.eof()) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "usergroups: group name exceeds maximum length",
+                     "groups may only be 16 characters or less");
+        return nullptr;
+    }
+
+    return new UserGroups(lineno, data.substr(0, sep), group_set);
 }
 
 bool UserGroups::validate(ScriptOptions) const {
-    return false;
+    /* All validation is done in parsing stage */
+    return true;
 }
 
 bool UserGroups::execute(ScriptOptions) const {

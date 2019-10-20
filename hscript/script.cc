@@ -597,9 +597,10 @@ bool Script::validate() const {
                     })
                 ) {
                     output_error("installfile:" + std::to_string(group->lineno()),
-                                 "usergroups: group specified twice");
+                                 "usergroups: duplicate group name specified");
                     failures++;
                 }
+                seen_groups.insert(these.begin(), these.end());
             }
 
             /* REQ: Runner.Validate.usergroups.Count */
