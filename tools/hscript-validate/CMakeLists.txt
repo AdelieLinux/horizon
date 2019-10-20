@@ -7,7 +7,7 @@ target_link_libraries(hscript-validate hscript)
 install(TARGETS hscript-validate DESTINATION bin)
 
 add_test(NAME "RSpecValidator"
-    COMMAND rspec spec/validator.rb
+    COMMAND rspec spec/validator_spec.rb
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)
 set_property(TEST "RSpecValidator"
     PROPERTY ENVIRONMENT "PATH=$PATH:${CMAKE_CURRENT_BINARY_DIR}/tools/hscript-validate")

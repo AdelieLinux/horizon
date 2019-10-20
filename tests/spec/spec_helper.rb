@@ -1,3 +1,5 @@
+require 'aruba/rspec'
+
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -49,4 +51,15 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
+end
+
+Aruba.configure do |config|
+    config.fixtures_directories = %w(fixtures)
+    config.remove_ansi_escape_sequences = false if respond_to? :remove_ansi_escape_sequences=
+end
+
+IFILE_PATH = 'installfile'
+
+def use_fixture(fixture)
+    copy '%/' + fixture, IFILE_PATH
 end

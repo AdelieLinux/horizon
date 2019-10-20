@@ -1,20 +1,5 @@
-require 'aruba/rspec'
-
-IFILE_PATH = 'installfile'
-
 def run_simulate(extra = '')
     run_command 'hscript-simulate ' + IFILE_PATH + extra
-end
-
-def use_fixture(fixture)
-    copy '%/' + fixture, IFILE_PATH
-end
-
-Aruba.configure do |config|
-    config.fixtures_directory = "fixtures" if respond_to? :fixtures_directory=
-    config.fixtures_directories = %w(fixtures) if respond_to? :fixtures_directories=
-    config.keep_ansi = true if respond_to? :keep_ansi=
-    config.remove_ansi_escape_sequences = false if respond_to? :remove_ansi_escape_sequences=
 end
 
 RSpec.describe 'HorizonScript Simulator', :type => :aruba do
