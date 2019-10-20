@@ -147,7 +147,7 @@ bool RootPassphrase::execute(ScriptOptions options) const {
         return true;
     }
 
-    /* LCOV_EXCL_START */
+#ifdef HAS_INSTALL_ENV
     /* This was tested on gwyn during development. */
     std::ifstream old_shadow("/target/etc/shadow");
     if(!old_shadow) {
@@ -179,7 +179,9 @@ bool RootPassphrase::execute(ScriptOptions options) const {
     }
     new_shadow << shadow_stream.str();
     return true;
-    /* LCOV_EXCL_STOP */
+#else
+    return false;
+#endif /* HAS_INSTALL_ENV */
 }
 
 

@@ -12,10 +12,12 @@
 
 #include <algorithm>
 #include <arpa/inet.h>          /* inet_pton */
-#include <linux/wireless.h>     /* struct iwreq */
-#include <string.h>             /* strerror */
-#include <sys/ioctl.h>          /* ioctl, ioctl numbers */
-#include <unistd.h>             /* close */
+#ifdef HAS_INSTALL_ENV
+#   include <linux/wireless.h>     /* struct iwreq */
+#   include <string.h>             /* strerror */
+#   include <sys/ioctl.h>          /* ioctl, ioctl numbers */
+#   include <unistd.h>             /* close */
+#endif
 #include "network.hh"
 #include "util/output.hh"
 
@@ -318,7 +320,7 @@ bool NetSSID::validate(ScriptOptions options) const {
         return true;
     }
 
-    /* LCOV_EXCL_START */
+#ifdef HAS_INSTALL_ENV
     struct iwreq request;
     int my_sock = ::socket(AF_INET, SOCK_STREAM, 0);
     if(my_sock == -1) {
@@ -349,7 +351,9 @@ bool NetSSID::validate(ScriptOptions options) const {
     }
     ::close(my_sock);
     return true;
-    /* LCOV_EXCL_STOP */
+#else
+    return false;
+#endif
 }
 
 bool NetSSID::execute(ScriptOptions) const {

@@ -11,14 +11,16 @@
  */
 
 #include <algorithm>
-#include <blkid/blkid.h>    /* blkid_get_tag_value */
 #include <cstring>          /* strerror */
 #include <fstream>
 #include <string>
-#include <sys/mount.h>      /* mount */
-#include <sys/stat.h>       /* mkdir, stat */
-#include <sys/types.h>      /* S_* */
-#include <unistd.h>         /* access */
+#ifdef HAS_INSTALL_ENV
+#   include <blkid/blkid.h>    /* blkid_get_tag_value */
+#   include <sys/mount.h>      /* mount */
+#   include <sys/stat.h>       /* mkdir, stat */
+#   include <sys/types.h>      /* S_* */
+#   include <unistd.h>         /* access */
+#endif /* HAS_INSTALL_ENV */
 #include "disk.hh"
 #include "util/output.hh"
 
@@ -117,11 +119,13 @@ bool Mount::validate(ScriptOptions options) const {
     /* We only validate if running in an Installation Environment. */
     if(!options.test(InstallEnvironment)) return true;
 
+#ifdef HAS_INSTALL_ENV
     /* XXX TODO: This will fail validation if the block device does not
      * already exist.  However, we must take in to account that block devices
      * may not yet exist during the script validation phase.  This check may
      * need to happen in Script::validate like the Uniqueness tests. */
     return(access(this->device().c_str(), F_OK) == 0);
+#endif /* HAS_INSTALL_ENV */
 }
 
 bool Mount::execute(ScriptOptions options) const {
@@ -131,7 +135,9 @@ bool Mount::execute(ScriptOptions options) const {
     /* We have to get the filesystem for the node. */
     if(options.test(Simulate)) {
         fstype = "auto";
-    } else { /* LCOV_EXCL_START */
+    }
+#ifdef HAS_INSTALL_ENV
+    else {
         fstype = blkid_get_tag_value(nullptr, "TYPE", this->device().c_str());
         if(fstype == nullptr) {
             output_error("installfile:" + std::to_string(this->lineno()),
@@ -139,7 +145,8 @@ bool Mount::execute(ScriptOptions options) const {
                          this->device());
             return false;
         }
-    } /* LCOV_EXCL_STOP */
+    }
+#endif /* HAS_INSTALL_ENV */
 
     output_info("installfile:" + std::to_string(this->lineno()),
                 "mount: mounting " + this->device() + " on " +
@@ -150,7 +157,9 @@ bool Mount::execute(ScriptOptions options) const {
             std::cout << "-o " << this->options() << " ";
         }
         std::cout << this->device() << " " << actual_mount << std::endl;
-    } else { /* LCOV_EXCL_START */
+    }
+#ifdef HAS_INSTALL_ENV
+    else {
         /* mount */
         if(mount(this->device().c_str(), actual_mount.c_str(), fstype, 0,
                  this->options().c_str()) != 0) {
@@ -165,7 +174,8 @@ bool Mount::execute(ScriptOptions options) const {
                 return false;
             }
         }
-    } /* LCOV_EXCL_STOP */
+    }
+#endif /* HAS_INSTALL_ENV */
 
     /* Handle fstab.  We're guaranteed to have a /target since mount has
      * already ran and /target is the first mount done.
@@ -183,7 +193,9 @@ bool Mount::execute(ScriptOptions options) const {
                   << "n' " << this->device() << " " << this->mountpoint()
                   << " " << fstype << " " << fstab_opts
                   << " >> /target/etc/fstab" << std::endl;
-    } else { /* LCOV_EXCL_START */
+    }
+#ifdef HAS_INSTALL_ENV
+    else {
         if(this->mountpoint() == "/") {
             /* failure of mkdir will be handled in the !fstab_f case */
             mkdir("/target/etc",
@@ -198,7 +210,8 @@ bool Mount::execute(ScriptOptions options) const {
         fstab_f << this->device() << "\t" << this->mountpoint() << "\t"
                 << fstype << "\t" << fstab_opts << "\t0\t" << pass
                 << std::endl;
-    } /* LCOV_EXCL_STOP */
+    }
+#endif /* HAS_INSTALL_ENV */
 
     return true;
 }

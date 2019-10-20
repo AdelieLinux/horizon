@@ -13,7 +13,9 @@
 #include <assert.h>
 #include <fstream>
 #include <regex>
-#include <unistd.h>
+#ifdef HAS_INSTALL_ENV
+#   include <unistd.h>
+#endif /* HAS_INSTALL_ENV */
 #include "meta.hh"
 #include "util/output.hh"
 
@@ -87,14 +89,17 @@ bool Hostname::execute(ScriptOptions opts) const {
                 "hostname: set hostname to '" + actual + "'");
     if(opts.test(Simulate)) {
         std::cout << "hostname " << actual << std::endl;
-    } else { /* LCOV_EXCL_START */
+    }
+#ifdef HAS_INSTALL_ENV
+    else {
         if(sethostname(actual.c_str(), actual.size()) == -1) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "hostname: failed to set host name",
                          std::string(strerror(errno)));
             return false;
         }
-    } /* LCOV_EXCL_STOP */
+    }
+#endif /* HAS_INSTALL_ENV */
 
     /* Runner.Execute.hostname.Write. */
     output_info("installfile:" + std::to_string(this->lineno()),
@@ -102,7 +107,9 @@ bool Hostname::execute(ScriptOptions opts) const {
     if(opts.test(Simulate)) {
         std::cout << "printf '%s' " << actual << " > /target/etc/hostname"
                   << std::endl;
-    } else { /* LCOV_EXCL_START */
+    }
+#ifdef HAS_INSTALL_ENV
+    else {
         std::ofstream hostname_f("/target/etc/hostname");
         if(!hostname_f) {
             output_error("installfile:" + std::to_string(this->lineno()),
@@ -110,7 +117,8 @@ bool Hostname::execute(ScriptOptions opts) const {
             return false;
         }
         hostname_f << actual;
-    } /* LCOV_EXCL_STOP */
+    }
+#endif /* HAS_INSTALL_ENV */
 
     /* The second condition ensures that it isn't a single dot that simply
      * terminates the nodename. */
@@ -121,7 +129,9 @@ bool Hostname::execute(ScriptOptions opts) const {
         if(opts.test(Simulate)) {
             std::cout << "printf 'dns_domain_lo=\"" << domain
                       << "\"\\" << "n' >> /target/etc/conf.d/net" << std::endl;
-        } else { /* LCOV_EXCL_START */
+        }
+#ifdef HAS_INSTALL_ENV
+        else {
             std::ofstream net_conf_f("/target/etc/conf.d/net");
             if(!net_conf_f) {
                 output_error("installfile:" + std::to_string(this->lineno()),
@@ -130,7 +140,8 @@ bool Hostname::execute(ScriptOptions opts) const {
                 return false;
             }
             net_conf_f << "dns_domain_lo\"" << domain << "\"" << std::endl;
-        } /* LCOV_EXCL_STOP */
+        }
+#endif /* HAS_INSTALL_ENV */
     }
 
     return true;
@@ -242,7 +253,7 @@ bool Repository::execute(ScriptOptions opts) const {
         return true;
     }
 
-    /* LCOV_EXCL_START */
+#ifdef HAS_INSTALL_ENV
     std::ofstream repo_f("/target/etc/apk/repositories",
                          std::ios_base::ate);
     if(!repo_f) {
@@ -255,5 +266,7 @@ bool Repository::execute(ScriptOptions opts) const {
     repo_f << this->value() << std::endl;
 
     return true;
-    /* LCOV_EXCL_STOP */
+#else
+    return false;
+#endif /* HAS_INSTALL_ENV */
 }
