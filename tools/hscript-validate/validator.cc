@@ -51,6 +51,10 @@ int main(int argc, char *argv[]) {
 
     bold_if_pretty(std::cout);
     std::cout << "HorizonScript Validation Utility version 0.1.0";
+#ifdef NON_LIBRE_FIRMWARE
+    colour_if_pretty(std::cout, "31");
+    std::cout << " (supports non-free firmware)";
+#endif
     reset_if_pretty(std::cout);
     std::cout << std::endl;
     std::cout << "Copyright (c) 2019 Adélie Linux and contributors.  AGPL-3.0 license." << std::endl;

@@ -11,6 +11,7 @@
  */
 
 #include <algorithm>
+#include <assert.h>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -103,6 +104,10 @@ struct Script::ScriptPrivate {
     /*! Disk identification keys */
     std::vector< std::unique_ptr<DiskId> > diskids;
 
+#ifdef NON_LIBRE_FIRMWARE
+    std::unique_ptr<Firmware> firmware;
+#endif
+
     /*! Store +key_obj+ representing the key +key_name+.
      * @param key_name      The name of the key that is being stored.
      * @param obj           The Key object associated with the key.
@@ -120,6 +125,8 @@ struct Script::ScriptPrivate {
             return store_pkginstall(obj, lineno, errors, warnings, opts);
         } else if(key_name == "rootpw") {
             return store_rootpw(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "firmware") {
+            return store_firmware(obj, lineno, errors, warnings, opts);
         } else if(key_name == "mount") {
             std::unique_ptr<Mount> mount(dynamic_cast<Mount *>(obj));
             this->mounts.push_back(std::move(mount));
@@ -215,6 +222,23 @@ struct Script::ScriptPrivate {
         std::unique_ptr<RootPassphrase> r(dynamic_cast<RootPassphrase *>(obj));
         this->rootpw = std::move(r);
         return true;
+    }
+
+    bool store_firmware(Keys::Key *obj, int lineno, int *errors, int *warnings,
+                        ScriptOptions opts) {
+        std::unique_ptr<Firmware> f(dynamic_cast<Firmware *>(obj));
+#ifdef NON_LIBRE_FIRMWARE
+        if(this->firmware) {
+            DUPLICATE_ERROR(this->firmware, std::string("firmware"),
+                            (this->firmware->test()) ? "true" : "false")
+            return false;
+        }
+        this->firmware = std::move(f);
+        return true;
+#else
+        assert(!f->test());
+        return true;
+#endif
     }
 
     bool store_username(Keys::Key *obj, int lineno, int *errors, int *warnings,
@@ -532,6 +556,25 @@ bool Script::validate() const {
         }
         std::unique_ptr<Keys::Repository> user_repo(user_key);
         this->internal->repos.push_back(std::move(user_repo));
+
+#ifdef NON_LIBRE_FIRMWARE
+        /* REQ: Runner.Execute.firmware.Repository */
+        if(this->internal->firmware && this->internal->firmware->test()) {
+            Keys::Repository *fw_key = dynamic_cast<Keys::Repository *>(
+                Horizon::Keys::Repository::parseFromData(
+                    "https://distfiles.apkfission.net/adelie-stable/nonfree",
+                    0, nullptr, nullptr
+                )
+            );
+            if(!fw_key) {
+                output_error("internal",
+                             "failed to create firmware repository");
+                return false;
+            }
+            std::unique_ptr<Keys::Repository> fw_repo(fw_key);
+            this->internal->repos.push_back(std::move(fw_repo));
+        }
+#endif
     }
 
     /* REQ: Runner.Validate.repository */
@@ -711,6 +754,13 @@ bool Script::execute() const {
             return false;
         }
     }
+
+#ifdef NON_LIBRE_FIRMWARE
+    /* REQ: Runner.Execute.firmware */
+    if(this->internal->firmware && this->internal->firmware->test()) {
+        this->internal->packages.insert("linux-firmware");
+    }
+#endif
     output_step_end("pre-metadata");
 
     /**************** NETWORK ****************/

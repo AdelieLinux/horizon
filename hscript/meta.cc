@@ -167,6 +167,40 @@ Key *PkgInstall::parseFromData(const std::string &data, int lineno, int *errors,
 }
 
 
+Key *Firmware::parseFromData(const std::string &data, int lineno, int *errors,
+                             int *warnings) {
+    bool value;
+    if(!BooleanKey::parse(data, "installfile:" + std::to_string(lineno),
+                          "firmware", &value)) {
+        if(errors) *errors += 1;
+        return nullptr;
+    }
+
+    if(value) {
+#ifdef NON_LIBRE_FIRMWARE
+        output_warning("installfile:" + std::to_string(lineno),
+                       "firmware: You have requested non-libre firmware.  "
+                       "This may cause security issues, system instability, "
+                       "and many other issues.  You should not enable this "
+                       "option unless your system absolutely requires it.");
+#else
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "firmware: You have requested non-libre firmware, "
+                     "but this version of Horizon does not support "
+                     "non-libre firmware.", "Installation cannot proceed.");
+        return nullptr;
+#endif
+    }
+    return new Firmware(lineno, value);
+}
+
+bool Firmware::execute(ScriptOptions) const {
+    /* By itself, this does nothing. */
+    return true;
+}
+
+
 /* LCOV_EXCL_START */
 bool PkgInstall::validate(ScriptOptions) const {
     /* Any validation errors would have occurred above. */

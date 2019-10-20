@@ -51,6 +51,11 @@ class Keymap : public StringKey {
 };
 
 class Firmware : public BooleanKey {
+private:
+    Firmware(int _line, bool _value) : BooleanKey(_line, _value) {}
+public:
+    static Key *parseFromData(const std::string &, int, int*, int*);
+    bool execute(ScriptOptions) const override;
 };
 
 class Timezone : public StringKey {
