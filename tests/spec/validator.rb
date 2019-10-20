@@ -10,6 +10,10 @@ def use_fixture(fixture)
     copy '%/' + fixture, IFILE_PATH
 end
 
+Aruba.configure do |config|
+    config.fixtures_directories = %w(fixtures)
+end
+
 PARSER_SUCCESS = /parser: 0 error\(s\), 0 warning\(s\)/
 VALIDATOR_SUCCESS = /validator: 0 failure\(s\)/
 

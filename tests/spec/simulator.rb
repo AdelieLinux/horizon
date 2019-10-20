@@ -10,6 +10,10 @@ def use_fixture(fixture)
     copy '%/' + fixture, IFILE_PATH
 end
 
+Aruba.configure do |config|
+    config.fixtures_directories = %w(fixtures)
+end
+
 RSpec.describe 'HorizonScript Simulator', :type => :aruba do
     context "argument passing" do
         it "requires an installfile to be specified" do
