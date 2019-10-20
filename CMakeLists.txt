@@ -73,6 +73,6 @@ IF(COVERAGE)
         add_custom_target(lcov_report DEPENDS horizon.coverage)
         add_custom_command(OUTPUT cov_html
             COMMAND genhtml ARGS horizon.coverage --output-directory cov_html)
-        add_custom_target(lcov_html DEPEND cov_html)
+        add_custom_target(lcov_html DEPENDS cov_html)
     ENDIF(LCOV_EXECUTABLE)
 ENDIF(COVERAGE)
