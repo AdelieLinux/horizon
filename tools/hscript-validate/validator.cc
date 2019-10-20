@@ -51,6 +51,9 @@ int main(int argc, char *argv[]) {
 
     bold_if_pretty(std::cout);
     std::cout << "HorizonScript Validation Utility version 0.1.0";
+#ifndef HAS_INSTALL_ENV
+    std::cout << " (runtime environment only)";
+#endif
 #ifdef NON_LIBRE_FIRMWARE
     colour_if_pretty(std::cout, "31");
     std::cout << " (supports non-free firmware)";

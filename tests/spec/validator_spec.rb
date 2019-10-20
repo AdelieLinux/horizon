@@ -486,17 +486,20 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                 it "succeeds with present disk" do
                     use_fixture '0078-diskid-diskid-loop0.installfile'
                     run_validate ' -i'
+                    skip "This build does not support this test" if last_command_started.stdout =~ /runtime environment only/
                     expect(last_command_started).to have_output(PARSER_SUCCESS)
                     expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
                 end
                 it "fails with non-present disk" do
                     use_fixture '0079-diskid-enoent.installfile'
                     run_validate ' -i'
+                    skip "This build does not support this test" if last_command_started.stdout =~ /runtime environment only/
                     expect(last_command_started).to have_output(/No such file or directory/)
                 end
                 it "fails with non-disk file" do
                     use_fixture '0080-diskid-tmp.installfile'
                     run_validate ' -i'
+                    skip "This build does not support this test" if last_command_started.stdout =~ /runtime environment only/
                     expect(last_command_started).to have_output(/error: .*diskid.*block/)
                 end
                 it "fails with a duplicate identification device" do
