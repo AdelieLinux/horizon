@@ -76,6 +76,8 @@ bool DiskId::execute(ScriptOptions options) const {
     struct udev *udev;
     struct udev_device *device;
     const char *serial;
+    /* XXX this is *horrible* */
+    const char *syspath = ("/sys/block/" + _block.substr(5)).c_str();
 
     udev = udev_new();
     if(!udev) {
@@ -84,11 +86,11 @@ bool DiskId::execute(ScriptOptions options) const {
                      "cannot read disk information");
         return false;
     }
-    device = udev_device_new_from_syspath(udev, _block.c_str());
+    device = udev_device_new_from_syspath(udev, syspath);
     if(!device) {
         udev_unref(udev);
         output_error("installfile:" + std::to_string(line),
-                     "diskid: failed to communicate with udevd",
+                     "diskid: failed to retrieve disk from udevd",
                      "cannot read disk information");
         return false;
     }
