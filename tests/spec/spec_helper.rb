@@ -52,9 +52,9 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 
-  Aruba.configure do |config|
-    config.fixtures_directories = %w(fixtures)
-    config.remove_ansi_escape_sequences = false if respond_to? :remove_ansi_escape_sequences=
+  Aruba.configure do |a_config|
+    a_config.fixtures_directories = %w(fixtures)
+    a_config.remove_ansi_escape_sequences = false if respond_to? :remove_ansi_escape_sequences=
   end
 end
 
