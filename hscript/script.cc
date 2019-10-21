@@ -116,7 +116,7 @@ struct Script::ScriptPrivate {
      * @param opts          Script parsing options.
      */
     bool store_key(const std::string &key_name, Keys::Key *obj, int lineno,
-                   int *errors, int *warnings, ScriptOptions opts) {
+                   int *errors, int *warnings, const ScriptOptions &opts) {
         if(key_name == "network") {
             return store_network(obj, lineno, errors, warnings, opts);
         } else if(key_name == "hostname") {
@@ -334,7 +334,8 @@ Script::~Script() {
     delete internal;
 }
 
-const Script *Script::load(const std::string path, const ScriptOptions opts) {
+const Script *Script::load(const std::string &path,
+                           const ScriptOptions &opts) {
     std::ifstream file(path);
     if(!file) {
         output_error(path, "Cannot open installfile", "");
@@ -345,7 +346,8 @@ const Script *Script::load(const std::string path, const ScriptOptions opts) {
 }
 
 
-const Script *Script::load(std::istream &sstream, const ScriptOptions opts) {
+const Script *Script::load(std::istream &sstream,
+                           const ScriptOptions &opts) {
 #define PARSER_ERROR(err_str) \
     errors++;\
     output_error("installfile:" + std::to_string(lineno),\
