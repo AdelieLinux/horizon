@@ -37,6 +37,31 @@ public:
 };
 
 class DiskLabel : public Key {
+public:
+    /*! The type of disklabel. */
+    enum LabelType {
+        /*! Apple Partition Map (APM) */
+        APM,
+        /*! Master Boot Record (MBR) */
+        MBR,
+        /*! GUID Partition Table (GPT) */
+        GPT
+    };
+private:
+    const std::string _block;
+    const LabelType _type;
+
+    DiskLabel(int _line, const std::string &_b, const LabelType &_t) :
+        Key(_line), _block(_b), _type(_t) {}
+public:
+    /*! Retrieve the block device that this key identifies. */
+    const std::string device() const { return this->_block; }
+    /*! Retrieve the type of disklabel for the block device. */
+    const LabelType type() const { return this->_type; }
+
+    static Key *parseFromData(const std::string &, int, int*, int*);
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 class Partition : public Key {

@@ -548,6 +548,54 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*diskid.*already/)
                 end
             end
+            context "for 'disklabel' key" do
+                it "requires a label type" do
+                    use_fixture '0129-disklabel-without-label.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*disklabel.*expected/)
+                end
+                it "succeeds with a APM disk label" do
+                    use_fixture '0122-disklabel-apm.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with a MBR disk label" do
+                    use_fixture '0123-disklabel-mbr.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with a GPT disk label" do
+                    use_fixture '0124-disklabel-gpt.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with a duplicate disk" do
+                    use_fixture '0125-disklabel-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*disklabel.*already/)
+                end
+                it "succeeds with present disk" do
+                    use_fixture '0126-disklabel-loop0.installfile'
+                    run_validate ' -i'
+                    skip "This build does not support this test" if last_command_started.stdout =~ /runtime environment only/
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with non-present disk" do
+                    use_fixture '0127-disklabel-enoent.installfile'
+                    run_validate ' -i'
+                    skip "This build does not support this test" if last_command_started.stdout =~ /runtime environment only/
+                    expect(last_command_started).to have_output(/error: .*disklabel.*block/)
+                end
+                it "requires a valid label type" do
+                    use_fixture '0128-disklabel-invalid-type.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*disklabel.*type/)
+                end
+            end
         end
         context "unique keys" do
             # Runner.Validate.network.

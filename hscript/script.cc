@@ -103,6 +103,8 @@ struct Script::ScriptPrivate {
 
     /*! Disk identification keys */
     std::vector< std::unique_ptr<DiskId> > diskids;
+    /*! Disklabel configuration keys */
+    std::vector< std::unique_ptr<DiskLabel> > disklabels;
     /*! Target system's mountpoints. */
     std::vector< std::unique_ptr<Mount> > mounts;
 
@@ -156,6 +158,10 @@ struct Script::ScriptPrivate {
         } else if(key_name == "diskid") {
             std::unique_ptr<DiskId> diskid(dynamic_cast<DiskId *>(obj));
             this->diskids.push_back(std::move(diskid));
+            return true;
+        } else if(key_name == "disklabel") {
+            std::unique_ptr<DiskLabel> l(dynamic_cast<DiskLabel *>(obj));
+            this->disklabels.push_back(std::move(l));
             return true;
         } else if(key_name == "mount") {
             std::unique_ptr<Mount> mount(dynamic_cast<Mount *>(obj));
@@ -496,7 +502,7 @@ const Script *Script::load(std::istream &sstream,
 
 bool Script::validate() const {
     int failures = 0;
-    std::set<std::string> seen_diskids, seen_mounts;
+    std::set<std::string> seen_diskids, seen_labels, seen_mounts;
     std::map<const std::string, int> seen_iface;
 
     /* REQ: Runner.Validate.network */
@@ -696,6 +702,23 @@ bool Script::validate() const {
                          " has already been identified");
         }
         seen_diskids.insert(diskid->device());
+    }
+
+    /* REQ: Runner.Validate.disklabel */
+    for(auto &label : this->internal->disklabels) {
+        if(!label->validate(this->opts)) {
+            failures++;
+            continue;
+        }
+
+        /* REQ: Runner.Validate.disklabel.Unique */
+        if(seen_labels.find(label->device()) != seen_labels.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(label->lineno()),
+                         "disklabel: device " + label->device() +
+                         " already has a label queued");
+        }
+        seen_labels.insert(label->device());
     }
 
     /* REQ: Runner.Validate.mount */

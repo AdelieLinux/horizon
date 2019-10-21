@@ -28,6 +28,34 @@
 
 using namespace Horizon::Keys;
 
+
+#ifdef HAS_INSTALL_ENV
+/*! Determine if _block is a valid block device.
+ * @param key       The key associated with this test.
+ * @param line      The line number where the key exists.
+ * @param _block    The path to test.
+ * @returns true if _block is valid, false otherwise.
+ * @note Will output_error if an error occurs.
+ */
+bool is_block_device(const std::string &key, int line, const std::string &_block) {
+    struct stat blk_stat;
+    const char *block_c = _block.c_str();
+    if(access(block_c, F_OK) != 0 || stat(block_c, &blk_stat) != 0) {
+        output_error("installfile:" + std::to_string(line),
+                     key + ": error opening device " + _block,
+                     strerror(errno));
+        return false;
+    }
+    if(!S_ISBLK(blk_stat.st_mode)) {
+        output_error("installfile:" + std::to_string(line),
+                     key + ": " + _block + " is not a valid block device");
+        return false;
+    }
+    return true;
+}
+#endif /* HAS_INSTALL_ENV */
+
+
 Key *DiskId::parseFromData(const std::string &data, int lineno, int *errors,
                            int *warnings) {
     std::string block, ident;
@@ -46,26 +74,15 @@ Key *DiskId::parseFromData(const std::string &data, int lineno, int *errors,
 }
 
 bool DiskId::validate(ScriptOptions options) const {
-    /* We only validate if running in an Installation Environment. */
-    if(!options.test(InstallEnvironment)) return true;
-
 #ifdef HAS_INSTALL_ENV
-    /* Unlike 'mount', 'diskid' *does* require that the block device exist
-     * before installation begins.  This test is always valid. */
-    struct stat blk_stat;
-    const char *block_c = _block.c_str();
-    if(access(block_c, F_OK) != 0 || stat(block_c, &blk_stat) != 0) {
-        output_error("installfile:" + std::to_string(line),
-                     "diskid: error opening device " + _block,
-                     strerror(errno));
-        return false;
-    }
-    if(!S_ISBLK(blk_stat.st_mode)) {
-        output_error("installfile:" + std::to_string(line),
-                     "diskid: " + _block + " is not a valid block device");
-        return false;
+    /* We only validate if running in an Installation Environment. */
+    if(options.test(InstallEnvironment)) {
+        /* Unlike 'mount', 'diskid' *does* require that the block device exist
+         * before installation begins.  This test is always valid. */
+        return is_block_device("diskid", this->lineno(), _block);
     }
 #endif /* HAS_INSTALL_ENV */
+
     return true;
 }
 
@@ -116,6 +133,61 @@ bool DiskId::execute(ScriptOptions options) const {
 
     return match;
 }
+
+
+Key *DiskLabel::parseFromData(const std::string &data, int lineno, int *errors,
+                              int *warnings) {
+    std::string block, label;
+    std::string::size_type sep = data.find_first_of(' ');
+    LabelType type;
+
+    /* REQ: Runner.Validate.disklabel.Validity */
+    if(sep == std::string::npos || data.length() == sep + 1) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "disklabel: expected a label type",
+                     "valid format for disklabel is: [disk] [type]");
+        return nullptr;
+    }
+
+    block = data.substr(0, sep);
+    label = data.substr(sep + 1);
+    std::transform(label.begin(), label.end(), label.begin(), ::tolower);
+    /* REQ: Runner.Validate.disklabel.LabelType */
+    if(label == "apm") {
+        type = APM;
+    } else if(label == "mbr") {
+        type = MBR;
+    } else if(label == "gpt") {
+        type = GPT;
+    } else {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "disklabel: '" + label + "' is not a valid label type",
+                     "valid label types are: apm, mbr, gpt");
+        return nullptr;
+    }
+
+    return new DiskLabel(lineno, block, type);
+}
+
+bool DiskLabel::validate(ScriptOptions options) const {
+#ifdef HAS_INSTALL_ENV
+    /* REQ: Runner.Validate.disklabel.Block */
+    if(options.test(InstallEnvironment)) {
+        /* disklabels are created before any others, so we can check now */
+        return is_block_device("disklabel", this->lineno(), _block);
+    }
+#endif /* HAS_INSTALL_ENV */
+
+    return true;
+}
+
+bool DiskLabel::execute(ScriptOptions) const {
+    /* TODO XXX NOTIMPLEMENTED */
+    return false;
+}
+
 
 Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
                           int *warnings) {
