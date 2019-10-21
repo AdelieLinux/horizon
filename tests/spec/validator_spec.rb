@@ -186,6 +186,44 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*firmware.*value/)
                 end
             end
+            context "for 'language' key" do
+                # Runner.Validate.language
+                # Runner.Validate.language.Format
+                it "supports a simple language" do
+                    use_fixture '0115-language-simple.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "supports a language_territory value" do
+                    use_fixture '0116-language-country.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "supports the UTF-8 codeset" do
+                    use_fixture '0117-language-codeset.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "supports the special case C.UTF-8" do
+                    use_fixture '0118-language-c-exception.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "requires a valid language" do
+                    use_fixture '0119-language-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*language.*invalid/)
+                end
+                it "requires the UTF-8 codeset" do
+                    use_fixture '0120-language-iso.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*language.*codeset/)
+                end
+            end
             context "for 'mount' key" do
                 # Runner.Validate.mount.
                 it "fails with an invalid value" do
@@ -536,6 +574,11 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                 run_validate
                 skip "This build does not support firmware" if last_command_started.stdout !~ /supports non-free/
                 expect(last_command_started).to have_output(/error: .*duplicate.*firmware/)
+            end
+            it "fails with a duplicate 'language' key" do
+                use_fixture '0121-language-duplicate.installfile'
+                run_validate
+                expect(last_command_started).to have_output(/error: .*duplicate.*language/)
             end
         end
         context "user account keys:" do

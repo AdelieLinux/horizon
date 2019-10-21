@@ -45,6 +45,13 @@ public:
 };
 
 class Language : public StringKey {
+private:
+    Language(int _line, const std::string &my_lang) :
+        StringKey(_line, my_lang) {}
+public:
+    static Key *parseFromData(const std::string &data, int lineno, int *errors,
+                              int *warnings);
+    bool execute(ScriptOptions) const override;
 };
 
 class Keymap : public StringKey {
@@ -63,7 +70,7 @@ class Timezone : public StringKey {
 
 class Repository : public StringKey {
 private:
-    Repository(int _line, const std::string my_url) :
+    Repository(int _line, const std::string &my_url) :
         StringKey(_line, my_url) {}
 public:
     static Key *parseFromData(const std::string &data, int lineno, int *errors,

@@ -88,8 +88,8 @@ struct Script::ScriptPrivate {
     std::set<std::string> packages;
     /*! The root shadow line. */
     std::unique_ptr<RootPassphrase> rootpw;
-    /*! Target system's mountpoints. */
-    std::vector< std::unique_ptr<Mount> > mounts;
+    /*! The system language. */
+    std::unique_ptr<Language> lang;
 
     /*! Network addressing configuration */
     std::vector< std::unique_ptr<NetAddress> > addresses;
@@ -103,6 +103,8 @@ struct Script::ScriptPrivate {
 
     /*! Disk identification keys */
     std::vector< std::unique_ptr<DiskId> > diskids;
+    /*! Target system's mountpoints. */
+    std::vector< std::unique_ptr<Mount> > mounts;
 
 #ifdef NON_LIBRE_FIRMWARE
     std::unique_ptr<Firmware> firmware;
@@ -119,18 +121,6 @@ struct Script::ScriptPrivate {
                    int *errors, int *warnings, const ScriptOptions &opts) {
         if(key_name == "network") {
             return store_network(obj, lineno, errors, warnings, opts);
-        } else if(key_name == "hostname") {
-            return store_hostname(obj, lineno, errors, warnings, opts);
-        } else if(key_name == "pkginstall") {
-            return store_pkginstall(obj, lineno, errors, warnings, opts);
-        } else if(key_name == "rootpw") {
-            return store_rootpw(obj, lineno, errors, warnings, opts);
-        } else if(key_name == "firmware") {
-            return store_firmware(obj, lineno, errors, warnings, opts);
-        } else if(key_name == "mount") {
-            std::unique_ptr<Mount> mount(dynamic_cast<Mount *>(obj));
-            this->mounts.push_back(std::move(mount));
-            return true;
         } else if(key_name == "netaddress") {
             std::unique_ptr<NetAddress> addr(dynamic_cast<NetAddress *>(obj));
             this->addresses.push_back(std::move(addr));
@@ -139,13 +129,19 @@ struct Script::ScriptPrivate {
             std::unique_ptr<NetSSID> ssid(dynamic_cast<NetSSID *>(obj));
             this->ssids.push_back(std::move(ssid));
             return true;
+        } else if(key_name == "hostname") {
+            return store_hostname(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "pkginstall") {
+            return store_pkginstall(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "rootpw") {
+            return store_rootpw(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "language") {
+            return store_lang(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "firmware") {
+            return store_firmware(obj, lineno, errors, warnings, opts);
         } else if(key_name == "repository") {
             std::unique_ptr<Repository> repo(dynamic_cast<Repository *>(obj));
             this->repos.push_back(std::move(repo));
-            return true;
-        } else if(key_name == "diskid") {
-            std::unique_ptr<DiskId> diskid(dynamic_cast<DiskId *>(obj));
-            this->diskids.push_back(std::move(diskid));
             return true;
         } else if(key_name == "username") {
             return store_username(obj, lineno, errors, warnings, opts);
@@ -157,6 +153,14 @@ struct Script::ScriptPrivate {
             return store_usericon(obj, lineno, errors, warnings, opts);
         } else if(key_name == "usergroups") {
             return store_usergroups(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "diskid") {
+            std::unique_ptr<DiskId> diskid(dynamic_cast<DiskId *>(obj));
+            this->diskids.push_back(std::move(diskid));
+            return true;
+        } else if(key_name == "mount") {
+            std::unique_ptr<Mount> mount(dynamic_cast<Mount *>(obj));
+            this->mounts.push_back(std::move(mount));
+            return true;
         } else {
             return false;
         }
@@ -239,6 +243,18 @@ struct Script::ScriptPrivate {
         assert(!f->test());
         return true;
 #endif
+    }
+
+    bool store_lang(Keys::Key *obj, int lineno, int *errors, int *,
+                    ScriptOptions) {
+        if(this->lang) {
+            DUPLICATE_ERROR(this->lang, std::string("language"),
+                            this->lang->value())
+            return false;
+        }
+        std::unique_ptr<Language> l(dynamic_cast<Language *>(obj));
+        this->lang = std::move(l);
+        return true;
     }
 
     bool store_username(Keys::Key *obj, int lineno, int *errors, int *,
@@ -527,9 +543,16 @@ bool Script::validate() const {
     /* REQ: Runner.Validate.rootpw */
     if(!this->internal->rootpw->validate(this->opts)) failures++;
 
-    /* language */
+    /* REQ: Runner.Validate.language */
+    if(internal->lang && !internal->lang->validate(this->opts)) failures++;
+
     /* keymap */
-    /* firmware */
+
+#ifdef NON_LIBRE_FIRMWARE
+    /* REQ: Runner.Validate.firmware */
+    if(!this->internal->firmware->validate(this->opts)) failures++;
+#endif
+
     /* timezone */
 
     /* REQ: Script.repository */

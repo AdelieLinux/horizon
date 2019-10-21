@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <fstream>
 #include <regex>
+#include <set>
 #include <sstream>
 #ifdef HAS_INSTALL_ENV
 #   include <unistd.h>
@@ -176,6 +177,77 @@ Key *PkgInstall::parseFromData(const std::string &data, int lineno, int *errors,
         all_pkgs.insert(next_pkg);
     }
     return new PkgInstall(lineno, all_pkgs);
+}
+
+
+/* All ISO 639-1 language codes.
+ * Source: https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt
+ * Python to construct table:
+ * >>> f = open('ISO-639-2_utf-8.txt')
+ * >>> x = csv.reader(f, delimiter='|')
+ * >>> langs = [lang[2] for lang in iter(x) if lang != '']
+ * >>> print('"' + '", "'.join(langs) + '", "C."')
+ */
+const std::set<std::string> valid_langs = {
+    "aa", "ab", "af", "ak", "sq", "am", "ar", "an", "hy", "as", "av", "ae",
+    "ay", "az", "ba", "bm", "eu", "be", "bn", "bh", "bi", "bs", "br", "bg",
+    "my", "ca", "ch", "ce", "zh", "cu", "cv", "kw", "co", "cr", "cs", "da",
+    "dv", "nl", "dz", "en", "eo", "et", "ee", "fo", "fj", "fi", "fr", "fy",
+    "ff", "ka", "de", "gd", "ga", "gl", "gv", "el", "gn", "gu", "ht", "ha",
+    "he", "hz", "hi", "ho", "hr", "hu", "ig", "is", "io", "ii", "iu", "ie",
+    "ia", "id", "ik", "it", "jv", "ja", "kl", "kn", "ks", "kr", "kk", "km",
+    "ki", "rw", "ky", "kv", "kg", "ko", "kj", "ku", "lo", "la", "lv", "li",
+    "ln", "lt", "lb", "lu", "lg", "mk", "mh", "ml", "mi", "mr", "ms", "mg",
+    "mt", "mn", "na", "nv", "nr", "nd", "ng", "ne", "nn", "nb", "no", "ny",
+    "oc", "oj", "or", "om", "os", "pa", "fa", "pi", "pl", "pt", "ps", "qu",
+    "rm", "ro", "rn", "ru", "sg", "sa", "si", "sk", "sl", "se", "sm", "sn",
+    "sd", "so", "st", "es", "sc", "sr", "ss", "su", "sw", "sv", "ty", "ta",
+    "tt", "te", "tg", "tl", "th", "bo", "ti", "to", "tn", "ts", "tk", "tr",
+    "tw", "ug", "uk", "ur", "uz", "ve", "vi", "vo", "cy", "wa", "wo", "xh",
+    "yi", "yo", "za", "zu", "C."
+};
+
+
+Key *Language::parseFromData(const std::string &data, int lineno, int *errors,
+                             int *warnings) {
+    if(data.length() < 2 ||
+       valid_langs.find(data.substr(0, 2)) == valid_langs.end()) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "language: invalid language specified",
+                     "language must be a valid ISO 639-1 language code");
+        return nullptr;
+    }
+
+    /* We know a valid language appears, but is it real? */
+    if(data.length() > 2) {
+        /* data[1] is . if language is C.UTF-8 */
+        if(data[2] != '_' && data[1] != '.') {
+            if(errors) *errors += 1;
+            output_error("installfile:" + std::to_string(lineno),
+                         "language: invalid language specified",
+                         "language must be a valid ISO 639-1 language code, "
+                         "optionally followed by '_' and a country code");
+            return nullptr;
+        }
+        /* we don't really care about the country code, but we do care about
+         * codeset - we (via musl) *only* support UTF-8. */
+        std::string::size_type dot = data.find_first_of('.');
+        if(dot != std::string::npos && data.substr(dot+1, 5) != "UTF-8") {
+            if(errors) *errors += 1;
+            output_error("installfile:" + std::to_string(lineno),
+                         "language: invalid language specified",
+                         "you cannot specify a non-UTF-8 codeset");
+            return nullptr;
+        }
+    }
+
+    return new Language(lineno, data);
+}
+
+
+bool Language::execute(ScriptOptions) const {
+    return false;
 }
 
 
