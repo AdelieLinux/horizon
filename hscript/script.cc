@@ -865,10 +865,17 @@ bool Script::execute() const {
 
     /**************** POST PACKAGE METADATA ****************/
     output_step_start("post-metadata");
+
     if(!this->internal->rootpw->execute(opts)) {
         EXECUTE_FAILURE("post-metadata");
         return false;
     }
+
+    if(this->internal->lang && !this->internal->lang->execute(opts)) {
+        EXECUTE_FAILURE("post-metadata");
+        return false;
+    }
+
     output_step_end("post-metadata");
     return true;
 }

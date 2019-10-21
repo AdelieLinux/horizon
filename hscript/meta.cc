@@ -16,6 +16,9 @@
 #include <set>
 #include <sstream>
 #ifdef HAS_INSTALL_ENV
+#   include <cstring>       /* strerror */
+#   include <errno.h>       /* errno */
+#   include <sys/stat.h>    /* chmod */
 #   include <unistd.h>
 #endif /* HAS_INSTALL_ENV */
 #include "meta.hh"
@@ -246,8 +249,38 @@ Key *Language::parseFromData(const std::string &data, int lineno, int *errors,
 }
 
 
-bool Language::execute(ScriptOptions) const {
-    return false;
+bool Language::execute(ScriptOptions opts) const {
+    if(opts.test(Simulate)) {
+        std::cout << "printf '#!/bin/sh\\" << "nexport LANG=\"%s\"\\" << "n'"
+                  << this->value() << " > /target/etc/profile.d/language.sh"
+                  << std::endl
+                  << "chmod a+x /target/etc/profile.d/language.sh"
+                  << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    const char *lang_path = "/target/etc/profile.d/language.sh";
+    std::ofstream lang_f(lang_path);
+    if(!lang_f) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "language: could not open /etc/profile.d/language.sh "
+                     "for writing");
+        return false;
+    }
+    lang_f << "#!/bin/sh" << std::endl << "export LANG=\""
+           << this->value() << "\"" << std::endl;
+    lang_f.close();
+
+    if(chmod(lang_path,
+             S_IRUSR | S_IWUSR | S_IXUSR | S_IXGRP | S_IXOTH) != 0) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "language: could not set /etc/profile.d/language.sh "
+                     "as executable", strerror(errno));
+        return false;
+    }
+#endif /* HAS_INSTALL_ENV */
+    return true;
 }
 
 
