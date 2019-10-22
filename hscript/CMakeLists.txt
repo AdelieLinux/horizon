@@ -8,17 +8,10 @@ set(HSCRIPT_SOURCE
 )
 
 set(HSCRIPT_INCLUDE
-	script.hh
-	key.hh
+        script.hh
 )
 
-IF(INSTALL)
-set(HSCRIPT_LIBRARY_TYPE SHARED)
-ELSE(INSTALL)
-set(HSCRIPT_LIBRARY_TYPE STATIC)
-ENDIF(INSTALL)
-
-add_library(hscript ${HSCRIPT_LIBRARY_TYPE} ${HSCRIPT_SOURCE})
+add_library(hscript ${HSCRIPT_SOURCE})
 target_compile_features(hscript PRIVATE cxx_nullptr)
 target_compile_features(hscript PUBLIC cxx_unicode_literals)
 target_link_libraries(hscript ${BLKID_LIBRARIES} ${LIBUDEV_LIBRARIES})
