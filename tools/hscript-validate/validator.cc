@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
     }
 
     bold_if_pretty(std::cout);
-    std::cout << "HorizonScript Validation Utility version 0.1.0";
+    std::cout << "HorizonScript Validation Utility version " << VERSTR;
 #ifndef HAS_INSTALL_ENV
     std::cout << " (runtime environment only)";
 #endif

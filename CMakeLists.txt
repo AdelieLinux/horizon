@@ -4,8 +4,12 @@ include(FindPkgConfig)
 include(CheckIncludeFiles)
 
 project(Horizon
-	LANGUAGES CXX
+        LANGUAGES C CXX
 	VERSION 0.1.0)
+
+
+add_definitions(-DVERSTR="${PROJECT_VERSION}")
+
 
 option(BUILD_TOOLS "Enable building of tools (Validator, Simulator, etc)" ON)
 
