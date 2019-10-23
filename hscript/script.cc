@@ -26,7 +26,7 @@
 
 #include "util/output.hh"
 
-#define LINE_MAX 512
+#define SCRIPT_LINE_MAX 512
 
 
 typedef Horizon::Keys::Key *(*key_parse_fn)(const std::string &, int, int*, int*);
@@ -388,7 +388,7 @@ const Script *Script::load(std::istream &sstream,
     Script *the_script = new Script;
 
     int lineno = 0;
-    char nextline[LINE_MAX];
+    char nextline[SCRIPT_LINE_MAX];
     const std::string delim(" \t");
     int errors = 0, warnings = 0;
 
@@ -447,7 +447,8 @@ const Script *Script::load(std::istream &sstream,
     if(sstream.fail() && !sstream.eof()) {
         output_error("installfile:" + std::to_string(lineno + 1),
                      "line exceeds maximum length",
-                     "Maximum line length is " + std::to_string(LINE_MAX));
+                     "Maximum line length is " +
+                     std::to_string(SCRIPT_LINE_MAX));
         errors++;
     }
 
