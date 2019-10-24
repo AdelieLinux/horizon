@@ -62,6 +62,13 @@ Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
 
     type_pos = data.find_first_of(' ');
     iface = data.substr(0, type_pos);
+    if(iface.length() > IFNAMSIZ) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "netaddress: interface name '" + iface + "' is invalid",
+                     "interface names must be 16 characters or less");
+        return nullptr;
+    }
     /* theory: addr_pos could be npos, but that means 'read to end' anyway */
     addr_pos = data.find_first_of(' ', type_pos + 1);
     if(addr_pos == std::string::npos) next_end = std::string::npos;

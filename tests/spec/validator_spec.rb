@@ -293,6 +293,11 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*netaddress.*require/)
                 end
+                it "fails with invalid interface name" do
+                    use_fixture '0130-netaddress-invalid-iface.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netaddress.*interface/)
+                end
                 # Runner.Validate.netaddress.Validity.Type.
                 it "fails on invalid address type" do
                     use_fixture '0037-netaddress-invalid-type.installfile'
