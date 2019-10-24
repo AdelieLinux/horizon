@@ -19,8 +19,8 @@
 #   include <cstring>       /* strerror */
 #   include <errno.h>       /* errno */
 #   include <sys/stat.h>    /* chmod */
-#   include <unistd.h>
 #endif /* HAS_INSTALL_ENV */
+#include <unistd.h>         /* access - used by tz code even in RT env */
 #include "meta.hh"
 #include "util/output.hh"
 
@@ -183,6 +183,20 @@ Key *PkgInstall::parseFromData(const std::string &data, int lineno, int *errors,
 }
 
 
+/* LCOV_EXCL_START */
+bool PkgInstall::validate(ScriptOptions) const {
+    /* Any validation errors would have occurred above. */
+    return true;
+}
+
+
+bool PkgInstall::execute(ScriptOptions) const {
+    /* Package installation is handled in Script::execute. */
+    return true;
+}
+/* LCOV_EXCL_STOP */
+
+
 /* All ISO 639-1 language codes.
  * Source: https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt
  * Python to construct table:
@@ -318,18 +332,78 @@ bool Firmware::execute(ScriptOptions) const {
 }
 
 
-/* LCOV_EXCL_START */
-bool PkgInstall::validate(ScriptOptions) const {
-    /* Any validation errors would have occurred above. */
-    return true;
+Key *Timezone::parseFromData(const std::string &data, int lineno, int *errors,
+                             int *warnings) {
+    if(data.find_first_of(" .\\") != std::string::npos || data[0] == '/') {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "timezone: invalid timezone name");
+        return nullptr;
+    }
+
+    if(access("/usr/share/zoneinfo", X_OK) != 0) {
+        if(warnings) *warnings += 1;
+        output_warning("installfile:" + std::to_string(lineno),
+                       "timezone: can't determine validity of timezone",
+                       "zoneinfo data is missing or inaccessible");
+    } else {
+        std::string zi_path = "/usr/share/zoneinfo/" + data;
+        if(access(zi_path.c_str(), F_OK) != 0) {
+            if(errors) *errors += 1;
+            output_error("installfile:" + std::to_string(lineno),
+                         "timezone: unknown timezone '" + data + "'");
+            return nullptr;
+        }
+    }
+
+    return new Timezone(lineno, data);
 }
 
+bool Timezone::execute(ScriptOptions opts) const {
+    if(opts.test(Simulate)) {
+        /* If the target doesn't have tzdata installed, copy the zoneinfo from
+         * the Horizon environment. */
+        std::cout << "([ -f /target/usr/share/zoneinfo/" << this->value()
+                  << " ] && ln -s /usr/share/zoneinfo/" << this->value()
+                  << " /target/etc/localtime) || cp /usr/share/zoneinfo/"
+                  << this->value() << " /target/etc/localtime";
+        return true;
+    }
 
-bool PkgInstall::execute(ScriptOptions) const {
-    /* Package installation is handled in Script::execute. */
-    return true;
+#ifdef HAS_INSTALL_ENV
+    std::string zi_path = "/usr/share/zoneinfo/" + this->value();
+    std::string target_zi = "/target" + zi_path;
+    if(access(target_zi.c_str(), F_OK) == 0) {
+        if(symlink(zi_path.c_str(), "/target/etc/localtime") != 0) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "timezone: failed to create symbolic link",
+                         strerror(errno));
+            return false;
+        }
+        return true;
+    } else {
+        /* The target doesn't have tzdata installed.  We copy the zoneinfo
+         * file from the Horizon environment to the target. */
+        std::ifstream zoneinfo(zi_path, std::ios::binary);
+        if(!zoneinfo) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "timezone: failed to open zoneinfo file");
+            return false;
+        }
+        std::ofstream output("/target/etc/localtime");
+        if(!output) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "timezone: failed to prepare target environment");
+            return false;
+        }
+
+        output << zoneinfo.rdbuf();
+        return true;
+    }
+#else
+    return false;
+#endif
 }
-/* LCOV_EXCL_STOP */
 
 
 Key *Repository::parseFromData(const std::string &data, int lineno, int *errors,

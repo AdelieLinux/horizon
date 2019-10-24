@@ -160,32 +160,6 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                 run_validate
                 expect(last_command_started).to have_output(/error: .*rootpw.*/)
             end
-            context "for 'firmware' key" do
-                it "always supports 'false' value" do
-                    use_fixture '0112-firmware-false.installfile'
-                    run_validate
-                    expect(last_command_started).to have_output(PARSER_SUCCESS)
-                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
-                end
-                it "requires 'false' if built without support" do
-                    use_fixture '0111-firmware-true.installfile'
-                    run_validate
-                    skip "This build supports firmware" if last_command_started.stdout =~ /supports non-free/
-                    expect(last_command_started).to have_output(/error: .*firmware/)
-                end
-                it "supports 'true' if built with support" do
-                    use_fixture '0111-firmware-true.installfile'
-                    run_validate
-                    skip "This build does not support firmware" if last_command_started.stdout !~ /supports non-free/
-                    expect(last_command_started).to have_output(PARSER_SUCCESS)
-                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
-                end
-                it "requires a boolean value" do
-                    use_fixture '0113-firmware-invalid.installfile'
-                    run_validate
-                    expect(last_command_started).to have_output(/error: .*firmware.*value/)
-                end
-            end
             context "for 'language' key" do
                 # Runner.Validate.language
                 # Runner.Validate.language.Format
@@ -222,6 +196,60 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     use_fixture '0120-language-iso.installfile'
                     run_validate
                     expect(last_command_started).to have_output(/error: .*language.*codeset/)
+                end
+            end
+            context "for 'firmware' key" do
+                it "always supports 'false' value" do
+                    use_fixture '0112-firmware-false.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "requires 'false' if built without support" do
+                    use_fixture '0111-firmware-true.installfile'
+                    run_validate
+                    skip "This build supports firmware" if last_command_started.stdout =~ /supports non-free/
+                    expect(last_command_started).to have_output(/error: .*firmware/)
+                end
+                it "supports 'true' if built with support" do
+                    use_fixture '0111-firmware-true.installfile'
+                    run_validate
+                    skip "This build does not support firmware" if last_command_started.stdout !~ /supports non-free/
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "requires a boolean value" do
+                    use_fixture '0113-firmware-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*firmware.*value/)
+                end
+            end
+            context "for 'timezone' key" do
+                # Runner.Validate.timezone.
+                it "fails with an invalid value" do
+                    use_fixture '0132-timezone-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*timezone.*invalid/)
+                end
+                # Runner.Validate.timezone.
+                it "fails with a maliciously invalid value" do
+                    use_fixture '0133-timezone-malicious.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*timezone.*invalid/)
+                end
+                # Runner.Validate.timezone.zoneinfo.
+                it "succeeds with simple value" do
+                    use_fixture '0131-timezone-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                # Runner.Validate.timezone.zoneinfo.
+                it "succeeds with Locality/Zone value" do
+                    use_fixture '0134-timezone-subtz.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
                 end
             end
             context "for 'mount' key" do

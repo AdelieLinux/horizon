@@ -90,6 +90,9 @@ struct Script::ScriptPrivate {
     std::unique_ptr<RootPassphrase> rootpw;
     /*! The system language. */
     std::unique_ptr<Language> lang;
+    /* keymap */
+    /*! The system timezone. */
+    std::unique_ptr<Timezone> tzone;
 
     /*! Network addressing configuration */
     std::vector< std::unique_ptr<NetAddress> > addresses;
@@ -141,6 +144,8 @@ struct Script::ScriptPrivate {
             return store_lang(obj, lineno, errors, warnings, opts);
         } else if(key_name == "firmware") {
             return store_firmware(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "timezone") {
+            return store_timezone(obj, lineno, errors, warnings, opts);
         } else if(key_name == "repository") {
             std::unique_ptr<Repository> repo(dynamic_cast<Repository *>(obj));
             this->repos.push_back(std::move(repo));
@@ -260,6 +265,18 @@ struct Script::ScriptPrivate {
         }
         std::unique_ptr<Language> l(dynamic_cast<Language *>(obj));
         this->lang = std::move(l);
+        return true;
+    }
+
+    bool store_timezone(Keys::Key *obj, int lineno, int *errors, int *,
+                        ScriptOptions) {
+        if(this->tzone) {
+            DUPLICATE_ERROR(this->tzone, std::string("timezone"),
+                            this->tzone->value())
+            return false;
+        }
+        std::unique_ptr<Timezone> t(dynamic_cast<Timezone *>(obj));
+        this->tzone = std::move(t);
         return true;
     }
 
@@ -560,7 +577,22 @@ bool Script::validate() const {
     if(!this->internal->firmware->validate(this->opts)) failures++;
 #endif
 
-    /* timezone */
+    /* REQ: Runner.Execute.timezone */
+    if(!internal->tzone) {
+        Keys::Timezone *utc = dynamic_cast<Keys::Timezone *>(
+                Horizon::Keys::Timezone::parseFromData("UTC", 0,
+                                                       &failures, nullptr)
+        );
+        if(!utc) {
+            output_error("internal", "failed to create default timezone");
+            return false;
+        }
+        std::unique_ptr<Keys::Timezone> zone(utc);
+        this->internal->tzone = std::move(zone);
+    }
+
+    /* REQ: Runner.Validate.timezone */
+    if(!this->internal->tzone->validate(this->opts)) failures++;
 
     /* REQ: Script.repository */
     if(this->internal->repos.size() == 0) {
@@ -896,6 +928,14 @@ bool Script::execute() const {
     }
 
     if(this->internal->lang && !this->internal->lang->execute(opts)) {
+        EXECUTE_FAILURE("post-metadata");
+        return false;
+    }
+
+    /* keymap */
+    /* UserAccounts */
+
+    if(!this->internal->tzone->execute(opts)) {
         EXECUTE_FAILURE("post-metadata");
         return false;
     }

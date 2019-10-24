@@ -66,6 +66,13 @@ public:
 };
 
 class Timezone : public StringKey {
+private:
+    Timezone(int _line, const std::string &my_zone) :
+        StringKey(_line, my_zone) {}
+public:
+    static Key *parseFromData(const std::string &data, int lineno, int *errors,
+                              int *warnings);
+    bool execute(ScriptOptions) const override;
 };
 
 class Repository : public StringKey {
