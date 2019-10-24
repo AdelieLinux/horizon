@@ -231,8 +231,35 @@ Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
     }
 }
 
-bool NetAddress::validate(ScriptOptions) const {
-    /* possible to validate an address in the Installation Environment? */
+bool NetAddress::validate(ScriptOptions opts) const {
+    if(!opts.test(InstallEnvironment)) {
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    /* Retrieving the index is always valid, and is not even privileged. */
+    struct ifreq request;
+    int my_sock = ::socket(AF_INET, SOCK_STREAM, 0);
+    if(my_sock == -1) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "netaddress: can't open socket", ::strerror(errno));
+        return false;
+    }
+    memset(&request, 0, sizeof(request));
+    memcpy(&request.ifr_name, _iface.c_str(), _iface.size());
+    errno = 0;
+    if(ioctl(my_sock, SIOCGIFFLAGS, &request) == -1) {
+        if(errno == ENODEV) {
+            output_warning("installfile:" + std::to_string(this->lineno()),
+                           "netaddress: specified interface does not exist");
+            return true;
+        }
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "netaddress: trouble communicating with interface",
+                     ::strerror(errno));
+        return false;
+    }
+#endif
     return true;
 }
 
