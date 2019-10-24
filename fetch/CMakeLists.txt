@@ -1,0 +1,19 @@
+set(FETCH_SRCS
+        fetch.cc
+)
+add_executable(hscript-fetch ${FETCH_SRCS})
+
+install(TARGETS hscript-fetch DESTINATION bin)
+
+IF(RSPEC_EXECUTABLE)
+add_test(NAME "RSpecFetch"
+    COMMAND ${RSPEC_EXECUTABLE} spec/fetch_spec.rb
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)
+set_property(TEST "RSpecFetch"
+    PROPERTY ENVIRONMENT "PATH=$ENV{PATH}:${CMAKE_CURRENT_BINARY_DIR}")
+ENDIF(RSPEC_EXECUTABLE)
+
+IF(VALGRIND)
+add_test(NAME "ValgrindFetch"
+    COMMAND ${VALGRIND_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/hscript-fetch https://horizon.adelielinux.org/example.installfile)
+ENDIF(VALGRIND)

@@ -69,6 +69,9 @@ add_subdirectory(hscript)
 IF(BUILD_TOOLS)
     add_subdirectory(tools)
 ENDIF(BUILD_TOOLS)
+IF(INSTALL)
+    add_subdirectory(fetch)
+ENDIF(INSTALL)
 
 
 IF(COVERAGE)
