@@ -1,7 +1,14 @@
+pkg_check_modules(CURL libcurl)
+
 set(FETCH_SRCS
         fetch.cc
 )
 add_executable(hscript-fetch ${FETCH_SRCS})
+
+IF(CURL_FOUND)
+    add_definitions(-DHAVE_LIBCURL)
+    target_link_libraries(hscript-fetch ${CURL_LIBRARIES})
+ENDIF(CURL_FOUND)
 
 install(TARGETS hscript-fetch DESTINATION bin)
 

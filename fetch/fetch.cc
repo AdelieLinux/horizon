@@ -11,6 +11,11 @@
 
 #include <algorithm>        /* transform */
 #include <cstdlib>          /* EXIT_* */
+#ifdef HAVE_LIBCURL
+#    include <cstring>      /* strerror */
+#    include <curl/curl.h>  /* curl_* */
+#    include <errno.h>      /* errno */
+#endif /* HAVE_LIBCURL */
 #include <fstream>
 #include <map>
 #include <string>
@@ -54,7 +59,7 @@ int process_local(const std::string &path) {
     }
 
     if(input.fail() && !input.eof()) {
-        output_error("process_local", "line length error reading " + path);
+        output_error("process_local", "line too long while reading " + path);
         return EXIT_FAILURE;
     }
     if(input.bad() && !input.eof()) {
@@ -66,12 +71,44 @@ int process_local(const std::string &path) {
 }
 
 
+#ifdef HAVE_LIBCURL
 /*! Download an installfile using cURL.
  * @param path      The remote path to download.
  */
 int process_curl(const std::string &path) {
-    return EXIT_FAILURE;
+    CURL *curl = curl_easy_init();
+    CURLcode result;
+    int return_code = EXIT_FAILURE;
+    char errbuf[CURL_ERROR_SIZE];
+    FILE *fp;
+
+    if(curl == nullptr) {
+        output_error("internal", "trouble initialising cURL library");
+        return EXIT_FAILURE;
+    }
+
+    fp = fopen(IFILE_PATH, "w");
+    if(fp == nullptr) {
+        output_error("internal", "couldn't open " + std::string(IFILE_PATH) +
+                     " for writing", strerror(errno));
+        curl_easy_cleanup(curl);
+        return EXIT_FAILURE;
+    }
+
+    curl_easy_setopt(curl, CURLOPT_URL, path.c_str());
+    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuf);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+
+    result = curl_easy_perform(curl);
+    if(result == CURLE_OK) {
+        return_code = EXIT_SUCCESS;
+    } else {
+        output_error("curl", "couldn't download installfile", errbuf);
+    }
+    curl_easy_cleanup(curl);
+    return return_code;
 }
+#endif /* HAVE_LIBCURL */
 
 
 /*! The signature of a protocol dispatch function */
@@ -80,9 +117,11 @@ typedef int (*proto_dispatch_fn)(const std::string &);
 
 /*! Protocol handlers */
 static const std::map<std::string, proto_dispatch_fn> protos = {
+#ifdef HAVE_LIBCURL
     {"http", process_curl},
     {"https", process_curl},
-    {"tftp", process_curl}
+    {"tftp", process_curl},
+#endif /* HAVE_LIBCURL */
 };
 
 
