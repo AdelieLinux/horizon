@@ -149,6 +149,13 @@ int process_maybe_remote(const std::string &path) {
 }
 
 
+/*! Figure out the TFTP path(s) to try, and use them */
+int full_auto_tftp() {
+    output_error("tftp", "stub!");
+    return EXIT_FAILURE;
+}
+
+
 /*
  * The goal of the Locator is to find the HorizonScript for this computer,
  * which is the target, and copy it to the well-known path /etc/horizon
@@ -178,9 +185,13 @@ int main(int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
-        output_error("internal", "Fully Remote HorizonScript downloading "
-                     "is not yet implemented");
-        return EXIT_FAILURE;
+        if(protos.find("tftp") == protos.end()) {
+            output_error("internal", "A Fully Automatic installation requires "
+                         "Horizon to be built with TFTP support");
+            return EXIT_FAILURE;
+        } else {
+            return full_auto_tftp();
+        }
     }
 
     std::string path(argv[1]);
