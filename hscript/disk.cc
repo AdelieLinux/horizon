@@ -189,6 +189,198 @@ bool DiskLabel::execute(ScriptOptions) const {
 }
 
 
+/*! Parse a size string into a size and type.
+ * @param   in_size     (in) The string to parse.
+ * @param   out_size    (out) Where to which to write the size in bytes or %.
+ * @param   type        (out) The type of size determined.
+ * @returns true if the string was parseable, false otherwise.
+ */
+bool parse_size_string(const std::string &in_size, uint64_t *out_size, SizeType *type) {
+    std::string size(in_size), numbers, suffix;
+    std::string::size_type suffix_pos;
+    uint64_t multiplicand = 0;
+
+    /* Validate parameters */
+    if(out_size == nullptr || type == nullptr) {
+        return false;
+    }
+
+    /* Simpler since the string isn't case-sensitive. */
+    std::transform(size.cbegin(), size.cend(), size.begin(), ::tolower);
+
+    if(size == "fill") {
+        /* That was easy™ */
+        *type = SizeType::Fill;
+        *out_size = 0;
+        return true;
+    }
+
+    if(size.size() <= 1) {
+        /* at least two characters are required:
+         * - a 9 byte partition is invalid
+         */
+        return false;
+    }
+
+    if(size.size() > 21) {
+        output_error("partition", "Value too large");
+        return false;
+    }
+
+    suffix_pos = size.find_first_not_of("12345667890");
+    /* this is always correct unless suffix is %, which is handled below */
+    *type = SizeType::Bytes;
+    try {
+        *out_size = std::stoul(size.substr(0, suffix_pos));
+    } catch(const std::exception &) {
+        /* something is wrong; throw the same error as a non-numeric value */
+        suffix_pos = 0;
+    }
+
+    if(suffix_pos == std::string::npos) {
+        output_warning("partition", "size has no suffix; assuming bytes");
+        return true;
+    }
+
+    if(suffix_pos == 0) {
+        output_error("partition", "size must be a whole number, "
+                     "followed by optional suffix [K|M|G|T|%]");
+        return false;
+    }
+
+    suffix = size.substr(suffix_pos);
+
+#define OVERFLOW_ON(MAX_VAL) \
+    if(*out_size > MAX_VAL) {\
+        output_error("partition", "Value too large");\
+        return false;\
+    }
+
+    switch(suffix[0]) {
+    case 'k':
+        multiplicand = 1024;
+        OVERFLOW_ON(0x3FFFFFFFFFFFFF)
+        break;
+    case 'm':
+        multiplicand = 1048576;
+        OVERFLOW_ON(0xFFFFFFFFFFF)
+        break;
+    case 'g':
+        multiplicand = 1073741824;
+        OVERFLOW_ON(0x3FFFFFFFF)
+        break;
+    case 't':
+        multiplicand = 1099511627776;
+        OVERFLOW_ON(0xFFFFFF)
+        break;
+    case '%':
+        *type = SizeType::Percent;
+        multiplicand = 1;
+        OVERFLOW_ON(100)
+        break;
+    }
+
+#undef OVERFLOW_ON
+
+    /* if multiplicand is 0, it's an invalid suffix. */
+    if(suffix.size() != 1 || multiplicand == 0) {
+        output_error("partition", "size suffix must be K, M, G, T, or %");
+        return false;
+    }
+
+    *out_size *= multiplicand;
+    return true;
+}
+
+
+Key *Partition::parseFromData(const std::string &data, int lineno, int *errors,
+                              int *) {
+    std::string block, pno, size_str, typecode;
+    std::string::size_type next_pos, last_pos;
+    int part_no;
+    SizeType size_type;
+    uint64_t size;
+    PartitionType type = None;
+
+    long spaces = std::count(data.cbegin(), data.cend(), ' ');
+    if(spaces < 2 || spaces > 3) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "partition: expected either 3 or 4 elements, got: " +
+                     std::to_string(spaces),
+                     "syntax is: partition [block] [#] [size] ([type])");
+        return nullptr;
+    }
+
+    last_pos = next_pos = data.find_first_of(' ');
+    block = data.substr(0, next_pos);
+
+    if(block.compare(0, 4, "/dev")) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "partition: expected path to block device",
+                     "'" + block + "' is not a valid block device path");
+        return nullptr;
+    }
+
+    next_pos = data.find_first_of(' ', last_pos + 1);
+    pno = data.substr(last_pos + 1, next_pos - last_pos);
+    try {
+        part_no = std::stoi(pno);
+    } catch(const std::exception &) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "partition: expected partition number, got", pno);
+        return nullptr;
+    }
+    last_pos = next_pos;
+    next_pos = data.find_first_of(' ', last_pos + 1);
+    if(next_pos == std::string::npos) {
+        size_str = data.substr(last_pos + 1);
+    } else {
+        size_str = data.substr(last_pos + 1, next_pos - last_pos - 1);
+        typecode = data.substr(next_pos + 1);
+    }
+    if(!parse_size_string(size_str, &size, &size_type)) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "partition: invalid size", size_str);
+        return nullptr;
+    }
+
+    if(!typecode.empty()) {
+        std::transform(typecode.cbegin(), typecode.cend(), typecode.begin(),
+                       ::tolower);
+        if(typecode == "boot") {
+            type = Boot;
+        } else if(typecode == "esp") {
+            type = ESP;
+        } else {
+            if(errors) *errors += 1;
+            output_error("installfile:" + std::to_string(lineno),
+                         "partition: expected type code, got: " + typecode,
+                         "valid type codes are 'boot' and 'esp'");
+            return nullptr;
+        }
+    }
+
+    return new Partition(lineno, block, part_no, size_type, size, type);
+}
+
+bool Partition::validate(ScriptOptions opts) const {
+#ifdef HAS_INSTALL_ENV
+    if(opts.test(InstallEnvironment)) {
+        return is_block_device("partition", this->lineno(), this->device());
+    }
+#endif /* HAS_INSTALL_ENV */
+    return true;
+}
+
+bool Partition::execute(ScriptOptions) const {
+    return false;
+}
+
+
 Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
                           int *warnings) {
     std::string dev, where, opt;

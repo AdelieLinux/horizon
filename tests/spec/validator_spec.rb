@@ -629,6 +629,165 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*disklabel.*type/)
                 end
             end
+            context "for 'partition' key" do
+                it "succeeds with a typical value" do
+                    use_fixture '0135-partition-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                context "size value" do
+                    it "supports bytes" do
+                        use_fixture '0136-partition-size-bytes.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                    it "supports kilobytes (K)" do
+                        use_fixture '0137-partition-size-kbytes.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                    it "supports megabytes (M)" do
+                        use_fixture '0138-partition-size-mbytes.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                    it "supports gigabytes (G)" do
+                        use_fixture '0139-partition-size-gbytes.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                    it "supports terabytes (T)" do
+                        use_fixture '0140-partition-size-tbytes.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                    it "does not support exabytes (E)" do
+                        use_fixture '0141-partition-size-ebytes.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(/error: .*suffix/)
+                    end
+                    it "supports percentages" do
+                        use_fixture '0142-partition-size-percent.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                    it "does not support percentages over 100" do
+                        use_fixture '0143-partition-size-percent-overflow.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(/error: .*too large/)
+                    end
+                    it "supports the literal value 'fill'" do
+                        use_fixture '0144-partition-size-fill.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                    it "does not support non-numeric values" do
+                        use_fixture '0145-partition-size-nonnumeric.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(/error: .*number/)
+                    end
+                    it "does not support incorrect suffixes" do
+                        use_fixture '0146-partition-size-bad-suffix.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(/error: .*suffix/)
+                    end
+                    it "correctly handles byte overflow" do
+                        use_fixture '0147-partition-size-overflow.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(/error: .*too large/)
+                    end
+                    it "correctly handles kilobyte overflow (K)" do
+                        use_fixture '0148-partition-size-overflow-k.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(/error: .*too large/)
+                    end
+                    it "correctly handles megabyte overflow (M)" do
+                        use_fixture '0149-partition-size-overflow-m.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(/error: .*too large/)
+                    end
+                    it "correctly handles gigabyte overflow (G)" do
+                        use_fixture '0150-partition-size-overflow-g.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(/error: .*too large/)
+                    end
+                    it "correctly handles terabyte overflow (T)" do
+                        use_fixture '0151-partition-size-overflow-t.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(/error: .*too large/)
+                    end
+                    it "supports mixed-case 'fill'" do
+                        use_fixture '0162-partition-size-case.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                end
+                context "type code" do
+                    it "handles 'boot'" do
+                        use_fixture '0152-partition-type-boot.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                    it "handles 'esp'" do
+                        use_fixture '0153-partition-type-esp.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                    it "handles no value" do
+                        use_fixture '0154-partition-type-none.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                    it "errors on invalid type code" do
+                        use_fixture '0155-partition-type-invalid.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(/error: .*partition.*invalid/)
+                    end
+                end
+                it "errors on non-numeric partition number" do
+                    use_fixture '0156-partition-num-nonnumeric.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*partition.*number/)
+                end
+                it "requires a block device" do
+                    use_fixture '0157-partition-nonblock.installfile'
+                    run_validate ' -i'
+                    skip "This build does not support this test" if last_command_started.stdout =~ /runtime environment only/
+                    expect(last_command_started).to have_output(/error: .*partition.*block/)
+                end
+                it "requires an absolute device path" do
+                    use_fixture '0158-partition-nondev.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*partition.*device/)
+                end
+                it "requires partition numbers to be unique per block device" do
+                    use_fixture '0159-partition-num-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*partition.*already exists/)
+                end
+                it "requires a partition number" do
+                    use_fixture '0160-partition-missing-num.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*partition.*expected/)
+                end
+                it "requires a size" do
+                    use_fixture '0161-partition-missing-size.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*partition.*size/)
+                end
+            end
         end
         context "unique keys" do
             # Runner.Validate.network.

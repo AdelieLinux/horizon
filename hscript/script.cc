@@ -108,6 +108,8 @@ struct Script::ScriptPrivate {
     std::vector< std::unique_ptr<DiskId> > diskids;
     /*! Disklabel configuration keys */
     std::vector< std::unique_ptr<DiskLabel> > disklabels;
+    /*! Partition creation keys */
+    std::vector< std::unique_ptr<Partition> > partitions;
     /*! Target system's mountpoints. */
     std::vector< std::unique_ptr<Mount> > mounts;
 
@@ -167,6 +169,10 @@ struct Script::ScriptPrivate {
         } else if(key_name == "disklabel") {
             std::unique_ptr<DiskLabel> l(dynamic_cast<DiskLabel *>(obj));
             this->disklabels.push_back(std::move(l));
+            return true;
+        } else if(key_name == "partition") {
+            std::unique_ptr<Partition> p(dynamic_cast<Partition *>(obj));
+            this->partitions.push_back(std::move(p));
             return true;
         } else if(key_name == "mount") {
             std::unique_ptr<Mount> mount(dynamic_cast<Mount *>(obj));
@@ -520,7 +526,7 @@ const Script *Script::load(std::istream &sstream,
 
 bool Script::validate() const {
     int failures = 0;
-    std::set<std::string> seen_diskids, seen_labels, seen_mounts;
+    std::set<std::string> seen_diskids, seen_labels, seen_parts, seen_mounts;
     std::map<const std::string, int> seen_iface;
 
     /* REQ: Runner.Validate.network */
@@ -752,6 +758,25 @@ bool Script::validate() const {
                          " already has a label queued");
         }
         seen_labels.insert(label->device());
+    }
+
+    /* REQ: Runner.Validate.partition */
+    for(auto &part : this->internal->partitions) {
+        if(!part->validate(this->opts)) {
+            failures++;
+            continue;
+        }
+
+        /* REQ: Runner.Validate.partition.Unique */
+        std::string name = part->device() + std::to_string(part->partno());
+        if(seen_parts.find(name) != seen_parts.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(part->lineno()),
+                         "partition: partition #" +
+                         std::to_string(part->partno()) +
+                         " already exists on device " + part->device());
+        }
+        seen_parts.insert(name);
     }
 
     /* REQ: Runner.Validate.mount */

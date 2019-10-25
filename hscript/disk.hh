@@ -64,7 +64,53 @@ public:
     bool execute(ScriptOptions) const override;
 };
 
+/*! The type of size a disk key has */
+enum SizeType {
+    /*! Sized in bytes */
+    Bytes,
+    /*! Sized as a percentage of the whole disk */
+    Percent,
+    /*! Fill the rest of the disk */
+    Fill
+};
+
 class Partition : public Key {
+public:
+    /*! Valid partition type codes */
+    enum PartitionType {
+        /*! None (default) */
+        None = 0,
+        /*! Bootable */
+        Boot,
+        /*! EFI System Partition (GPT only) */
+        ESP
+    };
+private:
+    const std::string _block;
+    const int _partno;
+    const SizeType _size_type;
+    const uint64_t _size;
+    const PartitionType _type;
+
+    Partition(int _line, const std::string &_b, const int _p,
+              const SizeType _st, const uint64_t _s, const PartitionType _pt) :
+        Key(_line), _block(_b), _partno(_p), _size_type(_st), _size(_s),
+        _type(_pt) {}
+public:
+    /*! Retrieve the block device that this key identifies. */
+    const std::string device() const { return this->_block; }
+    /*! Retrieve the partition number that this key identifies. */
+    int partno() const { return this->_partno; }
+    /*! Retrieve the type of size that this partition uses. */
+    SizeType size_type() const { return this->_size_type; }
+    /*! Retrieve the size of this partition. */
+    uint64_t size() const { return this->_size; }
+    /*! Retrieve the Type Code of this partition, if any. */
+    PartitionType type() const { return this->_type; }
+
+    static Key *parseFromData(const std::string &, int, int*, int*);
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 class Encrypt : public Key {
