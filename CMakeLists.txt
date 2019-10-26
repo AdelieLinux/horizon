@@ -79,7 +79,7 @@ IF(COVERAGE)
 
     IF(LCOV_EXECUTABLE)
         add_custom_command(OUTPUT horizon.coverage
-            COMMAND lcov ARGS --exclude '/usr/include/c++/*' --exclude '*/3rdparty/*' --capture --directory ${CMAKE_BINARY_DIR} --output-file horizon.coverage)
+            COMMAND lcov ARGS --exclude '/usr/include/boost/*' --exclude '/usr/include/c++/*' --exclude '*/3rdparty/*' --capture --directory ${CMAKE_BINARY_DIR} --output-file horizon.coverage)
         add_custom_target(lcov_report DEPENDS horizon.coverage)
         add_custom_command(OUTPUT cov_html
             COMMAND genhtml ARGS horizon.coverage --output-directory cov_html)
