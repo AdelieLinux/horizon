@@ -137,6 +137,9 @@ bool RootPassphrase::execute(ScriptOptions options) const {
     const std::string root_line = "root:" + this->_value + ":" +
             std::to_string(time(nullptr) / 86400) + ":0:::::";
 
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "rootpw: setting root passphrase");
+
     if(options.test(Simulate)) {
         std::cout << "(printf '" << root_line << "\\" << "n'; "
                   << "cat /target/etc/shadow | sed '1d') > /tmp/shadow"

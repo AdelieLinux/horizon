@@ -264,6 +264,10 @@ Key *Language::parseFromData(const std::string &data, int lineno, int *errors,
 
 
 bool Language::execute(ScriptOptions opts) const {
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "language: setting default system language to " +
+                this->value());
+
     if(opts.test(Simulate)) {
         std::cout << "printf '#!/bin/sh\\" << "nexport LANG=\"%s\"\\" << "n'"
                   << this->value() << " > /target/etc/profile.d/language.sh"
@@ -360,13 +364,16 @@ Key *Timezone::parseFromData(const std::string &data, int lineno, int *errors,
 }
 
 bool Timezone::execute(ScriptOptions opts) const {
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "timezone: setting system timezone to " + this->value());
+
     if(opts.test(Simulate)) {
         /* If the target doesn't have tzdata installed, copy the zoneinfo from
          * the Horizon environment. */
         std::cout << "([ -f /target/usr/share/zoneinfo/" << this->value()
                   << " ] && ln -s /usr/share/zoneinfo/" << this->value()
                   << " /target/etc/localtime) || cp /usr/share/zoneinfo/"
-                  << this->value() << " /target/etc/localtime";
+                  << this->value() << " /target/etc/localtime" << std::endl;
         return true;
     }
 
