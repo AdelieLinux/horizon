@@ -876,7 +876,14 @@ bool Script::execute() const {
         }
     }
 
-    /* disklabel */
+    /* REQ: Runner.Execute.disklabel */
+    for(auto &label : this->internal->disklabels) {
+        if(!label->execute(opts)) {
+            EXECUTE_FAILURE("disk");
+            return false;
+        }
+    }
+
     /* partition */
     /* encrypt PVs */
     /* lvm_pv */

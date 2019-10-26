@@ -18,6 +18,7 @@
 #   include <assert.h>         /* assert */
 #   include <blkid/blkid.h>    /* blkid_get_tag_value */
 #   include <libudev.h>        /* udev_* */
+#   include <parted/parted.h>  /* ped_* */
 #   include <sys/mount.h>      /* mount */
 #   include <sys/stat.h>       /* mkdir, stat */
 #   include <sys/types.h>      /* S_* */
@@ -183,9 +184,50 @@ bool DiskLabel::validate(ScriptOptions options) const {
     return true;
 }
 
-bool DiskLabel::execute(ScriptOptions) const {
-    /* TODO XXX NOTIMPLEMENTED */
+bool DiskLabel::execute(ScriptOptions options) const {
+    std::string type_str;
+    switch(this->type()) {
+    case APM:
+        type_str = "apm";
+        break;
+    case MBR:
+        type_str = "mbr";
+        break;
+    case GPT:
+        type_str = "gpt";
+        break;
+    }
+
+    if(options.test(Simulate)) {
+        std::cout << "parted -ms " << this->device() << " mklabel "
+                  << type_str << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    PedDevice *pdevice = ped_device_get(this->device().c_str());
+    PedDiskType *label = ped_disk_type_get(type_str.c_str());
+    if(label == nullptr) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "disklabel: Parted does not support label type " +
+                     type_str + "!");
+        return false;
+    }
+
+    /* REQ: Runner.Execute.disklabel.Overwrite */
+    ped_disk_clobber(pdevice);
+    PedDisk *disk = ped_disk_new_fresh(pdevice, label);
+    if(disk == nullptr) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "disklabel: internal error creating new " +
+                     type_str + " label on " + _block);
+        return false;
+    }
+
+    return (ped_disk_commit_to_dev(disk) == 0);
+#else
     return false;
+#endif /* HAS_INSTALL_ENV */
 }
 
 
