@@ -1050,12 +1050,12 @@ bool Script::execute() const {
         }
 
         if(opts.test(Simulate)) {
-            std::cout << "cat >/target/etc/conf.d/net <<- NETCONF_EOF"
+            std::cout << "cat >>/target/etc/conf.d/net <<- NETCONF_EOF"
                       << std::endl << conf.str() << std::endl
                       << "NETCONF_EOF" << std::endl;
         } else {
             std::ofstream conf_file("/target/etc/conf.d/net",
-                                    std::ios_base::trunc);
+                                    std::ios_base::app);
             if(!conf_file) {
                 output_error("internal", "cannot save network configuration "
                              "to target");
