@@ -12,11 +12,13 @@
 
 #include <algorithm>
 #include <assert.h>
+#include <cstring>      /* strerror */
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <set>
 #include <sstream>
+#include <sys/stat.h>   /* mkdir */
 
 #include "script.hh"
 #include "disk.hh"
@@ -879,6 +881,14 @@ bool Script::validate() const {
 bool Script::execute() const {
     bool success;
 
+    if(mkdir("/tmp/horizon", S_IRUSR | S_IWUSR | S_IXUSR) != 0) {
+        if(errno != EEXIST) {
+            output_error("internal", "could not create temporary directory",
+                         ::strerror(errno));
+            return false;
+        }
+    }
+
     /* REQ: Runner.Execute.Verify */
     output_step_start("validate");
     success = this->validate();
@@ -960,12 +970,52 @@ bool Script::execute() const {
 
     /**************** NETWORK ****************/
     output_step_start("net");
-    for(auto &ssid : this->internal->ssids) {
-        if(!ssid->execute(opts)) {
-            EXECUTE_FAILURE("net");
-            /* "Soft" error.  Not fatal. */
+
+    if(!this->internal->ssids.empty()) {
+        std::ofstream wpao("/tmp/horizon/wpa_supplicant.conf",
+                          std::ios_base::trunc);
+        if(wpao) {
+            wpao << "# Enable the control interface for wpa_cli and wpa_gui"
+                << std::endl
+                << "ctrl_interface=/var/run/wpa_supplicant" << std::endl
+                << "ctrl_interface_group=wheel" << std::endl
+                << "update_config=1" << std::endl;
+        } else {
+            output_error("internal",
+                         "cannot write wireless networking configuration");
+        }
+
+        for(auto &ssid : this->internal->ssids) {
+            if(!ssid->execute(opts)) {
+                EXECUTE_FAILURE("net");
+                /* "Soft" error.  Not fatal. */
+            }
+        }
+
+        std::ifstream wpai("/tmp/horizon/wpa_supplicant.conf");
+        if(wpai) {
+            if(opts.test(Simulate)) {
+                std::cout << "cat >/target/etc/wpa_supplicant/wpa_supplicant.conf "
+                          << "<<- WPA_EOF" << std::endl;
+                std::cout << wpai.rdbuf();
+                std::cout << std::endl << "WPA_EOF" << std::endl;
+            } else {
+                std::ofstream target_wpa("/target/etc/wpa_supplicant/"
+                                         "wpa_supplicant.conf",
+                                         std::ios_base::trunc);
+                if(!target_wpa) {
+                    output_error("internal", "cannot save wireless networking "
+                                 "configuration to target");
+                } else {
+                    target_wpa << wpai.rdbuf();
+                }
+            }
+        } else {
+            output_error("internal",
+                         "cannot read wireless networking configuration");
         }
     }
+
     for(auto &addr : this->internal->addresses) {
         if(!addr->execute(opts)) {
             EXECUTE_FAILURE("net");

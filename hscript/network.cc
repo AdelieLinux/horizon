@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <arpa/inet.h>          /* inet_pton */
 #include <cstring>              /* memcpy */
+#include <fstream>              /* ofstream for Net write */
 #ifdef HAS_INSTALL_ENV
 #   include <linux/wireless.h>     /* struct iwreq */
 #   include <string.h>             /* strerror */
@@ -395,5 +396,22 @@ bool NetSSID::validate(ScriptOptions options) const {
 }
 
 bool NetSSID::execute(ScriptOptions) const {
-    return false;
+    std::ofstream conf("/tmp/horizon/wpa_supplicant.conf",
+                       std::ios_base::app);
+    if(!conf) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "netssid: failed to write configuration");
+        return false;
+    }
+
+    conf << std::endl;
+    conf << "network={" << std::endl;
+    conf << "\tssid=\"" << this->ssid() << "\"" << std::endl;
+    if(this->type() != SecurityType::None) {
+        conf << "\tpsk=\"" << this->passphrase() << "\"" << std::endl;
+    }
+    conf << "\tpriority=5" << std::endl;
+    conf << "}" << std::endl;
+
+    return !conf.fail();
 }
