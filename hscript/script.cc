@@ -883,8 +883,12 @@ bool Script::execute() const {
     bool success;
     boost::system::error_code ec;
 
-    if(!fs::exists("/tmp/horizon", ec) &&
-       !fs::create_directory("/tmp/horizon", ec)) {
+    /* assume create_directory will give us the error if removal fails */
+    if(fs::exists("/tmp/horizon", ec)) {
+        fs::remove_all("/tmp/horizon", ec);
+    }
+
+    if(!fs::create_directory("/tmp/horizon", ec)) {
         output_error("internal", "could not create temporary directory",
                      ec.message());
         return false;
