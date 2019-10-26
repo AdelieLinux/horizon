@@ -542,6 +542,132 @@ const Script *Script::load(std::istream &sstream,
 }
 
 
+/*! Perform all necessary validations on a single user account.
+ * @param name      The username of the account.
+ * @param detail    The UserDetail record of the account.
+ * @param opts      The ScriptOptions in use.
+ * @returns A count of errors encountered, or 0 if the account is valid.
+ */
+int validate_one_account(const std::string &name, UserDetail *detail,
+                         ScriptOptions opts) {
+    int failures = 0;
+
+    /* REQ: Runner.Validate.username */
+    if(!detail->name->validate(opts)) {
+        failures++;
+    }
+
+    /* REQ: Runner.Validate.useralias */
+    if(detail->alias && !detail->alias->validate(opts)) {
+        failures++;
+    }
+
+    /* REQ: Runner.Validate.userpw */
+    if(detail->passphrase && !detail->passphrase->validate(opts)) {
+        failures++;
+    }
+
+    /* REQ: Runner.Validate.userpw.None */
+    if(!detail->passphrase) {
+        int line = detail->name->lineno();
+        output_warning("installfile:" + std::to_string(line),
+                       "username: " + name + " has no set passphrase",
+                       "This account will not be able to log in.");
+    }
+
+    /* REQ: Runner.Validate.usericon */
+    if(detail->icon && !detail->icon->validate(opts)) {
+        failures++;
+    }
+
+    if(detail->groups.size() > 0) {
+        std::set<std::string> seen_groups;
+        for(auto &group : detail->groups) {
+            /* REQ: Runner.Validate.usergroups */
+            if(!group->validate(opts)) {
+                failures++;
+            }
+
+            /* REQ: Runner.Validate.usergroups.Unique */
+            const std::set<std::string> these = group->groups();
+            if(!std::all_of(these.begin(), these.end(),
+                [&seen_groups](std::string elem) {
+                    return seen_groups.find(elem) == seen_groups.end();
+                })
+            ) {
+                output_error("installfile:" + std::to_string(group->lineno()),
+                             "usergroups: duplicate group name specified");
+                failures++;
+            }
+            seen_groups.insert(these.begin(), these.end());
+        }
+
+        /* REQ: Runner.Validate.usergroups.Count */
+        if(seen_groups.size() > 16) {
+            output_error("installfile:0",
+                         "usergroups: " + name + " is a member of " +
+                         "more than 16 groups");
+            failures++;
+        }
+    }
+
+    return failures;
+}
+
+
+/*! Add the default repositories to the repo list.
+ * @param repos     The list of repositories
+ * The list +repos+ will be modified with the default repositories for
+ * Adélie Linux.  Both system/ and user/ will be added.
+ */
+bool add_default_repos(std::vector<std::unique_ptr<Keys::Repository>> &repos) {
+    Keys::Repository *sys_key = dynamic_cast<Keys::Repository *>(
+        Horizon::Keys::Repository::parseFromData(
+            "https://distfiles.adelielinux.org/adelie/stable/system", 0,
+            nullptr, nullptr
+        )
+    );
+    if(!sys_key) {
+        output_error("internal", "failed to create default system repository");
+        return false;
+    }
+    std::unique_ptr<Keys::Repository> sys_repo(sys_key);
+    repos.push_back(std::move(sys_repo));
+    Keys::Repository *user_key = dynamic_cast<Keys::Repository *>(
+        Horizon::Keys::Repository::parseFromData(
+            "https://distfiles.adelielinux.org/adelie/stable/user", 0,
+            nullptr, nullptr
+        )
+    );
+    if(!user_key) {
+        output_error("internal", "failed to create default user repository");
+        return false;
+    }
+    std::unique_ptr<Keys::Repository> user_repo(user_key);
+    repos.push_back(std::move(user_repo));
+
+#ifdef NON_LIBRE_FIRMWARE
+    /* REQ: Runner.Execute.firmware.Repository */
+    if(this->internal->firmware && this->internal->firmware->test()) {
+        Keys::Repository *fw_key = dynamic_cast<Keys::Repository *>(
+            Horizon::Keys::Repository::parseFromData(
+                "https://distfiles.apkfission.net/adelie-stable/nonfree",
+                0, nullptr, nullptr
+            )
+        );
+        if(!fw_key) {
+            output_error("internal",
+                         "failed to create firmware repository");
+            return false;
+        }
+        std::unique_ptr<Keys::Repository> fw_repo(fw_key);
+        repos.push_back(std::move(fw_repo));
+    }
+#endif
+    return true;
+}
+
+
 bool Script::validate() const {
     int failures = 0;
     std::set<std::string> seen_diskids, seen_labels, seen_parts, seen_pvs,
@@ -621,49 +747,9 @@ bool Script::validate() const {
 
     /* REQ: Script.repository */
     if(this->internal->repos.size() == 0) {
-        Keys::Repository *sys_key = dynamic_cast<Keys::Repository *>(
-            Horizon::Keys::Repository::parseFromData(
-                "https://distfiles.adelielinux.org/adelie/stable/system", 0,
-                nullptr, nullptr
-            )
-        );
-        if(!sys_key) {
-            output_error("internal", "failed to create default system repository");
+        if(!add_default_repos(this->internal->repos)) {
             return false;
         }
-        std::unique_ptr<Keys::Repository> sys_repo(sys_key);
-        this->internal->repos.push_back(std::move(sys_repo));
-        Keys::Repository *user_key = dynamic_cast<Keys::Repository *>(
-            Horizon::Keys::Repository::parseFromData(
-                "https://distfiles.adelielinux.org/adelie/stable/user", 0,
-                nullptr, nullptr
-            )
-        );
-        if(!user_key) {
-            output_error("internal", "failed to create default user repository");
-            return false;
-        }
-        std::unique_ptr<Keys::Repository> user_repo(user_key);
-        this->internal->repos.push_back(std::move(user_repo));
-
-#ifdef NON_LIBRE_FIRMWARE
-        /* REQ: Runner.Execute.firmware.Repository */
-        if(this->internal->firmware && this->internal->firmware->test()) {
-            Keys::Repository *fw_key = dynamic_cast<Keys::Repository *>(
-                Horizon::Keys::Repository::parseFromData(
-                    "https://distfiles.apkfission.net/adelie-stable/nonfree",
-                    0, nullptr, nullptr
-                )
-            );
-            if(!fw_key) {
-                output_error("internal",
-                             "failed to create firmware repository");
-                return false;
-            }
-            std::unique_ptr<Keys::Repository> fw_repo(fw_key);
-            this->internal->repos.push_back(std::move(fw_repo));
-        }
-#endif
     }
 
     /* REQ: Runner.Validate.repository */
@@ -684,65 +770,7 @@ bool Script::validate() const {
 
     for(auto &acct : this->internal->accounts) {
         UserDetail *detail = acct.second.get();
-        /* REQ: Runner.Validate.username */
-        if(!detail->name->validate(this->opts)) {
-            failures++;
-        }
-
-        /* REQ: Runner.Validate.useralias */
-        if(detail->alias && !detail->alias->validate(this->opts)) {
-            failures++;
-        }
-
-        /* REQ: Runner.Validate.userpw */
-        if(detail->passphrase && !detail->passphrase->validate(this->opts)) {
-            failures++;
-        }
-
-        /* REQ: Runner.Validate.userpw.None */
-        if(!detail->passphrase) {
-            int line = detail->name->lineno();
-            output_warning("installfile:" + std::to_string(line),
-                           "username: " + acct.first +
-                           " has no set passphrase",
-                           "This account will not be able to log in.");
-        }
-
-        /* REQ: Runner.Validate.usericon */
-        if(detail->icon && !detail->icon->validate(this->opts)) {
-            failures++;
-        }
-
-        if(detail->groups.size() > 0) {
-            std::set<std::string> seen_groups;
-            for(auto &group : detail->groups) {
-                /* REQ: Runner.Validate.usergroups */
-                if(!group->validate(this->opts)) {
-                    failures++;
-                }
-
-                /* REQ: Runner.Validate.usergroups.Unique */
-                const std::set<std::string> these = group->groups();
-                if(!std::all_of(these.begin(), these.end(),
-                    [&seen_groups](std::string elem) {
-                        return seen_groups.find(elem) == seen_groups.end();
-                    })
-                ) {
-                    output_error("installfile:" + std::to_string(group->lineno()),
-                                 "usergroups: duplicate group name specified");
-                    failures++;
-                }
-                seen_groups.insert(these.begin(), these.end());
-            }
-
-            /* REQ: Runner.Validate.usergroups.Count */
-            if(seen_groups.size() > 16) {
-                output_error("installfile:0",
-                             "usergroups: " + acct.first + " is a member of " +
-                             "more than 16 groups");
-                failures++;
-            }
-        }
+        failures += validate_one_account(acct.first, detail, this->opts);
     }
 
     /* REQ: Runner.Validate.diskid */
