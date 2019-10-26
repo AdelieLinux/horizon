@@ -71,4 +71,11 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             expect(last_command_started.stderr).to include("set domain name 'we-sing-it-proudly.new-romantics.club'")
         end
     end
+    context "simulating 'netssid' execution" do
+        it "outputs the network block correctly" do
+            use_fixture '0067-netssid-spaces-wpa.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("network={\n\tssid=\"The New Fox 5G\"\n\tpsk=\"shh, sekrit!\"\n\tpriority=5\n}")
+        end
+    end
 end
