@@ -12,13 +12,12 @@
 
 #include <algorithm>
 #include <assert.h>
-#include <cstring>      /* strerror */
+#include <boost/filesystem.hpp>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <set>
 #include <sstream>
-#include <sys/stat.h>   /* mkdir */
 
 #include "script.hh"
 #include "disk.hh"
@@ -34,6 +33,8 @@
 typedef Horizon::Keys::Key *(*key_parse_fn)(const std::string &, int, int*, int*);
 
 using namespace Horizon::Keys;
+
+namespace fs = boost::filesystem;
 
 const std::map<std::string, key_parse_fn> valid_keys = {
     {"network", &Network::parseFromData},
@@ -880,13 +881,13 @@ bool Script::validate() const {
 
 bool Script::execute() const {
     bool success;
+    boost::system::error_code ec;
 
-    if(mkdir("/tmp/horizon", S_IRUSR | S_IWUSR | S_IXUSR) != 0) {
-        if(errno != EEXIST) {
-            output_error("internal", "could not create temporary directory",
-                         ::strerror(errno));
-            return false;
-        }
+    if(!fs::exists("/tmp/horizon", ec) &&
+       !fs::create_directory("/tmp/horizon", ec)) {
+        output_error("internal", "could not create temporary directory",
+                     ec.message());
+        return false;
     }
 
     /* REQ: Runner.Execute.Verify */
@@ -980,6 +981,7 @@ bool Script::execute() const {
                 << "ctrl_interface=/var/run/wpa_supplicant" << std::endl
                 << "ctrl_interface_group=wheel" << std::endl
                 << "update_config=1" << std::endl;
+            wpao.close();
         } else {
             output_error("internal",
                          "cannot write wireless networking configuration");
@@ -992,36 +994,73 @@ bool Script::execute() const {
             }
         }
 
-        std::ifstream wpai("/tmp/horizon/wpa_supplicant.conf");
-        if(wpai) {
-            if(opts.test(Simulate)) {
+        if(opts.test(Simulate)) {
+            std::ifstream wpai("/tmp/horizon/wpa_supplicant.conf");
+            if(wpai) {
                 std::cout << "cat >/target/etc/wpa_supplicant/wpa_supplicant.conf "
-                          << "<<- WPA_EOF" << std::endl;
-                std::cout << wpai.rdbuf();
-                std::cout << std::endl << "WPA_EOF" << std::endl;
+                          << "<<- WPA_EOF" << std::endl
+                          << wpai.rdbuf() << std::endl
+                          << "WPA_EOF" << std::endl;
             } else {
-                std::ofstream target_wpa("/target/etc/wpa_supplicant/"
-                                         "wpa_supplicant.conf",
-                                         std::ios_base::trunc);
-                if(!target_wpa) {
-                    output_error("internal", "cannot save wireless networking "
-                                 "configuration to target");
-                } else {
-                    target_wpa << wpai.rdbuf();
-                }
+                output_error("internal",
+                             "cannot read wireless networking configuration");
             }
         } else {
-            output_error("internal",
-                         "cannot read wireless networking configuration");
+            fs::copy_file("/tmp/horizon/wpa_supplicant.conf",
+                          "/target/etc/wpa_supplicant/wpa_supplicant.conf",
+                          fs::copy_option::overwrite_if_exists,
+                          ec);
+            if(ec.failed()) {
+                output_error("internal", "cannot save wireless networking "
+                             "configuration to target", ec.message());
+            }
         }
     }
 
-    for(auto &addr : this->internal->addresses) {
-        if(!addr->execute(opts)) {
-            EXECUTE_FAILURE("net");
-            /* "Soft" error.  Not fatal. */
+    if(!this->internal->addresses.empty()) {
+        fs::path netifrc_dir("/tmp/horizon/netifrc");
+        if(!fs::exists(netifrc_dir) &&
+           !fs::create_directory(netifrc_dir, ec)) {
+            output_error("internal", "cannot create temporary directory",
+                         ec.message());
+        }
+
+        for(auto &addr : this->internal->addresses) {
+            if(!addr->execute(opts)) {
+                EXECUTE_FAILURE("net");
+                /* "Soft" error.  Not fatal. */
+            }
+        }
+
+        std::ostringstream conf;
+        for(auto &&var_dent : fs::directory_iterator(netifrc_dir)) {
+            const std::string variable(var_dent.path().filename().string());
+            std::ifstream contents(var_dent.path().string());
+            if(!contents) {
+                output_error("internal", "cannot read network configuration");
+                continue;
+            }
+            conf << variable << "=\"";
+            if(contents.rdbuf()->in_avail()) conf << contents.rdbuf();
+            conf << "\"" << std::endl;
+        }
+
+        if(opts.test(Simulate)) {
+            std::cout << "cat >/target/etc/conf.d/net <<- NETCONF_EOF"
+                      << std::endl << conf.str() << std::endl
+                      << "NETCONF_EOF" << std::endl;
+        } else {
+            std::ofstream conf_file("/target/etc/conf.d/net",
+                                    std::ios_base::trunc);
+            if(!conf_file) {
+                output_error("internal", "cannot save network configuration "
+                             "to target");
+            } else {
+                conf_file << conf.str();
+            }
         }
     }
+
     if(!this->internal->network->execute(opts)) {
         EXECUTE_FAILURE("net");
         return false;

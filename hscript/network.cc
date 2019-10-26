@@ -265,7 +265,41 @@ bool NetAddress::validate(ScriptOptions opts) const {
 }
 
 bool NetAddress::execute(ScriptOptions) const {
-    return false;
+    std::ofstream config("/tmp/horizon/netifrc/config_" + this->iface(),
+                         std::ios_base::app);
+    if(!config) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "netaddress: couldn't write network configuration for "
+                     + this->iface());
+        return false;
+    }
+
+    switch(this->type()) {
+    case DHCP:
+        config << "dhcp";
+        break;
+    case SLAAC:
+        /* automatically handled by netifrc */
+        break;
+    case Static:
+        config << this->address() << "/" << std::to_string(this->prefix())
+               << std::endl;
+        break;
+    }
+
+    if(!this->gateway().empty()) {
+        std::ofstream route("/tmp/horizon/netifrc/routes_" + this->iface(),
+                            std::ios_base::app);
+        if(!route) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "netaddress: couldn't write route configuration for "
+                         + this->iface());
+            return false;
+        }
+        route << "default via " << this->gateway() << std::endl;
+    }
+
+    return true;
 }
 
 
