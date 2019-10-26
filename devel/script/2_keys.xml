@@ -842,7 +842,7 @@ lvm_pv /dev/sda
                     <example>
                         <title>The <literal>lvm_pv</literal> Key &mdash; LVM Partition</title>
                         <programlisting>
-disklabel /dev/sda apm
+disklabel /dev/sda gpt
 partition /dev/sda 1 4M boot
 partition /dev/sda 2 fill
 lvm_pv /dev/sda2
