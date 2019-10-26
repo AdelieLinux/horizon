@@ -110,6 +110,12 @@ struct Script::ScriptPrivate {
     std::vector< std::unique_ptr<DiskLabel> > disklabels;
     /*! Partition creation keys */
     std::vector< std::unique_ptr<Partition> > partitions;
+    /*! LVM physical volume keys */
+    std::vector< std::unique_ptr<LVMPhysical> > lvm_pvs;
+    /*! LVM volume group keys */
+    std::vector< std::unique_ptr<LVMGroup> > lvm_vgs;
+    /*! LVM logical volume keys */
+    std::vector< std::unique_ptr<LVMVolume> > lvm_lvs;
     /*! Target system's mountpoints. */
     std::vector< std::unique_ptr<Mount> > mounts;
 
@@ -173,6 +179,18 @@ struct Script::ScriptPrivate {
         } else if(key_name == "partition") {
             std::unique_ptr<Partition> p(dynamic_cast<Partition *>(obj));
             this->partitions.push_back(std::move(p));
+            return true;
+        } else if(key_name == "lvm_pv") {
+            std::unique_ptr<LVMPhysical> pv(dynamic_cast<LVMPhysical *>(obj));
+            this->lvm_pvs.push_back(std::move(pv));
+            return true;
+        } else if(key_name == "lvm_vg") {
+            std::unique_ptr<LVMGroup> vg(dynamic_cast<LVMGroup *>(obj));
+            this->lvm_vgs.push_back(std::move(vg));
+            return true;
+        } else if(key_name == "lvm_lv") {
+            std::unique_ptr<LVMVolume> lv(dynamic_cast<LVMVolume *>(obj));
+            this->lvm_lvs.push_back(std::move(lv));
             return true;
         } else if(key_name == "mount") {
             std::unique_ptr<Mount> mount(dynamic_cast<Mount *>(obj));
@@ -526,7 +544,8 @@ const Script *Script::load(std::istream &sstream,
 
 bool Script::validate() const {
     int failures = 0;
-    std::set<std::string> seen_diskids, seen_labels, seen_parts, seen_mounts;
+    std::set<std::string> seen_diskids, seen_labels, seen_parts, seen_pvs,
+            seen_mounts;
     std::map<const std::string, int> seen_iface;
 
     /* REQ: Runner.Validate.network */
@@ -777,6 +796,23 @@ bool Script::validate() const {
                          " already exists on device " + part->device());
         }
         seen_parts.insert(name);
+    }
+
+    /* REQ: Runner.Validate.lvm_pv */
+    for(auto &pv : this->internal->lvm_pvs) {
+        if(!pv->validate(this->opts)) {
+            failures++;
+            continue;
+        }
+
+        /* We don't actually have a requirement, but... */
+        if(seen_pvs.find(pv->value()) != seen_pvs.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(pv->lineno()),
+                         "lvm_pv: a physical volume already exists on device "
+                         + pv->value());
+        }
+        seen_pvs.insert(pv->value());
     }
 
     /* REQ: Runner.Validate.mount */

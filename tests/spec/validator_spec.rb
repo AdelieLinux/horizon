@@ -788,6 +788,24 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*partition.*size/)
                 end
             end
+            context "for 'lvm_pv' key" do
+                it "succeeds with normal value" do
+                    use_fixture '0163-lvmpv-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with a non-absolute block device path" do
+                    use_fixture '0164-lvmpv-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_pv.*path/)
+                end
+                it "fails with duplicate physical volumes" do
+                    use_fixture '0165-lvmpv-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_pv.*exists/)
+                end
+            end
         end
         context "unique keys" do
             # Runner.Validate.network.

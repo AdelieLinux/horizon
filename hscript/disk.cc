@@ -381,6 +381,29 @@ bool Partition::execute(ScriptOptions) const {
 }
 
 
+Key *LVMPhysical::parseFromData(const std::string &data, int lineno,
+                                int *errors, int *warnings) {
+    if(data.size() < 6 || data.substr(0, 5) != "/dev/") {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "lvm_pv: expected an absolute path to a block device");
+        return nullptr;
+    }
+
+    /*if(access(data.c_str(), F_OK) != 0) {
+        if(warnings) *warnings += 1;
+        output_warning("installfile:" + std::to_string(lineno),
+                       "lvm_pv: device may not exist");
+    }*/
+
+    return new LVMPhysical(lineno, data);
+}
+
+bool LVMPhysical::execute(ScriptOptions) const {
+    return false;
+}
+
+
 Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
                           int *warnings) {
     std::string dev, where, opt;

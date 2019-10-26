@@ -116,7 +116,12 @@ public:
 class Encrypt : public Key {
 };
 
-class LVMPhysical : public Key {
+class LVMPhysical : public StringKey {
+private:
+    LVMPhysical(int _line, const std::string &_d) : StringKey(_line, _d) {}
+public:
+    static Key *parseFromData(const std::string &, int, int*, int*);
+    bool execute(ScriptOptions) const override;
 };
 
 class LVMGroup : public Key {
