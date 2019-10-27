@@ -587,11 +587,10 @@ bool Mount::execute(ScriptOptions options) const {
                              ec.message());
                 return false;
             }
-            fs::permissions("/target/etc",
-                            fs::perms::owner_all |
-                            fs::perms::group_read | fs::perms::group_exec |
-                            fs::perms::others_read | fs::perms::others_exec,
+            fs::permissions("/target/etc", rwxr_xr_x,
+                #if defined(FS_IS_STDCXX)
                             fs::perm_options::replace,
+                #endif
                             ec);
             if(ec) {
                 output_warning("installfile:" + std::to_string(this->lineno()),
