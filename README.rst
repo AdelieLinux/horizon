@@ -96,6 +96,11 @@ To build the entirety of Project Horizon, you will need:
 
 * BCNM
 
+* Either a C++17 environment, or Boost.Filesystem (boost-dev)
+
+  Horizon makes full use of the C++17 <filesystem> library if it is
+  available, but will fall back to requiring Boost if it isn't.
+
 To run the test suite, you will additionally need:
 
 * RSpec (ruby-rspec)
@@ -113,6 +118,52 @@ present on the computer where it runs (either the Runtime or Installation
 Environment):
 
 * tzdata (`timezone` key validation and execution)
+
+
+Build options
+`````````````
+
+The Horizon build system supports a few options to allow you to build the
+components you need.
+
+* ``BUILD_SHARED_LIBS``
+
+  This may be ON or OFF.  If ON, libhscript will be a .so.  This results in
+  significantly smaller build sizes, because the C++ runtime won't be built
+  in to Horizon.  However, it may also sacrifice portability.
+
+  The default is ON and is recommended you keep it as such.
+
+* ``BUILD_TOOLS``
+
+  This may be ON or OFF.  If ON, hscript-simulate and hscript-validate will
+  be built.  It is recommended you leave it ON.
+
+* ``COVERAGE``
+
+  This may be ON or OFF.  If ON, code will be built with gcov support.
+  Additionally, if LCOV (lcov) is installed on the system, you will be able
+  to generate coverage reports.
+
+  The default is OFF as this option is only useful for development of Horizon.
+
+* ``VALGRIND``
+
+  This option is only available if the Valgrind executable is found during
+  CMake initialisation.  If ON, Valgrind tests will be run during the test
+  suite.  The default is OFF.
+
+* ``INSTALL``
+
+  This option is only available if you are building Horizon on Linux, as it
+  requires the Linux kernel headers (linux-headers).  If ON, the tools will
+  support the Installation Environment and can be used to install Adélie
+  Linux.  If OFF, the tools will only support the Runtime Environment,
+  allowing you to validate and simulate HorizonScript files but not actually
+  execute them.
+
+  The default is ON when the build process is run on a computer running Linux.
+  It is unavailable on other computers.
 
 
 
