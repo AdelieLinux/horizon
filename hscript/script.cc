@@ -12,7 +12,7 @@
 
 #include <algorithm>
 #include <assert.h>
-#include <boost/filesystem.hpp>
+#include "util/filesystem.hh"
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -33,9 +33,6 @@
 typedef Horizon::Keys::Key *(*key_parse_fn)(const std::string &, int, int*, int*);
 
 using namespace Horizon::Keys;
-
-namespace fs = boost::filesystem;
-using boost::system::error_code;
 
 const std::map<std::string, key_parse_fn> valid_keys = {
     {"network", &Network::parseFromData},
@@ -1013,9 +1010,8 @@ bool Script::execute() const {
         } else {
             fs::copy_file("/tmp/horizon/wpa_supplicant.conf",
                           "/target/etc/wpa_supplicant/wpa_supplicant.conf",
-                          fs::copy_option::overwrite_if_exists,
-                          ec);
-            if(ec.failed()) {
+                          fs_overwrite, ec);
+            if(ec) {
                 output_error("internal", "cannot save wireless networking "
                              "configuration to target", ec.message());
             }
@@ -1088,16 +1084,16 @@ bool Script::execute() const {
             if(do_wpa) {
                 fs::copy_file("/target/etc/wpa_supplicant/wpa_supplicant.conf",
                           "/etc/wpa_supplicant/wpa_supplicant.conf",
-                          fs::copy_option::overwrite_if_exists, ec);
-                if(ec.failed()) {
+                          fs_overwrite, ec);
+                if(ec) {
                     output_error("internal", "cannot use wireless configuration "
                                  "during installation", ec.message());
                     EXECUTE_FAILURE("net");
                 }
             }
             fs::copy_file("/target/etc/conf.d/net", "/etc/conf.d/net",
-                          fs::copy_option::overwrite_if_exists, ec);
-            if(ec.failed()) {
+                          fs_overwrite, ec);
+            if(ec) {
                 output_error("internal", "cannot use networking configuration "
                              "during installation", ec.message());
                 EXECUTE_FAILURE("net");

@@ -16,16 +16,13 @@
 #include <set>
 #include <sstream>
 #ifdef HAS_INSTALL_ENV
-#   include <boost/filesystem.hpp>
+#   include "util/filesystem.hh"
 #endif /* HAS_INSTALL_ENV */
 #include <unistd.h>         /* access - used by tz code even in RT env */
 #include "meta.hh"
 #include "util/output.hh"
 
 using namespace Horizon::Keys;
-
-namespace fs = boost::filesystem;
-using boost::system::error_code;
 
 Key *Hostname::parseFromData(const std::string &data, int lineno, int *errors,
                              int *) {
@@ -293,11 +290,8 @@ bool Language::execute(ScriptOptions opts) const {
            << this->value() << "\"" << std::endl;
     lang_f.close();
 
-    fs::permissions(lang_path,
-                    fs::perms::owner_all |
-                    fs::perms::group_read | fs::perms::group_exe |
-                    fs::perms::others_read | fs::perms::others_exe, ec);
-    if(ec.failed()) {
+    fs::permissions(lang_path, rwxr_xr_x, ec);
+    if(ec) {
         output_error("installfile:" + std::to_string(this->lineno()),
                      "language: could not set /etc/profile.d/language.sh "
                      "as executable", ec.message());
@@ -389,7 +383,7 @@ bool Timezone::execute(ScriptOptions opts) const {
     error_code ec;
     if(fs::exists(target_zi, ec)) {
         fs::create_symlink(zi_path, "/target/etc/localtime", ec);
-        if(ec.failed()) {
+        if(ec) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "timezone: failed to create symbolic link",
                          ec.message());
@@ -400,7 +394,7 @@ bool Timezone::execute(ScriptOptions opts) const {
         /* The target doesn't have tzdata installed.  We copy the zoneinfo
          * file from the Horizon environment to the target. */
         fs::copy_file(zi_path, "/target/etc/localtime", ec);
-        if(ec.failed()) {
+        if(ec) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "timezone: failed to prepare target environment",
                          ec.message());

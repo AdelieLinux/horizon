@@ -17,7 +17,7 @@
 #ifdef HAS_INSTALL_ENV
 #   include <assert.h>         /* assert */
 #   include <blkid/blkid.h>    /* blkid_get_tag_value */
-#   include <boost/filesystem.hpp>
+#   include "util/filesystem.hh"
 #   include <libudev.h>        /* udev_* */
 #   include <parted/parted.h>  /* ped_* */
 #   include <sys/mount.h>      /* mount */
@@ -29,10 +29,6 @@
 #include "util/output.hh"
 
 using namespace Horizon::Keys;
-
-namespace fs = boost::filesystem;
-using boost::system::error_code;
-
 
 #ifdef HAS_INSTALL_ENV
 /*! Determine if _block is a valid block device.
@@ -541,7 +537,7 @@ bool Mount::execute(ScriptOptions options) const {
         /* mount */
         if(!fs::exists(actual_mount, ec)) {
             fs::create_directory(actual_mount, ec);
-            if(ec.failed()) {
+            if(ec) {
                 output_error("installfile:" + std::to_string(this->lineno()),
                              "mount: failed to create target directory for "
                              + this->mountpoint(), ec.message());
@@ -585,7 +581,7 @@ bool Mount::execute(ScriptOptions options) const {
     else {
         if(this->mountpoint() == "/") {
             fs::create_directory("/target/etc", ec);
-            if(ec.failed()) {
+            if(ec) {
                 output_error("installfile:" + std::to_string(this->lineno()),
                              "mount: failed to create /etc for target",
                              ec.message());
@@ -593,10 +589,11 @@ bool Mount::execute(ScriptOptions options) const {
             }
             fs::permissions("/target/etc",
                             fs::perms::owner_all |
-                            fs::perms::group_read | fs::perms::group_exe |
-                            fs::perms::others_read | fs::perms::others_exe,
+                            fs::perms::group_read | fs::perms::group_exec |
+                            fs::perms::others_read | fs::perms::others_exec,
+                            fs::perm_options::replace,
                             ec);
-            if(ec.failed()) {
+            if(ec) {
                 output_warning("installfile:" + std::to_string(this->lineno()),
                                "mount: failed to set permissions for target /etc",
                                ec.message());
