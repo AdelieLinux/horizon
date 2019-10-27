@@ -16,15 +16,16 @@
 #include <set>
 #include <sstream>
 #ifdef HAS_INSTALL_ENV
-#   include <cstring>       /* strerror */
-#   include <errno.h>       /* errno */
-#   include <sys/stat.h>    /* chmod */
+#   include <boost/filesystem.hpp>
 #endif /* HAS_INSTALL_ENV */
 #include <unistd.h>         /* access - used by tz code even in RT env */
 #include "meta.hh"
 #include "util/output.hh"
 
 using namespace Horizon::Keys;
+
+namespace fs = boost::filesystem;
+using boost::system::error_code;
 
 Key *Hostname::parseFromData(const std::string &data, int lineno, int *errors,
                              int *) {
@@ -115,7 +116,7 @@ bool Hostname::execute(ScriptOptions opts) const {
     }
 #ifdef HAS_INSTALL_ENV
     else {
-        std::ofstream hostname_f("/target/etc/hostname");
+        std::ofstream hostname_f("/target/etc/hostname", std::ios_base::trunc);
         if(!hostname_f) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "hostname: could not open /etc/hostname for writing");
@@ -137,7 +138,8 @@ bool Hostname::execute(ScriptOptions opts) const {
         }
 #ifdef HAS_INSTALL_ENV
         else {
-            std::ofstream net_conf_f("/target/etc/conf.d/net");
+            std::ofstream net_conf_f("/target/etc/conf.d/net",
+                                     std::ios_base::app);
             if(!net_conf_f) {
                 output_error("installfile:" + std::to_string(this->lineno()),
                              "hostname: could not open /etc/conf.d/net for "
@@ -226,7 +228,7 @@ const std::set<std::string> valid_langs = {
 
 
 Key *Language::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *warnings) {
+                             int *) {
     if(data.length() < 2 ||
        valid_langs.find(data.substr(0, 2)) == valid_langs.end()) {
         if(errors) *errors += 1;
@@ -279,7 +281,8 @@ bool Language::execute(ScriptOptions opts) const {
 
 #ifdef HAS_INSTALL_ENV
     const char *lang_path = "/target/etc/profile.d/language.sh";
-    std::ofstream lang_f(lang_path);
+    std::ofstream lang_f(lang_path, std::ios_base::trunc);
+    error_code ec;
     if(!lang_f) {
         output_error("installfile:" + std::to_string(this->lineno()),
                      "language: could not open /etc/profile.d/language.sh "
@@ -290,11 +293,14 @@ bool Language::execute(ScriptOptions opts) const {
            << this->value() << "\"" << std::endl;
     lang_f.close();
 
-    if(chmod(lang_path,
-             S_IRUSR | S_IWUSR | S_IXUSR | S_IXGRP | S_IXOTH) != 0) {
+    fs::permissions(lang_path,
+                    fs::perms::owner_all |
+                    fs::perms::group_read | fs::perms::group_exe |
+                    fs::perms::others_read | fs::perms::others_exe, ec);
+    if(ec.failed()) {
         output_error("installfile:" + std::to_string(this->lineno()),
                      "language: could not set /etc/profile.d/language.sh "
-                     "as executable", strerror(errno));
+                     "as executable", ec.message());
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
@@ -380,31 +386,26 @@ bool Timezone::execute(ScriptOptions opts) const {
 #ifdef HAS_INSTALL_ENV
     std::string zi_path = "/usr/share/zoneinfo/" + this->value();
     std::string target_zi = "/target" + zi_path;
-    if(access(target_zi.c_str(), F_OK) == 0) {
-        if(symlink(zi_path.c_str(), "/target/etc/localtime") != 0) {
+    error_code ec;
+    if(fs::exists(target_zi, ec)) {
+        fs::create_symlink(zi_path, "/target/etc/localtime", ec);
+        if(ec.failed()) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "timezone: failed to create symbolic link",
-                         strerror(errno));
+                         ec.message());
             return false;
         }
         return true;
     } else {
         /* The target doesn't have tzdata installed.  We copy the zoneinfo
          * file from the Horizon environment to the target. */
-        std::ifstream zoneinfo(zi_path, std::ios::binary);
-        if(!zoneinfo) {
+        fs::copy_file(zi_path, "/target/etc/localtime", ec);
+        if(ec.failed()) {
             output_error("installfile:" + std::to_string(this->lineno()),
-                         "timezone: failed to open zoneinfo file");
+                         "timezone: failed to prepare target environment",
+                         ec.message());
             return false;
         }
-        std::ofstream output("/target/etc/localtime");
-        if(!output) {
-            output_error("installfile:" + std::to_string(this->lineno()),
-                         "timezone: failed to prepare target environment");
-            return false;
-        }
-
-        output << zoneinfo.rdbuf();
         return true;
     }
 #else

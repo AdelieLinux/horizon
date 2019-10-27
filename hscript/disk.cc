@@ -17,10 +17,11 @@
 #ifdef HAS_INSTALL_ENV
 #   include <assert.h>         /* assert */
 #   include <blkid/blkid.h>    /* blkid_get_tag_value */
+#   include <boost/filesystem.hpp>
 #   include <libudev.h>        /* udev_* */
 #   include <parted/parted.h>  /* ped_* */
 #   include <sys/mount.h>      /* mount */
-#   include <sys/stat.h>       /* mkdir, stat */
+#   include <sys/stat.h>       /* stat */
 #   include <sys/types.h>      /* S_* */
 #   include <unistd.h>         /* access */
 #endif /* HAS_INSTALL_ENV */
@@ -28,6 +29,9 @@
 #include "util/output.hh"
 
 using namespace Horizon::Keys;
+
+namespace fs = boost::filesystem;
+using boost::system::error_code;
 
 
 #ifdef HAS_INSTALL_ENV
@@ -424,19 +428,13 @@ bool Partition::execute(ScriptOptions) const {
 
 
 Key *LVMPhysical::parseFromData(const std::string &data, int lineno,
-                                int *errors, int *warnings) {
+                                int *errors, int *) {
     if(data.size() < 6 || data.substr(0, 5) != "/dev/") {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
                      "lvm_pv: expected an absolute path to a block device");
         return nullptr;
     }
-
-    /*if(access(data.c_str(), F_OK) != 0) {
-        if(warnings) *warnings += 1;
-        output_warning("installfile:" + std::to_string(lineno),
-                       "lvm_pv: device may not exist");
-    }*/
 
     return new LVMPhysical(lineno, data);
 }
@@ -508,6 +506,9 @@ bool Mount::validate(ScriptOptions options) const {
 bool Mount::execute(ScriptOptions options) const {
     const std::string actual_mount = "/target" + this->mountpoint();
     const char *fstype = nullptr;
+#ifdef HAS_INSTALL_ENV
+    error_code ec;
+#endif
 
     /* We have to get the filesystem for the node. */
     if(options.test(Simulate)) {
@@ -538,6 +539,15 @@ bool Mount::execute(ScriptOptions options) const {
 #ifdef HAS_INSTALL_ENV
     else {
         /* mount */
+        if(!fs::exists(actual_mount, ec)) {
+            fs::create_directory(actual_mount, ec);
+            if(ec.failed()) {
+                output_error("installfile:" + std::to_string(this->lineno()),
+                             "mount: failed to create target directory for "
+                             + this->mountpoint(), ec.message());
+                return false;
+            }
+        }
         if(mount(this->device().c_str(), actual_mount.c_str(), fstype, 0,
                  this->options().c_str()) != 0) {
             output_warning("installfile:" + std::to_string(this->lineno()),
@@ -574,9 +584,23 @@ bool Mount::execute(ScriptOptions options) const {
 #ifdef HAS_INSTALL_ENV
     else {
         if(this->mountpoint() == "/") {
-            /* failure of mkdir will be handled in the !fstab_f case */
-            mkdir("/target/etc",
-                  S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+            fs::create_directory("/target/etc", ec);
+            if(ec.failed()) {
+                output_error("installfile:" + std::to_string(this->lineno()),
+                             "mount: failed to create /etc for target",
+                             ec.message());
+                return false;
+            }
+            fs::permissions("/target/etc",
+                            fs::perms::owner_all |
+                            fs::perms::group_read | fs::perms::group_exe |
+                            fs::perms::others_read | fs::perms::others_exe,
+                            ec);
+            if(ec.failed()) {
+                output_warning("installfile:" + std::to_string(this->lineno()),
+                               "mount: failed to set permissions for target /etc",
+                               ec.message());
+            }
         }
         std::ofstream fstab_f("/target/etc/fstab");
         if(!fstab_f) {
