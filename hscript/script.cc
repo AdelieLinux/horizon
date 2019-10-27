@@ -35,6 +35,7 @@ typedef Horizon::Keys::Key *(*key_parse_fn)(const std::string &, int, int*, int*
 using namespace Horizon::Keys;
 
 namespace fs = boost::filesystem;
+using boost::system::error_code;
 
 const std::map<std::string, key_parse_fn> valid_keys = {
     {"network", &Network::parseFromData},
@@ -881,7 +882,7 @@ bool Script::validate() const {
 
 bool Script::execute() const {
     bool success;
-    boost::system::error_code ec;
+    error_code ec;
 
     /* assume create_directory will give us the error if removal fails */
     if(fs::exists("/tmp/horizon", ec)) {
@@ -1042,6 +1043,7 @@ bool Script::execute() const {
             std::ifstream contents(var_dent.path().string());
             if(!contents) {
                 output_error("internal", "cannot read network configuration");
+                EXECUTE_FAILURE("net");
                 continue;
             }
             conf << variable << "=\"";
@@ -1059,6 +1061,7 @@ bool Script::execute() const {
             if(!conf_file) {
                 output_error("internal", "cannot save network configuration "
                              "to target");
+                EXECUTE_FAILURE("net");
             } else {
                 conf_file << conf.str();
             }
@@ -1068,6 +1071,39 @@ bool Script::execute() const {
     if(!this->internal->network->execute(opts)) {
         EXECUTE_FAILURE("net");
         return false;
+    }
+
+    if(this->internal->network->test()) {
+        bool do_wpa = !this->internal->ssids.empty();
+
+        if(opts.test(Simulate)) {
+            if(do_wpa) {
+                std::cout << "cp /target/etc/wpa_supplicant/wpa_supplicant.conf "
+                          << "/etc/wpa_supplicant/wpa_supplicant.conf"
+                          << std::endl;
+            }
+            std::cout << "cp /target/etc/conf.d/net /etc/conf.d/net"
+                      << std::endl;
+        } else {
+            if(do_wpa) {
+                fs::copy_file("/target/etc/wpa_supplicant/wpa_supplicant.conf",
+                          "/etc/wpa_supplicant/wpa_supplicant.conf",
+                          fs::copy_option::overwrite_if_exists, ec);
+                if(ec.failed()) {
+                    output_error("internal", "cannot use wireless configuration "
+                                 "during installation", ec.message());
+                    EXECUTE_FAILURE("net");
+                }
+            }
+            fs::copy_file("/target/etc/conf.d/net", "/etc/conf.d/net",
+                          fs::copy_option::overwrite_if_exists, ec);
+            if(ec.failed()) {
+                output_error("internal", "cannot use networking configuration "
+                             "during installation", ec.message());
+                EXECUTE_FAILURE("net");
+                return false;
+            }
+        }
     }
     output_step_end("net");
 
