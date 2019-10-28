@@ -570,7 +570,7 @@ int validate_one_account(const std::string &name, UserDetail *detail,
 
     /* REQ: Runner.Validate.userpw.None */
     if(!detail->passphrase) {
-        int line = detail->name->lineno();
+        long line = detail->name->lineno();
         output_warning("installfile:" + std::to_string(line),
                        "username: " + name + " has no set passphrase",
                        "This account will not be able to log in.");

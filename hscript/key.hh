@@ -26,8 +26,8 @@ namespace Keys {
 class Key {
 protected:
     /*! The line number where this Key appeared. */
-    int line;
-    Key(int _line) : line(_line) {}
+    long line;
+    Key(long _line) : line(_line) {}
 public:
     virtual ~Key();
 
@@ -56,7 +56,7 @@ public:
      */
     virtual bool execute(ScriptOptions) const = 0;
 
-    int lineno() const { return this->line; }
+    long lineno() const { return this->line; }
 };
 
 

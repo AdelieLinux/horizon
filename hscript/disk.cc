@@ -38,7 +38,8 @@ using namespace Horizon::Keys;
  * @returns true if _block is valid, false otherwise.
  * @note Will output_error if an error occurs.
  */
-bool is_block_device(const std::string &key, int line, const std::string &_block) {
+bool is_block_device(const std::string &key, long line,
+                     const std::string &_block) {
     struct stat blk_stat;
     const char *block_c = _block.c_str();
     if(access(block_c, F_OK) != 0 || stat(block_c, &blk_stat) != 0) {
