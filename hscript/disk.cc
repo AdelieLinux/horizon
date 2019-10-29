@@ -531,6 +531,7 @@ bool LVMGroup::validate(ScriptOptions) const {
 }
 
 bool LVMGroup::test_pv(ScriptOptions) const {
+#ifdef HAS_INSTALL_ENV
     const char *fstype = blkid_get_tag_value(nullptr, "TYPE",
                                              this->pv().c_str());
     if(fstype == nullptr) {
@@ -539,6 +540,9 @@ bool LVMGroup::test_pv(ScriptOptions) const {
     }
 
     return (strcmp(fstype, "LVM2_member") == 0);
+#else
+    return true;
+#endif
 }
 
 bool LVMGroup::execute(ScriptOptions) const {

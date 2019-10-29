@@ -872,12 +872,14 @@ bool Script::validate() const {
         if(seen_pvs.find(vg->pv()) == seen_pvs.end()) {
             /* Okay, let's see if a PV already exists there... */
             if(opts.test(InstallEnvironment)) {
+#ifdef HAS_INSTALL_ENV
                 if(!vg->test_pv(opts)) {
                     failures++;
                     output_error("installfile:" + std::to_string(vg->lineno()),
                                  "lvm_vg: a physical volume does not exist on "
                                  + vg->pv());
                 }
+#endif
             } else {
                 /* We can't tell if we aren't running on the target. */
                 output_warning("installfile:" + std::to_string(vg->lineno()),
