@@ -672,7 +672,7 @@ bool add_default_repos(std::vector<std::unique_ptr<Keys::Repository>> &repos) {
 bool Script::validate() const {
     int failures = 0;
     std::set<std::string> seen_diskids, seen_labels, seen_parts, seen_pvs,
-            seen_mounts;
+            seen_vg_names, seen_vg_pvs, seen_mounts;
     std::map<const std::string, int> seen_iface;
 
     /* REQ: Runner.Validate.network */
@@ -842,6 +842,49 @@ bool Script::validate() const {
                          + pv->value());
         }
         seen_pvs.insert(pv->value());
+    }
+
+    /* REQ: Runner.Validate.lvm_vg */
+    for(auto &vg : this->internal->lvm_vgs) {
+        if(!vg->validate(this->opts)) {
+            failures++;
+            continue;
+        }
+
+        if(seen_vg_names.find(vg->name()) != seen_vg_names.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(vg->lineno()),
+                         "lvm_vg: duplicate volume group name specified",
+                         vg->name() + " already given");
+        }
+        seen_vg_names.insert(vg->name());
+
+        if(seen_vg_pvs.find(vg->pv()) != seen_vg_pvs.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(vg->lineno()),
+                         "lvm_vg: a volume group already exists on " +
+                         vg->pv());
+        }
+        seen_vg_pvs.insert(vg->pv());
+
+        /* REQ: Runner.Validate.lvm_vg.PhysicalVolume */
+        /* If we already know a PV is being created there, we know it's fine */
+        if(seen_pvs.find(vg->pv()) == seen_pvs.end()) {
+            /* Okay, let's see if a PV already exists there... */
+            if(opts.test(InstallEnvironment)) {
+                if(!vg->test_pv(opts)) {
+                    failures++;
+                    output_error("installfile:" + std::to_string(vg->lineno()),
+                                 "lvm_vg: a physical volume does not exist on "
+                                 + vg->pv());
+                }
+            } else {
+                /* We can't tell if we aren't running on the target. */
+                output_warning("installfile:" + std::to_string(vg->lineno()),
+                               "lvm_vg: please ensure an LVM physical volume "
+                               "already exists at " + vg->pv());
+            }
+        }
     }
 
     /* REQ: Runner.Validate.mount */

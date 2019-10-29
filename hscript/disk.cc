@@ -441,6 +441,111 @@ bool LVMPhysical::execute(ScriptOptions) const {
 }
 
 
+/*! Determine if a string is a valid LVM VG/LV name.
+ * @param name      The name of which to test validity.
+ * @returns true if the string is a valid name, false otherwise.
+ * @note LVM LVs have additional restrictions; see is_valid_lvm_lv_name.
+ */
+bool is_valid_lvm_name(const std::string &name) {
+    if(name[0] == '.' && (name.length() == 1 || name[1] == '.')) {
+        /* . and .. are invalid */
+        return false;
+    }
+    if(name[0] == '-') {
+        /* VG nor LV may start with - */
+        return false;
+    }
+
+    const std::string valid_syms("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+_.-");
+    return (name.find_first_not_of(valid_syms) == std::string::npos);
+}
+
+/*! Determine if a string is a valid LVM LV name.
+ * @param name      The name of which to test validity.
+ * @returns true if the string is a valid LV name, false otherwise.
+ */
+bool is_valid_lvm_lv_name(const std::string &name) {
+    if(!is_valid_lvm_name(name)) {
+        /* Fail fast if we fail the general test. */
+        return false;
+    }
+
+    if(name == "snapshot" || name == "pvmove") {
+        /* Invalid full names. */
+        return false;
+    }
+
+    if(name.find("_cdata") != std::string::npos ||
+       name.find("_cmeta") != std::string::npos ||
+       name.find("_corig") != std::string::npos ||
+       name.find("_mlog") != std::string::npos ||
+       name.find("_mimage") != std::string::npos ||
+       name.find("_pmspare") != std::string::npos ||
+       name.find("_rimage") != std::string::npos ||
+       name.find("_rmeta") != std::string::npos ||
+       name.find("_tdata") != std::string::npos ||
+       name.find("_tmeta") != std::string::npos ||
+       name.find("_vorigin") != std::string::npos) {
+        /* Cannot occur anywhere in the name. */
+        return false;
+    }
+
+    return true;
+}
+
+
+Key *LVMGroup::parseFromData(const std::string &data, int lineno, int *errors,
+                             int *) {
+    std::string::size_type space = data.find_first_of(' ');
+    if(space == std::string::npos || data.size() == space + 1) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "lvm_vg: expected exactly two elements",
+                     "syntax is lvm_vg [pv_block] [name-of-vg]");
+        return nullptr;
+    }
+
+    const std::string pv(data.substr(0, space));
+    const std::string name(data.substr(space + 1));
+
+    if(pv.length() < 6 || pv.substr(0, 5) != "/dev/") {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "lvm_vg: expected absolute path to block device");
+        return nullptr;
+    }
+
+    if(!is_valid_lvm_name(name)) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "lvm_vg: invalid volume group name");
+        return nullptr;
+    }
+
+    return new LVMGroup(lineno, pv, name);
+}
+
+bool LVMGroup::validate(ScriptOptions) const {
+    /* validation occurs during parsing */
+    return true;
+}
+
+bool LVMGroup::test_pv(ScriptOptions) const {
+    const char *fstype = blkid_get_tag_value(nullptr, "TYPE",
+                                             this->pv().c_str());
+    if(fstype == nullptr) {
+        /* inconclusive */
+        return true;
+    }
+
+    return (strcmp(fstype, "LVM2_member") == 0);
+}
+
+bool LVMGroup::execute(ScriptOptions) const {
+    return false;
+}
+
+
 Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
                           int *warnings) {
     std::string dev, where, opt;

@@ -806,6 +806,34 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*lvm_pv.*exists/)
                 end
             end
+            context "for 'lvm_vg' key" do
+                it "succeeds with a normal value" do
+                    use_fixture '0166-lvmvg-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with an invalid PV path" do
+                    use_fixture '0167-lvmvg-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_vg.*path/)
+                end
+                it "fails with a duplicate volume group name" do
+                    use_fixture '0168-lvmvg-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_vg.*exists/)
+                end
+                it "fails with a dash as the first character of the VG name" do
+                    use_fixture '0169-lvmvg-dash.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_vg.*name/)
+                end
+                it "requires a volume group name" do
+                    use_fixture '0170-lvmvg-without-vg.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_vg.*expected/)
+                end
+            end
         end
         context "unique keys" do
             # Runner.Validate.network.

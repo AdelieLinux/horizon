@@ -125,6 +125,23 @@ public:
 };
 
 class LVMGroup : public Key {
+private:
+    const std::string _pv;
+    const std::string _vgname;
+
+    LVMGroup(int _line, const std::string &_p, const std::string &_v) :
+        Key(_line), _pv(_p), _vgname(_v) {}
+public:
+    /*! Retrieve the physical volume where this volume group will reside. */
+    const std::string pv() const { return this->_pv; }
+    /*! Retrieve the name of this volume group. */
+    const std::string name() const { return this->_vgname; }
+
+    static Key *parseFromData(const std::string &, int, int*, int*);
+    bool validate(ScriptOptions) const override;
+    /*! Determine if the PV passed is a real one. */
+    bool test_pv(ScriptOptions) const;
+    bool execute(ScriptOptions) const override;
 };
 
 class LVMVolume : public Key {
