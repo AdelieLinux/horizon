@@ -26,8 +26,8 @@ using namespace Horizon::Keys;
 
 Key *Hostname::parseFromData(const std::string &data, int lineno, int *errors,
                              int *) {
-    std::regex valid_re("[A-Za-z0-9-_.]*");
-    if(!std::regex_match(data, valid_re)) {
+    std::string valid_chars("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.");
+    if(data.find_first_not_of(valid_chars) != std::string::npos) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
                      "hostname: expected machine or DNS name",
