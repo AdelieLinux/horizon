@@ -111,6 +111,7 @@
                     <listitem id="DEP-7.3"><para>XFS.</para></listitem>
                     <listitem id="DEP-7.4"><para>JFS.</para></listitem>
                     <listitem id="DEP-7.5"><para>ext2.</para></listitem>
+                    <listitem id="DEP-7.6"><para>vfat.</para></listitem>
                 </orderedlist>
             </para>
         </formalpara>
