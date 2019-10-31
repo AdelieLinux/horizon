@@ -414,6 +414,7 @@ Key *Partition::parseFromData(const std::string &data, int lineno, int *errors,
 bool Partition::validate(ScriptOptions opts) const {
 #ifdef HAS_INSTALL_ENV
     if(opts.test(InstallEnvironment)) {
+        /* REQ: Runner.Validate.partition.Block */
         return is_block_device("partition", this->lineno(), this->device());
     }
 #endif /* HAS_INSTALL_ENV */

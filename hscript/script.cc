@@ -695,6 +695,9 @@ bool Script::validate() const {
     std::set<std::string> seen_diskids, seen_labels, seen_parts, seen_pvs,
             seen_vg_names, seen_vg_pvs, seen_lvs, seen_fses, seen_mounts;
     std::map<const std::string, int> seen_iface;
+#ifdef HAS_INSTALL_ENV
+    error_code ec;
+#endif /* HAS_INSTALL_ENV */
 
     /* REQ: Runner.Validate.network */
     if(!this->internal->network->validate(this->opts)) failures++;
@@ -838,7 +841,9 @@ bool Script::validate() const {
         }
 
         /* REQ: Runner.Validate.partition.Unique */
-        std::string name = part->device() + std::to_string(part->partno());
+        const std::string &dev = part->device();
+        const std::string maybe_p(::isdigit(dev[dev.size() - 1]) ? "p" : "");
+        std::string name = dev + maybe_p + std::to_string(part->partno());
         if(seen_parts.find(name) != seen_parts.end()) {
             failures++;
             output_error("installfile:" + std::to_string(part->lineno()),
@@ -864,6 +869,19 @@ bool Script::validate() const {
                          + pv->value());
         }
         seen_pvs.insert(pv->value());
+
+        /* REQ: Runner.Validate.lvm_pv.Block */
+        if(opts.test(InstallEnvironment)) {
+#ifdef HAS_INSTALL_ENV
+            if(!fs::exists(pv->value(), ec) &&
+               seen_parts.find(pv->value()) == seen_parts.end()) {
+                failures++;
+                output_error("installfile:" + std::to_string(pv->lineno()),
+                             "lvm_pv: device " + pv->value() +
+                             " does not exist");
+            }
+#endif /* HAS_INSTALL_ENV */
+        }
     }
 
     /* REQ: Runner.Validate.lvm_vg */
@@ -944,6 +962,16 @@ bool Script::validate() const {
         }
     }
 
+#define CHECK_EXIST_PART_LV(device, key, line) \
+    if(!fs::exists(device, ec) &&\
+       seen_parts.find(device) == seen_parts.end() &&\
+       seen_lvs.find(device.substr(5)) == seen_lvs.end()) {\
+        failures++;\
+        output_error("installfile:" + std::to_string(line),\
+                     std::string(key) + ": device " + device +\
+                     " does not exist");\
+    }
+
     /* REQ: Runner.Validate.fs */
     for(auto &fs : this->internal->fses) {
         if(!fs->validate(this->opts)) {
@@ -959,6 +987,13 @@ bool Script::validate() const {
                          "created on " + fs->device());
         }
         seen_fses.insert(fs->device());
+
+        /* REQ: Runner.Validate.fs.Block */
+        if(opts.test(InstallEnvironment)) {
+#ifdef HAS_INSTALL_ENV
+            CHECK_EXIST_PART_LV(fs->device(), "fs", fs->lineno())
+#endif /* HAS_INSTALL_ENV */
+        }
     }
 
     /* REQ: Runner.Validate.mount */
@@ -977,10 +1012,16 @@ bool Script::validate() const {
                          " is a duplicate");
         }
         seen_mounts.insert(mount->mountpoint());
-        if(this->opts.test(InstallEnvironment)) {
-            /* TODO: Runner.Validate.mount.Block for not-yet-created devs. */
+
+        /* REQ: Runner.Validate.mount.Block */
+        if(opts.test(InstallEnvironment)) {
+#ifdef HAS_INSTALL_ENV
+            CHECK_EXIST_PART_LV(mount->device(), "mount", mount->lineno())
+#endif /* HAS_INSTALL_ENV */
         }
     }
+
+#undef CHECK_EXIST_PART_LV
 
     /* REQ: Runner.Validate.mount.Root */
     if(seen_mounts.find("/") == seen_mounts.end()) {
