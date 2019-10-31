@@ -498,6 +498,10 @@
                     <title>Runner.Validate.fs.Type</title>
                     <para>The system shall verify that the second value of each <literal>fs</literal> key tuple specifies a valid file system supported by Horizon, using lower case characters.</para>
                 </formalpara>
+                <formalpara id="Runner.Validate.fs.Unique">
+                    <title>Runner.Validate.fs.Unique</title>
+                    <para>The system shall verify that the first value of each <literal>fs</literal> key is unique in the HorizonScript.</para>
+                </formalpara>
                 <formalpara id="Runner.Validate.mount">
                     <title>Runner.Validate.mount</title>
                     <para>The system shall verify that the HorizonScript contains at least one valid <literal>mount</literal> key.</para>
