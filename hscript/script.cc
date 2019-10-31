@@ -285,9 +285,6 @@ struct Script::ScriptPrivate {
         this->firmware = std::move(f);
         return true;
 #else
-        /* Shut up -Wunused-parameter. */
-        assert(lineno != 0);
-        assert(errors != nullptr);
         assert(!f->test());
         return true;
 #endif
