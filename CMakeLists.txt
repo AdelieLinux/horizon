@@ -11,6 +11,13 @@ project(Horizon
 add_definitions(-DVERSTR="${PROJECT_VERSION}")
 
 
+if(MSVC)
+  add_compile_options(/W4 /WX)
+else()
+  add_compile_options(-Wall -Wextra -Werror)
+endif()
+
+
 option(BUILD_TOOLS "Enable building of tools (Validator, Simulator, etc)" ON)
 
 
