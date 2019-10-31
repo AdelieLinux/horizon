@@ -550,6 +550,62 @@ bool LVMGroup::execute(ScriptOptions) const {
 }
 
 
+Key *LVMVolume::parseFromData(const std::string &data, int lineno, int *errors,
+                              int *) {
+    std::string vg, name, size_str;
+    std::string::size_type name_start, size_start;
+    SizeType size_type;
+    uint64_t size;
+
+    long spaces = std::count(data.cbegin(), data.cend(), ' ');
+    if(spaces != 2) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "lvm_lv: expected 3 elements, got: " +
+                     std::to_string(spaces),
+                     "syntax is: lvm_lv [vg] [name] [size]");
+        return nullptr;
+    }
+
+    name_start = data.find_first_of(' ');
+    vg = data.substr(0, name_start);
+    size_start = data.find_first_of(' ', name_start + 1);
+    name = data.substr(name_start + 1, size_start - name_start - 1);
+    size_str = data.substr(size_start + 1);
+
+    if(!is_valid_lvm_name(vg)) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "lvm_lv: invalid volume group name");
+        return nullptr;
+    }
+
+    if(!is_valid_lvm_lv_name(name)) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "lvm_lv: invalid volume name");
+        return nullptr;
+    }
+
+    if(!parse_size_string(size_str, &size, &size_type)) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "lvm_lv: invalid size", size_str);
+        return nullptr;
+    }
+
+    return new LVMVolume(lineno, vg, name, size_type, size);
+}
+
+bool LVMVolume::validate(ScriptOptions) const {
+    return true;
+}
+
+bool LVMVolume::execute(ScriptOptions) const {
+    return false;
+}
+
+
 Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
                           int *warnings) {
     std::string dev, where, opt;

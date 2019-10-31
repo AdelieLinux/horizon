@@ -834,6 +834,45 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*lvm_vg.*expected/)
                 end
             end
+            context "for 'lvm_lv' key" do
+                it "succeeds with a simple value" do
+                    use_fixture '0171-lvmlv-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "requires a valid volume group name" do
+                    use_fixture '0172-lvmlv-badvg.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_lv.*name/)
+                end
+                it "requires a valid logical volume name" do
+                    use_fixture '0173-lvmlv-badlv.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_lv.*name/)
+                end
+                it "requires a valid size" do
+                    use_fixture '0174-lvmlv-bad-size.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_lv.*size/)
+                end
+                it "requires a size to be specified" do
+                    use_fixture '0175-lvmlv-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_lv.*expected/)
+                end
+                it "requires a unique VG/LV name pair" do
+                    use_fixture '0176-lvmlv-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_lv.*already/)
+                end
+                it "requires the volume group to be present" do
+                    use_fixture '0177-lvmlv-no-vg.installfile'
+                    run_validate ' -i'
+                    skip "This build does not support this test" if last_command_started.stdout =~ /runtime environment only/
+                    expect(last_command_started).to have_output(/error: .*lvm_lv.*volume group/)
+                end
+            end
         end
         context "unique keys" do
             # Runner.Validate.network.

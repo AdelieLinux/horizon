@@ -1,0 +1,12 @@
+network false
+hostname test.machine
+pkginstall adelie-base
+rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
+mount /dev/sda1 /
+diskid /dev/sdb WDC
+disklabel /dev/sdb apm
+partition /dev/sdb 1 8M boot
+partition /dev/sdb 2 fill
+lvm_pv /dev/sdb2
+lvm_vg /dev/sdb2 MyVolGroup
+lvm_lv MyVolGroup xml_cdata fill

@@ -672,7 +672,7 @@ bool add_default_repos(std::vector<std::unique_ptr<Keys::Repository>> &repos) {
 bool Script::validate() const {
     int failures = 0;
     std::set<std::string> seen_diskids, seen_labels, seen_parts, seen_pvs,
-            seen_vg_names, seen_vg_pvs, seen_mounts;
+            seen_vg_names, seen_vg_pvs, seen_lvs, seen_mounts;
     std::map<const std::string, int> seen_iface;
 
     /* REQ: Runner.Validate.network */
@@ -879,12 +879,43 @@ bool Script::validate() const {
                                  "lvm_vg: a physical volume does not exist on "
                                  + vg->pv());
                 }
-#endif
+#endif /* HAS_INSTALL_ENV */
             } else {
                 /* We can't tell if we aren't running on the target. */
                 output_warning("installfile:" + std::to_string(vg->lineno()),
                                "lvm_vg: please ensure an LVM physical volume "
                                "already exists at " + vg->pv());
+            }
+        }
+    }
+
+    /* REQ: Runner.Validate.lvm_lv */
+    for(auto &lv : this->internal->lvm_lvs) {
+        const std::string lvpath(lv->vg() + "/" + lv->name());
+        if(!lv->validate(this->opts)) {
+            failures++;
+            continue;
+        }
+
+        if(seen_lvs.find(lvpath) != seen_lvs.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(lv->lineno()),
+                         "lvm_lv: a volume with the name " + lv->name() +
+                         " already exists on the volume group " + lv->vg());
+        }
+        seen_lvs.insert(lvpath);
+
+        if(seen_vg_names.find(lv->vg()) == seen_vg_names.end()) {
+            /* Let's make sure it still exists, if we are running in the IE */
+            if(opts.test(InstallEnvironment)) {
+#ifdef HAS_INSTALL_ENV
+                if(!fs::exists("/dev/" + lv->vg())) {
+                    failures++;
+                    output_error("installfile:" + std::to_string(lv->lineno()),
+                                 "lvm_lv: volume group " + lv->vg() +
+                                 " does not exist");
+                }
+#endif /* HAS_INSTALL_ENV */
             }
         }
     }

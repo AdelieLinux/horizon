@@ -145,6 +145,28 @@ public:
 };
 
 class LVMVolume : public Key {
+private:
+    const std::string _vg;
+    const std::string _lvname;
+    const SizeType _size_type;
+    const uint64_t _size;
+
+    LVMVolume(int _line, const std::string &_v, const std::string &_n,
+              SizeType _t, uint64_t _s) : Key(_line), _vg(_v), _lvname(_n),
+        _size_type(_t), _size(_s) {}
+public:
+    /*! Retrieve the volume group to which this volume belongs. */
+    const std::string vg() const { return this->_vg; }
+    /*! Retrieve the name of this volume. */
+    const std::string name() const { return this->_lvname; }
+    /*! Retrieve the type of size that this volume uses. */
+    SizeType size_type() const { return this->_size_type; }
+    /*! Retrieve the size of this volume. */
+    uint64_t size() const { return this->_size; }
+
+    static Key *parseFromData(const std::string &, int, int*, int*);
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 class Filesystem : public Key {
