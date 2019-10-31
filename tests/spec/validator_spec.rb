@@ -873,6 +873,14 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*lvm_lv.*volume group/)
                 end
             end
+            context "for 'keymap' key" do
+                it "succeeds with a simple value" do
+                    use_fixture '0178-keymap-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+            end
         end
         context "unique keys" do
             # Runner.Validate.network.
