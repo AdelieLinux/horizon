@@ -55,6 +55,14 @@ public:
 };
 
 class Keymap : public StringKey {
+private:
+    Keymap(int _line, const std::string &keymap) :
+        StringKey(_line, keymap) {}
+public:
+    static Key *parseFromData(const std::string &data, int lineno, int *errors,
+                              int *warnings);
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 class Firmware : public BooleanKey {

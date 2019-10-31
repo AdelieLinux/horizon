@@ -91,7 +91,8 @@ struct Script::ScriptPrivate {
     std::unique_ptr<RootPassphrase> rootpw;
     /*! The system language. */
     std::unique_ptr<Language> lang;
-    /* keymap */
+    /*! The system keymap. */
+    std::unique_ptr<Keymap> keymap;
     /*! The system timezone. */
     std::unique_ptr<Timezone> tzone;
 
@@ -151,6 +152,8 @@ struct Script::ScriptPrivate {
             return store_rootpw(obj, lineno, errors, warnings, opts);
         } else if(key_name == "language") {
             return store_lang(obj, lineno, errors, warnings, opts);
+        } else if(key_name == "keymap") {
+            return store_keymap(obj, lineno, errors, warnings, opts);
         } else if(key_name == "firmware") {
             return store_firmware(obj, lineno, errors, warnings, opts);
         } else if(key_name == "timezone") {
@@ -290,6 +293,18 @@ struct Script::ScriptPrivate {
         }
         std::unique_ptr<Language> l(dynamic_cast<Language *>(obj));
         this->lang = std::move(l);
+        return true;
+    }
+
+    bool store_keymap(Keys::Key *obj, int lineno, int *errors, int *,
+                      ScriptOptions) {
+        if(this->keymap) {
+            DUPLICATE_ERROR(this->keymap, std::string("keymap"),
+                            this->keymap->value())
+            return false;
+        }
+        std::unique_ptr<Keymap> k(dynamic_cast<Keymap *>(obj));
+        this->keymap = std::move(k);
         return true;
     }
 
@@ -722,7 +737,8 @@ bool Script::validate() const {
     /* REQ: Runner.Validate.language */
     if(internal->lang && !internal->lang->validate(this->opts)) failures++;
 
-    /* keymap */
+    /* REQ: Runner.Validate.keymap */
+    if(internal->keymap && !internal->keymap->validate(this->opts)) failures++;
 
 #ifdef NON_LIBRE_FIRMWARE
     /* REQ: Runner.Validate.firmware */

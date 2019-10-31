@@ -261,7 +261,6 @@ Key *Language::parseFromData(const std::string &data, int lineno, int *errors,
     return new Language(lineno, data);
 }
 
-
 bool Language::execute(ScriptOptions opts) const {
     output_info("installfile:" + std::to_string(this->lineno()),
                 "language: setting default system language to " +
@@ -298,6 +297,21 @@ bool Language::execute(ScriptOptions opts) const {
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
+    return true;
+}
+
+
+Key *Keymap::parseFromData(const std::string &data, int lineno, int *, int *) {
+    return new Keymap(lineno, data);
+}
+
+bool Keymap::validate(ScriptOptions) const {
+    /* TODO XXX */
+    /* Will require console-setup to be installed on the validating machine. */
+    return true;
+}
+
+bool Keymap::execute(ScriptOptions) const {
     return true;
 }
 
