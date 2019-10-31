@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstring>          /* strerror */
 #include <fstream>
+#include <set>
 #include <string>
 #ifdef HAS_INSTALL_ENV
 #   include <assert.h>         /* assert */
@@ -602,6 +603,57 @@ bool LVMVolume::validate(ScriptOptions) const {
 }
 
 bool LVMVolume::execute(ScriptOptions) const {
+    return false;
+}
+
+
+const static std::set<std::string> valid_fses = {
+    "ext2", "ext3", "ext4", "jfs", "vfat", "xfs"
+};
+
+
+Key *Filesystem::parseFromData(const std::string &data, int lineno,
+                               int *errors, int *) {
+    if(std::count(data.begin(), data.end(), ' ') != 1) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "fs: expected exactly two elements",
+                     "syntax is: fs [device] [fstype]");
+        return nullptr;
+    }
+
+    std::string::size_type sep = data.find(' ');
+    std::string device(data.substr(0, sep));
+    std::string fstype(data.substr(sep + 1));
+
+    if(device.size() < 6 || device.compare(0, 5, "/dev/")) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "fs: element 1: expected device node",
+                     "'" + device + "' is not a valid device node");
+        return nullptr;
+    }
+
+    if(valid_fses.find(fstype) == valid_fses.end()) {
+        std::string fses;
+        for(auto &&fs : valid_fses) fses += fs + " ";
+
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "fs: element 2: expected filesystem type",
+                     "valid filesystems are: " + fses);
+        return nullptr;
+    }
+
+    return new Filesystem(lineno, device, fstype);
+}
+
+bool Filesystem::validate(ScriptOptions) const {
+    /* Validation is done during parsing. */
+    return true;
+}
+
+bool Filesystem::execute(ScriptOptions) const {
     return false;
 }
 

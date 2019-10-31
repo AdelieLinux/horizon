@@ -118,6 +118,8 @@ struct Script::ScriptPrivate {
     std::vector< std::unique_ptr<LVMGroup> > lvm_vgs;
     /*! LVM logical volume keys */
     std::vector< std::unique_ptr<LVMVolume> > lvm_lvs;
+    /*! Filesystem creation keys */
+    std::vector< std::unique_ptr<Filesystem> > fses;
     /*! Target system's mountpoints. */
     std::vector< std::unique_ptr<Mount> > mounts;
 
@@ -195,6 +197,10 @@ struct Script::ScriptPrivate {
         } else if(key_name == "lvm_lv") {
             std::unique_ptr<LVMVolume> lv(dynamic_cast<LVMVolume *>(obj));
             this->lvm_lvs.push_back(std::move(lv));
+            return true;
+        } else if(key_name == "fs") {
+            std::unique_ptr<Filesystem> fs(dynamic_cast<Filesystem *>(obj));
+            this->fses.push_back(std::move(fs));
             return true;
         } else if(key_name == "mount") {
             std::unique_ptr<Mount> mount(dynamic_cast<Mount *>(obj));
@@ -687,7 +693,7 @@ bool add_default_repos(std::vector<std::unique_ptr<Keys::Repository>> &repos) {
 bool Script::validate() const {
     int failures = 0;
     std::set<std::string> seen_diskids, seen_labels, seen_parts, seen_pvs,
-            seen_vg_names, seen_vg_pvs, seen_lvs, seen_mounts;
+            seen_vg_names, seen_vg_pvs, seen_lvs, seen_fses, seen_mounts;
     std::map<const std::string, int> seen_iface;
 
     /* REQ: Runner.Validate.network */
@@ -913,6 +919,7 @@ bool Script::validate() const {
             continue;
         }
 
+        /* REQ: Runner.Validate.lvm_lv.Name */
         if(seen_lvs.find(lvpath) != seen_lvs.end()) {
             failures++;
             output_error("installfile:" + std::to_string(lv->lineno()),
@@ -921,6 +928,7 @@ bool Script::validate() const {
         }
         seen_lvs.insert(lvpath);
 
+        /* REQ: Runner.Validate.lvm_lv.VolumeGroup */
         if(seen_vg_names.find(lv->vg()) == seen_vg_names.end()) {
             /* Let's make sure it still exists, if we are running in the IE */
             if(opts.test(InstallEnvironment)) {
@@ -934,6 +942,23 @@ bool Script::validate() const {
 #endif /* HAS_INSTALL_ENV */
             }
         }
+    }
+
+    /* REQ: Runner.Validate.fs */
+    for(auto &fs : this->internal->fses) {
+        if(!fs->validate(this->opts)) {
+            failures++;
+            continue;
+        }
+
+        /* REQ: Runner.Validate.fs.Unique */
+        if(seen_fses.find(fs->device()) != seen_fses.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(fs->lineno()),
+                         "fs: a filesystem is already scheduled to be "
+                         "created on " + fs->device());
+        }
+        seen_fses.insert(fs->device());
     }
 
     /* REQ: Runner.Validate.mount */

@@ -873,6 +873,29 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*lvm_lv.*volume group/)
                 end
             end
+            context "for 'fs' key" do
+                it "succeeds with a simple value" do
+                    use_fixture '0179-fs-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "requires a filesystem type" do
+                    use_fixture '0180-fs-without-fs.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*fs.*expected/)
+                end
+                it "requires a valid absolute block device path" do
+                    use_fixture '0181-fs-invalid-dev.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*fs.*device/)
+                end
+                it "requires a valid filesystem type" do
+                    use_fixture '0182-fs-invalid-type.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*fs.*type/)
+                end
+            end
             context "for 'keymap' key" do
                 it "succeeds with a simple value" do
                     use_fixture '0178-keymap-basic.installfile'

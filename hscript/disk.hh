@@ -170,6 +170,21 @@ public:
 };
 
 class Filesystem : public Key {
+private:
+    const std::string _block;
+    const std::string _type;
+
+    Filesystem(int _line, const std::string &_b, const std::string &_t) :
+        Key(_line), _block(_b), _type(_t) {}
+public:
+    /*! Retrieve the block device on which to create the filesystem. */
+    const std::string device() const { return this->_block; }
+    /*! Retreive the type of filesystem to create. */
+    const std::string fstype() const { return this->_type; }
+
+    static Key *parseFromData(const std::string &, int, int*, int*);
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 class Mount : public Key {
