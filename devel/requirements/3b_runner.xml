@@ -162,6 +162,14 @@
                     <title>Runner.Validate.network.netssid.Key</title>
                     <para>If the third value of a <literal>netssid</literal> tuple is a valid security type and not <literal>none</literal>, the system shall ensure that the <literal>netssid</literal> tuple has a fourth value that specifies the security key.</para>
                 </formalpara>
+                <formalpara id="Runner.Validate.nameserver">
+                    <title>Runner.Validate.nameserver</title>
+                    <para>The system shall verify any <literal>nameserver</literal> keys contained in the HorizonScript.</para>
+                </formalpara>
+                <formalpara id="Runner.Validate.nameserver.IP">
+                    <title>Runner.Validate.nameserver.IP</title>
+                    <para>The system shall verify that the value of each <literal>nameserver</literal> key is an IPv4 or IPv6 address.</para>
+                </formalpara>
                 <formalpara id="Runner.Validate.hostname">
                     <title>Runner.Validate.hostname</title>
                     <para>The system shall verify that the HorizonScript contains exactly one <literal>hostname</literal> key.</para>
