@@ -596,17 +596,8 @@ Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
     return new Mount(lineno, dev, where, opt);
 }
 
-bool Mount::validate(ScriptOptions options) const {
-    /* We only validate if running in an Installation Environment. */
-    if(!options.test(InstallEnvironment)) return true;
-
-#ifdef HAS_INSTALL_ENV
-    /* XXX TODO: This will fail validation if the block device does not
-     * already exist.  However, we must take in to account that block devices
-     * may not yet exist during the script validation phase.  This check may
-     * need to happen in Script::validate like the Uniqueness tests. */
-    return(access(this->device().c_str(), F_OK) == 0);
-#endif /* HAS_INSTALL_ENV */
+bool Mount::validate(ScriptOptions) const {
+    return true;
 }
 
 bool Mount::execute(ScriptOptions options) const {
