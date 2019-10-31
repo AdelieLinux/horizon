@@ -317,7 +317,7 @@ bool Keymap::execute(ScriptOptions) const {
 
 
 Key *Firmware::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *warnings) {
+                             int *) {
     bool value;
     if(!BooleanKey::parse(data, "installfile:" + std::to_string(lineno),
                           "firmware", &value)) {

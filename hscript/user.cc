@@ -120,7 +120,7 @@ static bool string_is_crypt(const std::string &pw, const std::string &key,
 
 
 Key *RootPassphrase::parseFromData(const std::string &data, int lineno,
-                                   int *errors, int *warnings) {
+                                   int *errors, int *) {
     if(!string_is_crypt(data, "rootpw", lineno)) {
         if(errors) *errors += 1;
         return nullptr;
@@ -189,7 +189,7 @@ bool RootPassphrase::execute(ScriptOptions options) const {
 
 
 Key *Username::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *warnings) {
+                             int *) {
     if(!is_valid_name(data.c_str())) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
@@ -214,7 +214,7 @@ bool Username::execute(ScriptOptions) const {
 
 
 Key *UserAlias::parseFromData(const std::string &data, int lineno, int *errors,
-                              int *warnings) {
+                              int *) {
     /* REQ: Runner.Validate.useralias.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {
@@ -238,7 +238,7 @@ bool UserAlias::execute(ScriptOptions) const {
 
 
 Key *UserPassphrase::parseFromData(const std::string &data, int lineno,
-                                   int *errors, int *warnings) {
+                                   int *errors, int *) {
     /* REQ: Runner.Validate.userpw.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {
@@ -269,7 +269,7 @@ bool UserPassphrase::execute(ScriptOptions) const {
 
 
 Key *UserIcon::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *warnings) {
+                             int *) {
     /* REQ: Runner.Validate.usericon.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {
@@ -302,7 +302,7 @@ bool UserIcon::execute(ScriptOptions) const {
 
 
 Key *UserGroups::parseFromData(const std::string &data, int lineno,
-                               int *errors, int *warnings) {
+                               int *errors, int *) {
     /* REQ: Runner.Validate.usergroups.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {

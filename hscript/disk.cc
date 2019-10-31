@@ -60,7 +60,7 @@ bool is_block_device(const std::string &key, long line,
 
 
 Key *DiskId::parseFromData(const std::string &data, int lineno, int *errors,
-                           int *warnings) {
+                           int *) {
     std::string block, ident;
     std::string::size_type block_end = data.find_first_of(' ');
     if(block_end == std::string::npos) {
@@ -139,7 +139,7 @@ bool DiskId::execute(ScriptOptions options) const {
 
 
 Key *DiskLabel::parseFromData(const std::string &data, int lineno, int *errors,
-                              int *warnings) {
+                              int *) {
     std::string block, label;
     std::string::size_type sep = data.find_first_of(' ');
     LabelType type;
@@ -660,7 +660,7 @@ bool Filesystem::execute(ScriptOptions) const {
 
 
 Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
-                          int *warnings) {
+                          int *) {
     std::string dev, where, opt;
     std::string::size_type where_pos, opt_pos;
     bool any_failure = false;

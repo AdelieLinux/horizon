@@ -244,8 +244,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_pkginstall(Keys::Key* obj, int lineno, int *errors,
-                          int *warnings, ScriptOptions opts) {
+    bool store_pkginstall(Keys::Key* obj, int lineno, int *, int *warnings,
+                          ScriptOptions opts) {
         PkgInstall *install = dynamic_cast<PkgInstall *>(obj);
         for(auto &pkg : install->packages()) {
             if(opts.test(StrictMode) && packages.find(pkg) != packages.end()) {
@@ -285,6 +285,9 @@ struct Script::ScriptPrivate {
         this->firmware = std::move(f);
         return true;
 #else
+        /* Shut up -Wunused-parameter. */
+        assert(lineno != 0);
+        assert(errors != nullptr);
         assert(!f->test());
         return true;
 #endif

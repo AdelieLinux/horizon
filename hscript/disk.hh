@@ -57,7 +57,7 @@ public:
     /*! Retrieve the block device that this key identifies. */
     const std::string device() const { return this->_block; }
     /*! Retrieve the type of disklabel for the block device. */
-    const LabelType type() const { return this->_type; }
+    LabelType type() const { return this->_type; }
 
     static Key *parseFromData(const std::string &, int, int*, int*);
     bool validate(ScriptOptions) const override;
