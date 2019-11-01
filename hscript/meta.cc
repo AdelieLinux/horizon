@@ -301,13 +301,30 @@ bool Language::execute(ScriptOptions opts) const {
 }
 
 
-Key *Keymap::parseFromData(const std::string &data, int lineno, int *, int *) {
+const std::set<std::string> valid_keymaps = {
+    "us", "ad", "af", "ara", "al", "am", "at", "az", "by", "be", "bd", "in",
+    "ba", "br", "bg", "ma", "mm", "ca", "cd", "cn", "hr", "cz", "dk", "nl",
+    "bt", "ee", "ir", "iq", "fo", "fi", "fr", "gh", "gn", "ge", "de", "gr",
+    "hu", "is", "il", "it", "jp", "kg", "kh", "kz", "la", "latam", "lt", "lv",
+    "mao", "me", "mk", "mt", "mn", "no", "pl", "pt", "ro", "ru", "rs", "si",
+    "sk", "es", "se", "ch", "sy", "tj", "lk", "th", "tr", "ua", "gb", "uz",
+    "vn", "kr", "ie", "pk", "mv", "za", "epo", "np", "ng", "et", "sn", "brai",
+    "tm", "ml", "tz", "ke", "bw", "ph"
+};
+
+Key *Keymap::parseFromData(const std::string &data, int lineno, int *errors,
+                           int *) {
+    if(valid_keymaps.find(data) == valid_keymaps.end()) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "keymap: invalid keymap specified");
+        return nullptr;
+    }
+
     return new Keymap(lineno, data);
 }
 
 bool Keymap::validate(ScriptOptions) const {
-    /* TODO XXX */
-    /* Will require console-setup to be installed on the validating machine. */
     return true;
 }
 
