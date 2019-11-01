@@ -8,6 +8,16 @@
 
 
 
+Tests
+=====
+
+Please ensure that any feature additions include adequate testing.  The
+overall goal for the Horizon repository is 100% test coverage for Runtime
+Environment code, and 80% test coverage for Install Environment code.
+
+Bug fixes may include regression tests to ensure the bug does not recur.
+
+
 
 Contributing Changes
 ====================
