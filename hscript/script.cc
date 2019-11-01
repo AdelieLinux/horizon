@@ -98,11 +98,15 @@ struct Script::ScriptPrivate {
 
     /*! Network addressing configuration */
     std::vector< std::unique_ptr<NetAddress> > addresses;
+    /*! Network nameserver resolver addresses */
     std::vector< std::unique_ptr<Nameserver> > nses;
+    /*! Wireless networking configuration */
     std::vector< std::unique_ptr<NetSSID> > ssids;
 
     /*! APK repositories */
     std::vector< std::unique_ptr<Repository> > repos;
+    /*! APK repository keys */
+    std::vector< std::unique_ptr<SigningKey> > repo_keys;
 
     /*! User account information */
     std::map< std::string, std::unique_ptr<UserDetail> > accounts;

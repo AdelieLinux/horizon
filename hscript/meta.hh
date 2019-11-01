@@ -25,8 +25,7 @@ private:
     Hostname(int _line, const std::string my_name) :
         StringKey(_line, my_name) {}
 public:
-    static Key *parseFromData(const std::string &data, int lineno, int *errors,
-                              int *warnings);
+    static Key *parseFromData(const std::string &, int, int *, int *);
     bool validate(ScriptOptions) const override;
     bool execute(ScriptOptions) const override;
 };
@@ -37,8 +36,7 @@ private:
     PkgInstall(int _line, const std::set<std::string> my_pkgs) : Key(_line),
         _pkgs(my_pkgs) {}
 public:
-    static Key *parseFromData(const std::string &data, int lineno, int *errors,
-                              int *warnings);
+    static Key *parseFromData(const std::string &, int, int *, int *);
     const std::set<std::string> packages() const { return _pkgs; }
     bool validate(ScriptOptions) const override;
     bool execute(ScriptOptions) const override;
@@ -49,8 +47,7 @@ private:
     Language(int _line, const std::string &my_lang) :
         StringKey(_line, my_lang) {}
 public:
-    static Key *parseFromData(const std::string &data, int lineno, int *errors,
-                              int *warnings);
+    static Key *parseFromData(const std::string &, int, int *, int *);
     bool execute(ScriptOptions) const override;
 };
 
@@ -59,8 +56,7 @@ private:
     Keymap(int _line, const std::string &keymap) :
         StringKey(_line, keymap) {}
 public:
-    static Key *parseFromData(const std::string &data, int lineno, int *errors,
-                              int *warnings);
+    static Key *parseFromData(const std::string &, int, int *, int *);
     bool validate(ScriptOptions) const override;
     bool execute(ScriptOptions) const override;
 };
@@ -69,7 +65,7 @@ class Firmware : public BooleanKey {
 private:
     Firmware(int _line, bool _value) : BooleanKey(_line, _value) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*);
+    static Key *parseFromData(const std::string &, int, int *, int *);
     bool execute(ScriptOptions) const override;
 };
 
@@ -78,8 +74,7 @@ private:
     Timezone(int _line, const std::string &my_zone) :
         StringKey(_line, my_zone) {}
 public:
-    static Key *parseFromData(const std::string &data, int lineno, int *errors,
-                              int *warnings);
+    static Key *parseFromData(const std::string &, int, int *, int *);
     bool execute(ScriptOptions) const override;
 };
 
@@ -88,8 +83,7 @@ private:
     Repository(int _line, const std::string &my_url) :
         StringKey(_line, my_url) {}
 public:
-    static Key *parseFromData(const std::string &data, int lineno, int *errors,
-                              int *warnings);
+    static Key *parseFromData(const std::string &, int, int *, int *);
     bool validate(ScriptOptions) const override;
     bool execute(ScriptOptions) const override;
 };
