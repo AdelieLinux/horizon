@@ -198,6 +198,24 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*language.*codeset/)
                 end
             end
+            context "for 'nameserver' key" do
+                it "succeeds with IPv4 and IPv6 addresses" do
+                    use_fixture '0183-nameserver-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with an invalid value" do
+                    use_fixture '0184-nameserver-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*nameserver.*expected/)
+                end
+                it "fails with brackets around IPv6 addresses" do
+                    use_fixture '0185-nameserver-brackets.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/nameserver.*brackets/)
+                end
+            end
             context "for 'firmware' key" do
                 it "always supports 'false' value" do
                     use_fixture '0112-firmware-false.installfile'

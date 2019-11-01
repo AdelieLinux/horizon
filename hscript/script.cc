@@ -98,6 +98,7 @@ struct Script::ScriptPrivate {
 
     /*! Network addressing configuration */
     std::vector< std::unique_ptr<NetAddress> > addresses;
+    std::vector< std::unique_ptr<Nameserver> > nses;
     std::vector< std::unique_ptr<NetSSID> > ssids;
 
     /*! APK repositories */
@@ -141,6 +142,10 @@ struct Script::ScriptPrivate {
         } else if(key_name == "netaddress") {
             std::unique_ptr<NetAddress> addr(dynamic_cast<NetAddress *>(obj));
             this->addresses.push_back(std::move(addr));
+            return true;
+        } else if(key_name == "nameserver") {
+            std::unique_ptr<Nameserver> ns(dynamic_cast<Nameserver *>(obj));
+            this->nses.push_back(std::move(ns));
             return true;
         } else if(key_name == "netssid") {
             std::unique_ptr<NetSSID> ssid(dynamic_cast<NetSSID *>(obj));
@@ -727,6 +732,13 @@ bool Script::validate() const {
                              "netaddress: interface '" + address->iface() +
                              "' has too many addresses assigned");
             }
+        }
+    }
+
+    /* REQ: Runner.Validate.nameserver */
+    for(auto &ns : this->internal->nses) {
+        if(!ns->validate(this->opts)) {
+            failures++;
         }
     }
 

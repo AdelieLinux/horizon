@@ -69,7 +69,12 @@ public:
     bool execute(ScriptOptions) const override;
 };
 
-class Nameserver : public Key {
+class Nameserver : public StringKey {
+private:
+    Nameserver(int _line, const std::string &ns) : StringKey(_line, ns) {}
+public:
+    static Key *parseFromData(const std::string &, int, int *, int *);
+    bool execute(ScriptOptions) const override;
 };
 
 class NetSSID : public Key {

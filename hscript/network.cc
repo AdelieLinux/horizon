@@ -28,6 +28,7 @@
 
 using namespace Horizon::Keys;
 
+
 Key *Network::parseFromData(const std::string &data, int lineno, int *errors,
                             int *) {
     bool value;
@@ -300,6 +301,52 @@ bool NetAddress::execute(ScriptOptions) const {
     }
 
     return true;
+}
+
+
+Key *Nameserver::parseFromData(const std::string &data, int lineno,
+                               int *errors, int *) {
+    char addr_buf[16];
+    static const std::string valid_chars("1234567890ABCDEFabcdef:.");
+
+    if(data.find_first_not_of(valid_chars) != std::string::npos) {
+        if(errors) *errors += 0;
+        output_error("installfile:" + std::to_string(lineno),
+                     "nameserver: expected an IP address");
+        if(data.find_first_of("[]") != std::string::npos) {
+            output_info("installfile:" + std::to_string(lineno),
+                        "nameserver: hint: you don't have to enclose IPv6 "
+                        "addresses in [] brackets");
+        }
+        return nullptr;
+    }
+
+    if(data.find(':') != std::string::npos) {
+        /* IPv6 */
+        if(::inet_pton(AF_INET6, data.c_str(), &addr_buf) != 1) {
+            if(errors) *errors += 1;
+            output_error("installfile:" + std::to_string(lineno),
+                         "nameserver: '" + data + "' is not a valid IPv6 "
+                         "address", "hint: a ':' was found, so an IPv6 "
+                         "address was expected");
+            return nullptr;
+        }
+    } else {
+        /* IPv4 */
+        if(::inet_pton(AF_INET, data.c_str(), &addr_buf) != 1) {
+            if(errors) *errors += 1;
+            output_error("installfile:" + std::to_string(lineno),
+                         "nameserver: '" + data + "' is not a valid IPv4 "
+                         "address");
+            return nullptr;
+        }
+    }
+
+    return new Nameserver(lineno, data);
+}
+
+bool Nameserver::execute(ScriptOptions) const {
+    return false;
 }
 
 
