@@ -16,6 +16,9 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#ifdef HAS_INSTALL_ENV
+#   include <parted/parted.h>
+#endif /* HAS_INSTALL_ENV */
 #include <set>
 #include <sstream>
 
@@ -1130,6 +1133,9 @@ bool Script::execute() const {
 
     /**************** DISK SETUP ****************/
     output_step_start("disk");
+#ifdef HAS_INSTALL_ENV
+    if(opts.test(InstallEnvironment)) ped_device_probe_all();
+#endif /* HAS_INSTALL_ENV */
     /* REQ: Runner.Execute.diskid */
     for(auto &diskid : this->internal->diskids) {
         if(!diskid->execute(opts)) {
@@ -1146,13 +1152,56 @@ bool Script::execute() const {
         }
     }
 
-    /* partition */
+    /* REQ: Runner.Execute.partition */
+    /* Ensure partitions are created in on-disk order. */
+    std::sort(this->internal->partitions.begin(), this->internal->partitions.end(),
+              [](std::unique_ptr<Keys::Partition> const &e1,
+                 std::unique_ptr<Keys::Partition> const &e2) {
+        return (e1->device() + "p" + std::to_string(e1->partno())) <
+               (e2->device() + "p" + std::to_string(e2->partno()));
+    });
+    for(auto &part : this->internal->partitions) {
+        if(!part->execute(opts)) {
+            EXECUTE_FAILURE("disk");
+            return false;
+        }
+    }
+
     /* encrypt PVs */
-    /* lvm_pv */
-    /* lvm_vg */
-    /* lvm_lv */
+
+    /* REQ: Runner.Execute.lvm_pv */
+    for(auto &pv : this->internal->lvm_pvs) {
+        if(!pv->execute(opts)) {
+            EXECUTE_FAILURE("disk");
+            return false;
+        }
+    }
+
+    /* REQ: Runner.Execute.lvm_vg */
+    for(auto &vg : this->internal->lvm_vgs) {
+        if(!vg->execute(opts)) {
+            EXECUTE_FAILURE("disk");
+            return false;
+        }
+    }
+
+    /* REQ: Runner.Execute.lvm_lv */
+    for(auto &lv : this->internal->lvm_lvs) {
+        if(!lv->execute(opts)) {
+            EXECUTE_FAILURE("disk");
+            return false;
+        }
+    }
+
     /* encrypt */
-    /* fs */
+
+    /* REQ: Runner.Execute.fs */
+    for(auto &fs : this->internal->fses) {
+        if(!fs->execute(opts)) {
+            EXECUTE_FAILURE("disk");
+            return false;
+        }
+    }
 
     /* REQ: Runner.Execute.mount */
     /* Sort by mountpoint.
@@ -1168,6 +1217,9 @@ bool Script::execute() const {
             return false;
         }
     }
+#ifdef HAS_INSTALL_ENV
+    if(opts.test(InstallEnvironment)) ped_device_free_all();
+#endif /* HAS_INSTALL_ENV */
     output_step_end("disk");
 
     /**************** PRE PACKAGE METADATA ****************/
