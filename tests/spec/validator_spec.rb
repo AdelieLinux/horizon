@@ -910,6 +910,30 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*lvm_lv.*volume group/)
                 end
             end
+            context "for 'encrypt' key" do
+                it "succeeds with a simple value" do
+                    use_fixture '0189-encrypt-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with a duplicate block device" do
+                    use_fixture '0190-encrypt-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*encrypt.*already/)
+                end
+                it "fails with an invalid block device" do
+                    use_fixture '0191-encrypt-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*encrypt.*expected/)
+                end
+                it "succeeds with a passphrase" do
+                    use_fixture '0192-encrypt-pw.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+            end
             context "for 'fs' key" do
                 it "succeeds with a simple value" do
                     use_fixture '0179-fs-basic.installfile'

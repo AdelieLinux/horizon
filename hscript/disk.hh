@@ -114,6 +114,21 @@ public:
 };
 
 class Encrypt : public Key {
+private:
+    const std::string _block;
+    const std::string _pw;
+
+    Encrypt(int _line, const std::string &_b, const std::string &_p) :
+        Key(_line), _block(_b), _pw(_p) {}
+public:
+    /*! Retrieve the block device that this key encrypts. */
+    const std::string device() const { return this->_block; }
+    /*! Retrieve the passphrase used to encrypt the block device. */
+    const std::string passphrase() const { return this->_pw; }
+
+    static Key *parseFromData(const std::string &, int, int*, int*);
+    bool validate(ScriptOptions) const override;
+    bool execute(ScriptOptions) const override;
 };
 
 class LVMPhysical : public StringKey {

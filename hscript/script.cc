@@ -123,6 +123,8 @@ struct Script::ScriptPrivate {
     std::vector< std::unique_ptr<LVMGroup> > lvm_vgs;
     /*! LVM logical volume keys */
     std::vector< std::unique_ptr<LVMVolume> > lvm_lvs;
+    /*! LUKS creation keys */
+    std::vector< std::unique_ptr<Encrypt> > luks;
     /*! Filesystem creation keys */
     std::vector< std::unique_ptr<Filesystem> > fses;
     /*! Target system's mountpoints. */
@@ -210,6 +212,10 @@ struct Script::ScriptPrivate {
         } else if(key_name == "lvm_lv") {
             std::unique_ptr<LVMVolume> lv(dynamic_cast<LVMVolume *>(obj));
             this->lvm_lvs.push_back(std::move(lv));
+            return true;
+        } else if(key_name == "encrypt") {
+            std::unique_ptr<Encrypt> e(dynamic_cast<Encrypt *>(obj));
+            this->luks.push_back(std::move(e));
             return true;
         } else if(key_name == "fs") {
             std::unique_ptr<Filesystem> fs(dynamic_cast<Filesystem *>(obj));
@@ -706,7 +712,8 @@ bool add_default_repos(std::vector<std::unique_ptr<Keys::Repository>> &repos) {
 bool Script::validate() const {
     int failures = 0;
     std::set<std::string> seen_diskids, seen_labels, seen_parts, seen_pvs,
-            seen_vg_names, seen_vg_pvs, seen_lvs, seen_fses, seen_mounts;
+            seen_vg_names, seen_vg_pvs, seen_lvs, seen_fses, seen_mounts,
+            seen_luks;
     std::map<const std::string, int> seen_iface;
 #ifdef HAS_INSTALL_ENV
     error_code ec;
@@ -1002,6 +1009,30 @@ bool Script::validate() const {
         output_error("installfile:" + std::to_string(line),\
                      std::string(key) + ": device " + device +\
                      " does not exist");\
+    }
+
+    /* REQ: Runner.Validate.encrypt */
+    for(auto &crypt : this->internal->luks) {
+        if(!crypt->validate(this->opts)) {
+            failures++;
+            continue;
+        }
+
+        /* REQ: Runner.Validate.encrypt.Unique */
+        if(seen_luks.find(crypt->device()) != seen_luks.end()) {
+            failures++;
+            output_error("installfile:" + std::to_string(crypt->lineno()),
+                         "encrypt: encryption is already scheduled for " +
+                         crypt->device());
+        }
+        seen_luks.insert(crypt->device());
+
+        /* REQ: Runner.Validate.encrypt.Block */
+        if(opts.test(InstallEnvironment)) {
+#ifdef HAS_INSTALL_ENV
+            CHECK_EXIST_PART_LV(crypt->device(), "encrypt", crypt->lineno())
+#endif /* HAS_INSTALL_ENV */
+        }
     }
 
     /* REQ: Runner.Validate.fs */

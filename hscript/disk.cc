@@ -233,6 +233,37 @@ bool DiskLabel::execute(ScriptOptions options) const {
 }
 
 
+Key *Encrypt::parseFromData(const std::string &data, int lineno, int *errors,
+                            int *) {
+    std::string::size_type sep = data.find(' ');
+    std::string dev, pass;
+
+    if(sep == std::string::npos) {
+        dev = data;
+    } else {
+        dev = data.substr(0, sep);
+        pass = data.substr(sep + 1);
+    }
+
+    if(dev.size() < 6 || dev.compare(0, 5, "/dev/")) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "encrypt: expected path to block device");
+        return nullptr;
+    }
+
+    return new Encrypt(lineno, dev, pass);
+}
+
+bool Encrypt::validate(ScriptOptions) const {
+    return true;
+}
+
+bool Encrypt::execute(ScriptOptions) const {
+    return false;
+}
+
+
 /*! Parse a size string into a size and type.
  * @param   in_size     (in) The string to parse.
  * @param   out_size    (out) Where to which to write the size in bytes or %.
