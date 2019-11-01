@@ -226,7 +226,7 @@ bool DiskLabel::execute(ScriptOptions options) const {
         return false;
     }
 
-    return (ped_disk_commit_to_dev(disk) == 0);
+    return (ped_disk_commit(disk) == 0);
 #else
     return false;
 #endif /* HAS_INSTALL_ENV */
