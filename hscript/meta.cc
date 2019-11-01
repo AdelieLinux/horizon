@@ -466,3 +466,24 @@ bool Repository::execute(ScriptOptions opts) const {
     return false;
 #endif /* HAS_INSTALL_ENV */
 }
+
+
+Key *SigningKey::parseFromData(const std::string &data, int lineno,
+                               int *errors, int *) {
+    if(data.empty() || (data[0] != '/' && data.compare(0, 8, "https://"))) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "signingkey: must be absolute path or HTTPS URL");
+        return nullptr;
+    }
+
+    return new SigningKey(lineno, data);
+}
+
+bool SigningKey::validate(ScriptOptions) const {
+    return true;
+}
+
+bool SigningKey::execute(ScriptOptions) const {
+    return false;
+}

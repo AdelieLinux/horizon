@@ -562,6 +562,25 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*repository/)
                 end
             end
+            context "for 'signingkey' key" do
+                it "succeeds with secure key URL" do
+                    use_fixture '0186-signingkey-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with local key URL" do
+                    use_fixture '0187-signingkey-local.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with insecure key URL" do
+                    use_fixture '0188-signingkey-insec.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*signingkey/)
+                end
+            end
             context "for 'diskid' key" do
                 it "succeeds with basic disk identification" do
                     use_fixture '0076-diskid-basic.installfile'

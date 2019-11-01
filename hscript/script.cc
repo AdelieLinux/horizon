@@ -173,6 +173,10 @@ struct Script::ScriptPrivate {
             std::unique_ptr<Repository> repo(dynamic_cast<Repository *>(obj));
             this->repos.push_back(std::move(repo));
             return true;
+        } else if(key_name == "signingkey") {
+            std::unique_ptr<SigningKey> key(dynamic_cast<SigningKey *>(obj));
+            this->repo_keys.push_back(std::move(key));
+            return true;
         } else if(key_name == "username") {
             return store_username(obj, lineno, errors, warnings, opts);
         } else if(key_name == "useralias") {
@@ -808,7 +812,19 @@ bool Script::validate() const {
                      "You may only specify up to 10 repositories.");
     }
 
-    /* signingkey */
+    /* REQ: Runner.Validate.signingkey */
+    for(auto &key : this->internal->repo_keys) {
+        if(!key->validate(this->opts)) {
+            failures++;
+        }
+    }
+    if(this->internal->repo_keys.size() > 10) {
+        failures++;
+        output_error("installfile:" +
+                     std::to_string(this->internal->repo_keys[11]->lineno()),
+                     "signingkey: too many keys specified",
+                     "You may only specify up to 10 repository keys.");
+    }
 
     for(auto &acct : this->internal->accounts) {
         UserDetail *detail = acct.second.get();
