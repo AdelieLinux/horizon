@@ -482,6 +482,10 @@
                     <title>Runner.Validate.encrypt.Block</title>
                     <para>If the system is running in an installation environment, the system shall verify that the value of each <literal>encrypt</literal> key, and the first value of each <literal>encrypt</literal> key tuple, specifies a valid block device or a block device that will be created.</para>
                 </formalpara>
+                <formalpara id="Runner.Validate.encrypt.Unique">
+                    <title>Runner.Validate.encrypt.Unique</title>
+                    <para>The system shall verify that the value of each <literal>encrypt</literal> key, and the first value of each <literal>encrypt</literal> key tuple, is unique to all <literal>encrypt</literal> keys and <literal>encrypt</literal> key tuples in the HorizonScript.</para>
+                </formalpara>
                 <formalpara id="Runner.Validate.fs">
                     <title>Runner.Validate.fs</title>
                     <para>The systemm shall verify any <literal>fs</literal> keys contained in the HorizonScript.</para>
