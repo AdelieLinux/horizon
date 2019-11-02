@@ -11,12 +11,18 @@
  */
 
 #include <string>
+#include <vector>
 #ifdef HAVE_LIBCURL
-#    include <cstdio>       /* fopen */
-#    include <cstring>      /* strerror */
-#    include <curl/curl.h>  /* curl_* */
-#    include <errno.h>      /* errno */
+#    include <cstdio>           /* fopen */
+#    include <cstring>          /* strerror */
+#    include <curl/curl.h>      /* curl_* */
+#    include <errno.h>          /* errno */
 #endif /* HAVE_LIBCURL */
+#ifdef HAS_INSTALL_ENV
+#   include <spawn.h>           /* posix_spawnp */
+#   include <sys/wait.h>        /* waitpid, W* */
+#   include <unistd.h>          /* environ */
+#endif
 #include "util/output.hh"
 
 #ifdef HAVE_LIBCURL
@@ -59,3 +65,51 @@ bool download_file(const std::string &url, const std::string &path) {
     return false;
 }
 #endif /* HAVE_LIBCURL */
+
+int run_command(const std::string &cmd, const std::vector<std::string> &args) {
+#ifdef HAS_INSTALL_ENV
+    const char **argv = new const char*[args.size() + 2];
+    pid_t child;
+    int status;
+
+    argv[0] = cmd.c_str();
+    for(unsigned long index = 0; index < args.size(); index++) {
+        argv[index + 1] = args.at(index).c_str();
+    }
+    argv[args.size() + 1] = nullptr;
+
+    status = posix_spawnp(&child, cmd.c_str(), nullptr, nullptr,
+                          const_cast<char * const *>(argv), environ);
+    if(status != 0) {
+        /* extremely unlikely failure case */
+        output_error(cmd, "cannot fork", strerror(status));
+        delete[] argv;
+        return -1;
+    }
+
+    delete[] argv;
+
+    if(waitpid(child, &status, 0) == -1) {
+        /* unlikely failure case */
+        output_error(cmd, "waitpid", strerror(errno));
+        return -1;
+    }
+
+    if(!WIFEXITED(status)) {
+        output_error(cmd, "received fatal signal " +
+                     std::to_string(WTERMSIG(status)));
+        return -1;
+    }
+
+    if(WEXITSTATUS(status) != 0) {
+        output_error(cmd, "exited abnormally with status " +
+                     std::to_string(WEXITSTATUS(status)));
+        return false;
+    }
+
+    return WEXITSTATUS(status);
+#else /* !HAS_INSTALL_ENV */
+    output_error(cmd, "can't spawn processes in runtine environment");
+    return -1;
+#endif /* HAS_INSTALL_ENV */
+}

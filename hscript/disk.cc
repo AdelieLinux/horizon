@@ -22,14 +22,13 @@
 #   include "util/filesystem.hh"
 #   include <libudev.h>        /* udev_* */
 #   include <parted/parted.h>  /* ped_* */
-#   include <spawn.h>          /* posix_spawnp */
 #   include <sys/mount.h>      /* mount */
 #   include <sys/stat.h>       /* stat */
 #   include <sys/types.h>      /* S_* */
-#   include <sys/wait.h>       /* waitpid, W* */
 #   include <unistd.h>         /* access */
 #endif /* HAS_INSTALL_ENV */
 #include "disk.hh"
+#include "util.hh"
 #include "util/output.hh"
 
 using namespace Horizon::Keys;
@@ -877,47 +876,9 @@ bool Filesystem::execute(ScriptOptions opts) const {
     }
 
 #ifdef HAS_INSTALL_ENV
-    const char **argv = new const char*[args.size() + 2];
-    pid_t child;
-    int status;
-
-    argv[0] = cmd.c_str();
-    for(unsigned long index = 0; index < args.size(); index++) {
-        argv[index + 1] = args.at(index).c_str();
-    }
-    argv[args.size() + 1] = nullptr;
-
-    status = posix_spawnp(&child, cmd.c_str(), nullptr, nullptr,
-                          const_cast<char * const *>(argv), environ);
-    if(status != 0) {
-        /* extremely unlikely failure case */
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "fs: cannot fork", strerror(status));
-        delete[] argv;
-        return false;
-    }
-
-    delete[] argv;
-
-    if(waitpid(child, &status, 0) == -1) {
-        /* unlikely failure case */
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "fs: waitpid", strerror(errno));
-        return false;
-    }
-
-    if(!WIFEXITED(status)) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "fs: received fatal signal " +
-                     std::to_string(WTERMSIG(status)) + " while running " +
-                     cmd);
-        return false;
-    }
-
-    if(WEXITSTATUS(status) != 0) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "fs: " + cmd + " exited with status " +
-                     std::to_string(WEXITSTATUS(status)));
+    if(run_command(cmd, args) != 0) {
+        output_error("installfile:" + std::to_string(line),
+                     "fs: failed to create filesystem");
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
