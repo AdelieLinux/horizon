@@ -482,6 +482,10 @@ bool Partition::validate(ScriptOptions opts) const {
 }
 
 bool Partition::execute(ScriptOptions opts) const {
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "partition: creating partition #" + std::to_string(_partno) +
+                " on " + _block);
+
     if(opts.test(Simulate)) {
         output_error("installfile:" + std::to_string(this->lineno()),
                      "partition: Not supported in Simulation mode");
@@ -826,6 +830,9 @@ bool Filesystem::execute(ScriptOptions opts) const {
     std::string cmd;
     std::vector<std::string> args;
 
+    output_info("installfile:" + std::to_string(line),
+                "fs: creating new filesystem on " + _block);
+
     switch(_type) {
     case Ext2:
         cmd = "mkfs.ext2";
@@ -870,7 +877,7 @@ bool Filesystem::execute(ScriptOptions opts) const {
     }
 
 #ifdef HAS_INSTALL_ENV
-    const char **argv = new const char*[args.size() + 1];
+    const char **argv = new const char*[args.size() + 2];
     pid_t child;
     int status;
 
@@ -878,13 +885,14 @@ bool Filesystem::execute(ScriptOptions opts) const {
     for(unsigned long index = 0; index < args.size(); index++) {
         argv[index + 1] = args.at(index).c_str();
     }
+    argv[args.size() + 1] = nullptr;
 
     status = posix_spawnp(&child, cmd.c_str(), nullptr, nullptr,
-                          const_cast<char * const *>(argv), nullptr);
+                          const_cast<char * const *>(argv), environ);
     if(status != 0) {
         /* extremely unlikely failure case */
         output_error("installfile:" + std::to_string(this->lineno()),
-                     "filesystem: cannot fork", strerror(status));
+                     "fs: cannot fork", strerror(status));
         delete[] argv;
         return false;
     }
@@ -894,13 +902,13 @@ bool Filesystem::execute(ScriptOptions opts) const {
     if(waitpid(child, &status, 0) == -1) {
         /* unlikely failure case */
         output_error("installfile:" + std::to_string(this->lineno()),
-                     "filesystem: waitpid", strerror(errno));
+                     "fs: waitpid", strerror(errno));
         return false;
     }
 
     if(!WIFEXITED(status)) {
         output_error("installfile:" + std::to_string(this->lineno()),
-                     "filesystem: received fatal signal " +
+                     "fs: received fatal signal " +
                      std::to_string(WTERMSIG(status)) + " while running " +
                      cmd);
         return false;
@@ -908,7 +916,7 @@ bool Filesystem::execute(ScriptOptions opts) const {
 
     if(WEXITSTATUS(status) != 0) {
         output_error("installfile:" + std::to_string(this->lineno()),
-                     "filesystem: " + cmd + " exited with status " +
+                     "fs: " + cmd + " exited with status " +
                      std::to_string(WEXITSTATUS(status)));
         return false;
     }

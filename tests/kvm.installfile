@@ -1,0 +1,10 @@
+hostname horizonkvmtest-ppc64.adelielinux.org
+rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
+network true
+netaddress eth0 dhcp
+diskid /dev/sda QEMU_HARDDISK
+disklabel /dev/sda gpt
+partition /dev/sda 1 fill
+fs /dev/sda1 ext4
+mount /dev/sda1 /
+pkginstall adelie-base-posix
