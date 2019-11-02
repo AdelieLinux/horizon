@@ -94,6 +94,11 @@ bool DiskId::validate(ScriptOptions options) const {
 
 bool DiskId::execute(ScriptOptions options) const {
     bool match = false;
+
+    output_info("installfile:" + std::to_string(line),
+                "diskid: Checking " + _block + " for identification string " +
+                _ident);
+
     if(!options.test(InstallEnvironment)) return true;
 
 #ifdef HAS_INSTALL_ENV
@@ -131,6 +136,16 @@ bool DiskId::execute(ScriptOptions options) const {
     if(serial) {
         std::string full_str(serial);
         match = (full_str.find(_ident) != std::string::npos);
+    } else {
+        output_error("installfile:" + std::to_string(line),
+                     "diskid: failed to retrieve disk identification",
+                     "cannot read disk information");
+    }
+
+    if(!match) {
+        output_error("installfile:" + std::to_string(line),
+                     "diskid: device does not match expected identification "
+                     "string");
     }
 
     udev_device_unref(device);
@@ -203,6 +218,10 @@ bool DiskLabel::execute(ScriptOptions options) const {
         break;
     }
 
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "disklabel: creating new " + type_str + " disklabel on " +
+                device());
+
     if(options.test(Simulate)) {
         std::cout << "parted -ms " << this->device() << " mklabel "
                   << type_str << std::endl;
@@ -212,6 +231,7 @@ bool DiskLabel::execute(ScriptOptions options) const {
 #ifdef HAS_INSTALL_ENV
     PedDevice *pdevice = ped_device_get(this->device().c_str());
     PedDiskType *label = ped_disk_type_get(type_str.c_str());
+
     if(label == nullptr) {
         output_error("installfile:" + std::to_string(this->lineno()),
                      "disklabel: Parted does not support label type " +
@@ -225,7 +245,7 @@ bool DiskLabel::execute(ScriptOptions options) const {
     if(disk == nullptr) {
         output_error("installfile:" + std::to_string(this->lineno()),
                      "disklabel: internal error creating new " +
-                     type_str + " label on " + _block);
+                     type_str + " disklabel on " + _block);
         return false;
     }
 
