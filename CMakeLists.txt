@@ -53,17 +53,6 @@ IF(NOT HAVE_LINUX_WIRELESS_H)
 SET(INSTALL OFF)
 ENDIF(NOT HAVE_LINUX_WIRELESS_H)
 
-IF(INSTALL)
-    add_definitions(-DHAS_INSTALL_ENV)
-    pkg_check_modules(BLKID REQUIRED blkid)
-    pkg_check_modules(LIBUDEV REQUIRED libudev)
-    pkg_check_modules(PARTED REQUIRED libparted)
-    find_library(BCNM_LIBRARY REQUIRED wpactrl PATH_SUFFIXES bcnm)
-    set(BUILD_SHARED_LIBS ON)
-ELSE(INSTALL)
-    set(BUILD_SHARED_LIBS OFF)
-ENDIF(INSTALL)
-
 
 include_directories(.)
 
@@ -71,6 +60,21 @@ include_directories(.)
 ## Test stuff ##
 find_program(RSPEC_EXECUTABLE NAMES rspec)
 enable_testing()
+
+
+IF(INSTALL)
+    add_definitions(-DHAS_INSTALL_ENV)
+    pkg_check_modules(BLKID REQUIRED blkid)
+    pkg_check_modules(LIBUDEV REQUIRED libudev)
+    pkg_check_modules(PARTED REQUIRED libparted)
+    find_library(BCNM_LIBRARY REQUIRED wpactrl PATH_SUFFIXES bcnm)
+    set(BUILD_SHARED_LIBS ON)
+
+    add_subdirectory(executor)
+ELSE(INSTALL)
+    set(BUILD_SHARED_LIBS OFF)
+ENDIF(INSTALL)
+
 
 add_subdirectory(hscript)
 IF(BUILD_TOOLS)
