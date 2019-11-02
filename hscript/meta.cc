@@ -478,7 +478,7 @@ bool Repository::execute(ScriptOptions opts) const {
 
 #ifdef HAS_INSTALL_ENV
     std::ofstream repo_f("/target/etc/apk/repositories",
-                         std::ios_base::ate);
+                         std::ios_base::app);
     if(!repo_f) {
         output_error("installfile:" + std::to_string(this->lineno()),
                      "repository: could not open /etc/apk/repositories "
