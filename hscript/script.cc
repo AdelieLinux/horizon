@@ -1224,11 +1224,29 @@ bool Script::execute() const {
 
     /**************** PRE PACKAGE METADATA ****************/
     output_step_start("pre-metadata");
+
+    /* REQ: Runner.Execute.hostname */
     if(!this->internal->hostname->execute(opts)) {
         EXECUTE_FAILURE("pre-metadata");
         return false;
     }
 
+    /* REQ: Runner.Execute.repository */
+    if(opts.test(Simulate)) {
+        std::cout << "mkdir -p /target/etc/apk" << std::endl;
+    }
+#ifdef HAS_INSTALL_ENV
+    else {
+        if(!fs::exists("/target/etc/apk", ec)) {
+            fs::create_directory("/target/etc/apk", ec);
+            if(ec) {
+                output_error("internal", "failed to initialise APK");
+                EXECUTE_FAILURE("pre-metadata");
+                return false;
+            }
+        }
+    }
+#endif /* HAS_INSTALL_ENV */
     for(auto &repo : this->internal->repos) {
         if(!repo->execute(opts)) {
             EXECUTE_FAILURE("pre-metadata");
@@ -1324,6 +1342,7 @@ bool Script::execute() const {
         }
 
         if(opts.test(Simulate)) {
+            std::cout << "mkdir -p /target/etc/conf.d" << std::endl;
             std::cout << "cat >>/target/etc/conf.d/net <<- NETCONF_EOF"
                       << std::endl << conf.str() << std::endl
                       << "NETCONF_EOF" << std::endl;
@@ -1388,6 +1407,14 @@ bool Script::execute() const {
 
     /**************** PKGDB ****************/
     output_step_start("pkgdb");
+
+    /* REQ: Runner.Execute.signingkey */
+    for(auto &key : this->internal->repo_keys) {
+        if(!key->execute(opts)) {
+            EXECUTE_FAILURE("pkgdb");
+            return false;
+        }
+    }
 
     /* REQ: Runner.Execute.pkginstall.APKDB */
     output_info("internal", "initialising APK");

@@ -266,6 +266,9 @@ bool NetAddress::validate(ScriptOptions opts) const {
 }
 
 bool NetAddress::execute(ScriptOptions) const {
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "netaddress: adding configuration for " + _iface);
+
     std::ofstream config("/tmp/horizon/netifrc/config_" + this->iface(),
                          std::ios_base::app);
     if(!config) {
@@ -477,6 +480,9 @@ bool NetSSID::validate(ScriptOptions options) const {
 }
 
 bool NetSSID::execute(ScriptOptions) const {
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "netssid: configuring SSID " + _ssid);
+
     std::ofstream conf("/tmp/horizon/wpa_supplicant.conf",
                        std::ios_base::app);
     if(!conf) {

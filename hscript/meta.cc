@@ -130,6 +130,7 @@ bool Hostname::execute(ScriptOptions opts) const {
         output_info("installfile:" + std::to_string(this->lineno()),
                     "hostname: set domain name '" + domain + "'");
         if(opts.test(Simulate)) {
+            std::cout << "mkdir -p /target/etc/conf.d" << std::endl;
             std::cout << "printf 'dns_domain_lo=\"" << domain
                       << "\"\\" << "n' >> /target/etc/conf.d/net" << std::endl;
         }
