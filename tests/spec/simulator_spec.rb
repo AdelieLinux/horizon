@@ -78,4 +78,11 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             expect(last_command_started.stdout).to include("network={\n\tssid=\"The New Fox 5G\"\n\tpsk=\"shh, sekrit!\"\n\tpriority=5\n}")
         end
     end
+    context "simulating 'fs' execution" do
+        it "creates ext4 filesystems correctly" do
+            use_fixture '0179-fs-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("mkfs.ext4 -q -z /tmp/undo-sdb1 /dev/sdb1")
+        end
+    end
 end

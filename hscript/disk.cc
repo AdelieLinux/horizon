@@ -16,14 +16,17 @@
 #include <set>
 #include <string>
 #ifdef HAS_INSTALL_ENV
+#   include <array>
 #   include <assert.h>         /* assert */
 #   include <blkid/blkid.h>    /* blkid_get_tag_value */
 #   include "util/filesystem.hh"
 #   include <libudev.h>        /* udev_* */
 #   include <parted/parted.h>  /* ped_* */
+#   include <spawn.h>          /* posix_spawnp */
 #   include <sys/mount.h>      /* mount */
 #   include <sys/stat.h>       /* stat */
 #   include <sys/types.h>      /* S_* */
+#   include <sys/wait.h>       /* waitpid, W* */
 #   include <unistd.h>         /* access */
 #endif /* HAS_INSTALL_ENV */
 #include "disk.hh"
@@ -456,7 +459,7 @@ bool Partition::execute(ScriptOptions opts) const {
     if(opts.test(Simulate)) {
         output_error("installfile:" + std::to_string(this->lineno()),
                      "partition: Not supported in Simulation mode");
-        return false;
+        return true;
     }
 
 #ifdef HAS_INSTALL_ENV
@@ -776,8 +779,98 @@ bool Filesystem::validate(ScriptOptions) const {
     return true;
 }
 
-bool Filesystem::execute(ScriptOptions) const {
-    return false;
+bool Filesystem::execute(ScriptOptions opts) const {
+    std::string cmd;
+    std::vector<std::string> args;
+
+    switch(_type) {
+    case Ext2:
+        cmd = "mkfs.ext2";
+        break;
+    case Ext3:
+        cmd = "mkfs.ext3";
+        break;
+    case Ext4:
+        cmd = "mkfs.ext4";
+        break;
+    case JFS:
+        cmd = "mkfs.jfs";
+        args.push_back("-q");
+        break;
+    case VFAT:
+        cmd = "mkfs.vfat";
+        args.push_back("-F32");
+        break;
+    case XFS:
+        cmd = "mkfs.xfs";
+        args.push_back("-f");
+        break;
+    }
+
+    if(_type == Ext2 || _type == Ext3 || _type == Ext4) {
+        const std::string dev_node(
+                    device().substr(device().find_last_of('/') + 1));
+        args.push_back("-q");
+        args.push_back("-z");
+        args.push_back("/tmp/undo-" + dev_node);
+    }
+
+    args.push_back(_block);
+
+    if(opts.test(Simulate)) {
+        std::cout << cmd;
+        for(auto &&arg : args) {
+            std::cout << " " << arg;
+        }
+        std::cout << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    const char **argv = new const char*[args.size() + 1];
+    pid_t child;
+    int status;
+
+    argv[0] = cmd.c_str();
+    for(unsigned long index = 0; index < args.size(); index++) {
+        argv[index + 1] = args.at(index).c_str();
+    }
+
+    status = posix_spawnp(&child, cmd.c_str(), nullptr, nullptr,
+                          const_cast<char * const *>(argv), nullptr);
+    if(status != 0) {
+        /* extremely unlikely failure case */
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "filesystem: cannot fork", strerror(status));
+        delete[] argv;
+        return false;
+    }
+
+    delete[] argv;
+
+    if(waitpid(child, &status, 0) == -1) {
+        /* unlikely failure case */
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "filesystem: waitpid", strerror(errno));
+        return false;
+    }
+
+    if(!WIFEXITED(status)) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "filesystem: received fatal signal " +
+                     std::to_string(WTERMSIG(status)) + " while running " +
+                     cmd);
+        return false;
+    }
+
+    if(WEXITSTATUS(status) != 0) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "filesystem: " + cmd + " exited with status " +
+                     std::to_string(WEXITSTATUS(status)));
+        return false;
+    }
+#endif /* HAS_INSTALL_ENV */
+    return true;
 }
 
 
