@@ -191,6 +191,18 @@ Specification.  The documents are written in DocBook XML; the HTML and PDF
 versions are not stored in this repository.
 
 
+``executor``: HorizonScript Executor
+````````````````````````````````````
+The ``executor`` directory includes the source code for the HorizonScript
+Executor, which is the primary executable for running HorizonScript files.
+
+
+``fetch``: HorizonScript Locator
+````````````````````````````````
+The ``fetch`` directory includes the source for the HorizonScript Locator,
+used on the target computer to retrieve the installfile.
+
+
 ``hscript``: HorizonScript library
 ``````````````````````````````````
 The ``hscript`` directory includes the source code for the HorizonScript
