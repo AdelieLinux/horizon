@@ -452,8 +452,84 @@ bool Partition::validate(ScriptOptions opts) const {
     return true;
 }
 
-bool Partition::execute(ScriptOptions) const {
-    return false;
+bool Partition::execute(ScriptOptions opts) const {
+    if(opts.test(Simulate)) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "partition: Not supported in Simulation mode");
+        return false;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    PedDevice *dev = ped_device_get(this->device().c_str());
+    if(dev == nullptr) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "partition: error opening device " + this->device());
+        return false;
+    }
+
+    PedDisk *disk = ped_disk_new(dev);
+    if(disk == nullptr) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "partition: error reading device " + this->device());
+        return false;
+    }
+
+    int last = ped_disk_get_last_partition_num(disk);
+
+    /* no partitions = 0 partitions */
+    if(last == -1) last = 0;
+
+    if(last != (this->partno() - 1)) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "partition: consistency error on " + this->device(),
+                     "Partition #" + std::to_string(this->partno()) +
+                     " has been requested, but the disk has " +
+                     std::to_string(last) + " partitions");
+        ped_disk_destroy(disk);
+        return false;
+    }
+
+    PedPartition *before, *me;
+    PedSector start = 0;
+    PedSector size;
+    if(last > 0) {
+        before = ped_disk_get_partition(disk, last);
+        if(before == nullptr) {
+            output_error("installfile:" + std::to_string(this->lineno()),
+                         "partition: error reading partition table on " +
+                         this->device());
+            ped_disk_destroy(disk);
+            return false;
+        }
+        start = before->geom.end + 1;
+    }
+
+    switch(this->size_type()) {
+    case SizeType::Bytes:
+        size = static_cast<int64_t>(this->size()) / dev->sector_size;
+        break;
+    case SizeType::Percent:
+        size = dev->length * (this->size() / 100.0);
+        break;
+    case SizeType::Fill:
+        size = dev->length - start;
+        break;
+    }
+
+    me = ped_partition_new(disk, PED_PARTITION_NORMAL, nullptr,
+                           start, start + size);
+    if(me == nullptr) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "partition: error creating partition on " +
+                     this->device());
+        ped_disk_destroy(disk);
+        return false;
+    }
+
+    ped_disk_add_partition(disk, me, ped_constraint_any(dev));
+    ped_disk_destroy(disk);
+#endif /* HAS_INSTALL_ENV */
+    return true;
 }
 
 
