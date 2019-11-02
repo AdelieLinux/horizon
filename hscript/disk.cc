@@ -231,6 +231,7 @@ bool DiskLabel::execute(ScriptOptions options) const {
 #ifdef HAS_INSTALL_ENV
     PedDevice *pdevice = ped_device_get(this->device().c_str());
     PedDiskType *label = ped_disk_type_get(type_str.c_str());
+    int res;
 
     if(label == nullptr) {
         output_error("installfile:" + std::to_string(this->lineno()),
@@ -249,7 +250,12 @@ bool DiskLabel::execute(ScriptOptions options) const {
         return false;
     }
 
-    return (ped_disk_commit(disk) == 1);
+    res = ped_disk_commit(disk);
+    if(res != 1) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "disklabel: error creating disklabel on " + _block);
+    }
+    return (res == 1);
 #else
     return false;
 #endif /* HAS_INSTALL_ENV */
@@ -514,7 +520,7 @@ bool Partition::execute(ScriptOptions opts) const {
 
     PedPartition *before, *me;
     PedSector start = 0;
-    PedSector size;
+    PedSector size = 0;
     if(last > 0) {
         before = ped_disk_get_partition(disk, last);
         if(before == nullptr) {
@@ -549,7 +555,24 @@ bool Partition::execute(ScriptOptions opts) const {
         return false;
     }
 
-    ped_disk_add_partition(disk, me, ped_constraint_any(dev));
+    int res = ped_disk_add_partition(disk, me, ped_constraint_any(dev));
+    if(res == 0) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "partition: error adding partition to " +
+                     this->device());
+        ped_disk_destroy(disk);
+        return false;
+    }
+
+    res = ped_disk_commit(disk);
+    if(res != 1) {
+        output_error("installfile:" + std::to_string(this->lineno()),
+                     "partition: error flushing changes to " +
+                     this->device());
+        ped_disk_destroy(disk);
+        return false;
+    }
+
     ped_disk_destroy(disk);
 #endif /* HAS_INSTALL_ENV */
     return true;
