@@ -8,6 +8,16 @@
 
 
 
+Code Style
+==========
+
+See the `Code Style Guide`_ for information about the code style used in
+Project Horizon.
+
+.. _`Code Style Guide`: devel/STYLE.rst
+
+
+
 Tests
 =====
 
