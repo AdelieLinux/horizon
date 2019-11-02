@@ -1281,6 +1281,9 @@ bool Script::execute() const {
                              "cannot read wireless networking configuration");
             }
         } else {
+            if(!fs::exists("/target/etc/wpa_supplicant", ec)) {
+                fs::create_directory("/target/etc/wpa_supplicant", ec);
+            }
             fs::copy_file("/tmp/horizon/wpa_supplicant.conf",
                           "/target/etc/wpa_supplicant/wpa_supplicant.conf",
                           fs_overwrite, ec);
@@ -1325,6 +1328,13 @@ bool Script::execute() const {
                       << std::endl << conf.str() << std::endl
                       << "NETCONF_EOF" << std::endl;
         } else {
+            if(!fs::exists("/target/etc/conf.d")) {
+                fs::create_directory("/target/etc/conf.d", ec);
+                if(ec) {
+                    output_error("internal", "could not create /etc/conf.d "
+                                 "directory", ec.message());
+                }
+            }
             std::ofstream conf_file("/target/etc/conf.d/net",
                                     std::ios_base::app);
             if(!conf_file) {

@@ -135,6 +135,15 @@ bool Hostname::execute(ScriptOptions opts) const {
         }
 #ifdef HAS_INSTALL_ENV
         else {
+            if(!fs::exists("/target/etc/conf.d")) {
+                error_code ec;
+                fs::create_directory("/target/etc/conf.d", ec);
+                if(ec) {
+                    output_error("installfile:" + std::to_string(line),
+                                 "hostname: could not create /etc/conf.d "
+                                 "directory", ec.message());
+                }
+            }
             std::ofstream net_conf_f("/target/etc/conf.d/net",
                                      std::ios_base::app);
             if(!net_conf_f) {
