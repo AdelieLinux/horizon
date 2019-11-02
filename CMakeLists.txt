@@ -5,7 +5,7 @@ include(CheckIncludeFiles)
 
 project(Horizon
         LANGUAGES C CXX
-	VERSION 0.1.0)
+        VERSION 0.2.0)
 
 
 add_definitions(-DVERSTR="${PROJECT_VERSION}")
