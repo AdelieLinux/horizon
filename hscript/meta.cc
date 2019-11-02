@@ -154,7 +154,7 @@ bool Hostname::execute(ScriptOptions opts) const {
                              "writing");
                 return false;
             }
-            net_conf_f << "dns_domain_lo\"" << domain << "\"" << std::endl;
+            net_conf_f << "dns_domain_lo=\"" << domain << "\"" << std::endl;
         }
 #endif /* HAS_INSTALL_ENV */
     }
