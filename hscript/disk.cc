@@ -733,6 +733,7 @@ Key *Filesystem::parseFromData(const std::string &data, int lineno,
     std::string::size_type sep = data.find(' ');
     std::string device(data.substr(0, sep));
     std::string fstype(data.substr(sep + 1));
+    FilesystemType type;
 
     if(device.size() < 6 || device.compare(0, 5, "/dev/")) {
         if(errors) *errors += 1;
@@ -753,7 +754,21 @@ Key *Filesystem::parseFromData(const std::string &data, int lineno,
         return nullptr;
     }
 
-    return new Filesystem(lineno, device, fstype);
+    if(fstype == "ext2") {
+        type = Ext2;
+    } else if(fstype == "ext3") {
+        type = Ext3;
+    } else if(fstype == "ext4") {
+        type = Ext4;
+    } else if(fstype == "jfs") {
+        type = JFS;
+    } else if(fstype == "vfat") {
+        type = VFAT;
+    } else {
+        type = XFS;
+    }
+
+    return new Filesystem(lineno, device, type);
 }
 
 bool Filesystem::validate(ScriptOptions) const {
