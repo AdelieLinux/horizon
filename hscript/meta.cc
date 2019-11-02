@@ -20,6 +20,7 @@
 #endif /* HAS_INSTALL_ENV */
 #include <unistd.h>         /* access - used by tz code even in RT env */
 #include "meta.hh"
+#include "util.hh"
 #include "util/output.hh"
 
 using namespace Horizon::Keys;
@@ -511,6 +512,48 @@ bool SigningKey::validate(ScriptOptions) const {
     return true;
 }
 
-bool SigningKey::execute(ScriptOptions) const {
-    return false;
+bool SigningKey::execute(ScriptOptions opts) const {
+    /* everything after the last / in the value is the filename */
+    const std::string name(_value.substr(_value.find_last_of('/') + 1));
+
+    const std::string target("/target/etc/apk/keys/" + name);
+
+    output_info("installfile:" + std::to_string(line),
+                "signingkey: trusting " + name + " for repository signing");
+
+    if(opts.test(Simulate)) {
+        std::cout << "mkdir -p /target/etc/apk/keys" << std::endl;
+        if(_value[0] == '/') {
+            std::cout << "cp " << _value << " " << target << std::endl;
+        } else {
+            std::cout << "curl -L -o " << target << " " << _value << std::endl;
+        }
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    error_code ec;
+    if(!fs::exists("/target/etc/apk/keys")) {
+        fs::create_directory("/target/etc/apk/keys", ec);
+        if(ec) {
+            output_error("installfile:" + std::to_string(line),
+                         "signingkey: could not initialise target repository "
+                         "keys directory", ec.message());
+            return false;
+        }
+    }
+
+    if(_value[0] == '/') {
+        fs::copy_file(_value, target, fs_overwrite, ec);
+        if(ec) {
+            output_error("installfile:" + std::to_string(line),
+                         "signingkey: could not copy signing key to target",
+                         ec.message());
+            return false;
+        }
+    } else {
+        return download_file(_value, target);
+    }
+#endif /* HAS_INSTALL_ENV */
+    return true;
 }

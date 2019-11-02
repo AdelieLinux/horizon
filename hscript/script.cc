@@ -712,6 +712,26 @@ bool add_default_repos(std::vector<std::unique_ptr<Keys::Repository>> &repos) {
 }
 
 
+/*! Add the default repository keys to the signing key list.
+ * @param keys      The list of repository keys.
+ * The list +keys+ will be modified with the default repository signing keys
+ * for Adélie Linux.
+ */
+bool add_default_repo_keys(std::vector<std::unique_ptr<Keys::SigningKey>> &keys) {
+    Keys::SigningKey *key = dynamic_cast<Keys::SigningKey *>(
+        Horizon::Keys::SigningKey::parseFromData(
+            "/etc/apk/keys/packages@adelielinux.org.pub", 0, nullptr, nullptr)
+    );
+    if(!key) {
+        output_error("internal", "failed to create default repository signing key");
+        return false;
+    }
+    std::unique_ptr<Keys::SigningKey> repo_key(key);
+    keys.push_back(std::move(repo_key));
+    return true;
+}
+
+
 bool Script::validate() const {
     int failures = 0;
     std::set<std::string> seen_diskids, seen_labels, seen_parts, seen_pvs,
@@ -820,6 +840,13 @@ bool Script::validate() const {
                      std::to_string(this->internal->repos[11]->lineno()),
                      "repository: too many repositories specified",
                      "You may only specify up to 10 repositories.");
+    }
+
+    /* REQ: Script.signingkey */
+    if(this->internal->repo_keys.size() == 0) {
+        if(!add_default_repo_keys(this->internal->repo_keys)) {
+            return false;
+        }
     }
 
     /* REQ: Runner.Validate.signingkey */
