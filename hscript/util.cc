@@ -104,7 +104,6 @@ int run_command(const std::string &cmd, const std::vector<std::string> &args) {
     if(WEXITSTATUS(status) != 0) {
         output_error(cmd, "exited abnormally with status " +
                      std::to_string(WEXITSTATUS(status)));
-        return false;
     }
 
     return WEXITSTATUS(status);
