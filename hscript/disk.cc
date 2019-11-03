@@ -594,8 +594,29 @@ Key *LVMPhysical::parseFromData(const std::string &data, int lineno,
     return new LVMPhysical(lineno, data);
 }
 
-bool LVMPhysical::execute(ScriptOptions) const {
-    return false;
+bool LVMPhysical::execute(ScriptOptions opts) const {
+    output_info("installfile:" + std::to_string(line),
+                "lvm_pv: creating physical volume on " + _value);
+
+    if(opts.test(Simulate)) {
+        std::cout << "pvcreate --force " << _value << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    const char *fstype = blkid_get_tag_value(nullptr, "TYPE", _value.c_str());
+    if(fstype != nullptr && strcmp(fstype, "LVM2_member") == 0) {
+        /* already a pv; skip */
+        return true;
+    }
+
+    if(run_command("pvcreate", {"--force", _value}) != 0) {
+        output_error("installfile:" + std::to_string(line),
+                     "lvm_pv: failed to create physical volume on " + _value);
+        return false;
+    }
+#endif /* HAS_INSTALL_ENV */
+    return true;
 }
 
 
@@ -698,13 +719,80 @@ bool LVMGroup::test_pv(ScriptOptions) const {
     }
 
     return (strcmp(fstype, "LVM2_member") == 0);
-#else
+#else /* !HAS_INSTALL_ENV */
     return true;
-#endif
+#endif /* HAS_INSTALL_ENV */
 }
 
-bool LVMGroup::execute(ScriptOptions) const {
-    return false;
+/*! Determine if a named Volume Group currently exists on a LVM PV.
+ * @param vg        The name of the Volume Group.
+ * @param pv        The path to the LVM physical volume.
+ * @param line      The installfile line number.
+ * @param msgs      Whether or not to print messages.
+ * @returns true if +vg+ appears on +pv+; false otherwise.
+ */
+bool does_vg_exist_on_pv(const std::string &vg, const std::string &pv,
+                         long line, bool msgs) {
+    bool success = false;
+    const std::string pv_command("pvs --noheadings -o vg_name " + pv +
+                                 " 2>/dev/null");
+
+    FILE *pvs = popen(pv_command.c_str(), "r");
+    if(pvs == nullptr) {
+        if(msgs) output_error("installfile:" + std::to_string(line),
+                              "lvm_vg: can't determine if vg is duplicate");
+        return false;
+    }
+
+    char *buf = nullptr;
+    size_t buf_size = 0;
+    ssize_t read_bytes = getline(&buf, &buf_size, pvs);
+
+    pclose(pvs);
+
+    /* size must match *exactly* or else we could have a short compare succeed
+     * i.e. on-disk VG "Group", our VG "GroupNouveau"
+     * also, use vg.size() to avoid comparing the terminating \n */
+    if(static_cast<unsigned long>(read_bytes) != vg.size() + 3 ||
+       strncmp(buf + 2, vg.c_str(), vg.size())) {
+        if(msgs) output_error("installfile:" + std::to_string(line),
+                              "lvm_vg: volume group already exists and is "
+                              "not using the specified physical volume");
+    } else {
+        /* the VG already exists and uses the specified PV - we're good */
+        success = true;
+    }
+
+    free(buf);
+    return success;
+}
+
+bool LVMGroup::execute(ScriptOptions opts) const {
+    output_info("installfile:" + std::to_string(line),
+                "lvm_vg: creating volume group " + _vgname + " on " + _pv);
+
+    if(opts.test(Simulate)) {
+        std::cout << "vgcreate " << _vgname << " " << _pv << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    /* REQ: Runner.Execute.lvm_vg.Duplicate */
+    if(fs::exists("/dev/" + _vgname)) {
+        return does_vg_exist_on_pv(_vgname, _pv, line, true);
+    }
+
+    if(run_command("vgcreate", {_vgname, _pv}) != 0) {
+        if(does_vg_exist_on_pv(_vgname, _pv, line, true)) {
+            return true;
+        }
+
+        output_error("installfile:" + std::to_string(line),
+                     "lvm_vg: failed to create volume group");
+        return false;
+    }
+#endif /* HAS_INSTALL_ENV */
+    return true;
 }
 
 
@@ -760,6 +848,8 @@ bool LVMVolume::validate(ScriptOptions) const {
 }
 
 bool LVMVolume::execute(ScriptOptions) const {
+    output_info("installfile:" + std::to_string(line),
+                "lvm_lv: creating volume " + _lvname + " on " + _vg);
     return false;
 }
 
