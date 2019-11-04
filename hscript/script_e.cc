@@ -234,6 +234,7 @@ bool Script::execute() const {
         }
     }
 
+    bool dhcp = false;
     if(!internal->addresses.empty()) {
         fs::path netifrc_dir("/tmp/horizon/netifrc");
         if(!fs::exists(netifrc_dir) &&
@@ -247,6 +248,7 @@ bool Script::execute() const {
                 EXECUTE_FAILURE("netaddress");
                 /* "Soft" error.  Not fatal. */
             }
+            if(addr->type() == NetAddress::DHCP) dhcp = true;
         }
 
         std::ostringstream conf;
@@ -288,6 +290,55 @@ bool Script::execute() const {
         }
     }
 
+    /* REQ: Runner.Execute.nameserver */
+    if(!internal->nses.empty()) {
+        for(auto &ns : internal->nses) {
+            if(!ns->execute(opts)) {
+                EXECUTE_FAILURE("nameserver");
+                return false;
+            }
+        }
+
+        /* REQ: Runner.Execute.nameserver.FQDN */
+        const std::string &hostname(internal->hostname->value());
+        const std::string::size_type dot = hostname.find_first_of('.');
+        if(dot != std::string::npos && hostname.size() > dot + 1) {
+            const std::string domain(hostname.substr(dot + 1));
+            if(opts.test(Simulate)) {
+                std::cout << "printf 'domain " << domain << "\\"
+                          << "n >>/target/etc/resolv.conf" << std::endl;
+            } else {
+                std::ofstream resolvconf("/target/etc/resolv.conf",
+                                         std::ios_base::app);
+                if(!resolvconf) {
+                    output_error("internal", "failed to open resolv.conf");
+                    EXECUTE_FAILURE("nameserver");
+                    return false;
+                }
+                resolvconf << "domain " << domain << std::endl;
+            }
+        }
+
+        if(dhcp) {
+            if(opts.test(Simulate)) {
+                std::cout << "mv /target/etc/resolv.conf "
+                          << "/target/etc/resolv.conf.head" << std::endl;
+            } else {
+                if(fs::exists("/target/etc/resolv.conf", ec)) {
+                    fs::rename("/target/etc/resolv.conf",
+                               "/target/etc/resolv.conf.head", ec);
+                    if(ec) {
+                        output_error("internal",
+                                     "cannot save nameserver configuration",
+                                     ec.message());
+                        EXECUTE_FAILURE("nameserver");
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
     if(!internal->network->execute(opts)) {
         EXECUTE_FAILURE("network");
         return false;
@@ -304,6 +355,9 @@ bool Script::execute() const {
             }
             std::cout << "cp /target/etc/conf.d/net /etc/conf.d/net"
                       << std::endl;
+            if(!internal->nses.empty()) {
+                std::cout << "cp /target/etc/resolv.conf* /etc/" << std::endl;
+            }
         } else {
             if(do_wpa) {
                 fs::copy_file("/target/etc/wpa_supplicant/wpa_supplicant.conf",
@@ -322,6 +376,22 @@ bool Script::execute() const {
                              "during installation", ec.message());
                 EXECUTE_FAILURE("network");
                 return false;
+            }
+            if(!internal->nses.empty()) {
+                if(dhcp) {
+                    fs::copy_file("/target/etc/resolv.conf.head",
+                                  "/etc/resolv.conf.head", ec);
+                } else {
+                    fs::copy_file("/target/etc/resolv.conf",
+                                  "/etc/resolv.conf", ec);
+                }
+
+                if(ec) {
+                    output_error("internal", "cannot use DNS configuration "
+                                 "during installation", ec.message());
+                    EXECUTE_FAILURE("network");
+                    return false;
+                }
             }
         }
     }

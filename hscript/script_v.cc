@@ -13,6 +13,11 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#ifdef HAS_INSTALL_ENV
+#   include <resolv.h>      /* MAXNS */
+#else
+#   define MAXNS 3          /* default */
+#endif
 #include <set>
 #include <string>
 #include <vector>
@@ -211,6 +216,12 @@ bool Horizon::Script::validate() const {
     /* REQ: Runner.Validate.nameserver */
     for(auto &ns : internal->nses) {
         if(!ns->validate(opts)) failures++;
+    }
+    if(internal->nses.size() > MAXNS) {
+        output_warning("installfile:" +
+                       to_string(internal->nses[MAXNS]->lineno()),
+                       "nameserver: more nameservers are defined than usable",
+                       to_string(MAXNS) + " nameservers are allowed");
     }
 
     /* REQ: Runner.Validate.network.netssid */

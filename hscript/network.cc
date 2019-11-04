@@ -348,8 +348,21 @@ Key *Nameserver::parseFromData(const std::string &data, int lineno,
     return new Nameserver(lineno, data);
 }
 
-bool Nameserver::execute(ScriptOptions) const {
-    return false;
+bool Nameserver::execute(ScriptOptions opts) const {
+    if(opts.test(Simulate)) {
+        std::cout << "printf 'nameserver %s\\" << "n' " << _value
+                  << " >>/target/etc/resolv.conf" << std::endl;
+        return true;
+    }
+
+    std::ofstream resolvconf("/target/etc/resolv.conf", std::ios_base::app);
+    if(!resolvconf) {
+        output_error("installfile:" + std::to_string(line),
+                     "nameserver: couldn't write configuration to target");
+        return false;
+    }
+    resolvconf << "nameserver " << _value << std::endl;
+    return true;
 }
 
 
