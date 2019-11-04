@@ -97,7 +97,7 @@ purpose.  Methods SHOULD also use Doxygen-style notation for describing their
 parameters, return values (if any), and side-effects (if any).
 
 
-Encapuslation
+Encapsulation
 -------------
 
 C++ classes that are meant to be public API (that is, consumed by external
