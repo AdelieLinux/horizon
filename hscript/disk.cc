@@ -788,7 +788,7 @@ bool LVMGroup::execute(ScriptOptions opts) const {
         }
 
         output_error("installfile:" + std::to_string(line),
-                     "lvm_vg: failed to create volume group");
+                     "lvm_vg: failed to create volume group " + _vgname);
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
@@ -847,10 +847,40 @@ bool LVMVolume::validate(ScriptOptions) const {
     return true;
 }
 
-bool LVMVolume::execute(ScriptOptions) const {
+bool LVMVolume::execute(ScriptOptions opts) const {
     output_info("installfile:" + std::to_string(line),
                 "lvm_lv: creating volume " + _lvname + " on " + _vg);
-    return false;
+    std::string param, size;
+
+    switch(_size_type) {
+    case Fill:
+        param = "-l";
+        size = "100%FREE";
+        break;
+    case Bytes:
+        param = "-L";
+        size = std::to_string(_size) + "B";
+        break;
+    case Percent:
+        param = "-l";
+        size = std::to_string(_size) + "%VG";
+        break;
+    }
+
+    if(opts.test(Simulate)) {
+        std::cout << "lvcreate " << param << " " << size << " -n "
+                  << _lvname << " " << _vg << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    if(run_command("lvcreate", {param, size, "-n", _lvname, _vg}) != 0) {
+        output_error("installfile:" + std::to_string(line),
+                     "lvm_lv: failed to create logical volume " + _lvname);
+        return false;
+    }
+#endif /* HAS_INSTALL_ENV */
+    return true;
 }
 
 
