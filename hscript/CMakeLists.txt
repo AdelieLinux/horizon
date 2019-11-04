@@ -2,7 +2,10 @@ pkg_check_modules(CURL libcurl)
 
 set(HSCRIPT_SOURCE
 	script.cc
+        script_v.cc
+        script_e.cc
         disk.cc
+        disk_lvm.cc
         key.cc
         meta.cc
         network.cc
