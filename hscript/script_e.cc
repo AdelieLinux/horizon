@@ -455,7 +455,10 @@ bool Script::execute() const {
         return false;
     }
 
-    /* keymap */
+    if(internal->keymap && !internal->keymap->execute(opts)) {
+        EXECUTE_FAILURE("keymap");
+        return false;
+    }
     /* UserAccounts */
 
     if(!internal->tzone->execute(opts)) {

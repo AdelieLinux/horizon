@@ -339,7 +339,41 @@ bool Keymap::validate(ScriptOptions) const {
     return true;
 }
 
-bool Keymap::execute(ScriptOptions) const {
+bool Keymap::execute(ScriptOptions opts) const {
+    const std::string conf("# KEYBOARD CONFIGURATION FILE\n\
+\n\
+# Consult the keyboard(5) manual page.\n\
+\n\
+XKBMODEL=pc105\n\
+XKBLAYOUT=" + _value + "\n\
+XKBVARIANT=\n\
+XKBOPTIONS=\n\
+\n\
+BACKSPACE=guess"
+                           );
+
+    output_info("installfile:" + std::to_string(line),
+                "keymap: setting system keyboard map to " + _value);
+
+    if(opts.test(Simulate)) {
+        std::cout << "cat >/target/etc/default/keyboard <<-KEYCONF"
+                  << std::endl;
+        std::cout << conf << std::endl;
+        std::cout << "KEYCONF" << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    std::ofstream keyconf("/target/etc/default/keyboard",
+                          std::ios_base::trunc);
+    if(!keyconf) {
+        output_error("installfile:" + std::to_string(line),
+                     "keymap: cannot write target keyboard configuration");
+        return false;
+    }
+
+    keyconf << conf;
+#endif /* HAS_INSTALL_ENV */
     return true;
 }
 
