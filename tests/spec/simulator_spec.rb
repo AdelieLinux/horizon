@@ -27,6 +27,23 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
             expect(last_command_started.stdout).to start_with("#!/bin/sh")
         end
     end
+    context "simulating 'disklabel' execution" do
+        it "creates Apple Partition Maps correctly" do
+            use_fixture '0122-disklabel-apm.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("parted -ms /dev/sda mklabel apm")
+        end
+        it "creates GUID Partition Tables correctly" do
+            use_fixture '0124-disklabel-gpt.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("parted -ms /dev/sda mklabel gpt")
+        end
+        it "creates MBR tables correctly" do
+            use_fixture '0123-disklabel-mbr.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("parted -ms /dev/sda mklabel mbr")
+        end
+    end
     context "simulating 'lvm_pv' execution" do
         it "creates a physical volume" do
             use_fixture '0163-lvmpv-basic.installfile'
@@ -49,10 +66,35 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
         end
     end
     context "simulating 'fs' execution" do
+        it "creates ext2 filesystems correctly" do
+            use_fixture '0193-fs-ext2.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("mkfs.ext2 -q -z /tmp/undo-sdb1 /dev/sdb1")
+        end
+        it "creates ext3 filesystems correctly" do
+            use_fixture '0194-fs-ext3.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("mkfs.ext3 -q -z /tmp/undo-sdb1 /dev/sdb1")
+        end
         it "creates ext4 filesystems correctly" do
             use_fixture '0179-fs-basic.installfile'
             run_simulate
             expect(last_command_started.stdout).to include("mkfs.ext4 -q -z /tmp/undo-sdb1 /dev/sdb1")
+        end
+        it "creates JFS filesystems correctly" do
+            use_fixture '0195-fs-jfs.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("mkfs.jfs -q /dev/sdb1")
+        end
+        it "creates VFAT filesystems correctly" do
+            use_fixture '0196-fs-vfat.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("mkfs.vfat -F32 /dev/sdb1")
+        end
+        it "creates XFS filesystems correctly" do
+            use_fixture '0197-fs-xfs.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("mkfs.xfs -f /dev/sdb1")
         end
     end
     context "simulating 'mount' execution" do

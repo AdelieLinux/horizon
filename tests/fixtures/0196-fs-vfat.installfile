@@ -1,0 +1,9 @@
+network false
+hostname test.machine
+pkginstall adelie-base
+rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
+diskid /dev/sdb WDBNCE2500PNC
+disklabel /dev/sdb gpt
+partition /dev/sdb 1 fill
+fs /dev/sdb1 vfat
+mount /dev/sdb1 /
