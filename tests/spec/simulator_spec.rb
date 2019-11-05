@@ -137,7 +137,7 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
         it "configures nameservers correctly" do
             use_fixture '0183-nameserver-basic.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("printf 'nameserver %s\n' 172.16.1.1 >>/target/etc/resolv.conf")
+            expect(last_command_started.stdout).to include("printf 'nameserver %s\\n' 172.16.1.1 >>/target/etc/resolv.conf")
         end
     end
 end
