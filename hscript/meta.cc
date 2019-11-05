@@ -411,7 +411,7 @@ bool Firmware::execute(ScriptOptions) const {
     /* By itself, this does nothing. */
     return true;
 }
-/* LCOV_EXCL_END */
+/* LCOV_EXCL_STOP */
 
 
 Key *Timezone::parseFromData(const std::string &data, int lineno, int *errors,
