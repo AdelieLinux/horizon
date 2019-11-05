@@ -167,6 +167,7 @@ bool LVMGroup::test_pv(ScriptOptions) const {
 #endif /* HAS_INSTALL_ENV */
 }
 
+#ifdef HAS_INSTALL_ENV
 /*! Determine if a named Volume Group currently exists on a LVM PV.
  * @param vg        The name of the Volume Group.
  * @param pv        The path to the LVM physical volume.
@@ -209,6 +210,7 @@ bool does_vg_exist_on_pv(const std::string &vg, const std::string &pv,
     free(buf);
     return success;
 }
+#endif /* HAS_INSTALL_ENV */
 
 bool LVMGroup::execute(ScriptOptions opts) const {
     output_info("installfile:" + std::to_string(line),

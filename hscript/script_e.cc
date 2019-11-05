@@ -220,7 +220,9 @@ bool Script::execute() const {
                 output_error("internal",
                              "cannot read wireless networking configuration");
             }
-        } else {
+        }
+#ifdef HAS_INSTALL_ENV
+        else {
             if(!fs::exists("/target/etc/wpa_supplicant", ec)) {
                 fs::create_directory("/target/etc/wpa_supplicant", ec);
             }
@@ -232,6 +234,7 @@ bool Script::execute() const {
                              "configuration to target", ec.message());
             }
         }
+#endif /* HAS_INSTALL_ENV */
     }
 
     bool dhcp = false;
@@ -270,7 +273,9 @@ bool Script::execute() const {
             std::cout << "cat >>/target/etc/conf.d/net <<- NETCONF_EOF"
                       << std::endl << conf.str() << std::endl
                       << "NETCONF_EOF" << std::endl;
-        } else {
+        }
+#ifdef HAS_INSTALL_ENV
+        else {
             if(!fs::exists("/target/etc/conf.d")) {
                 fs::create_directory("/target/etc/conf.d", ec);
                 if(ec) {
@@ -288,6 +293,7 @@ bool Script::execute() const {
                 conf_file << conf.str();
             }
         }
+#endif /* HAS_INSTALL_ENV */
     }
 
     /* REQ: Runner.Execute.nameserver */
@@ -307,7 +313,9 @@ bool Script::execute() const {
             if(opts.test(Simulate)) {
                 std::cout << "printf 'domain " << domain << "\\"
                           << "n >>/target/etc/resolv.conf" << std::endl;
-            } else {
+            }
+#ifdef HAS_INSTALL_ENV
+            else {
                 std::ofstream resolvconf("/target/etc/resolv.conf",
                                          std::ios_base::app);
                 if(!resolvconf) {
@@ -317,13 +325,16 @@ bool Script::execute() const {
                 }
                 resolvconf << "domain " << domain << std::endl;
             }
+#endif /* HAS_INSTALL_ENV */
         }
 
         if(dhcp) {
             if(opts.test(Simulate)) {
                 std::cout << "mv /target/etc/resolv.conf "
                           << "/target/etc/resolv.conf.head" << std::endl;
-            } else {
+            }
+#ifdef HAS_INSTALL_ENV
+            else {
                 if(fs::exists("/target/etc/resolv.conf", ec)) {
                     fs::rename("/target/etc/resolv.conf",
                                "/target/etc/resolv.conf.head", ec);
@@ -336,6 +347,7 @@ bool Script::execute() const {
                     }
                 }
             }
+#endif /* HAS_INSTALL_ENV */
         }
     }
 
@@ -358,7 +370,9 @@ bool Script::execute() const {
             if(!internal->nses.empty()) {
                 std::cout << "cp /target/etc/resolv.conf* /etc/" << std::endl;
             }
-        } else {
+        }
+#ifdef HAS_INSTALL_ENV
+        else {
             if(do_wpa) {
                 fs::copy_file("/target/etc/wpa_supplicant/wpa_supplicant.conf",
                           "/etc/wpa_supplicant/wpa_supplicant.conf",
@@ -394,6 +408,7 @@ bool Script::execute() const {
                 }
             }
         }
+#endif /* HAS_INSTALL_ENV */
     }
     output_step_end("net");
 
