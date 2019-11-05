@@ -151,7 +151,7 @@ bool DiskId::execute(ScriptOptions options) const {
     udev_unref(udev);
 #endif /* HAS_INSTALL_ENV */
 
-    return match;
+    return match;  /* LCOV_EXCL_LINE */
 }
 
 
@@ -256,7 +256,7 @@ bool DiskLabel::execute(ScriptOptions options) const {
     }
     return (res == 1);
 #else
-    return false;
+    return false;  /* LCOV_EXCL_LINE */
 #endif /* HAS_INSTALL_ENV */
 }
 
@@ -579,7 +579,7 @@ bool Partition::execute(ScriptOptions opts) const {
 
     ped_disk_destroy(disk);
 #endif /* HAS_INSTALL_ENV */
-    return true;
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 
@@ -701,7 +701,7 @@ bool Filesystem::execute(ScriptOptions opts) const {
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
-    return true;
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 

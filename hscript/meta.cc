@@ -308,7 +308,7 @@ bool Language::execute(ScriptOptions opts) const {
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
-    return true;
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 
@@ -374,7 +374,7 @@ BACKSPACE=guess"
 
     keyconf << conf;
 #endif /* HAS_INSTALL_ENV */
-    return true;
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 
@@ -406,10 +406,12 @@ Key *Firmware::parseFromData(const std::string &data, int lineno, int *errors,
     return new Firmware(lineno, value);
 }
 
+/* LCOV_EXCL_START */
 bool Firmware::execute(ScriptOptions) const {
     /* By itself, this does nothing. */
     return true;
 }
+/* LCOV_EXCL_END */
 
 
 Key *Timezone::parseFromData(const std::string &data, int lineno, int *errors,
@@ -479,7 +481,7 @@ bool Timezone::execute(ScriptOptions opts) const {
         return true;
     }
 #else
-    return false;
+    return false;  /* LCOV_EXCL_LINE */
 #endif
 }
 
@@ -525,7 +527,7 @@ bool Repository::execute(ScriptOptions opts) const {
 
     return true;
 #else
-    return false;
+    return false;  /* LCOV_EXCL_LINE */
 #endif /* HAS_INSTALL_ENV */
 }
 
@@ -589,5 +591,5 @@ bool SigningKey::execute(ScriptOptions opts) const {
         return download_file(_value, target);
     }
 #endif /* HAS_INSTALL_ENV */
-    return true;
+    return true;  /* LCOV_EXCL_LINE */
 }

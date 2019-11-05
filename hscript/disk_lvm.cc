@@ -59,7 +59,7 @@ bool LVMPhysical::execute(ScriptOptions opts) const {
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
-    return true;
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 
@@ -152,6 +152,7 @@ bool LVMGroup::validate(ScriptOptions) const {
     return true;
 }
 
+/* LCOV_EXCL_START */
 bool LVMGroup::test_pv(ScriptOptions) const {
 #ifdef HAS_INSTALL_ENV
     const char *fstype = blkid_get_tag_value(nullptr, "TYPE",
@@ -166,6 +167,7 @@ bool LVMGroup::test_pv(ScriptOptions) const {
     return true;
 #endif /* HAS_INSTALL_ENV */
 }
+/* LCOV_EXCL_STOP */
 
 #ifdef HAS_INSTALL_ENV
 /*! Determine if a named Volume Group currently exists on a LVM PV.
@@ -237,7 +239,7 @@ bool LVMGroup::execute(ScriptOptions opts) const {
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
-    return true;
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 
@@ -325,5 +327,5 @@ bool LVMVolume::execute(ScriptOptions opts) const {
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
-    return true;
+    return true;  /* LCOV_EXCL_LINE */
 }

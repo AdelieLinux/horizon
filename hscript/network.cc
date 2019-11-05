@@ -262,7 +262,7 @@ bool NetAddress::validate(ScriptOptions opts) const {
         return false;
     }
 #endif
-    return true;
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 bool NetAddress::execute(ScriptOptions) const {
@@ -355,6 +355,7 @@ bool Nameserver::execute(ScriptOptions opts) const {
         return true;
     }
 
+#ifdef HAS_INSTALL_ENV
     std::ofstream resolvconf("/target/etc/resolv.conf", std::ios_base::app);
     if(!resolvconf) {
         output_error("installfile:" + std::to_string(line),
@@ -362,7 +363,8 @@ bool Nameserver::execute(ScriptOptions opts) const {
         return false;
     }
     resolvconf << "nameserver " << _value << std::endl;
-    return true;
+#endif /* HAS_INSTALL_ENV */
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 
@@ -488,7 +490,7 @@ bool NetSSID::validate(ScriptOptions options) const {
     ::close(my_sock);
     return true;
 #else
-    return false;
+    return false;  /* LCOV_EXCL_LINE */
 #endif
 }
 
