@@ -278,7 +278,7 @@ bool Language::execute(ScriptOptions opts) const {
                 this->value());
 
     if(opts.test(Simulate)) {
-        std::cout << "printf '#!/bin/sh\\" << "nexport LANG=\"%s\"\\" << "n'"
+        std::cout << "printf '#!/bin/sh\\" << "nexport LANG=\"%s\"\\" << "n' "
                   << this->value() << " > /target/etc/profile.d/language.sh"
                   << std::endl
                   << "chmod a+x /target/etc/profile.d/language.sh"
