@@ -140,4 +140,76 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             expect(last_command_started.stdout).to include("printf 'nameserver %s\\n' 172.16.1.1 >>/target/etc/resolv.conf")
         end
     end
+    # network
+    context "simulating 'signingkey' execution" do
+        it "downloads remote keys to target" do
+            use_fixture '0186-signingkey-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("curl -L -o /target/etc/apk/keys/packages@adelielinux.org.pub https://distfiles.adelielinux.org/adelie/packages@adelielinux.org.pub")
+        end
+        it "copies local keys to target" do
+            use_fixture '0187-signingkey-local.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("cp /etc/apk/keys/packages@adelielinux.org.pub /target/etc/apk/keys/packages@adelielinux.org.pub")
+        end
+        it "uses default keys when none are specified" do
+            use_fixture '0001-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("cp /etc/apk/keys/packages@adelielinux.org.pub /target/etc/apk/keys/packages@adelielinux.org.pub")
+        end
+    end
+    context "simulating 'pkginstall' execution" do
+        it "initialises the APK database" do
+            use_fixture '0001-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("apk --root /target --initdb add")
+        end
+        it "updates the local repository cache" do
+            use_fixture '0001-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("apk --root /target update")
+        end
+        it "installs the requested packages" do
+            use_fixture '0001-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("apk --root /target add adelie-base")
+        end
+    end
+    context "simulating 'language' execution" do
+        it "doesn't configure language by default" do
+            use_fixture '0001-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to_not include("/target/etc/profile.d/language.sh")
+        end
+        it "configures language correctly" do
+            use_fixture '0116-language-country.installfile'
+            run_simulate
+            # leading space also serves as regression test for 1d89a45
+            expect(last_command_started.stdout).to include(" ie_IE > /target/etc/profile.d/language.sh")
+        end
+        it "ensures profile script is executable" do
+            use_fixture '0116-language-country.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("chmod a+x /target/etc/profile.d/language.sh")
+        end
+    end
+    context "simulating 'keymap' execution" do
+        it "configures the system keymap correctly" do
+            use_fixture '0178-keymap-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("XKBLAYOUT=us")
+        end
+    end
+    context "simulating 'timezone' execution" do
+        it "configures UTC by default" do
+            use_fixture '0001-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("ln -s /usr/share/zoneinfo/UTC /target/etc/localtime")
+        end
+        it "configures the system timezone correctly" do
+            use_fixture '0134-timezone-subtz.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("ln -s /usr/share/zoneinfo/Pacific/Galapagos /target/etc/localtime")
+        end
+    end
 end
