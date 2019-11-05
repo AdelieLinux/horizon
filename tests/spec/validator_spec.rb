@@ -197,6 +197,11 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*language.*codeset/)
                 end
+                it "requires a valid two-char language" do
+                    use_fixture '0199-language-invalid2.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*language.*invalid/)
+                end
             end
             context "for 'nameserver' key" do
                 it "succeeds with IPv4 and IPv6 addresses" do
@@ -963,6 +968,11 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(PARSER_SUCCESS)
                     expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with an invalid value" do
+                    use_fixture '0198-keymap-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*keymap.*invalid/)
                 end
             end
         end
