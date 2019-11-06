@@ -890,6 +890,22 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*lvm_vg.*expected/)
                 end
+                it "fails with a dot as the VG name" do
+                    use_fixture '0207-lvmvg-dot.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_vg.*name/)
+                end
+                it "succeeds with a dot in the VG name" do
+                    use_fixture '0208-lvmvg-valid-dot.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "warns when a PV isn't created" do
+                    use_fixture '0214-lvmvg-without-pv.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/warning: .*lvm_vg.*physical volume/)
+                end
             end
             context "for 'lvm_lv' key" do
                 it "succeeds with a simple value" do
@@ -928,6 +944,19 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate ' -i'
                     skip "This build does not support this test" if last_command_started.stdout =~ /runtime environment only/
                     expect(last_command_started).to have_output(/error: .*lvm_lv.*volume group/)
+                end
+                it "fails if the logical volume name starts with a dash" do
+                    use_fixture '0209-lvmlv-dash.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_lv.*name/)
+                end
+                it "fails if the logical volume name is reserved" do
+                    use_fixture '0210-lvmlv-snapshot.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_lv.*name/)
+                    use_fixture '0211-lvmlv-pvmove.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*lvm_lv.*name/)
                 end
             end
             context "for 'encrypt' key" do

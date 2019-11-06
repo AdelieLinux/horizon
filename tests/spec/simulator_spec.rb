@@ -64,6 +64,16 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
             run_simulate
             expect(last_command_started.stdout).to include("lvcreate -l 100%FREE -n root MyVolGroup")
         end
+        it "supports percentage sizing" do
+            use_fixture '0212-lvmlv-size-percent.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("lvcreate -l 50%VG -n root MyVolGroup")
+        end
+        it "supports byte sizing" do
+            use_fixture '0213-lvmlv-size-bytes.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("lvcreate -L 104857600B -n root MyVolGroup")
+        end
     end
     context "simulating 'fs' execution" do
         it "creates ext2 filesystems correctly" do
