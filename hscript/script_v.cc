@@ -151,7 +151,7 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
         std::unique_ptr<Repository> fw_repo(fw_key);
         repos.push_back(std::move(fw_repo));
     }
-#endif
+#endif  /* NON_LIBRE_FIRMWARE */
     return true;
 }
 
@@ -172,6 +172,29 @@ bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys) {
     }
     std::unique_ptr<SigningKey> repo_key(key);
     keys.push_back(std::move(repo_key));
+
+#ifdef NON_LIBRE_FIRMWARE
+    /* REQ: Runner.Execute.signingkey.Firmware */
+    if(firmware) {
+        SigningKey *fkey = dynamic_cast<SigningKey *>(SigningKey::parseFromData(
+            "/etc/apk/keys/packages@pleroma.apkfission.net-5ac0b300.rsa.pub",
+                                                          0, nullptr, nullptr)
+        );
+        if(!fkey) {
+            output_error("internal", "failed to create firmware signing key");
+            return false;
+        }
+        std::unique_ptr<SigningKey> fw_key(fkey);
+        keys.push_back(std::move(fw_key));
+        fkey = dynamic_cast<SigningKey *>(SigningKey::parseFromData(
+            "/etc/apk/keys/packages@pleroma.apkfission.net-5ac04808.rsa.pub",
+                                              0, nullptr, nullptr));
+        if(fkey) {
+            std::unique_ptr<SigningKey> fw_key2(fkey);
+            keys.push_back(std::move(fw_key2));
+        }
+    }
+#endif  /* NON_LIBRE_FIRMWARE */
     return true;
 }
 
