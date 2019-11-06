@@ -157,7 +157,7 @@ bool Script::ScriptPrivate::store_key(const std::string &key_name, Key *obj,
         this->mounts.push_back(std::move(mount));
         return true;
     } else {
-        return false;
+        return false;  /* LCOV_EXCL_LINE - only here for error prevention */
     }
 }
 
