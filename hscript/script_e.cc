@@ -12,6 +12,8 @@
 
 #include <algorithm>
 #include <fstream>
+#include <set>
+#include <string>
 #ifdef HAS_INSTALL_ENV
 #   include <parted/parted.h>
 #endif /* HAS_INSTALL_ENV */
@@ -26,6 +28,7 @@ namespace Horizon {
 bool Script::execute() const {
     bool success;
     error_code ec;
+    std::set<std::string> ifaces;
 
     /* assume create_directory will give us the error if removal fails */
     if(fs::exists("/tmp/horizon", ec)) {
@@ -250,6 +253,8 @@ bool Script::execute() const {
             if(!addr->execute(opts)) {
                 EXECUTE_FAILURE("netaddress");
                 /* "Soft" error.  Not fatal. */
+            } else {
+                ifaces.insert(addr->iface());
             }
             if(addr->type() == NetAddress::DHCP) dhcp = true;
         }
@@ -459,6 +464,37 @@ bool Script::execute() const {
 
     /**************** POST PACKAGE METADATA ****************/
     output_step_start("post-metadata");
+
+    if(internal->packages.find("netifrc") != internal->packages.end() &&
+       !internal->addresses.empty()) {
+        /* REQ: Runner.Execute.netaddress.OpenRC */
+        if(opts.test(Simulate)) {
+            for(auto &iface : ifaces) {
+                std::cout << "ln -s /etc/init.d/net.lo /target/etc/init.d/net."
+                          << iface << std::endl;
+                std::cout << "ln -s /etc/init.d/net." << iface
+                          << " /target/etc/runlevels/default/net." << iface
+                          << std::endl;
+            }
+        } else {
+            for(auto &iface : ifaces) {
+                fs::create_symlink("/etc/init.d/net.lo",
+                                   "/target/etc/init.d/net." + iface, ec);
+                if(ec) {
+                    output_error("internal", "could not set up networking on "
+                                 + iface, ec.message());
+                } else {
+                    fs::create_symlink("/etc/init.d/net." + iface,
+                                       "/target/etc/runlevels/default/net." +
+                                       iface, ec);
+                    if(ec) {
+                        output_error("internal", "could not auto-start "
+                                     "networking on" + iface, ec.message());
+                    }
+                }
+            }
+        }
+    }
 
     if(!internal->rootpw->execute(opts)) {
         EXECUTE_FAILURE("rootpw");

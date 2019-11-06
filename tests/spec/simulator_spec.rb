@@ -174,6 +174,16 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             # The end quote is missing deliberately.
             expect(last_command_started.stdout).to include('routes_eth0="default via 172.16.1.1')
         end
+        it "doesn't perform OpenRC configuration when netifrc isn't installed" do
+            use_fixture '0042-netaddress-valid-static6.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to_not include ("/target/etc/init.d/net")
+        end
+        it "performs OpenRC configuration when netifrc is installed" do
+            use_fixture '0200-netaddress-openrc.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("ln -s /etc/init.d/net.lo /target/etc/init.d/net.eth0")
+        end
     end
     context "simulating 'nameserver' execution" do
         it "configures nameservers correctly" do
