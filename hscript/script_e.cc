@@ -432,12 +432,15 @@ bool Script::execute() const {
     output_info("internal", "initialising APK");
     if(opts.test(Simulate)) {
         std::cout << "apk --root /target --initdb add" << std::endl;
-    } else {
+    }
+#ifdef HAS_INSTALL_ENV
+    else {
         if(system("apk --root /target --initdb add") != 0) {
             EXECUTE_FAILURE("pkginstall");
             return false;
         }
     }
+#endif  /* HAS_INSTALL_ENV */
 
     /* REQ: Runner.Execute.pkginstall */
     output_info("internal", "installing packages to target");
@@ -448,7 +451,9 @@ bool Script::execute() const {
     if(opts.test(Simulate)) {
         std::cout << "apk --root /target update" << std::endl;
         std::cout << "apk --root /target add " << pkg_list.str() << std::endl;
-    } else {
+    }
+#ifdef HAS_INSTALL_ENV
+    else {
         if(system("apk --root /target update") != 0) {
             EXECUTE_FAILURE("pkginstall");
             return false;
@@ -459,6 +464,7 @@ bool Script::execute() const {
             return false;
         }
     }
+#endif  /* HAS_INSTALL_ENV */
 
     output_step_end("pkgdb");
 
@@ -476,7 +482,9 @@ bool Script::execute() const {
                           << " /target/etc/runlevels/default/net." << iface
                           << std::endl;
             }
-        } else {
+        }
+#ifdef HAS_INSTALL_ENV
+        else {
             for(auto &iface : ifaces) {
                 fs::create_symlink("/etc/init.d/net.lo",
                                    "/target/etc/init.d/net." + iface, ec);
@@ -494,6 +502,7 @@ bool Script::execute() const {
                 }
             }
         }
+#endif  /* HAS_INSTALL_ENV */
     }
 
     if(!internal->rootpw->execute(opts)) {

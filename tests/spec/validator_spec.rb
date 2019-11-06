@@ -220,6 +220,21 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/nameserver.*brackets/)
                 end
+                it "warns with more than MAXNS nameservers" do
+                    use_fixture '0201-nameserver-max.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/warning: .*nameserver.*more/)
+                end
+                it "fails with an invalid IPv4 address" do
+                    use_fixture '0202-nameserver-bad4.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*nameserver.*valid IPv4/)
+                end
+                it "fails with an invalid IPv6 address" do
+                    use_fixture '0203-nameserver-bad6.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*nameserver.*valid IPv6/)
+                end
             end
             context "for 'firmware' key" do
                 it "always supports 'false' value" do

@@ -179,6 +179,7 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             run_simulate
             expect(last_command_started.stdout).to_not include ("/target/etc/init.d/net")
         end
+        # Runner.Execute.netaddress.OpenRC
         it "performs OpenRC configuration when netifrc is installed" do
             use_fixture '0200-netaddress-openrc.installfile'
             run_simulate
@@ -228,6 +229,7 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
         end
     end
     context "simulating 'language' execution" do
+        # Runner.Execute.language
         it "doesn't configure language by default" do
             use_fixture '0001-basic.installfile'
             run_simulate
@@ -246,6 +248,7 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
         end
     end
     context "simulating 'keymap' execution" do
+        # Runner.Execute.keymap
         it "configures the system keymap correctly" do
             use_fixture '0178-keymap-basic.installfile'
             run_simulate
@@ -253,11 +256,13 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
         end
     end
     context "simulating 'timezone' execution" do
+        # Runner.Execute.timezone.Missing
         it "configures UTC by default" do
             use_fixture '0001-basic.installfile'
             run_simulate
             expect(last_command_started.stdout).to include("ln -s /usr/share/zoneinfo/UTC /target/etc/localtime")
         end
+        # Runner.Execute.timezone
         it "configures the system timezone correctly" do
             use_fixture '0134-timezone-subtz.installfile'
             run_simulate
