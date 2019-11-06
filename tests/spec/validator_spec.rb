@@ -1224,6 +1224,11 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*usergroups.*required/)
                 end
+                it "doesn't allow a group name longer than maximum" do
+                    use_fixture '0215-usergroups-length.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*usergroups.*exceeds maximum length/)
+                end
                 it "correctly errors when only a , is given" do
                     use_fixture '0106-usergroups-comma.installfile'
                     run_validate
