@@ -976,6 +976,11 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*fs.*type/)
                 end
+                it "fails with a duplicate block device" do
+                    use_fixture '0206-fs-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*fs.*already/)
+                end
             end
             context "for 'keymap' key" do
                 it "succeeds with a simple value" do
@@ -1021,6 +1026,16 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                 use_fixture '0121-language-duplicate.installfile'
                 run_validate
                 expect(last_command_started).to have_output(/error: .*duplicate.*language/)
+            end
+            it "fails with a duplicate 'keymap' key" do
+                use_fixture '0204-keymap-duplicate.installfile'
+                run_validate
+                expect(last_command_started).to have_output(/error: .*duplicate.*keymap/)
+            end
+            it "fails with a duplicate 'timezone' key" do
+                use_fixture '0205-timezone-duplicate.installfile'
+                run_validate
+                expect(last_command_started).to have_output(/error: .*duplicate.*timezone/)
             end
         end
         context "user account keys:" do
