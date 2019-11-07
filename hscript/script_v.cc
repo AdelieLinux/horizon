@@ -330,12 +330,15 @@ bool Horizon::Script::validate() const {
         failures += validate_one_account(acct.first, detail, opts);
     }
 
+#define VALIDATE_OR_SKIP(obj) \
+    if(!obj->validate(opts)) {\
+        failures++;\
+        continue;\
+    }
+
     /* REQ: Runner.Validate.diskid */
     for(auto &diskid : internal->diskids) {
-        if(!diskid->validate(opts)) {
-            failures++;
-            continue;
-        }
+        VALIDATE_OR_SKIP(diskid)
 
         /* REQ: Runner.Validate.diskid.Unique */
         if(seen_diskids.find(diskid->device()) != seen_diskids.end()) {
@@ -349,10 +352,7 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Validate.disklabel */
     for(auto &label : internal->disklabels) {
-        if(!label->validate(opts)) {
-            failures++;
-            continue;
-        }
+        VALIDATE_OR_SKIP(label)
 
         /* REQ: Runner.Validate.disklabel.Unique */
         if(seen_labels.find(label->device()) != seen_labels.end()) {
@@ -367,10 +367,7 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Validate.partition */
     for(auto &part : internal->partitions) {
-        if(!part->validate(opts)) {
-            failures++;
-            continue;
-        }
+        VALIDATE_OR_SKIP(part)
 
         /* REQ: Runner.Validate.partition.Unique */
         const std::string &dev = part->device();
@@ -388,10 +385,7 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Validate.lvm_pv */
     for(auto &pv : internal->lvm_pvs) {
-        if(!pv->validate(opts)) {
-            failures++;
-            continue;
-        }
+        VALIDATE_OR_SKIP(pv)
 
         /* We don't actually have a requirement, but... */
         if(seen_pvs.find(pv->value()) != seen_pvs.end()) {
@@ -419,10 +413,7 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Validate.lvm_vg */
     for(auto &vg : internal->lvm_vgs) {
-        if(!vg->validate(opts)) {
-            failures++;
-            continue;
-        }
+        VALIDATE_OR_SKIP(vg)
 
         if(seen_vg_names.find(vg->name()) != seen_vg_names.end()) {
             failures++;
@@ -467,10 +458,7 @@ bool Horizon::Script::validate() const {
     /* REQ: Runner.Validate.lvm_lv */
     for(auto &lv : internal->lvm_lvs) {
         const std::string lvpath(lv->vg() + "/" + lv->name());
-        if(!lv->validate(opts)) {
-            failures++;
-            continue;
-        }
+        VALIDATE_OR_SKIP(lv)
 
         /* REQ: Runner.Validate.lvm_lv.Name */
         if(seen_lvs.find(lvpath) != seen_lvs.end()) {
@@ -510,10 +498,7 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Validate.encrypt */
     for(auto &crypt : internal->luks) {
-        if(!crypt->validate(opts)) {
-            failures++;
-            continue;
-        }
+        VALIDATE_OR_SKIP(crypt)
 
         /* REQ: Runner.Validate.encrypt.Unique */
         if(seen_luks.find(crypt->device()) != seen_luks.end()) {
@@ -535,10 +520,7 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Validate.fs */
     for(auto &fs : internal->fses) {
-        if(!fs->validate(opts)) {
-            failures++;
-            continue;
-        }
+        VALIDATE_OR_SKIP(fs)
 
         /* REQ: Runner.Validate.fs.Unique */
         if(seen_fses.find(fs->device()) != seen_fses.end()) {
@@ -559,10 +541,7 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Validate.mount */
     for(auto &mount : internal->mounts) {
-        if(!mount->validate(opts)) {
-            failures++;
-            continue;
-        }
+        VALIDATE_OR_SKIP(mount)
 
         /* REQ: Runner.Validate.mount.Unique */
         if(seen_mounts.find(mount->mountpoint()) != seen_mounts.end()) {
@@ -590,6 +569,8 @@ bool Horizon::Script::validate() const {
         failures++;
         output_error("installfile:0", "mount: no root mount specified");
     }
+
+#undef VALIDATE_OR_SKIP
 
     output_log("validator", "0", "installfile",
                to_string(failures) + " failure(s).", "");
