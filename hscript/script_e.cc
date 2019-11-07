@@ -55,6 +55,11 @@ bool Script::execute() const {
 #define EXECUTE_FAILURE(phase) \
     output_error(phase, "The HorizonScript failed to execute",\
                  "Check the log file for more details.")
+#define EXECUTE_OR_FAIL(phase, obj) \
+    if(!obj->execute(opts)) {\
+        EXECUTE_FAILURE(phase);\
+        return false;\
+    }
 
     /**************** DISK SETUP ****************/
     output_step_start("disk");
@@ -63,18 +68,12 @@ bool Script::execute() const {
 #endif /* HAS_INSTALL_ENV */
     /* REQ: Runner.Execute.diskid */
     for(auto &diskid : internal->diskids) {
-        if(!diskid->execute(opts)) {
-            EXECUTE_FAILURE("diskid");
-            return false;
-        }
+        EXECUTE_OR_FAIL("diskid", diskid)
     }
 
     /* REQ: Runner.Execute.disklabel */
     for(auto &label : internal->disklabels) {
-        if(!label->execute(opts)) {
-            EXECUTE_FAILURE("disklabel");
-            return false;
-        }
+        EXECUTE_OR_FAIL("disklabel", label)
     }
 
     /* REQ: Runner.Execute.partition */
@@ -86,46 +85,31 @@ bool Script::execute() const {
                (e2->device() + "p" + std::to_string(e2->partno()));
     });
     for(auto &part : internal->partitions) {
-        if(!part->execute(opts)) {
-            EXECUTE_FAILURE("partition");
-            return false;
-        }
+        EXECUTE_OR_FAIL("partition", part)
     }
 
     /* encrypt PVs */
 
     /* REQ: Runner.Execute.lvm_pv */
     for(auto &pv : internal->lvm_pvs) {
-        if(!pv->execute(opts)) {
-            EXECUTE_FAILURE("lvm_pv");
-            return false;
-        }
+        EXECUTE_OR_FAIL("lvm_pv", pv)
     }
 
     /* REQ: Runner.Execute.lvm_vg */
     for(auto &vg : internal->lvm_vgs) {
-        if(!vg->execute(opts)) {
-            EXECUTE_FAILURE("lvm_vg");
-            return false;
-        }
+        EXECUTE_OR_FAIL("lvm_vg", vg)
     }
 
     /* REQ: Runner.Execute.lvm_lv */
     for(auto &lv : internal->lvm_lvs) {
-        if(!lv->execute(opts)) {
-            EXECUTE_FAILURE("lvm_lv");
-            return false;
-        }
+        EXECUTE_OR_FAIL("lvm_lv", lv)
     }
 
     /* encrypt */
 
     /* REQ: Runner.Execute.fs */
     for(auto &fs : internal->fses) {
-        if(!fs->execute(opts)) {
-            EXECUTE_FAILURE("fs");
-            return false;
-        }
+        EXECUTE_OR_FAIL("fs", fs)
     }
 
     /* REQ: Runner.Execute.mount */
@@ -137,10 +121,7 @@ bool Script::execute() const {
         return e1->mountpoint() < e2->mountpoint();
     });
     for(auto &mount : internal->mounts) {
-        if(!mount->execute(opts)) {
-            EXECUTE_FAILURE("mount");
-            return false;
-        }
+        EXECUTE_OR_FAIL("mount", mount)
     }
 #ifdef HAS_INSTALL_ENV
     if(opts.test(InstallEnvironment)) ped_device_free_all();
@@ -151,10 +132,7 @@ bool Script::execute() const {
     output_step_start("pre-metadata");
 
     /* REQ: Runner.Execute.hostname */
-    if(!internal->hostname->execute(opts)) {
-        EXECUTE_FAILURE("hostname");
-        return false;
-    }
+    EXECUTE_OR_FAIL("hostname", internal->hostname)
 
     /* REQ: Runner.Execute.repository */
     if(opts.test(Simulate)) {
@@ -173,10 +151,7 @@ bool Script::execute() const {
     }
 #endif /* HAS_INSTALL_ENV */
     for(auto &repo : internal->repos) {
-        if(!repo->execute(opts)) {
-            EXECUTE_FAILURE("repository");
-            return false;
-        }
+        EXECUTE_OR_FAIL("repository", repo)
     }
 
 #ifdef NON_LIBRE_FIRMWARE
@@ -304,10 +279,7 @@ bool Script::execute() const {
     /* REQ: Runner.Execute.nameserver */
     if(!internal->nses.empty()) {
         for(auto &ns : internal->nses) {
-            if(!ns->execute(opts)) {
-                EXECUTE_FAILURE("nameserver");
-                return false;
-            }
+            EXECUTE_OR_FAIL("nameserver", ns)
         }
 
         /* REQ: Runner.Execute.nameserver.FQDN */
@@ -356,10 +328,7 @@ bool Script::execute() const {
         }
     }
 
-    if(!internal->network->execute(opts)) {
-        EXECUTE_FAILURE("network");
-        return false;
-    }
+    EXECUTE_OR_FAIL("network", internal->network)
 
     if(internal->network->test()) {
         bool do_wpa = !internal->ssids.empty();
@@ -422,10 +391,7 @@ bool Script::execute() const {
 
     /* REQ: Runner.Execute.signingkey */
     for(auto &key : internal->repo_keys) {
-        if(!key->execute(opts)) {
-            EXECUTE_FAILURE("signingkey");
-            return false;
-        }
+        EXECUTE_OR_FAIL("signingkey", key)
     }
 
     /* REQ: Runner.Execute.pkginstall.APKDB */
@@ -505,26 +471,18 @@ bool Script::execute() const {
 #endif  /* HAS_INSTALL_ENV */
     }
 
-    if(!internal->rootpw->execute(opts)) {
-        EXECUTE_FAILURE("rootpw");
-        return false;
+    EXECUTE_OR_FAIL("rootpw", internal->rootpw)
+
+    if(internal->lang) {
+        EXECUTE_OR_FAIL("language", internal->lang)
     }
 
-    if(internal->lang && !internal->lang->execute(opts)) {
-        EXECUTE_FAILURE("language");
-        return false;
+    if(internal->keymap) {
+        EXECUTE_OR_FAIL("keymap", internal->keymap)
     }
 
-    if(internal->keymap && !internal->keymap->execute(opts)) {
-        EXECUTE_FAILURE("keymap");
-        return false;
-    }
     /* UserAccounts */
-
-    if(!internal->tzone->execute(opts)) {
-        EXECUTE_FAILURE("timezone");
-        return false;
-    }
+    EXECUTE_OR_FAIL("timezone", internal->tzone)
 
     output_step_end("post-metadata");
     return true;
