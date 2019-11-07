@@ -11,13 +11,13 @@
  */
 
 #include <algorithm>
+#include <assert.h>         /* assert */
 #include <cstring>          /* strerror */
 #include <fstream>
 #include <set>
 #include <string>
 #ifdef HAS_INSTALL_ENV
 #   include <array>
-#   include <assert.h>         /* assert */
 #   include <blkid/blkid.h>    /* blkid_get_tag_value */
 #   include "util/filesystem.hh"
 #   include <libudev.h>        /* udev_* */
@@ -305,9 +305,8 @@ bool parse_size_string(const std::string &in_size, uint64_t *out_size,
     uint64_t multiplicand = 0;
 
     /* Validate parameters */
-    if(out_size == nullptr || type == nullptr) {
-        return false;
-    }
+    assert(out_size != nullptr);
+    assert(type != nullptr);
 
     /* Simpler since the string isn't case-sensitive. */
     std::transform(size.cbegin(), size.cend(), size.begin(), ::tolower);
