@@ -1,0 +1,19 @@
+network false
+hostname test.machine
+pkginstall adelie-base
+rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
+mount /dev/sda1 /
+repository https://distfiles.adelielinux.org/adelie/current/system
+repository https://distfiles.adelielinux.org/adelie/current/user
+repository https://distfiles.adelielinux.org/adelie/stable/system
+repository https://distfiles.adelielinux.org/adelie/stable/user
+repository https://distfiles.adelielinux.org/adelie/1.0/system
+repository https://distfiles.adelielinux.org/adelie/1.0/user
+repository https://distfiles.adelielinux.org/adelie/1-stable/system
+repository https://distfiles.adelielinux.org/adelie/1-stable/user
+repository https://distfiles.adelielinux.org/adelie/1.0-beta4/system
+repository https://distfiles.adelielinux.org/adelie/1.0-beta4/user
+repository https://distfiles.adelielinux.org/adelie/1.0-beta3/system
+repository https://distfiles.adelielinux.org/adelie/1.0-beta3/user
+repository https://distfiles.adelielinux.org/adelie/1.0-beta2/system
+repository https://distfiles.adelielinux.org/adelie/1.0-beta2/user

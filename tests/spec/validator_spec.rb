@@ -568,6 +568,11 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*netssid.*security/)
                 end
+                it "fails with missing security type" do
+                    use_fixture '0220-netssid-missing-type.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netssid.*security type expected/)
+                end
             end
             context "for 'repository' key" do
                 it "succeeds with basic repositories" do
@@ -580,6 +585,11 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     use_fixture '0056-repository-invalid.installfile'
                     run_validate
                     expect(last_command_started).to have_output(/error: .*repository/)
+                end
+                it "fails with too many repositories specified" do
+                    use_fixture '0218-repository-max.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*repository.*too many/)
                 end
             end
             context "for 'signingkey' key" do
@@ -599,6 +609,11 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     use_fixture '0188-signingkey-insec.installfile'
                     run_validate
                     expect(last_command_started).to have_output(/error: .*signingkey/)
+                end
+                it "fails with too many signing keys specified" do
+                    use_fixture '0219-signingkey-max.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*signingkey.*too many/)
                 end
             end
             context "for 'pkginstall' key" do
