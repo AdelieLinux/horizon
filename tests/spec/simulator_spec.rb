@@ -27,6 +27,11 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
             expect(last_command_started.stdout).to start_with("#!/bin/sh")
         end
     end
+    it "handles validation failures correctly" do
+        use_fixture '0024-numeric-hostname.installfile'
+        run_simulate
+        expect(last_command_started.stderr).to include("Script failed.  Stop.")
+    end
     context "simulating 'disklabel' execution" do
         it "creates Apple Partition Maps correctly" do
             use_fixture '0122-disklabel-apm.installfile'
