@@ -601,6 +601,18 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*signingkey/)
                 end
             end
+            context "for 'pkginstall' key" do
+                it "warns when a package is listed twice in the same line" do
+                    use_fixture '0216-pkginstall-dup-single.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/warning: .*pkginstall.*already/)
+                end
+                it "warns when a package is listed twice in the same script" do
+                    use_fixture '0217-pkginstall-dup-multi.installfile'
+                    run_validate ' -s'
+                    expect(last_command_started).to have_output(/warning: .*pkginstall.*already/)
+                end
+            end
             context "for 'diskid' key" do
                 it "succeeds with basic disk identification" do
                     use_fixture '0076-diskid-basic.installfile'
