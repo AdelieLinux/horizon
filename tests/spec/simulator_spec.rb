@@ -202,8 +202,29 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             run_simulate
             expect(last_command_started.stdout).to include("printf 'nameserver %s\\n' 172.16.1.1 >>/target/etc/resolv.conf")
         end
+        it "uses resolv.conf when no interfaces use DHCP" do
+            use_fixture '0183-nameserver-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to_not include("mv /target/etc/resolv.conf /target/etc/resolv.conf.head")
+        end
+        it "uses resolv.conf.head when interfaces use DHCP" do
+            use_fixture '0221-nameserver-dhcp.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("mv /target/etc/resolv.conf /target/etc/resolv.conf.head")
+        end
     end
-    # network
+    context "simulating 'network' execution" do
+        it "copies SSID information" do
+            use_fixture '0222-complete.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("cp /target/etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf")
+        end
+        it "copies nameserver information" do
+            use_fixture '0222-complete.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("cp /target/etc/resolv.conf* /etc/")
+        end
+    end
     context "simulating 'signingkey' execution" do
         it "downloads remote keys to target" do
             use_fixture '0186-signingkey-basic.installfile'
@@ -222,16 +243,19 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
         end
     end
     context "simulating 'pkginstall' execution" do
+        # Runner.Execute.pkginstall.APKDB
         it "initialises the APK database" do
             use_fixture '0001-basic.installfile'
             run_simulate
             expect(last_command_started.stdout).to include("apk --root /target --initdb add")
         end
+        # Runner.Execute.pkginstall
         it "updates the local repository cache" do
             use_fixture '0001-basic.installfile'
             run_simulate
             expect(last_command_started.stdout).to include("apk --root /target update")
         end
+        # Runner.Execute.pkginstall
         it "installs the requested packages" do
             use_fixture '0001-basic.installfile'
             run_simulate
