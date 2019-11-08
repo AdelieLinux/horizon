@@ -82,6 +82,7 @@ IF(BUILD_TOOLS)
 ENDIF(BUILD_TOOLS)
 IF(INSTALL)
     add_subdirectory(fetch)
+    add_subdirectory(owner)
 ENDIF(INSTALL)
 
 

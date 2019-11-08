@@ -210,6 +210,13 @@ library.  This is the primary library for parsing, validating, and executing
 HorizonScript files, and contains the principal code for Project Horizon.
 
 
+``owner``: File ownership utility
+`````````````````````````````````
+The ``owner`` directory includes the source code for the ``hscript-printowner``
+utility, which prints the UID of the owner of a given file.  This is used
+during HorizonScript shell script execution.
+
+
 ``tools``: Tooling and accessories
 ``````````````````````````````````
 The ``tools`` directory includes the source code for tools related to Project
