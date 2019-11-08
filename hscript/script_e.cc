@@ -481,7 +481,26 @@ bool Script::execute() const {
         EXECUTE_OR_FAIL("keymap", internal->keymap)
     }
 
-    /* UserAccounts */
+    for(auto &acct : internal->accounts) {
+        output_info("internal", "setting up user account " + acct.first);
+
+        EXECUTE_OR_FAIL("username", acct.second->name)
+        if(acct.second->alias) {
+            EXECUTE_OR_FAIL("useralias", acct.second->alias)
+        }
+        if(acct.second->passphrase) {
+            EXECUTE_OR_FAIL("userpw", acct.second->passphrase)
+        }
+        if(!acct.second->groups.empty()) {
+            for(auto &grp : acct.second->groups) {
+                EXECUTE_OR_FAIL("usergroups", grp)
+            }
+        }
+        if(acct.second->icon) {
+            EXECUTE_OR_FAIL("usericon", acct.second->icon)
+        }
+    }
+
     EXECUTE_OR_FAIL("timezone", internal->tzone)
 
     output_step_end("post-metadata");

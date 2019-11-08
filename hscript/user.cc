@@ -17,6 +17,7 @@
 #include <sstream>
 #include <time.h>
 #include "user.hh"
+#include "util.hh"
 #include "util/net.hh"
 #include "util/output.hh"
 
@@ -183,8 +184,8 @@ bool RootPassphrase::execute(ScriptOptions options) const {
     new_shadow << shadow_stream.str();
     return true;
 #else
-    return false;
-#endif /* HAS_INSTALL_ENV */
+    return false;  /* LCOV_EXCL_LINE */
+#endif  /* HAS_INSTALL_ENV */
 }
 
 
@@ -208,8 +209,25 @@ Key *Username::parseFromData(const std::string &data, int lineno, int *errors,
     return new Username(lineno, data);
 }
 
-bool Username::execute(ScriptOptions) const {
-    return false;
+bool Username::execute(ScriptOptions opts) const {
+    output_info("installfile:" + std::to_string(line),
+                "username: creating account " + _value);
+
+    if(opts.test(Simulate)) {
+        std::cout << "useradd -c \"Adélie User\" -m -U " << _value
+                  << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    if(run_command("useradd", {"-c", "Adélie User", "-m", "-U", _value}) != 0)
+    {
+        output_error("installfile:" + std::to_string(line),
+                     "username: failed to create user account");
+        return false;
+    }
+#endif  /* HAS_INSTALL_ENV */
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 
@@ -232,8 +250,24 @@ bool UserAlias::validate(ScriptOptions) const {
     return true;
 }
 
-bool UserAlias::execute(ScriptOptions) const {
-    return false;
+bool UserAlias::execute(ScriptOptions opts) const {
+    output_info("installfile:" + std::to_string(line),
+                "useralias: setting GECOS name for " + _username);
+
+    if(opts.test(Simulate)) {
+        std::cout << "usermod -c \"" << _alias << "\" " << _username
+                  << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    if(run_command("usermod", {"-c", _alias, _username}) != 0) {
+        output_error("installfile:" + std::to_string(line),
+                     "useralias: failed to change GECOS of user " + _username);
+        return false;
+    }
+#endif  /* HAS_INSTALL_ENV */
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 
@@ -263,8 +297,23 @@ bool UserPassphrase::validate(ScriptOptions) const {
     return true;
 }
 
-bool UserPassphrase::execute(ScriptOptions) const {
-    return false;
+bool UserPassphrase::execute(ScriptOptions opts) const {
+    output_info("installfile:" + std::to_string(line),
+                "userpw: setting passphrase for " + _username);
+
+    if(opts.test(Simulate)) {
+        std::cout << "usermod -p '" << _passphrase << "' " << _username
+                  << std::endl;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    if(run_command("usermod", {"-p", _passphrase, _username}) != 0) {
+        output_error("installfile:" + std::to_string(line),
+                     "userpw: failed to set passphrase for " + _username);
+        return false;
+    }
+#endif  /* HAS_INSTALL_ENV */
+    return true;
 }
 
 
@@ -345,6 +394,28 @@ bool UserGroups::validate(ScriptOptions) const {
     return true;
 }
 
-bool UserGroups::execute(ScriptOptions) const {
-    return false;
+bool UserGroups::execute(ScriptOptions opts) const {
+    output_info("installfile:" + std::to_string(line),
+                "usergroups: setting group membership for " + _username);
+
+    std::string groups;
+    for(auto &grp : _groups) {
+        groups += grp + ",";
+    }
+    /* remove the last comma. */
+    groups.pop_back();
+
+    if(opts.test(Simulate)) {
+        std::cout << "usermod -aG " << groups << " " << _username << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    if(run_command("usermod", {"-a", "-G", groups, _username}) != 0) {
+        output_error("installfile:" + std::to_string(line),
+                     "usergroups: failed to add groups to " + _username);
+        return false;
+    }
+#endif  /* HAS_INSTALL_ENV */
+    return true;  /* LCOV_EXCL_LINE */
 }

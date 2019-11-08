@@ -308,4 +308,40 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             expect(last_command_started.stdout).to include("ln -s /usr/share/zoneinfo/Pacific/Galapagos /target/etc/localtime")
         end
     end
+    context "simulating 'username' execution" do
+        it "creates the user account" do
+            use_fixture '0082-username-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include('useradd -c "Adélie User" -m -U chris')
+            expect(last_command_started.stdout).to include('useradd -c "Adélie User" -m -U kayla')
+            expect(last_command_started.stdout).to include('useradd -c "Adélie User" -m -U meg')
+            expect(last_command_started.stdout).to include('useradd -c "Adélie User" -m -U steph')
+            expect(last_command_started.stdout).to include('useradd -c "Adélie User" -m -U amanda')
+        end
+    end
+    context "simulating 'useralias' execution" do
+        it "sets aliases on all named accounts" do
+            use_fixture '0087-useralias-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include('usermod -c "Christopher" chris')
+            expect(last_command_started.stdout).to include('usermod -c "Kayla" kayla')
+            expect(last_command_started.stdout).to include('usermod -c "Meaghan" meg')
+            expect(last_command_started.stdout).to include('usermod -c "Stephanie" steph')
+            expect(last_command_started.stdout).to include('usermod -c "Amanda Jane" amanda')
+        end
+    end
+    context "simulating 'userpw' execution" do
+        it "sets the user's passphrase" do
+            use_fixture '0091-userpw-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("usermod -p '$6$UZJm/vBmVgyIdMZr$ppKEulz/HY0/e7RcXXujQbcqDXkUYgIqNEVPQJO6.le9kUpz8GvvRezY3ifqUUEwjhSo9tTOMG7lhqjn8gGpH0' awilfox")
+        end
+    end
+    context "simulating 'usergroups' execution" do
+        it "sets groups" do
+            use_fixture '0104-usergroups-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include('usermod -aG ')
+        end
+    end
 end
