@@ -14,6 +14,10 @@
 #include "key.hh"
 #include "util/output.hh"
 
+
+Horizon::Keys::Key::~Key() {
+}
+
 bool Horizon::Keys::BooleanKey::parse(const std::string &what,
                                       const std::string &where,
                                       const std::string &key, bool *out) {
