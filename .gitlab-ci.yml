@@ -1,5 +1,11 @@
 image: ruby:2.5
 
+stages:
+  - build
+  - test
+  - late-test
+  - deploy
+
 build:
   stage: build
   script:
@@ -18,12 +24,19 @@ test:
   - PATH=../build/tools/hscript-validate:../build/tools/hscript-simulate:../build/owner:$PATH rspec --format RspecJunitFormatter --out rspec.xml
   artifacts:
     paths:
+    - build
     - tests/rspec.xml
     reports:
       junit: tests/rspec.xml
 
-coverage:
+valgrind:
   stage: test
+  script:
+  - cd build
+  - CTEST_OUTPUT_ON_FAILURE=TRUE ctest -R 'Valgrind*'
+
+coverage:
+  stage: late-test
   dependencies:
   - test
   script:
@@ -37,12 +50,6 @@ coverage:
     - build/cov_html
     reports:
       metrics: metrics.txt
-
-valgrind:
-  stage: test
-  script:
-  - cd build
-  - CTEST_OUTPUT_ON_FAILURE=TRUE ctest -R 'Valgrind*'
 
 pages:
   stage: deploy
