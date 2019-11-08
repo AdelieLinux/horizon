@@ -24,6 +24,7 @@ option(BUILD_TOOLS "Enable building of tools (Validator, Simulator, etc)" ON)
 ## Code Coverage stuff ##
 option(COVERAGE "Build for code coverage tests (slow)" OFF)
 IF(COVERAGE)
+    SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} --coverage")
     SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} --coverage")
     SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
 ENDIF(COVERAGE)
