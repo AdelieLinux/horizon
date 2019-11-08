@@ -1,0 +1,11 @@
+<h2>Network Configuration</h2>
+
+<p>This phase of Horizon allows you to configure your network or Internet connection.</p>
+
+<h3>Which option should I choose?</h3>
+
+<ul>
+<li><strong>Most home and small business users will choose Simple.</strong>  This will configure your computer to connect to the Internet using Wi-Fi or an Ethernet cable.  The Wi-Fi or Ethernet cable must be connected to a switch, router, or modem that allows your computer to configure itself for access the Internet over a standard called DHCP.  Almost all modems and routers support this standard.  For Wi-Fi connections, you will be able to specify your access point name (SSID) and password, if necessary.<br></li>
+<li>Some users will need to choose Advanced.  <strong>You will need to choose Advanced if you use a VPN to connect to the Internet, you use a proxy server, you need to authenticate to your network using 802.1X, or have a static IP address issued by your network administrator or ISP</strong> (uncommon).  Horizon will allow you to specify the settings you require to connect to your network and/or the Internet.<br></li>
+<li>If you do not wish to connect to a network or the Internet, you may choose Skip.  Note that you will only be able to choose Skip if you have the full installation media for your platform, and some software collections may be unavailable.</li>
+</ul>

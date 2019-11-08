@@ -19,6 +19,7 @@ endif()
 
 
 option(BUILD_TOOLS "Enable building of tools (Validator, Simulator, etc)" ON)
+option(BUILD_UI "Enable user interface" ON)
 
 
 ## Code Coverage stuff ##
@@ -82,6 +83,9 @@ add_subdirectory(owner)
 IF(BUILD_TOOLS)
     add_subdirectory(tools)
 ENDIF(BUILD_TOOLS)
+IF(BUILD_UI)
+    add_subdirectory(ui)
+ENDIF(BUILD_UI)
 IF(INSTALL)
     add_subdirectory(fetch)
 ENDIF(INSTALL)

@@ -1,0 +1,17 @@
+<h2>Welcome to Adélie Linux!</h2>
+
+<p>This is the <b>Horizon Installation System</b>, which will guide you through the process of installing the Adélie Linux operating system to your computer.</p>
+
+<p>Each step of the installation system has a help screen just like this one, accessible via the 'Help' button in the lower left corner of the screen.  If you need more information about an option provided, simply open the Help screen.</p>
+
+
+<hr>
+
+
+<h2>Preparing for the installation</h2>
+
+<p>Please back up all of your data before beginning installation. While every effort is made to ensure that the Adélie Linux installation routines are safe and error-free, we cannot guarantee that your data will be preserved once you start the installation. If you intend on dual-booting your computer with another operating system, such as Mac OS X or Windows, ensure there is adequate disk space available to install Adélie Linux. You will need up to 1 GB for a standard desktop installation, or at least 300 MB for a server installation.</p>
+
+<p>If you plan on connecting to the Internet directly from your Adélie Linux computer without using a router (not common), ensure you have your Internet access credentials (typically a username and password) available before starting installation. Adélie Linux supports connecting to most ADSL and dial-up Internet providers using PPP; and cable, T1, and fibre providers using Ethernet. If you use a static IP address (not common), make sure you have your IP address, subnet, and default gateway and nameserver settings before starting installation.</p>
+
+<p>If your computer came with recovery media, we recommend that you have it available in the very unlikely event you have an issue with Adélie Linux, or your hardware has an incompatibility. This way, you will be able to quickly restore your computer to normal operation.</p>

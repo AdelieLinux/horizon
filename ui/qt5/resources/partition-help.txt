@@ -1,0 +1,5 @@
+<h2>Partitioning the Hard Disk Drive</h2>
+
+Please help the user partition the disk drive here.
+
+Do not ship this content.

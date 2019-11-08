@@ -1,0 +1,19 @@
+<h2>Select Software</h2>
+
+<p>This phase of Horizon allows you to choose the software you want to run on your computer.</p>
+
+<h3>Which option should I choose?</h3>
+
+<ul>
+<li><strong>Most users should choose Desktop Software.</strong>  This option will install software for everday computing: a Web browser, an email client, a media player, a word processor, and more.  You will have the option to add and remove software from the Software Centre once Adélie Linux is installed.<br></li>
+<li>Server Software will allow you to choose "roles" that your computer will perform on a network.  <strong>This option will run server software on your computer that may be accessible from the public Internet.</strong>  Choose this option only if you are sure you want to run server software on your computer.<br></li>
+<li>If you want to have more control over the packages that are installed on your computer, you may select <strong>Advanced</strong>.  This option will allow you to select software to install from a list of packages.</li>
+</ul>
+
+<h3>Which desktop should I choose?</h3>
+
+<ul>
+<li>Adélie Linux strongly recommends that you use the <strong>KDE Plasma 5 desktop</strong>.  It is approachable for people new to Linux or computing, and has many ways to customise your experience should you so desire.  Please note, however, that some older computers with less than 512 MB RAM may be unable to use KDE Plasma 5.  In that case, you may wish to use a different desktop.<br></li>
+<li>If your computer is older or has less than 512 MB RAM, we recommend the <strong>LXQt desktop</strong>.<br></li>
+<li>If you are already familiar with the <strong>XFCE 4</strong> or <strong>OpenBox</strong> environments from other Linux or Unix environments, you may choose either of those options.<br></li>
+</ul>
