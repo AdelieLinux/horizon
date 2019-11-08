@@ -16,7 +16,17 @@ test:
   script:
   - cd tests
   - PATH=../build/tools/hscript-validate:../build/tools/hscript-simulate:../build/owner:$PATH rspec --format RspecJunitFormatter --out rspec.xml
-  - cd ../build
+  artifacts:
+    - tests/rspec.xml
+    reports:
+      junit: tests/rspec.xml
+
+coverage:
+  stage: test
+  dependencies:
+  - test
+  script:
+  - cd build
   - make lcov_report
   - make lcov_html
   - printf 'coverage %s\n' $(lcov --summary horizon.coverage | grep lines | cut -d ' ' -f4) > metrics.txt
@@ -24,9 +34,7 @@ test:
   artifacts:
     paths:
     - build/cov_html
-    - tests/rspec.xml
     reports:
-      junit: tests/rspec.xml
       metrics: metrics.txt
 
 valgrind:
