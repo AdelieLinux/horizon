@@ -17,6 +17,7 @@ test:
   - cd tests
   - PATH=../build/tools/hscript-validate:../build/tools/hscript-simulate:../build/owner:$PATH rspec --format RspecJunitFormatter --out rspec.xml
   artifacts:
+    paths:
     - tests/rspec.xml
     reports:
       junit: tests/rspec.xml
