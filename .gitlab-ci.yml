@@ -55,6 +55,7 @@ pages:
   stage: deploy
   dependencies:
   - test
+  - coverage
   script:
   - mkdir public
   - mv build/cov_html public/coverage
