@@ -8,22 +8,22 @@ Code of Conduct
 ===============
 
 This code of conduct outlines expectations for participation in the Adélie
-Linux communities, as well as steps for reporting unacceptable behavior.  We
+Linux community, as well as steps for reporting unacceptable behavior.  We
 are committed to providing a welcoming and inspiring community for all.
 People violating this code of conduct may be banned from the community.
 
-Our open source communities strive to:
+Our open source community strives to:
 
 * **Be friendly and patient**: Remember: you might not be communicating in
   someone else's primary spoken or programming language, and others may not
   have your level of understanding.
 
-* **Be welcoming**: Our communities welcome and support people of all
-  backgrounds and identities.  This includes, but is not limited to members of
-  any race, ethnicity, culture, national origin, color, immigration status,
-  social and economic class, educational level, sex, sexual orientation, gender
-  identity and expression, age, size, family status, political belief,
-  religion, and mental and physical ability.
+* **Be welcoming**: Our community welcomes and supports people of all types
+  and backgrounds.  This includes, but is not limited to members of any race,
+  ethnicity, culture, national origin, color, immigration status, social and
+  economic class, educational level, sex, sexual orientation, gender identity
+  and expression, age, size, family status, political belief, religion, and
+  mental and physical ability.
 
 * **Be respectful**: We are a world-wide community of professionals, and we
   conduct ourselves professionally.  Disagreement is no excuse for poor
@@ -41,7 +41,7 @@ Our open source communities strive to:
 
   * Insults, especially those using discriminatory terms or slurs.
 
-  * Behaviour that could be perceived as unwated sexual attention.
+  * Behaviour that could be perceived as unwanted sexual attention.
 
   * Advocating for or encouraging any of the above behaviors.
 
