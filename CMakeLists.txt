@@ -77,12 +77,12 @@ ENDIF(INSTALL)
 
 
 add_subdirectory(hscript)
+add_subdirectory(owner)
 IF(BUILD_TOOLS)
     add_subdirectory(tools)
 ENDIF(BUILD_TOOLS)
 IF(INSTALL)
     add_subdirectory(fetch)
-    add_subdirectory(owner)
 ENDIF(INSTALL)
 
 
