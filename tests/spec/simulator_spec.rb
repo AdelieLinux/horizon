@@ -344,4 +344,21 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             expect(last_command_started.stdout).to include('usermod -aG ')
         end
     end
+    context "simulating 'usericon' execution" do
+        it "creates the dir if needed" do
+            use_fixture '0098-usericon-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("mkdir -p /target/var/lib/AccountsService/icons")
+        end
+        it "downloads remote icons" do
+            use_fixture '0102-usericon-protocols.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("curl -LO /target/var/lib/AccountsService/icons/chris http://www.adelielinux.org/")
+        end
+        it "copies the correct icon" do
+            use_fixture '0098-usericon-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("cp /usr/share/user-manager/avatars/circles/Cat.png /target/var/lib/AccountsService/icons/awilfox")
+        end
+    end
 end

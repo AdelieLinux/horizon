@@ -25,6 +25,36 @@
 
 namespace Horizon {
 
+static bool icon_dir_created = false;
+
+void maybe_create_icon_dir(ScriptOptions opts) {
+    if(icon_dir_created) return;
+    icon_dir_created = true;
+
+    if(opts.test(Simulate)) {
+        std::cout << "mkdir -p /target/var/lib/AccountsService/icons"
+                  << std::endl
+                  << "chown root:root /target/var/lib/AccountsService/icons"
+                  << std::endl
+                  << "chmod 775 /target/var/lib/AccountsService/icons"
+                  << std::endl;
+        return;
+    }
+#ifdef HAS_INSTALL_ENV
+    else {
+        error_code ec;
+        if(!fs::exists("/target/var/lib/AccountsService/icons", ec)) {
+            fs::create_directories("/target/var/lib/AccountsService/icons",
+                                   ec);
+            if(ec) {
+                output_error("internal", "couldn't create icon dir",
+                             ec.message());
+            }
+        }
+    }
+#endif  /* HAS_INSTALL_ENV */
+}
+
 bool Script::execute() const {
     bool success;
     error_code ec;
@@ -497,6 +527,7 @@ bool Script::execute() const {
             }
         }
         if(acct.second->icon) {
+            maybe_create_icon_dir(opts);
             EXECUTE_OR_FAIL("usericon", acct.second->icon)
         }
     }

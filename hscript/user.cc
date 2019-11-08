@@ -18,6 +18,7 @@
 #include <time.h>
 #include "user.hh"
 #include "util.hh"
+#include "util/filesystem.hh"
 #include "util/net.hh"
 #include "util/output.hh"
 
@@ -345,8 +346,59 @@ bool UserIcon::validate(ScriptOptions) const {
     return true;
 }
 
-bool UserIcon::execute(ScriptOptions) const {
-    return false;
+bool UserIcon::execute(ScriptOptions opts) const {
+    const std::string as_path("/target/var/lib/AccountsService/icons/" +
+                              _username);
+    const std::string face_path("/target/home/" + _username + "/.face");
+
+    output_info("installfile:" + std::to_string(line),
+                "usericon: setting avatar for " + _username);
+
+    if(opts.test(Simulate)) {
+        if(_icon_path[0] == '/') {
+            std::cout << "cp " << _icon_path << " " << as_path << std::endl;
+        } else {
+            std::cout << "curl -LO " << as_path << " " << _icon_path
+                      << std::endl;
+        }
+        std::cout << "cp " << as_path << " " << face_path << ".icon" << std::endl;
+        std::cout << "chown $(hscript-printowner /target/home/" << _username
+                  << ") " << face_path << ".icon" << std::endl;
+        std::cout << "ln -s .face.icon " << face_path << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    error_code ec;
+    if(_icon_path[0] == '/') {
+        fs::copy_file(_icon_path, as_path, ec);
+        if(ec) {
+            output_error("installfile:" + std::to_string(line),
+                         "usericon: failed to copy icon", ec.message());
+            return false;
+        }
+    } else {
+        if(!download_file(_icon_path, as_path)) {
+            output_error("installfile:" + std::to_string(line),
+                         "usericon: failed to download icon");
+            return false;
+        }
+    }
+
+    fs::copy_file(as_path, face_path + ".icon", ec);
+    if(ec) {
+        output_error("installfile:" + std::to_string(line),
+                     "usericon: failed to copy icon to home", ec.message());
+        return false;
+    }
+
+    fs::create_symlink(".face.icon", face_path, ec);
+    if(ec) {
+        output_warning("installfile:" + std::to_string(line),
+                       "usericon: failed to create legacy symlink");
+    }
+#endif  /* HAS_INSTALL_ENV */
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 
