@@ -89,8 +89,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 
 
     /* REQ: UI.Global.Cancel.Confirm */
-    QObject::disconnect(button(CancelButton), &QAbstractButton::clicked,
-                        this, &QWizard::reject);
+    button(CancelButton)->disconnect(this);
     QObject::connect(button(CancelButton), &QAbstractButton::clicked,
                      [=](bool) {
         QMessageBox cancel(QMessageBox::Question,
@@ -109,10 +108,10 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     });
 
     /* REQ: Iface.UI.ButtonAccel */
-    setButtonText(HelpButton, tr("Help (F1)"));
-    setButtonText(CancelButton, tr("Cancel (F3)"));
-    setButtonText(BackButton, tr("Back (F5)"));
-    setButtonText(NextButton, tr("Next (F8)"));
+    setButtonText(HelpButton, tr("&Help (F1)"));
+    setButtonText(CancelButton, tr("&Cancel (F3)"));
+    setButtonText(BackButton, tr("< &Back (F5)"));
+    setButtonText(NextButton, tr("&Next > (F8)"));
 
     f1 = new QShortcut(Qt::Key_F1, this);
     connect(f1, &QShortcut::activated,
