@@ -29,8 +29,10 @@ HorizonHelpWindow::HorizonHelpWindow(QFile *helpFile, QWidget *parent) :
     helpText = new QTextEdit(this);
     helpText->setReadOnly(true);
     helpText->setHtml(helpFile->readAll().toStdString().c_str());
+    helpText->setWhatsThis(tr("This window contains information about the current page of Adélie Linux System Installation."));
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok, this);
+    buttonBox->setWhatsThis(tr("Choose OK to close this window and return to Adélie Linux System Installation."));
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
 
     layout = new QVBoxLayout();
