@@ -1,3 +1,15 @@
+/*
+ * horizonwizard.cc - Implementation of the main Wizard class
+ * horizon-qt5, the Qt 5 user interface for
+ * Project Horizon
+ *
+ * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * This code is licensed under the AGPL 3.0 license, as noted in the
+ * LICENSE-code file in the root directory of this repository.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include "horizonwizard.hh"
 #include "horizonhelpwindow.hh"
 
@@ -11,10 +23,7 @@
 #include "networkingpage.hh"
 #include "netsimplewifipage.hh"
 
-using std::map;
-using std::string;
-
-static map<int, string> help_id_map = {
+static std::map<int, std::string> help_id_map = {
     {HorizonWizard::Page_Intro, "intro"},
     {HorizonWizard::Page_Input, "input"},
     {HorizonWizard::Page_Partition, "partition"},
@@ -70,8 +79,8 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
             nohelp.exec();
             return;
         }
-        string helppath = ":/wizard_help/resources/" +
-                          help_id_map.at(currentId()) + "-help.txt";
+        std::string helppath = ":/wizard_help/resources/" +
+                               help_id_map.at(currentId()) + "-help.txt";
         QFile helpfile(helppath.c_str());
         helpfile.open(QFile::ReadOnly);
         HorizonHelpWindow help(&helpfile, this);

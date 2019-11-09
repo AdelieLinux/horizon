@@ -1,3 +1,15 @@
+/*
+ * intropage.cc - Implementation of the UI.Intro page
+ * horizon-qt5, the Qt 5 user interface for
+ * Project Horizon
+ *
+ * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * This code is licensed under the AGPL 3.0 license, as noted in the
+ * LICENSE-code file in the root directory of this repository.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include "intropage.hh"
 
 #include <QLabel>
@@ -17,23 +29,14 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
 #ifndef HAS_INSTALL_ENV
     descLabel = new QLabel(
                 tr("<p>"
-                   "Horizon will guide you through creation of a basic "
-                   "<code>installfile</code> "
-                   "for installing Adélie Linux on another computer."
+                   "Horizon will guide you through creation of a basic <code>installfile</code> for installing Adélie Linux on another computer."
                    "<p>"
-                   "<b>IMPORTANT:</b> Not all advanced settings will "
-                   "be available to you.  You may be allowed to "
-                   "specify an invalid or non-bootable disk layout or "
-                   "network configuration.  For best results, always "
-                   "run System Installation directly on the computer "
-                   "you wish to run Adélie Linux."
+                   "<b>IMPORTANT:</b> You may be allowed to specify an invalid or non-bootable disk layout or network configuration.  "
+                   "For best results, run System Installation directly on the computer you wish to run Adélie Linux."
                    "<p>"
-                   "For more information about the "
-                   "<code>installfile</code> "
-                   "format and syntax, see the "
+                   "For more information about the <code>installfile</code> format and syntax, see the "
                    "<a href='https://help.adelielinux.org/html/install/'>"
-                   "Adélie Linux Installation Guide</a> on the "
-                   "Internet."));
+                   "Adélie Linux Installation Guide</a> on the Internet."));
     descLabel->setOpenExternalLinks(true);
     descLabel->setTextFormat(Qt::RichText);
 #else  /* HAS_INSTALL_ENV */
