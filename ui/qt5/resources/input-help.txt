@@ -1,0 +1,8 @@
+<h2>Keyboard Layout Configuration</h2>
+
+<p>This page allows you to select the keyboard layout you will use in your
+new Adélie Linux environment.</p>
+
+<p>When you select a keyboard layout, Horizon will automatically load it.
+You may then use the provided input line to ensure this layout is correct
+before proceeding to the next page.</p>

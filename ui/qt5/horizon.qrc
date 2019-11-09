@@ -9,6 +9,7 @@
     </qresource>
     <qresource prefix="/wizard_help">
         <file>resources/intro-help.txt</file>
+        <file>resources/input-help.txt</file>
         <file>resources/partition-help.txt</file>
         <file>resources/network-start-help.txt</file>
         <file>resources/packages-simple-help.txt</file>
