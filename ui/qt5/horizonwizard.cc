@@ -20,6 +20,7 @@
 #include <string>
 
 #include "intropage.hh"
+#include "inputpage.hh"
 #include "networkingpage.hh"
 #include "netsimplewifipage.hh"
 
@@ -64,6 +65,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setSizeGripEnabled(false);
 
     setPage(Page_Intro, new IntroPage);
+    setPage(Page_Input, new InputPage);
     setPage(Page_Network, new NetworkingPage);
 
     QObject::connect(this, &QWizard::helpRequested, [=](void) {
