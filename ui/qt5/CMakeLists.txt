@@ -14,6 +14,8 @@ set(UI_SOURCES
 add_executable(horizon-qt5 ${UI_SOURCES})
 target_link_libraries(horizon-qt5 Qt5::Widgets)
 
+install(TARGETS horizon-qt5 DESTINATION bin)
+
 IF(INSTALL)
     # add_executable(horizon-run-qt5 ${RUN_QT_SOURCES})
 ENDIF(INSTALL)
