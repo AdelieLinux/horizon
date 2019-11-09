@@ -123,5 +123,5 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     f8 = new QShortcut(Qt::Key_F8, this);
     connect(f8, &QShortcut::activated,
             button(NextButton), &QAbstractButton::click);
-    f5->setWhatsThis(tr("Goes forward to the next page."));
+    f8->setWhatsThis(tr("Goes forward to the next page."));
 }
