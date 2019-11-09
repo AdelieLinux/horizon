@@ -34,21 +34,18 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
     descLabel->setTextFormat(Qt::RichText);
 #else
     descLabel = new QLabel(
-                tr("The streamlined installation process for Adélie "
-                   "Linux will only take about 10-15 minutes of your "
-                   "time.  After you're done, your computer will be "
-                   "running the reliable, secure, libre Adélie Linux "
-                   "operating system.\n\n"
+                tr("Thank you for choosing the Adélie Linux operating system.  "
+                   "This installation process will only take about 10-15 minutes of your time.  "
+                   "When you're done, your computer will be up and running with the reliable, secure, libre Adélie Linux.\n\n"
 
-                   "When you're ready to answer a few questions, get "
-                   "started by choosing Next.  If you'd like more "
-                   "information about the installation procedure, "
-                   "choose Help at any time.\n\n"
+                   "When you're ready to answer a few questions, you can get started by choosing Next or pressing F8.  "
+                   "If you'd like more information about the installation procedure, choose Help or press F1 at any time.\n\n"
 
-                   "If you are unable to use a mouse, you may press "
-                   "the Tab key to cycle between the available buttons."
-                   "  The currently selected button will be highlighted.  "
-                   "Press the Return key to make your selection."));
+                   "The installation procedure will not change anything on your computer until the final step.  "
+                   "You can safely cancel at any time, with no change to your computer, by choosing Cancel or pressing F3.\n\n"
+
+                   "If you are unable to use a mouse, you may press the Tab key to cycle between the available inputs.  "
+                   "The currently selected input will be highlighted."));
 #endif
     descLabel->setWordWrap(true);
 
