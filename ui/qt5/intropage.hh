@@ -22,7 +22,6 @@
 class IntroPage : public HorizonWizardPage {
 public:
     IntroPage(QWidget *parent = nullptr);
-    int nextId() const;
 
 #ifdef HAS_INSTALL_ENV
 private:

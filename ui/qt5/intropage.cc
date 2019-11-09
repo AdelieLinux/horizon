@@ -81,7 +81,3 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
 #endif  /* HAS_INSTALL_ENV */
     setLayout(layout);
 }
-
-int IntroPage::nextId() const {
-    return HorizonWizard::Page_Input;
-}
