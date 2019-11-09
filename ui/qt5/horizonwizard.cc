@@ -46,10 +46,10 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 
     setFixedSize(QSize(650, 450));
 
-    setOption(HaveHelpButton);
     /* REQ: UI.Global.Back.Save */
     setOption(IndependentPages);
     /* REQ: UI.Language.Buttons, Iface.UI.StandardButtons */
+    setOption(HaveHelpButton);
     setOption(NoBackButtonOnStartPage);
 
     setSizeGripEnabled(false);
