@@ -1,6 +1,7 @@
 #ifndef HORIZONWIZARD_HH
 #define HORIZONWIZARD_HH
 
+#include <QShortcut>
 #include <QWizard>
 #include <string>
 
@@ -34,8 +35,7 @@ public:
     };
 
     HorizonWizard(QWidget *parent = nullptr);
-    /* collected information stored here */
-    std::string keymap;
+    QShortcut *f1, *f3, *f5, *f8;
 };
 
 #endif  /* !HORIZONWIZARD_HH */
