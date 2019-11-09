@@ -1,6 +1,10 @@
 #include "intropage.hh"
 
 #include <QLabel>
+#ifdef HAS_INSTALL_ENV
+#include <QMenu>
+#include <QProcess>
+#endif  /* HAS_INSTALL_ENV */
 #include <QVBoxLayout>
 
 IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
@@ -32,7 +36,24 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
                    "Internet."));
     descLabel->setOpenExternalLinks(true);
     descLabel->setTextFormat(Qt::RichText);
-#else
+#else  /* HAS_INSTALL_ENV */
+    QMenu *toolMenu;
+    toolButton = new QPushButton(tr("Launch &Tool..."), this);
+    toolMenu = new QMenu("&Tools", toolButton);
+    connect(toolMenu->addAction("&Terminal"), &QAction::triggered, [=](void) {
+        QProcess p;
+        p.execute("xterm", {"-fa", "Liberation Mono", "-fs", "12"});
+    });
+    connect(toolMenu->addAction("&Partition Editor"), &QAction::triggered, [=](void) {
+        QProcess p;
+        p.execute("partitionmanager");
+    });
+    /*connect(toolMenu->addAction("&Web Browser"), &QAction::triggered, [=](void){
+        QProcess p;
+        p.execute("otter-browser");
+    });*/
+    toolButton->setMenu(toolMenu);
+
     descLabel = new QLabel(
                 tr("Thank you for choosing the Adélie Linux operating system.  "
                    "This installation process will only take about 10-15 minutes of your time.  "
@@ -46,11 +67,15 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
 
                    "If you are unable to use a mouse, you may press the Tab key to cycle between the available inputs.  "
                    "The currently selected input will be highlighted."));
-#endif
+#endif  /* !HAS_INSTALL_ENV */
     descLabel->setWordWrap(true);
 
     layout = new QVBoxLayout;
     layout->addWidget(descLabel);
+#ifdef HAS_INSTALL_ENV
+    layout->addStretch();
+    layout->addWidget(toolButton);
+#endif  /* HAS_INSTALL_ENV */
     setLayout(layout);
 }
 
