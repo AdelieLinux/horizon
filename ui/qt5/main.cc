@@ -11,6 +11,7 @@
  */
 
 #include <QApplication>
+#include <QIcon>
 #include <QLibraryInfo>
 #include <QTranslator>
 
@@ -28,6 +29,8 @@ int main(int argc, char *argv[]) {
                         ))) {
         app.installTranslator(translator);
     }
+
+    app.setWindowIcon(QIcon(":/horizon-256.png"));
 
     HorizonWizard wizard;
     wizard.show();

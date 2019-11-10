@@ -14,4 +14,7 @@
         <file>resources/network-start-help.txt</file>
         <file>resources/packages-simple-help.txt</file>
     </qresource>
+    <qresource prefix="/">
+        <file alias="horizon-256.png">../../assets/horizon-256.png</file>
+    </qresource>
 </RCC>
