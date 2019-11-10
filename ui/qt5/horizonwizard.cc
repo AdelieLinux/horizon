@@ -19,6 +19,10 @@
 #include <map>
 #include <string>
 
+#ifdef HAS_INSTALL_ENV
+#   include <libudev.h>
+#endif  /* HAS_INSTALL_ENV */
+
 #include "intropage.hh"
 #include "inputpage.hh"
 #include "networkingpage.hh"
@@ -53,6 +57,78 @@ static std::map<int, std::string> help_id_map = {
     {HorizonWizard::Page_Commit, "commit"}
 #endif  /* !HAS_INSTALL_ENV */
 };
+
+
+#ifdef HAS_INSTALL_ENV
+std::map<std::string, HorizonWizard::NetworkInterfaceType> probe_ifaces(void) {
+    struct udev *udev;
+    struct udev_enumerate *if_list;
+    struct udev_list_entry *first, *candidate;
+    struct udev_device *device = nullptr;
+
+    std::map<std::string, HorizonWizard::NetworkInterfaceType> ifaces;
+
+    udev = udev_new();
+    if(udev == nullptr) {
+        qDebug() << "Can't connect to UDev.";
+        return ifaces;
+    }
+
+    if_list = udev_enumerate_new(udev);
+    if(if_list == nullptr) {
+        qDebug() << "Uh oh.  UDev is unhappy.";
+        udev_unref(udev);
+        return ifaces;
+    }
+
+    udev_enumerate_add_match_subsystem(if_list, "net");
+    udev_enumerate_scan_devices(if_list);
+    first = udev_enumerate_get_list_entry(if_list);
+    udev_list_entry_foreach(candidate, first) {
+        const char *syspath = udev_list_entry_get_name(candidate);
+        const char *devtype, *cifname;
+
+        if(device != nullptr) udev_device_unref(device);
+        device = udev_device_new_from_syspath(udev, syspath);
+        if(device == nullptr) continue;
+        devtype = udev_device_get_devtype(device);
+        if(devtype == nullptr) {
+            devtype = udev_device_get_sysattr_value(device, "type");
+            if(devtype == nullptr) {
+                qDebug() << syspath << " skipped; no device type.";
+                continue;
+            }
+        }
+
+        cifname = udev_device_get_property_value(device, "INTERFACE");
+        if(cifname == nullptr) {
+            qDebug() << syspath << " has no interface name.";
+            continue;
+        }
+
+        std::string ifname(cifname);
+        if(strstr(devtype, "wlan")) {
+            ifaces.insert({ifname, HorizonWizard::Wireless});
+        } else if(strstr(devtype, "bond")) {
+            ifaces.insert({ifname, HorizonWizard::Bonded});
+        } else if(strstr(syspath, "/virtual/")) {
+            /* Skip lo, tuntap, etc */
+            continue;
+        } else if(strstr(devtype, "1")) {
+            ifaces.insert({ifname, HorizonWizard::Ethernet});
+        } else {
+            ifaces.insert({ifname, HorizonWizard::Unknown});
+        }
+    }
+
+    if(device != nullptr) udev_device_unref(device);
+
+    udev_enumerate_unref(if_list);
+    udev_unref(udev);
+    return ifaces;
+}
+#endif  /* HAS_INSTALL_ENV */
+
 
 HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setWindowTitle(tr("Adélie Linux System Installation"));
@@ -136,4 +212,8 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     connect(f8, &QShortcut::activated,
             button(NextButton), &QAbstractButton::click);
     f8->setWhatsThis(tr("Goes forward to the next page."));
+
+#ifdef HAS_INSTALL_ENV
+    interfaces = probe_ifaces();
+#endif  /* HAS_INSTALL_ENV */
 }

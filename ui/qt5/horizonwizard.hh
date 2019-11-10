@@ -15,6 +15,7 @@
 
 #include <QShortcut>
 #include <QWizard>
+#include <map>
 #include <string>
 
 class HorizonWizard : public QWizard {
@@ -49,8 +50,18 @@ public:
 #endif  /* !HAS_INSTALL_ENV */
     };
 
+    enum NetworkInterfaceType {
+        Ethernet,
+        Wireless,
+        Bonded,
+        Unknown
+    };
+
     HorizonWizard(QWidget *parent = nullptr);
     QShortcut *f1, *f3, *f5, *f8;
+
+    std::map<std::string, NetworkInterfaceType> interfaces;
+    std::string chosen_auto_iface;
 };
 
 #endif  /* !HORIZONWIZARD_HH */
