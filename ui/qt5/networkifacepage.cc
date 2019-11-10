@@ -50,17 +50,18 @@ void NetworkIfacePage::initializePage() {
             break;
         case HorizonWizard::Bonded:
             ifaceIcon = QIcon::fromTheme("network-card");
-            ifaceName = tr("Bonded Interface (%1)").arg(ifaceDevName);
+            ifaceName = tr("Bond (%1)").arg(ifaceDevName);
             break;
         case HorizonWizard::Unknown:
             ifaceIcon = QIcon::fromTheme("network-card");
-            ifaceName = tr("Unknown Interface (%1)").arg(ifaceDevName);
+            ifaceName = ifaceDevName;
             break;
         }
 
         new QListWidgetItem(ifaceIcon, ifaceName, ifaceList);
     }
-
+    ifaceList->setGridSize(QSize(160, 128));
+    ifaceList->setIconSize(QSize(96, 96));
     ifaceList->setViewMode(QListView::IconMode);
 
     layout = new QVBoxLayout;
