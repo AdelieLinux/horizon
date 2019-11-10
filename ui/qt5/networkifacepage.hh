@@ -13,12 +13,18 @@
 #ifndef NETWORKIFACEPAGE_HH
 #define NETWORKIFACEPAGE_HH
 
+#include <QListWidget>
+
 #include "horizonwizardpage.hh"
 
 class NetworkIfacePage : public HorizonWizardPage {
 public:
     NetworkIfacePage(QWidget *parent = nullptr);
     void initializePage() override;
+    bool isComplete() const;
+    int nextId() const;
+private:
+    QListWidget *ifaceList;
 };
 
 #endif /* !NETWORKIFACEPAGE_HH */

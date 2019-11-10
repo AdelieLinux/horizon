@@ -1,0 +1,21 @@
+<h2>Network Interface Selection</h2>
+
+<p>This page is shown when your computer has multiple network interfaces.
+Select the one that you wish to use during installation.  You can configure
+additional network interfaces after installation.</p>
+
+<h3>How do I know which interface to select?</h3>
+
+<ul>
+ <li>If you use a wireless connection, select <b>Wi-Fi</b>.</li>
+ <li>If you use a wired connection, select <b>Ethernet</b>.</li>
+</ul>
+
+<p>If you're not sure which interface is correct, and you know the MAC address
+of your interface, use the mouse to hover over each interface.  Each interface
+has its MAC address in its tool-tip.</p>
+
+<p>If you see multiple interfaces of the same type, and you aren't expecting
+this, your hardware may have been incorrectly detected by Adélie Linux.  You
+can contact our community for help at <a href="https://help.adelielinux.org/">
+https://help.adelielinux.org/</a>.</p>
