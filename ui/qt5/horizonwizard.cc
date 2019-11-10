@@ -26,6 +26,7 @@
 #include "intropage.hh"
 #include "inputpage.hh"
 #include "networkingpage.hh"
+#include "networkifacepage.hh"
 #include "netsimplewifipage.hh"
 
 static std::map<int, std::string> help_id_map = {
@@ -146,6 +147,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setPage(Page_Intro, new IntroPage);
     setPage(Page_Input, new InputPage);
     setPage(Page_Network, new NetworkingPage);
+    setPage(Page_Network_Iface, new NetworkIfacePage);
 
     QObject::connect(this, &QWizard::helpRequested, [=](void) {
         if(help_id_map.find(currentId()) == help_id_map.end()) {
