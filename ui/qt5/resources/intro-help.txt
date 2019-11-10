@@ -16,17 +16,17 @@ accessible via the 'Help' button in the lower left corner of the screen.</p>
 <p>The Installation System is divided in a series of <i>pages</i>, similar in
 concept to a paper form.</p>
 
-<p>When you are finishing filling in the information on one page, you may go
-to the next one by choosing Next or pressing the F8 key.</p>
+<p>When you are finishing filling in the information on one page, you may
+continue to the next page by choosing Continue or pressing the F8 key.</p>
 
 <p>If you want to go back and review or change information on a previous page,
-you may go back by choosing Back or pressing the F5 key.</p>
+you may go back by choosing Back or pressing the F6 key.</p>
 
 <p>If you need more information about an option provided, you may open the
 Help screen by choosing Help or pressing the F1 key.</p>
 
 <p>If you have decided not to complete the installation procedure at this
-time, you may stop at any time by choosing Cancel or pressing the F3 key.</p>
+time, you may stop at any time by choosing Exit or pressing the F3 key.</p>
 
 
 <hr>

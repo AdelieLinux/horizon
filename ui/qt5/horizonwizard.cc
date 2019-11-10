@@ -175,11 +175,11 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     QObject::connect(button(CancelButton), &QAbstractButton::clicked,
                      [=](bool) {
         QMessageBox cancel(QMessageBox::Question,
-                           tr("Cancel Adélie Linux System Installation"),
+                           tr("Exit Adélie Linux System Installation"),
                    #ifdef HAS_INSTALL_ENV
-                           tr("Adélie Linux has not yet been set up on your computer.  Cancellation will reboot your computer.  Do you wish to cancel?"),
+                           tr("Adélie Linux has not yet been set up on your computer.  Exiting will reboot your computer.  Do you wish to exit?"),
                    #else
-                           tr("You have not yet completed the System Installation wizard.  No installfile will be generated.  Do you wish to cancel?"),
+                           tr("You have not yet completed the System Installation wizard.  No installfile will be generated.  Do you wish to exit?"),
                    #endif
                            QMessageBox::Yes | QMessageBox::No,
                            this);
@@ -191,9 +191,9 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 
     /* REQ: Iface.UI.ButtonAccel */
     setButtonText(HelpButton, tr("&Help (F1)"));
-    setButtonText(CancelButton, tr("&Cancel (F3)"));
-    setButtonText(BackButton, tr("< &Back (F5)"));
-    setButtonText(NextButton, tr("&Next > (F8)"));
+    setButtonText(CancelButton, tr("E&xit (F3)"));
+    setButtonText(BackButton, tr("< &Back (F6)"));
+    setButtonText(NextButton, tr("Co&ntinue > (F8)"));
 
     f1 = new QShortcut(Qt::Key_F1, this);
     connect(f1, &QShortcut::activated,
@@ -203,9 +203,9 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     f3 = new QShortcut(Qt::Key_F3, this);
     connect(f3, &QShortcut::activated,
             button(CancelButton), &QAbstractButton::click);
-    f3->setWhatsThis(tr("Prompts to cancel the installation."));
+    f3->setWhatsThis(tr("Prompts to exit the installation."));
 
-    f5 = new QShortcut(Qt::Key_F5, this);
+    f5 = new QShortcut(Qt::Key_F6, this);
     connect(f5, &QShortcut::activated,
             button(BackButton), &QAbstractButton::click);
     f5->setWhatsThis(tr("Goes back to the previous page."));

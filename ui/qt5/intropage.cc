@@ -58,15 +58,14 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
     toolButton->setMenu(toolMenu);
 
     descLabel = new QLabel(
-                tr("Thank you for choosing the Adélie Linux operating system.  "
-                   "This installation process will only take about 10-15 minutes of your time.  "
-                   "When you're done, your computer will be up and running with the reliable, secure, libre Adélie Linux.\n\n"
+                tr("Thank you for choosing the reliable, secure, libre Adélie Linux operating system.  "
+                   "This installation process will take about 10-15 minutes.\n\n"
 
-                   "When you're ready to answer a few questions, you can get started by choosing Next or pressing F8.  "
+                   "When you're ready to answer a few questions, you can get started by choosing Continue or pressing F8.  "
                    "If you'd like more information about the installation procedure, choose Help or press F1 at any time.\n\n"
 
                    "The installation procedure will not change anything on your computer until the final step.  "
-                   "You can safely cancel at any time, with no change to your computer, by choosing Cancel or pressing F3.\n\n"
+                   "You can safely exit at any time, with no change to your computer, by choosing Exit or pressing F3.\n\n"
 
                    "If you are unable to use a mouse, you may press the Tab key to cycle between the available inputs.  "
                    "The currently selected input will be highlighted."));
