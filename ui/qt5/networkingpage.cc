@@ -1,12 +1,22 @@
+/*
+ * networkingpage.cc - Implementation of the UI.Network.AddressType page
+ * horizon-qt5, the Qt 5 user interface for
+ * Project Horizon
+ *
+ * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * This code is licensed under the AGPL 3.0 license, as noted in the
+ * LICENSE-code file in the root directory of this repository.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include "networkingpage.hh"
 #include "horizonwizard.hh"
 
-#include <cstdint>
 #include <QLabel>
 #include <QVBoxLayout>
 
-NetworkingPage::NetworkingPage(QWidget *parent) : HorizonWizardPage(parent)
-{
+NetworkingPage::NetworkingPage(QWidget *parent) : HorizonWizardPage(parent) {
     QLabel *descLabel;
     QVBoxLayout *layout;
 
@@ -35,7 +45,7 @@ NetworkingPage::NetworkingPage(QWidget *parent) : HorizonWizardPage(parent)
     radioGroup->addButton(skip);
 
     QObject::connect(radioGroup, static_cast<void (QButtonGroup:: *)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
-                     [=](QAbstractButton *button __attribute__((unused))) {
+                     [=](QAbstractButton *) {
         emit completeChanged();
     });
 
@@ -48,15 +58,12 @@ NetworkingPage::NetworkingPage(QWidget *parent) : HorizonWizardPage(parent)
     setLayout(layout);
 }
 
-bool NetworkingPage::isComplete() const
-{
+bool NetworkingPage::isComplete() const {
     return (radioGroup->checkedButton() != nullptr);
 }
 
-int NetworkingPage::nextId() const
-{
+int NetworkingPage::nextId() const {
     if(radioGroup->checkedButton() == simple) {
-        /* determine wifi */
         if(false) {
             return HorizonWizard::Page_Network_Wireless;
         } else {
