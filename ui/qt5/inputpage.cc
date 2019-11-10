@@ -12,6 +12,7 @@
 
 #include "inputpage.hh"
 
+#include <QDebug>
 #include <QLabel>
 #include <QVBoxLayout>
 
@@ -51,7 +52,8 @@ InputPage::InputPage(QWidget *parent) : HorizonWizardPage(parent) {
     layoutList->setSelectionMode(QAbstractItemView::SingleSelection);
     layoutList->setWhatsThis(tr("This is a list of keyboard layouts.  Select one to choose the layout of the keyboard you will be using on your Adélie Linux computer."));
     for(auto &map : valid_keymaps) {
-        layoutList->addItem(map.c_str());
+        QIcon myIcon = QIcon::fromTheme("input-keyboard");
+        new QListWidgetItem(myIcon, map.c_str(), layoutList);
     }
 
     registerField("keymap*", layoutList);
