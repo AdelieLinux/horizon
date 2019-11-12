@@ -27,7 +27,7 @@ Our open source community strives to:
 
 * **Be respectful**: We are a world-wide community of professionals, and we
   conduct ourselves professionally.  Disagreement is no excuse for poor
-  behaviour and poor manners.  Disrespectful and unacceptable behaviour
+  behavior and poor manners.  Disrespectful and unacceptable behavior
   includes, but is not limited to:
 
   * Violent threats or language.
@@ -41,12 +41,12 @@ Our open source community strives to:
 
   * Insults, especially those using discriminatory terms or slurs.
 
-  * Behaviour that could be perceived as unwanted sexual attention.
+  * Behavior that could be perceived as unwanted sexual attention.
 
   * Advocating for or encouraging any of the above behaviors.
 
 * **Understand disagreements**: Disagreements, both social and technical, are
-  useful learning opportunities. Seek to understand the other viewpoints and
+  useful learning opportunities.  Seek to understand the other viewpoints and
   resolve differences constructively.
 
 This code is not exhaustive or complete.  It serves to capture our common
