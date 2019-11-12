@@ -11,6 +11,7 @@ set(UI_SOURCES
     inputpage.cc
     networkingpage.cc
     networkifacepage.cc
+    netsimplewifipage.cc
 
     horizon.qrc)
 add_executable(horizon-qt5 ${UI_SOURCES})

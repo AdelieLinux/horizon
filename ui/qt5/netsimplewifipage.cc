@@ -1,71 +1,61 @@
+/*
+ * netsimplewifipage.cc - Implementation of the UI.Network.Wireless page
+ * horizon-qt5, the Qt 5 user interface for
+ * Project Horizon
+ *
+ * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * This code is licensed under the AGPL 3.0 license, as noted in the
+ * LICENSE-code file in the root directory of this repository.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 #include "netsimplewifipage.hh"
 
-#include <QHBoxLayout>
 #include <QLabel>
+#include <QPushButton>
 #include <QVBoxLayout>
 
-#include <horizon/wirelesscontroller.hh>
-
 NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
-        : HorizonWizardPage(parent)
-{
-        QHBoxLayout *securityLayout;
-        QVBoxLayout *layout;
-        QLabel *descLabel, *securityTypeLabel, *statusLabel;
+    : HorizonWizardPage(parent) {
+    QVBoxLayout *layout;
+    QLabel *statusLabel;
+    QPushButton *rescanButton;
 
-        loadWatermark("network");
-        setTitle(tr("Wireless Networking Setup"));
+    loadWatermark("network");
+    setTitle(tr("Select Your Network"));
 
-        descLabel = new QLabel(tr(
-                    "A supported Wi-Fi device has been found in this "
-                    "computer.  If you connect to the Internet using "
-                    "Wi-Fi, select your Access Point below.\n\n"
+    statusLabel = new QLabel(tr("Scanning for networks..."));
 
-                    "If you don't want to use Wi-Fi, select \"Use Wired "
-                    "Connection\" to continue using a wired connection."));
-        descLabel->setWordWrap(true);
+    rescanButton = new QPushButton(tr("&Rescan Networks"));
+    rescanButton->setEnabled(false);
+    connect(rescanButton, &QPushButton::clicked, [=](void) { doScan(); });
 
-        statusLabel = new QLabel(tr("Scanning for networks..."));
+    ssidListView = new QListWidget;
 
-        ssidListView = new QListView;
+    passphrase = new QLineEdit(this);
+    passphrase->setEchoMode(QLineEdit::Password);
+    passphrase->setPlaceholderText(tr("Passphrase"));
+    passphrase->hide();
 
-        ssidName = new QLineEdit(this);
-        ssidName->setPlaceholderText(tr("Network Name"));
-        ssidName->hide();
-
-        securityTypeLabel = new QLabel(tr("Security type"));
-
-        securityType = new QComboBox(this);
-        securityType->addItems({tr("None"), tr("WPA2 Personal"),
-                                tr("WPA2 Enterprise"), tr("WPA Personal"),
-                                tr("WPA Enterprise"), tr("WEP")});
-        securityType->setEnabled(false);
-        securityType->hide();
-
-        passphrase = new QLineEdit(this);
-        passphrase->setEchoMode(QLineEdit::Password);
-        passphrase->setPlaceholderText(tr("Passphrase"));
-        passphrase->hide();
-
-        securityLayout = new QHBoxLayout;
-        securityLayout->addWidget(securityTypeLabel);
-        securityLayout->addWidget(securityType);
-
-        layout = new QVBoxLayout;
-        layout->addWidget(descLabel);
-        layout->addWidget(statusLabel, 0, Qt::AlignCenter);
-        layout->addSpacing(10);
-        layout->addWidget(ssidListView, 0, Qt::AlignCenter);
-        layout->addSpacing(10);
-        layout->addWidget(ssidName);
-        layout->addSpacing(10);
-        layout->addLayout(securityLayout);
-        layout->addSpacing(10);
-        layout->addWidget(passphrase);
-        setLayout(layout);
+    layout = new QVBoxLayout;
+    layout->addWidget(statusLabel, 0, Qt::AlignCenter);
+    layout->addSpacing(10);
+    layout->addWidget(ssidListView, 0, Qt::AlignCenter);
+    layout->addWidget(rescanButton);
+    layout->addSpacing(10);
+    layout->addWidget(passphrase);
+    setLayout(layout);
 }
 
-void NetworkSimpleWirelessPage::initializePage()
-{
-        Horizon::WirelessController::wirelessController()->performScan();
+void NetworkSimpleWirelessPage::doScan() {
+    ssidListView->clear();
+}
+
+void NetworkSimpleWirelessPage::initializePage() {
+    doScan();
+}
+
+int NetworkSimpleWirelessPage::nextId() const {
+    return HorizonWizard::Page_Network_DHCP;
 }
