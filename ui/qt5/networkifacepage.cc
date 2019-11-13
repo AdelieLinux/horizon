@@ -42,6 +42,7 @@ NetworkIfacePage::NetworkIfacePage(QWidget *parent) :
     ifaceList->setGridSize(QSize(160, 128));
     ifaceList->setIconSize(QSize(96, 96));
     ifaceList->setViewMode(QListView::IconMode);
+    ifaceList->setWhatsThis(tr("A list of network interfaces present in your computer.  Select the interface you wish to use for installation."));
 }
 
 void NetworkIfacePage::initializePage() {
