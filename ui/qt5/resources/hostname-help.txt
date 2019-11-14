@@ -1,0 +1,16 @@
+<h2>Computer Name</h2>
+
+<p>This page allows you to set the name of your computer.  The name of your
+computer will appear in various places, such as the system startup screen,
+log files, and the Applications menu.</p>
+
+<p>For home users, it's best to provide a descriptive name of the location
+and/or owner of the computer.  For example, <i>Living-Room-PC</i> or
+<i>Annas-PC</i>.  Note that if you have a home network, you will need to
+make sure that each computer has a different name.  Otherwise, some
+applications may not function correctly.</p>
+
+<p>For business and server installations, a computer name is typically
+assigned by a network administrator.  This may include a domain name, which
+can be appended to the end of the name.  For example,
+<i>wkst025.wilcox-tech.com</i> or <i>postgres02.chi.adelielinux.org</i>.</p>
