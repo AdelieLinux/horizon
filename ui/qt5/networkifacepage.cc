@@ -123,6 +123,6 @@ int NetworkIfacePage::nextId() const {
     case HorizonWizard::Wireless:
         return HorizonWizard::Page_Network_Wireless;
     default:
-        return HorizonWizard::Page_Network_DHCP;
+        return HorizonWizard::Page_DateTime;
     }
 }

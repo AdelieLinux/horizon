@@ -33,6 +33,7 @@ public:
         Page_Network,           /* network type selection (DHCP/static) */
         Page_Network_Iface,     /* network interface selection */
         Page_Network_Wireless,  /* wireless */
+        Page_Network_CustomAP,  /* custom AP */
         Page_Network_DHCP,      /* interstitial for DHCP */
         Page_Network_Portal,    /* shown if captive portal is detected */
         Page_Network_Manual,    /* static addressing */

@@ -1,0 +1,17 @@
+<h2>Date and Time Settings</h2>
+
+<p>This page allows you to configure your computer's date and time.  It also
+allows you to configure your computer's time zone.</p>
+
+<h3>How do I know which time zone to select?</h3>
+
+<p>If you're installing Adélie Linux on a desktop, workstation, or laptop
+computer, choose the time zone where you are located, or where you will use
+the computer the most.  If you have another device with you that has Internet
+access, you may find your local time zone by using the interactive map at
+<a href="https://www.timeanddate.com/time/map/">
+https://www.timeanddate.com/time/map/</a>.</p>
+
+<p>If you're installing Adélie Linux on a server system, you should almost
+always use UTC.  This ensures that Daylight Savings Time will not adversely
+affect running services.</p>

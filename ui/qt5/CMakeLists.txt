@@ -12,6 +12,7 @@ set(UI_SOURCES
     networkingpage.cc
     networkifacepage.cc
     netsimplewifipage.cc
+    datetimepage.cc
 
     horizon.qrc)
 add_executable(horizon-qt5 ${UI_SOURCES})
@@ -22,6 +23,7 @@ install(TARGETS horizon-qt5 DESTINATION bin)
 IF(INSTALL)
     pkg_check_modules(XKBFile REQUIRED xkbfile)
     pkg_check_modules(LIBX11 REQUIRED x11)
-    target_link_libraries(horizon-qt5 ${LIBUDEV_LIBRARIES} ${LIBX11_LIBRARIES} ${XKBFile_LIBRARIES})
+    pkg_check_modules(LibCap REQUIRED libcap)
+    target_link_libraries(horizon-qt5 ${LIBUDEV_LIBRARIES} ${LibCap_LIBRARIES} ${LIBX11_LIBRARIES} ${XKBFile_LIBRARIES})
     # add_executable(horizon-run-qt5 ${RUN_QT_SOURCES})
 ENDIF(INSTALL)
