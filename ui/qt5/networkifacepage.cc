@@ -13,12 +13,6 @@
 #include "networkifacepage.hh"
 #include "horizonwizard.hh"
 
-#ifdef HAS_INSTALL_ENV
-#   include <net/if.h>      /* ifreq */
-#   include <sys/ioctl.h>   /* ioctl */
-#   include <unistd.h>      /* close */
-#endif
-
 #include <algorithm>
 #include <QDebug>
 #include <QLabel>
@@ -58,7 +52,7 @@ void NetworkIfacePage::initializePage() {
         QString ifaceDevName = QString::fromStdString(iface.first);
         QString ifaceName;
 
-        switch(iface.second) {
+        switch(iface.second.type) {
         case HorizonWizard::Wireless:
             ifaceIcon = QIcon::fromTheme("network-wireless");
             ifaceName = tr("Wi-Fi (%1)").arg(ifaceDevName);
@@ -79,28 +73,7 @@ void NetworkIfacePage::initializePage() {
 
         QListWidgetItem *item = new QListWidgetItem(ifaceIcon, ifaceName,
                                                     ifaceList);
-        /* Retrieving the index is always valid, and is not even privileged. */
-        struct ifreq request;
-        int my_sock = ::socket(AF_INET, SOCK_STREAM, 0);
-        if(my_sock == -1) {
-            continue;
-        }
-        memset(&request, 0, sizeof(request));
-        memcpy(&request.ifr_name, iface.first.c_str(), iface.first.size());
-        errno = 0;
-        if(ioctl(my_sock, SIOCGIFHWADDR, &request) != -1) {
-            char *buf;
-            asprintf(&buf, "%02X:%02X:%02X:%02X:%02X:%02X",
-                     request.ifr_ifru.ifru_hwaddr.sa_data[0],
-                     request.ifr_ifru.ifru_hwaddr.sa_data[1],
-                     request.ifr_ifru.ifru_hwaddr.sa_data[2],
-                     request.ifr_ifru.ifru_hwaddr.sa_data[3],
-                     request.ifr_ifru.ifru_hwaddr.sa_data[4],
-                     request.ifr_ifru.ifru_hwaddr.sa_data[5]);
-            item->setToolTip(QString(buf));
-            free(buf);
-        }
-        ::close(my_sock);
+        item->setToolTip(iface.second.mac);
     }
 
     layout = new QVBoxLayout;
@@ -119,7 +92,7 @@ int NetworkIfacePage::nextId() const {
     auto iterator = horizonWizard()->interfaces.begin();
     std::advance(iterator, ifaceList->currentRow());
 
-    switch(iterator->second) {
+    switch(iterator->second.type) {
     case HorizonWizard::Wireless:
         return HorizonWizard::Page_Network_Wireless;
     default:

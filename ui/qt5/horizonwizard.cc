@@ -21,6 +21,9 @@
 
 #ifdef HAS_INSTALL_ENV
 #   include <libudev.h>
+#   include <net/if.h>      /* ifreq */
+#   include <sys/ioctl.h>   /* ioctl */
+#   include <unistd.h>      /* close */
 #endif  /* HAS_INSTALL_ENV */
 
 #include "intropage.hh"
@@ -63,13 +66,13 @@ static std::map<int, std::string> help_id_map = {
 
 
 #ifdef HAS_INSTALL_ENV
-std::map<std::string, HorizonWizard::NetworkInterfaceType> probe_ifaces(void) {
+std::map<std::string, HorizonWizard::NetworkInterface> probe_ifaces(void) {
     struct udev *udev;
     struct udev_enumerate *if_list;
     struct udev_list_entry *first, *candidate;
     struct udev_device *device = nullptr;
 
-    std::map<std::string, HorizonWizard::NetworkInterfaceType> ifaces;
+    std::map<std::string, HorizonWizard::NetworkInterface> ifaces;
 
     udev = udev_new();
     if(udev == nullptr) {
@@ -90,6 +93,7 @@ std::map<std::string, HorizonWizard::NetworkInterfaceType> probe_ifaces(void) {
     udev_list_entry_foreach(candidate, first) {
         const char *syspath = udev_list_entry_get_name(candidate);
         const char *devtype, *cifname;
+        QString mac;
 
         if(device != nullptr) udev_device_unref(device);
         device = udev_device_new_from_syspath(udev, syspath);
@@ -109,18 +113,40 @@ std::map<std::string, HorizonWizard::NetworkInterfaceType> probe_ifaces(void) {
             continue;
         }
 
+        /* Retrieving the index is always valid, and is not even privileged. */
+        struct ifreq request;
+        int my_sock = ::socket(AF_INET, SOCK_STREAM, 0);
+        if(my_sock != -1) {
+            memset(&request, 0, sizeof(request));
+            memcpy(&request.ifr_name, cifname, strlen(cifname));
+            errno = 0;
+            if(ioctl(my_sock, SIOCGIFHWADDR, &request) != -1) {
+                char *buf;
+                asprintf(&buf, "%02X:%02X:%02X:%02X:%02X:%02X",
+                         request.ifr_ifru.ifru_hwaddr.sa_data[0],
+                         request.ifr_ifru.ifru_hwaddr.sa_data[1],
+                         request.ifr_ifru.ifru_hwaddr.sa_data[2],
+                         request.ifr_ifru.ifru_hwaddr.sa_data[3],
+                         request.ifr_ifru.ifru_hwaddr.sa_data[4],
+                         request.ifr_ifru.ifru_hwaddr.sa_data[5]);
+                mac = QString(buf);
+                free(buf);
+            }
+            ::close(my_sock);
+        }
+
         std::string ifname(cifname);
         if(strstr(devtype, "wlan")) {
-            ifaces.insert({ifname, HorizonWizard::Wireless});
+            ifaces.insert({ifname, {HorizonWizard::Wireless, mac}});
         } else if(strstr(devtype, "bond")) {
-            ifaces.insert({ifname, HorizonWizard::Bonded});
+            ifaces.insert({ifname, {HorizonWizard::Bonded, mac}});
         } else if(strstr(syspath, "/virtual/")) {
             /* Skip lo, tuntap, etc */
             continue;
         } else if(strstr(devtype, "1")) {
-            ifaces.insert({ifname, HorizonWizard::Ethernet});
+            ifaces.insert({ifname, {HorizonWizard::Ethernet, mac}});
         } else {
-            ifaces.insert({ifname, HorizonWizard::Unknown});
+            ifaces.insert({ifname, {HorizonWizard::Unknown, mac}});
         }
     }
 

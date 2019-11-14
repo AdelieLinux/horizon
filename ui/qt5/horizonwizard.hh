@@ -58,10 +58,15 @@ public:
         Unknown
     };
 
+    struct NetworkInterface {
+        NetworkInterfaceType type;
+        QString mac;
+    };
+
     HorizonWizard(QWidget *parent = nullptr);
     QShortcut *f1, *f3, *f5, *f8;
 
-    std::map<std::string, NetworkInterfaceType> interfaces;
+    std::map<std::string, NetworkInterface> interfaces;
     std::string chosen_auto_iface;
 };
 

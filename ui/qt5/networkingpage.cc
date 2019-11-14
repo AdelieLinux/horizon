@@ -80,7 +80,7 @@ int NetworkingPage::nextId() const {
         } else {
             horizonWizard()->chosen_auto_iface =
                     (horizonWizard()->interfaces.begin())->first;
-            if((horizonWizard()->interfaces.begin())->second
+            if((horizonWizard()->interfaces.begin())->second.type
                     == HorizonWizard::Wireless) {
                 return HorizonWizard::Page_Network_Wireless;
             } else {
