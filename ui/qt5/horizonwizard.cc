@@ -119,7 +119,7 @@ std::map<std::string, HorizonWizard::NetworkInterface> probe_ifaces(void) {
         int my_sock = ::socket(AF_INET, SOCK_STREAM, 0);
         if(my_sock != -1) {
             memset(&request, 0, sizeof(request));
-            memcpy(&request.ifr_name, cifname, strlen(cifname));
+            memcpy(&request.ifr_name, cifname, strnlen(cifname, IFNAMSIZ));
             errno = 0;
             if(ioctl(my_sock, SIOCGIFHWADDR, &request) != -1) {
                 char *buf;
