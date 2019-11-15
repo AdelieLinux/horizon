@@ -14,41 +14,37 @@
 
 using std::string;
 
-void HorizonWizardPage::loadWatermark(string page) {
-    QPixmap pixmap;
-    qreal pixelRatio = 0;
+QPixmap HorizonWizardPage::loadDPIAwarePixmap(string pixmap, string type) {
     string path = ":/wizard_pixmaps/resources/";
-    path += page;
+    path += pixmap;
     path += "-";
 
-    if(window()->devicePixelRatioF() == 2.0) {
-        path += "high";
-        pixelRatio = 2.0;
-    } else if(window()->devicePixelRatioF() == 1.0) {
+    if(window()->devicePixelRatioF() <= 1.0) {
         path += "low";
-        pixelRatio = 1.0;
     } else {
         path += "high";
     }
 
-    path += ".png";
+    path += type;
+    return QPixmap(path.c_str());
+}
 
-    pixmap = QPixmap(path.c_str());
+void HorizonWizardPage::loadWatermark(string page) {
+    QPixmap pixmap = loadDPIAwarePixmap(page);
+    qreal pixelRatio = window()->devicePixelRatioF();
 
     // Handle cases where ratio is not exactly 1.0 or 2.0
     // Wizard machinary automatically uses FastTransformation, which is
     // ugly as sin.
     if(pixelRatio > 1.0) {
-        qreal width = 232 * window()->devicePixelRatioF();
-        qreal height = 380 * window()->devicePixelRatioF();
+        qreal width = 232 * pixelRatio;
+        qreal height = 380 * pixelRatio;
         QSize newSize = QSize(width, height);
 
         pixmap = pixmap.scaled(newSize, Qt::KeepAspectRatio,
                                Qt::SmoothTransformation);
-        pixmap.setDevicePixelRatio(window()->devicePixelRatioF());
-    } else {
-        pixmap.setDevicePixelRatio(pixelRatio);
     }
+    pixmap.setDevicePixelRatio(pixelRatio);
 
     setPixmap(QWizard::WatermarkPixmap, pixmap);
 }

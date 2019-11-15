@@ -22,6 +22,7 @@ class HorizonWizardPage : public QWizardPage {
 public:
     HorizonWizardPage(QWidget *parent = 0) : QWizardPage(parent) {}
 
+    QPixmap loadDPIAwarePixmap(std::string pixmap, std::string type = ".png");
     void loadWatermark(std::string page);
     HorizonWizard *horizonWizard() const;
 };

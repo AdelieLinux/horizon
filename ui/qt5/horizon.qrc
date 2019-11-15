@@ -6,6 +6,12 @@
         <file>resources/network-high.png</file>
         <file>resources/software-high.png</file>
         <file>resources/software-low.png</file>
+        <file alias="resources/status-current-high.svg">../../assets/status-current-high.svg</file>
+        <file alias="resources/status-current-low.svg">../../assets/status-current-low.svg</file>
+        <file alias="resources/status-issue-high.svg">../../assets/status-issue-high.svg</file>
+        <file alias="resources/status-issue-low.svg">../../assets/status-issue-low.svg</file>
+        <file alias="resources/status-success-high.svg">../../assets/status-success-high.svg</file>
+        <file alias="resources/status-success-low.svg">../../assets/status-success-low.svg</file>
     </qresource>
     <qresource prefix="/wizard_help">
         <file>resources/intro-help.txt</file>
