@@ -1,0 +1,15 @@
+<h2>Automatic Network Configuration</h2>
+
+<p>This page configures your system for network access automatically.</p>
+
+<h3>What should I do if System Installation reports an issue?</h3>
+
+<ul>
+<li>Ensure that all cables are connected firmly to your computer and other
+networking equipment.</li>
+<li>Try restarting your computer and networking equipment.</li>
+<li>If these steps do not resolve your issue, and your network connection
+works on another operating system on your computer, you may contact our
+community at
+<a href="https://help.adelielinux.org/">https://help.adelielinux.org</a>.</li>
+</ul>

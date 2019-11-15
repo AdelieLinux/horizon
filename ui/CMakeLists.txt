@@ -1,4 +1,4 @@
-find_package(Qt5 COMPONENTS Widgets)
+find_package(Qt5 COMPONENTS Network Widgets)
 
 IF(Qt5_FOUND)
     option(BUILD_QT "Build the Qt 5 user interface" ON)

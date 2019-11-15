@@ -12,12 +12,13 @@ set(UI_SOURCES
     networkingpage.cc
     networkifacepage.cc
     netsimplewifipage.cc
+    netdhcppage.cc
     datetimepage.cc
     hostnamepage.cc
 
     horizon.qrc)
 add_executable(horizon-qt5 ${UI_SOURCES})
-target_link_libraries(horizon-qt5 Qt5::Widgets)
+target_link_libraries(horizon-qt5 Qt5::Network Qt5::Widgets)
 
 install(TARGETS horizon-qt5 DESTINATION bin)
 

@@ -12,6 +12,7 @@
 
 #include "networkifacepage.hh"
 #include "horizonwizard.hh"
+#include "netdhcppage.hh"
 
 #include <algorithm>
 #include <QDebug>
@@ -96,6 +97,16 @@ int NetworkIfacePage::nextId() const {
     case HorizonWizard::Wireless:
         return HorizonWizard::Page_Network_Wireless;
     default:
-        return HorizonWizard::Page_DateTime;
+        return HorizonWizard::Page_Network_DHCP;
     }
+}
+
+bool NetworkIfacePage::validatePage() {
+    /* What a hack!
+     *
+     * Independent Pages means the DHCP page is never cleaned, even when Back
+     * is chosen.  So, we have to do it from here. */
+    horizonWizard()->removePage(HorizonWizard::Page_Network_DHCP);
+    horizonWizard()->setPage(HorizonWizard::Page_Network_DHCP, new NetDHCPPage);
+    return true;
 }

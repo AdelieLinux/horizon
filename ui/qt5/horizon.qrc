@@ -19,6 +19,7 @@
         <file>resources/partition-help.txt</file>
         <file>resources/network-start-help.txt</file>
         <file>resources/network-iface-help.txt</file>
+        <file>resources/network-dhcp-help.txt</file>
         <file>resources/datetime-help.txt</file>
         <file>resources/hostname-help.txt</file>
         <file>resources/packages-simple-help.txt</file>

@@ -31,6 +31,7 @@
 #include "networkingpage.hh"
 #include "networkifacepage.hh"
 #include "netsimplewifipage.hh"
+#include "netdhcppage.hh"
 #include "datetimepage.hh"
 #include "hostnamepage.hh"
 
@@ -48,7 +49,7 @@ static std::map<int, std::string> help_id_map = {
     {HorizonWizard::Page_Network_Iface, "network-iface"},
     {HorizonWizard::Page_Network_Wireless, "network-wifi"},
     {HorizonWizard::Page_Network_CustomAP, "network-wifi-ap"},
-    {HorizonWizard::Page_Network_DHCP, "none"},
+    {HorizonWizard::Page_Network_DHCP, "network-dhcp"},
     {HorizonWizard::Page_Network_Portal, "network-portal"},
     {HorizonWizard::Page_Network_Manual, "network-manual"},
     {HorizonWizard::Page_DateTime, "datetime"},
@@ -181,6 +182,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setPage(Page_Network, new NetworkingPage);
     setPage(Page_Network_Iface, new NetworkIfacePage);
     setPage(Page_Network_Wireless, new NetworkSimpleWirelessPage);
+    setPage(Page_Network_DHCP, new NetDHCPPage);
     setPage(Page_DateTime, new DateTimePage);
     setPage(Page_Hostname, new HostnamePage);
 
