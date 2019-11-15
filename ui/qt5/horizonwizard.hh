@@ -66,6 +66,8 @@ public:
     HorizonWizard(QWidget *parent = nullptr);
     QShortcut *f1, *f3, *f5, *f8;
 
+    std::string mirror_domain;
+    std::string version;
     std::map<std::string, NetworkInterface> interfaces;
     std::string chosen_auto_iface;
 };
