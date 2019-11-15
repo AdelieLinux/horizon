@@ -16,7 +16,7 @@
 #include <QTextEdit>
 #include <QVBoxLayout>
 
-HorizonHelpWindow::HorizonHelpWindow(QFile *helpFile, QWidget *parent) :
+HorizonHelpWindow::HorizonHelpWindow(QFile *helpFile, QWidget *parent, bool plain) :
     QDialog(parent), helpFile(helpFile) {
     QDialogButtonBox *buttonBox;
     QTextEdit *helpText;
@@ -28,7 +28,11 @@ HorizonHelpWindow::HorizonHelpWindow(QFile *helpFile, QWidget *parent) :
 
     helpText = new QTextEdit(this);
     helpText->setReadOnly(true);
-    helpText->setHtml(helpFile->readAll().toStdString().c_str());
+    if(plain) {
+        helpText->setText(helpFile->readAll().toStdString().c_str());
+    } else {
+        helpText->setHtml(helpFile->readAll().toStdString().c_str());
+    }
     helpText->setWhatsThis(tr("This window contains information about the current page of Adélie Linux System Installation."));
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok, this);
