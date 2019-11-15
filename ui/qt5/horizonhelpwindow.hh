@@ -19,7 +19,7 @@
 class HorizonHelpWindow : public QDialog {
     Q_OBJECT
 public:
-    explicit HorizonHelpWindow(QFile *helpFile, QWidget *parent = nullptr, bool plain = false);
+    explicit HorizonHelpWindow(QFile *helpFile, QWidget *parent = nullptr, bool log = false);
 private:
     QFile *helpFile;
 };
