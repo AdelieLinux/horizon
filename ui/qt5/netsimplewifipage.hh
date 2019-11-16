@@ -16,8 +16,10 @@
 #include "horizonwizardpage.hh"
 
 #include <QComboBox>
+#include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QPushButton>
 
 class NetworkSimpleWirelessPage : public HorizonWizardPage {
 public:
@@ -27,6 +29,9 @@ public:
     void doScan();
     int nextId() const;
 private:
+    QLabel *statusLabel;
+    QPushButton *rescanButton;
+
     QListWidget *ssidListView;
     QLineEdit *passphrase;
 };

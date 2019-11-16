@@ -12,15 +12,12 @@
 
 #include "netsimplewifipage.hh"
 
-#include <QLabel>
-#include <QPushButton>
+#include <bcnm/wpactrl.h>
 #include <QVBoxLayout>
 
 NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     : HorizonWizardPage(parent) {
     QVBoxLayout *layout;
-    QLabel *statusLabel;
-    QPushButton *rescanButton;
 
     loadWatermark("network");
     setTitle(tr("Select Your Network"));
@@ -50,6 +47,7 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
 
 void NetworkSimpleWirelessPage::doScan() {
     ssidListView->clear();
+    rescanButton->setEnabled(false);
 }
 
 void NetworkSimpleWirelessPage::initializePage() {

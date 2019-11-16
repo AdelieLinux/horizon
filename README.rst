@@ -88,7 +88,7 @@ Build Requirements
 
 To build the entirety of Project Horizon, you will need:
 
-* Qt 5 (Core; Widgets) (qt5-qtbase-dev)
+* Qt 5 (Core; Network; Widgets) (qt5-qtbase-dev)
 
 * GNU Parted development files (parted-dev)
 
@@ -96,10 +96,21 @@ To build the entirety of Project Horizon, you will need:
 
 * BCNM
 
+* cURL development files (curl-dev)
+
 * Either a C++17 environment, or Boost.Filesystem (boost-dev)
 
   Horizon makes full use of the C++17 <filesystem> library if it is
   available, but will fall back to requiring Boost if it isn't.
+
+To build the Horizon UI for Installation Environments, you will additionally
+need:
+
+* LibCap development files (libcap-dev)
+
+* libX11 development files (libx11-dev)
+
+* XKB File development files (libxkbfile-dev)
 
 To run the test suite, you will additionally need:
 
