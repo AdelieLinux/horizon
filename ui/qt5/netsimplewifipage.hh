@@ -15,6 +15,11 @@
 
 #include "horizonwizardpage.hh"
 
+#ifdef HAS_INSTALL_ENV
+#   include <bcnm/wpactrl.h>
+#   include <QSocketNotifier>
+#endif  /* HAS_INSTALL_ENV */
+
 #include <QComboBox>
 #include <QLabel>
 #include <QLineEdit>
@@ -24,16 +29,31 @@
 class NetworkSimpleWirelessPage : public HorizonWizardPage {
 public:
     NetworkSimpleWirelessPage(QWidget *parent = nullptr);
+    ~NetworkSimpleWirelessPage();
 
     void initializePage();
-    void doScan();
+    bool isComplete() const;
     int nextId() const;
+    bool validatePage();
 private:
     QLabel *statusLabel;
     QPushButton *rescanButton;
 
     QListWidget *ssidListView;
     QLineEdit *passphrase;
+
+    void doScan();
+    void scanDone(QString message);
+
+#ifdef HAS_INSTALL_ENV
+    wpactrl_t control;
+    wpactrl_xchg_t exchange;
+    wpactrl_xchgitem_t exchange_item;
+    QSocketNotifier *notify;
+
+    int processScan(wpactrl_t *, const char *, size_t);
+    friend int scanResults(wpactrl_t *, char const *, size_t, void *, tain_t *);
+#endif  /* HAS_INSTALL_ENV */
 };
 
 #endif /* !NETWORKSIMPLEWIRELESSPAGE_HH */
