@@ -137,6 +137,7 @@ void NetworkSimpleWirelessPage::doScan() {
         notify->deleteLater();
         notify = nullptr;
         statusLabel->setText(status);
+        rescanButton->setEnabled(true);
         return;
     });
     notify->setEnabled(true);
