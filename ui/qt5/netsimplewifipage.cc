@@ -84,7 +84,8 @@ void NetworkSimpleWirelessPage::doScan() {
     tain_now_g();
     if(!wpactrl_start_g(&control, suppsock.c_str(), 2000)) {
         rescanButton->setEnabled(false);
-        statusLabel->setText(tr("Couldn't communicate with wireless subsystem."));
+        statusLabel->setText(tr("Couldn't communicate with wireless subsystem (Code %1)").arg(errno));
+        return;
     }
 
     response = wpactrl_command_g(&control, "SCAN");
