@@ -35,21 +35,14 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     rescanButton = new QPushButton(tr("&Rescan Networks"));
     connect(rescanButton, &QPushButton::clicked, [=](void) { doScan(); });
 
-#ifdef HAS_INSTALL_ENV
-    tain_now_g();
-    if(!wpactrl_start_g(&control, "/var/run/wpa_supplicant", 2000)) {
-        rescanButton->setEnabled(false);
-        statusLabel->setText(tr("Couldn't communicate with wireless subsystem."));
-    }
-    notify = nullptr;
-#endif  /* HAS_INSTALL_ENV */
-
     ssidListView = new QListWidget;
 
+#ifdef HAS_INSTALL_ENV
     exchange_item = {
       .filter = "CTRL-EVENT-SCAN-RESULTS",
       .cb = &scanResults
     };
+#endif  /* HAS_INSTALL_ENV */
 
     passphrase = new QLineEdit(this);
     passphrase->setEchoMode(QLineEdit::Password);
@@ -85,6 +78,14 @@ void NetworkSimpleWirelessPage::doScan() {
 
     tain_t deadline;
     wparesponse_t response;
+    std::string suppsock = "/var/run/wpa_supplicant/" +
+            horizonWizard()->chosen_auto_iface;
+
+    tain_now_g();
+    if(!wpactrl_start_g(&control, suppsock.c_str(), 2000)) {
+        rescanButton->setEnabled(false);
+        statusLabel->setText(tr("Couldn't communicate with wireless subsystem."));
+    }
 
     response = wpactrl_command_g(&control, "SCAN");
     if(response != WPA_OK && response != WPA_FAILBUSY) {
