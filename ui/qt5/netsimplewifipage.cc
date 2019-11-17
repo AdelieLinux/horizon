@@ -14,6 +14,7 @@
 #include "netdhcppage.hh"
 
 #include <assert.h>
+#include <sstream>
 #include <QVBoxLayout>
 
 #ifdef HAS_INSTALL_ENV
@@ -38,10 +39,8 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     ssidListView = new QListWidget;
 
 #ifdef HAS_INSTALL_ENV
-    exchange_item = {
-      .filter = "CTRL-EVENT-SCAN-RESULTS",
-      .cb = &scanResults
-    };
+    exchange_item.filter = "CTRL-EVENT-SCAN-RESULTS";
+    exchange_item.cb = &scanResults;
 #endif  /* HAS_INSTALL_ENV */
 
     passphrase = new QLineEdit(this);
@@ -103,6 +102,7 @@ void NetworkSimpleWirelessPage::doScan() {
     }
 
     if(notify != nullptr) {
+        notify->setEnabled(false);
         notify->deleteLater();
         notify = nullptr;
     }
@@ -118,7 +118,11 @@ void NetworkSimpleWirelessPage::doScan() {
                 status = tr("Issue communicating with wireless subsystem.");
             } else {
                 int code = wpactrl_xchg_event_g(&control, &exchange);
-                if(code < 0) {
+                if(code == -2) {
+                    /* if the callback is what failed, we already set status */
+                    status = statusLabel->text();
+                } else if(code < 0) {
+                    /* non-callback failure */
                     status = tr("Issue processing scanned networks (Code %1)")
                             .arg(code);
                 } else if(code == 0) {
@@ -152,11 +156,77 @@ int NetworkSimpleWirelessPage::nextId() const {
 }
 
 #ifdef HAS_INSTALL_ENV
-int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *s, size_t len) {
+int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
     assert(c == &control);
-    QString network(s);
-    ssidListView->addItem(network);
-    return 0;
+
+    size_t bufsize = 32768;
+    char *buf = static_cast<char *>(malloc(bufsize));
+    ssize_t res_size;
+
+    errno = 0;
+    res_size = wpactrl_query_g(&control, "SCAN_RESULTS", buf, bufsize);
+    if(res_size == -1) {
+        if(errno == EMSGSIZE) {
+            statusLabel->setText(tr("Scan failed: Out of memory"));
+            free(buf);
+            return 0;
+        } else {
+            statusLabel->setText(tr("Scan failed (Code %1)").arg(errno));
+            free(buf);
+            return 0;
+        }
+    }
+
+    std::string raw_nets(buf, static_cast<std::string::size_type>(res_size));
+    std::istringstream net_streams(raw_nets);
+    /* discard the first line - it's a header */
+    net_streams.getline(buf, static_cast<std::streamsize>(bufsize));
+    /* process networks */
+    while(net_streams.getline(buf, static_cast<std::streamsize>(bufsize))) {
+        std::string net_line(buf);
+        std::string::size_type cur = 0, next = net_line.find_first_of('\t');
+        assert(next != std::string::npos);
+        std::string bssid(net_line.substr(cur, next));
+        cur = next + 1;
+        next = net_line.find_first_of('\t', cur);
+        assert(next != std::string::npos);
+        std::string freq(net_line.substr(cur, next));
+        cur = next + 1;
+        next = net_line.find_first_of('\t', cur);
+        assert(next != std::string::npos);
+        std::string signal(net_line.substr(cur, next));
+        cur = next + 1;
+        next = net_line.find_first_of('\t', cur);
+        assert(next != std::string::npos);
+        std::string flags(net_line.substr(cur, next));
+        cur = next + 1;
+        next = net_line.find_first_of('\t', cur);
+        assert(next == std::string::npos);
+        std::string ssid(net_line.substr(cur, next));
+
+        QIcon icon;
+        int strength = std::stoi(signal);
+        if(strength < -90) {
+            icon = QIcon::fromTheme("network-wireless-signal-none");
+        } else if(strength < -80) {
+            icon = QIcon::fromTheme("network-wireless-signal-weak");
+        } else if(strength < -67) {
+            icon = QIcon::fromTheme("network-wireless-signal-ok");
+        } else if(strength < -50) {
+            icon = QIcon::fromTheme("network-wireless-signal-good");
+        } else {
+            icon = QIcon::fromTheme("network-wireless-signal-excellent");
+        }
+
+        QListWidgetItem *network = new QListWidgetItem(ssidListView);
+        network->setText(QString::fromStdString(ssid));
+        network->setIcon(icon);
+        network->setToolTip(tr("Frequency: %1 MHz\nBSSID: %2\nRSSI: %3")
+                            .arg(freq.c_str()).arg(bssid.c_str())
+                            .arg(signal.c_str()));
+    }
+
+    return 1;
 }
 #endif  /* HAS_INSTALL_ENV */
 
