@@ -189,23 +189,26 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
         std::string net_line(buf);
         std::string::size_type cur = 0, next = net_line.find_first_of('\t');
         assert(next != std::string::npos);
-        std::string bssid(net_line.substr(cur, next));
+        std::string bssid(net_line.substr(cur, next - cur));
         cur = next + 1;
         next = net_line.find_first_of('\t', cur);
         assert(next != std::string::npos);
-        std::string freq(net_line.substr(cur, next));
+        std::string freq(net_line.substr(cur, next - cur));
         cur = next + 1;
         next = net_line.find_first_of('\t', cur);
         assert(next != std::string::npos);
-        std::string signal(net_line.substr(cur, next));
+        std::string signal(net_line.substr(cur, next - cur));
         cur = next + 1;
         next = net_line.find_first_of('\t', cur);
         assert(next != std::string::npos);
-        std::string flags(net_line.substr(cur, next));
+        std::string flags(net_line.substr(cur, next - cur));
         cur = next + 1;
         next = net_line.find_first_of('\t', cur);
         assert(next == std::string::npos);
-        std::string ssid(net_line.substr(cur, next));
+        std::string ssid(net_line.substr(cur));
+
+        /* Don't bother with empty SSIDs. */
+        if(ssid.empty()) continue;
 
         QIcon icon;
         int strength = std::stoi(signal);
