@@ -89,7 +89,7 @@ void NetworkSimpleWirelessPage::doScan() {
 
     response = wpactrl_command_g(&control, "SCAN");
     if(response != WPA_OK && response != WPA_FAILBUSY) {
-        scanDone(tr("Couldn't scan for wireless networks."));
+        scanDone(tr("Couldn't scan for wireless networks (Code %1)").arg(response));
         return;
     }
 
@@ -118,7 +118,8 @@ void NetworkSimpleWirelessPage::doScan() {
             } else {
                 int code = wpactrl_xchg_event_g(&control, &exchange);
                 if(code < 0) {
-                    status = tr("Issue processing scanned networks.");
+                    status = tr("Issue processing scanned networks (Code %1)")
+                            .arg(code);
                 } else if(code == 0) {
                     /* Not finished yet, so don't do anything. */
                     return;
