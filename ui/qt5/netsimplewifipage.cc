@@ -41,6 +41,7 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
 #ifdef HAS_INSTALL_ENV
     exchange_item.filter = "CTRL-EVENT-SCAN-RESULTS";
     exchange_item.cb = &scanResults;
+    notify = nullptr;
 #endif  /* HAS_INSTALL_ENV */
 
     passphrase = new QLineEdit(this);
