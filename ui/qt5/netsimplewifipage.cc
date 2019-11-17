@@ -112,6 +112,7 @@ void NetworkSimpleWirelessPage::doScan() {
     connect(notify, &QSocketNotifier::activated, [=](int) {
         QString status;
 
+        tain_now_g();
         if(wpactrl_xchg_timeout_g(&control, &exchange)) {
             status = tr("Network scan timed out.");
         } else {
