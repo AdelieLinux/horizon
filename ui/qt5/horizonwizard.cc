@@ -126,16 +126,7 @@ std::map<std::string, HorizonWizard::NetworkInterface> probe_ifaces(void) {
             memcpy(&request.ifr_name, cifname, strnlen(cifname, IFNAMSIZ));
             errno = 0;
             if(ioctl(my_sock, SIOCGIFHWADDR, &request) != -1) {
-                char *buf;
-                asprintf(&buf, "%02X:%02X:%02X:%02X:%02X:%02X",
-                         request.ifr_ifru.ifru_hwaddr.sa_data[0],
-                         request.ifr_ifru.ifru_hwaddr.sa_data[1],
-                         request.ifr_ifru.ifru_hwaddr.sa_data[2],
-                         request.ifr_ifru.ifru_hwaddr.sa_data[3],
-                         request.ifr_ifru.ifru_hwaddr.sa_data[4],
-                         request.ifr_ifru.ifru_hwaddr.sa_data[5]);
-                mac = QString(buf);
-                free(buf);
+                mac = fromMacAddress(request.ifr_ifru.ifru_hwaddr.sa_data);
             }
             ::close(my_sock);
         }

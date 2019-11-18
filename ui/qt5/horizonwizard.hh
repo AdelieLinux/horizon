@@ -18,6 +18,19 @@
 #include <map>
 #include <string>
 
+inline QString fromMacAddress(char address[6]) {
+    char buf[18];
+    snprintf(buf, 18, "%02X:%02X:%02X:%02X:%02X:%02X",
+             address[0] & 0xFF,
+             address[1] & 0xFF,
+             address[2] & 0xFF,
+             address[3] & 0xFF,
+             address[4] & 0xFF,
+             address[5] & 0xFF);
+    QString mac(buf);
+    return mac;
+}
+
 class HorizonWizard : public QWizard {
 public:
     enum {
