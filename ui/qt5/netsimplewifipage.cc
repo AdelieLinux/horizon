@@ -161,6 +161,7 @@ int NetworkSimpleWirelessPage::nextId() const {
 #ifdef HAS_INSTALL_ENV
 int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
     assert(c == &control);
+    std::vector<QListWidgetItem *> netitems;
 
     stralloc buf = STRALLOC_ZERO;
 
@@ -209,7 +210,7 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
             icon = QIcon::fromTheme("network-wireless-signal-excellent");
         }
 
-        QListWidgetItem *netitem = new QListWidgetItem(ssidListView);
+        QListWidgetItem *netitem = new QListWidgetItem;
         netitem->setText(QString::fromStdString(ssid));
         netitem->setIcon(icon);
         netitem->setToolTip(tr("Frequency: %1 MHz\nBSSID: %2\nRSSI: %3")
@@ -217,6 +218,18 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
                             .arg(fromMacAddress(network.bssid))
                             .arg(network.signal_level));
         netitem->setData(Qt::UserRole, QString::fromStdString(flags));
+        netitem->setData(Qt::UserRole + 1, network.signal_level);
+        netitems.push_back(netitem);
+    }
+
+    std::sort(netitems.begin(), netitems.end(),
+              [](QListWidgetItem *left, QListWidgetItem *right) {
+        return left->data(Qt::UserRole + 1).toInt() <
+               right->data(Qt::UserRole + 1).toInt();
+    });
+
+    for(auto &item : netitems) {
+        ssidListView->addItem(item);
     }
 
     return 1;
