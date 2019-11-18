@@ -188,6 +188,7 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
     for(size_t net = 0; net < genalloc_len(wpactrl_scanres_t, &nets); net++) {
         wpactrl_scanres_t network = netarray[net];
         std::string ssid(netstr.s + network.ssid_start, network.ssid_len);
+        std::string flags(netstr.s + network.flags_start, network.flags_len);
 
         /* Don't bother with empty SSIDs. */
         if(ssid.empty()) continue;
@@ -212,6 +213,7 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
                             .arg(network.frequency)
                             .arg(fromMacAddress(network.bssid))
                             .arg(network.signal_level));
+        netitem->setData(Qt::UserRole, QString::fromStdString(flags));
     }
 
     return 1;
