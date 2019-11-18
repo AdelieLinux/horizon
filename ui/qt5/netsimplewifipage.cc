@@ -192,6 +192,9 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
 
         /* Don't bother with empty SSIDs. */
         if(ssid.empty()) continue;
+        /* since this *is* destructive, we don't run it on our actual SSID */
+        if(QString::fromStdString(ssid)
+                .remove("\\x00", Qt::CaseSensitive).size() == 0) continue;
 
         QIcon icon;
         if(network.signal_level < -90) {
