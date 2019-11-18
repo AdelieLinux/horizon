@@ -209,7 +209,8 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
         netitem->setText(QString::fromStdString(ssid));
         netitem->setIcon(icon);
         netitem->setToolTip(tr("Frequency: %1 MHz\nBSSID: %2\nRSSI: %3")
-                            .arg(network.frequency).arg("bssid.c_str()")
+                            .arg(network.frequency)
+                            .arg(fromMacAddress(network.bssid))
                             .arg(network.signal_level));
     }
 
