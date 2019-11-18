@@ -179,7 +179,7 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
     stralloc netstr = STRALLOC_ZERO;
     errno = 0;
 
-    if(wpactrl_scan_parse(buf.s, buf.len, &nets, &netstr) != 0) {
+    if(wpactrl_scan_parse(buf.s, buf.len, &nets, &netstr) != 1) {
         statusLabel->setText(tr("Network listing failed (Code %1)").arg(errno));
         return 0;
     }
