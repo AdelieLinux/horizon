@@ -53,9 +53,9 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     layout->addWidget(statusLabel, 0, Qt::AlignCenter);
     layout->addSpacing(10);
     layout->addWidget(ssidListView, 0, Qt::AlignCenter);
-    layout->addWidget(rescanButton);
+    layout->addWidget(rescanButton, 0, Qt::AlignCenter);
     layout->addSpacing(10);
-    layout->addWidget(passphrase);
+    layout->addWidget(passphrase, 0, Qt::AlignCenter);
     setLayout(layout);
 }
 
@@ -131,7 +131,7 @@ void NetworkSimpleWirelessPage::doScan() {
                     /* Not finished yet, so don't do anything. */
                     return;
                 } else {
-                    status = tr("Scan successful.");
+                    status = tr("Select your network from the list.");
                 }
             }
         }
@@ -162,74 +162,55 @@ int NetworkSimpleWirelessPage::nextId() const {
 int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
     assert(c == &control);
 
-    size_t bufsize = 32768;
-    char *buf = static_cast<char *>(malloc(bufsize));
-    ssize_t res_size;
+    stralloc buf = STRALLOC_ZERO;
 
     errno = 0;
-    res_size = wpactrl_query_g(&control, "SCAN_RESULTS", buf, bufsize);
-    if(res_size == -1) {
+    if(!wpactrl_querysa_g(&control, "SCAN_RESULTS", &buf)) {
         if(errno == EMSGSIZE) {
             statusLabel->setText(tr("Scan failed: Out of memory"));
-            free(buf);
             return 0;
         } else {
             statusLabel->setText(tr("Scan failed (Code %1)").arg(errno));
-            free(buf);
             return 0;
         }
     }
 
-    std::string raw_nets(buf, static_cast<std::string::size_type>(res_size));
-    std::istringstream net_streams(raw_nets);
-    /* discard the first line - it's a header */
-    net_streams.getline(buf, static_cast<std::streamsize>(bufsize));
-    /* process networks */
-    while(net_streams.getline(buf, static_cast<std::streamsize>(bufsize))) {
-        std::string net_line(buf);
-        std::string::size_type cur = 0, next = net_line.find_first_of('\t');
-        assert(next != std::string::npos);
-        std::string bssid(net_line.substr(cur, next - cur));
-        cur = next + 1;
-        next = net_line.find_first_of('\t', cur);
-        assert(next != std::string::npos);
-        std::string freq(net_line.substr(cur, next - cur));
-        cur = next + 1;
-        next = net_line.find_first_of('\t', cur);
-        assert(next != std::string::npos);
-        std::string signal(net_line.substr(cur, next - cur));
-        cur = next + 1;
-        next = net_line.find_first_of('\t', cur);
-        assert(next != std::string::npos);
-        std::string flags(net_line.substr(cur, next - cur));
-        cur = next + 1;
-        next = net_line.find_first_of('\t', cur);
-        assert(next == std::string::npos);
-        std::string ssid(net_line.substr(cur));
+    genalloc nets = GENALLOC_ZERO;
+    stralloc netstr = STRALLOC_ZERO;
+    errno = 0;
+
+    if(wpactrl_scan_parse(buf.s, buf.len, &nets, &netstr) != 0) {
+        statusLabel->setText(tr("Network listing failed (Code %1)").arg(errno));
+        return 0;
+    }
+
+    wpactrl_scanres_t *netarray = genalloc_s(wpactrl_scanres_t, &nets);
+    for(size_t net = 0; net < genalloc_len(wpactrl_scanres_t, &nets); net++) {
+        wpactrl_scanres_t network = netarray[net];
+        std::string ssid(netstr.s + network.ssid_start, network.ssid_len);
 
         /* Don't bother with empty SSIDs. */
         if(ssid.empty()) continue;
 
         QIcon icon;
-        int strength = std::stoi(signal);
-        if(strength < -90) {
+        if(network.signal_level < -90) {
             icon = QIcon::fromTheme("network-wireless-signal-none");
-        } else if(strength < -80) {
+        } else if(network.signal_level < -80) {
             icon = QIcon::fromTheme("network-wireless-signal-weak");
-        } else if(strength < -67) {
+        } else if(network.signal_level < -67) {
             icon = QIcon::fromTheme("network-wireless-signal-ok");
-        } else if(strength < -50) {
+        } else if(network.signal_level < -50) {
             icon = QIcon::fromTheme("network-wireless-signal-good");
         } else {
             icon = QIcon::fromTheme("network-wireless-signal-excellent");
         }
 
-        QListWidgetItem *network = new QListWidgetItem(ssidListView);
-        network->setText(QString::fromStdString(ssid));
-        network->setIcon(icon);
-        network->setToolTip(tr("Frequency: %1 MHz\nBSSID: %2\nRSSI: %3")
-                            .arg(freq.c_str()).arg(bssid.c_str())
-                            .arg(signal.c_str()));
+        QListWidgetItem *netitem = new QListWidgetItem(ssidListView);
+        netitem->setText(QString::fromStdString(ssid));
+        netitem->setIcon(icon);
+        netitem->setToolTip(tr("Frequency: %1 MHz\nBSSID: %2\nRSSI: %3")
+                            .arg(network.frequency).arg("bssid.c_str()")
+                            .arg(network.signal_level));
     }
 
     return 1;
