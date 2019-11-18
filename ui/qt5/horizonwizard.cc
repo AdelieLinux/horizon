@@ -22,6 +22,7 @@
 #ifdef HAS_INSTALL_ENV
 #   include <libudev.h>
 #   include <net/if.h>      /* ifreq */
+#   include <skalibs/tai.h> /* STAMP */
 #   include <sys/ioctl.h>   /* ioctl */
 #   include <unistd.h>      /* close */
 #endif  /* HAS_INSTALL_ENV */
@@ -254,5 +255,6 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 
 #ifdef HAS_INSTALL_ENV
     interfaces = probe_ifaces();
+    tain_now_set_stopwatch_g();
 #endif  /* HAS_INSTALL_ENV */
 }
