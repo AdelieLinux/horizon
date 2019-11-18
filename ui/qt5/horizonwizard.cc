@@ -22,7 +22,9 @@
 #ifdef HAS_INSTALL_ENV
 #   include <libudev.h>
 #   include <net/if.h>      /* ifreq */
+extern "C" {
 #   include <skalibs/tai.h> /* STAMP */
+}
 #   include <sys/ioctl.h>   /* ioctl */
 #   include <unistd.h>      /* close */
 #endif  /* HAS_INSTALL_ENV */
