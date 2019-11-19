@@ -14,6 +14,7 @@
 #include "horizonwizard.hh"
 
 #include <QLabel>
+#include <QVariant>
 #include <QVBoxLayout>
 
 NetworkingPage::NetworkingPage(QWidget *parent) : HorizonWizardPage(parent) {
@@ -54,7 +55,10 @@ void NetworkingPage::initializePage() {
     radioGroup->addButton(skip);
 
     QObject::connect(radioGroup, static_cast<void (QButtonGroup:: *)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
-                     [=](QAbstractButton *) {
+                     [=](QAbstractButton *button) {
+        if(button == skip) setField("network", QVariant(false));
+        else setField("network", QVariant(true));
+
         emit completeChanged();
     });
 
