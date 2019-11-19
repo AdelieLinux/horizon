@@ -198,7 +198,7 @@ void NetworkSimpleWirelessPage::initializePage() {
 }
 
 bool NetworkSimpleWirelessPage::isComplete() const {
-    if(ssidListView->currentRow() != -1) {
+    if(ssidListView->currentRow() == -1) {
         return false;
     }
 
@@ -268,8 +268,9 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
                             .arg(network.frequency)
                             .arg(fromMacAddress(network.bssid))
                             .arg(network.signal_level));
+        QString zero(QString::fromStdString(std::string("\0", 1)));
         netitem->setData(Qt::UserRole, QString::fromStdString(flags)
-                                       .split("\0"));
+                                       .split(zero));
         netitem->setData(Qt::UserRole + 1, network.signal_level);
         netitems.push_back(netitem);
     }
