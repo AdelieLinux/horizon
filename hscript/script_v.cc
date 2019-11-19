@@ -161,7 +161,8 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
  * The list +keys+ will be modified with the default repository signing keys
  * for Adélie Linux.
  */
-bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys) {
+bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys,
+                           bool firmware = false) {
     SigningKey *key = dynamic_cast<SigningKey *>(
         SigningKey::parseFromData(
             "/etc/apk/keys/packages@adelielinux.org.pub", 0, nullptr, nullptr)
@@ -308,7 +309,11 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Script.signingkey */
     if(internal->repo_keys.size() == 0) {
-        if(!add_default_repo_keys(internal->repo_keys)) {
+        if(!add_default_repo_keys(internal->repo_keys
+#ifdef NON_LIBRE_FIRMWARE
+                            , internal->firmware && internal->firmware->test()
+#endif
+                                  )) {
             return false;
         }
     }
