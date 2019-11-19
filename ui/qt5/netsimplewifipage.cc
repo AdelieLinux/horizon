@@ -75,18 +75,17 @@ void NetworkSimpleWirelessPage::scanDone(QString message) {
 
 void NetworkSimpleWirelessPage::networkChosen(QListWidgetItem *current,
                                               QListWidgetItem *) {
-    emit completeChanged();
     passphrase->clear();
+    passphrase->hide();
 
     if(current == nullptr) {
-        passphrase->hide();
+        emit completeChanged();
         return;
     }
 
     QStringList flags = current->data(Qt::UserRole).toStringList();
     if(flags.length() == 0) {
-        passphrase->hide();
-        return;
+        goto done;
     }
 
     for(auto &flag : flags) {
@@ -94,25 +93,26 @@ void NetworkSimpleWirelessPage::networkChosen(QListWidgetItem *current,
             passphrase->setEnabled(false);
             passphrase->setPlaceholderText(tr("WPA Enterprise networks are not supported in this release of Horizon."));
             passphrase->show();
-            return;
+            goto done;
         }
 
         if(flag.startsWith("WPA-PSK") || flag.startsWith("WPA2-PSK")) {
             passphrase->setEnabled(true);
             passphrase->setPlaceholderText(tr("WPA Passphrase"));
             passphrase->show();
-            return;
+            goto done;
         }
 
         if(flag.startsWith("WEP")) {
             passphrase->setEnabled(true);
             passphrase->setPlaceholderText(tr("WEP Passphrase"));
             passphrase->show();
-            return;
+            goto done;
         }
     }
 
-    passphrase->hide();
+done:
+    emit completeChanged();
     return;
 }
 
@@ -195,6 +195,7 @@ void NetworkSimpleWirelessPage::doScan() {
 
 void NetworkSimpleWirelessPage::initializePage() {
     doScan();
+    passphrase->setMinimumWidth(ssidListView->size().width());
 }
 
 bool NetworkSimpleWirelessPage::isComplete() const {
