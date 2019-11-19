@@ -91,10 +91,14 @@ void InputPage::initializePage() {
     /* Select the current keyboard layout, if available. */
     Display *dpy = XOpenDisplay(nullptr);
     if(dpy != nullptr) {
-        XkbRF_VarDefsRec vardefs;
+        XkbRF_VarDefsRec vardefs{};
         XkbRF_GetNamesProp(dpy, nullptr, &vardefs);
         QList<QListWidgetItem *> items = layoutList->findItems(vardefs.layout, Qt::MatchExactly);
         if(!items.empty()) layoutList->setCurrentItem(items.at(0));
+        free(vardefs.model);
+        free(vardefs.layout);
+        free(vardefs.variant);
+        free(vardefs.options);
         XCloseDisplay(dpy);
     }
 #endif  /* HAS_INSTALL_ENV */

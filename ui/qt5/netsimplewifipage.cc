@@ -286,6 +286,9 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
         ssidListView->addItem(item);
     }
 
+    stralloc_free(&netstr);
+    genalloc_free(wpactrl_scanres_t, &nets);
+
     return 1;
 }
 #endif  /* HAS_INSTALL_ENV */

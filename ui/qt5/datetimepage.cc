@@ -114,11 +114,15 @@ void DateTimePage::maybeRaiseCap() {
     if(captain == nullptr)
         return;
 
-    if(cap_set_flag(captain, CAP_EFFECTIVE, 1, &time_cap, CAP_SET) == -1)
+    if(cap_set_flag(captain, CAP_EFFECTIVE, 1, &time_cap, CAP_SET) == -1) {
+        cap_free(captain);
         return;
+    }
 
-    if(cap_set_proc(captain))
+    if(cap_set_proc(captain)) {
+        cap_free(captain);
         return;
+    }
 
     cap_free(captain);
 
