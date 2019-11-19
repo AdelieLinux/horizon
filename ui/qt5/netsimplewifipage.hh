@@ -43,6 +43,7 @@ private:
     QLineEdit *passphrase;
 
     void doScan();
+    void networkChosen(QListWidgetItem*, QListWidgetItem*);
     void scanDone(QString message);
 
 #ifdef HAS_INSTALL_ENV

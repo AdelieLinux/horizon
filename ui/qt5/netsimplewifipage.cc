@@ -37,6 +37,8 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     connect(rescanButton, &QPushButton::clicked, [=](void) { doScan(); });
 
     ssidListView = new QListWidget;
+    connect(ssidListView, &QListWidget::currentItemChanged,
+            this, &NetworkSimpleWirelessPage::networkChosen);
 
 #ifdef HAS_INSTALL_ENV
     exchange_item.filter = "CTRL-EVENT-SCAN-RESULTS";
@@ -45,8 +47,9 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
 #endif  /* HAS_INSTALL_ENV */
 
     passphrase = new QLineEdit(this);
+    connect(passphrase, &QLineEdit::textChanged,
+            this, &NetworkSimpleWirelessPage::completeChanged);
     passphrase->setEchoMode(QLineEdit::Password);
-    passphrase->setPlaceholderText(tr("Passphrase"));
     passphrase->hide();
 
     layout = new QVBoxLayout;
@@ -70,6 +73,49 @@ void NetworkSimpleWirelessPage::scanDone(QString message) {
     statusLabel->setText(message);
 }
 
+void NetworkSimpleWirelessPage::networkChosen(QListWidgetItem *current,
+                                              QListWidgetItem *) {
+    emit completeChanged();
+    passphrase->clear();
+
+    if(current == nullptr) {
+        passphrase->hide();
+        return;
+    }
+
+    QStringList flags = current->data(Qt::UserRole).toStringList();
+    if(flags.length() == 0) {
+        passphrase->hide();
+        return;
+    }
+
+    for(auto &flag : flags) {
+        if(flag.startsWith("WPA-EAP") || flag.startsWith("WPA2-EAP")) {
+            passphrase->setEnabled(false);
+            passphrase->setPlaceholderText(tr("WPA Enterprise networks are not supported in this release of Horizon."));
+            passphrase->show();
+            return;
+        }
+
+        if(flag.startsWith("WPA-PSK") || flag.startsWith("WPA2-PSK")) {
+            passphrase->setEnabled(true);
+            passphrase->setPlaceholderText(tr("WPA Passphrase"));
+            passphrase->show();
+            return;
+        }
+
+        if(flag.startsWith("WEP")) {
+            passphrase->setEnabled(true);
+            passphrase->setPlaceholderText(tr("WEP Passphrase"));
+            passphrase->show();
+            return;
+        }
+    }
+
+    passphrase->hide();
+    return;
+}
+
 void NetworkSimpleWirelessPage::doScan() {
 #ifdef HAS_INSTALL_ENV
     ssidListView->clear();
@@ -82,6 +128,7 @@ void NetworkSimpleWirelessPage::doScan() {
             horizonWizard()->chosen_auto_iface;
 
     tain_now_g();
+    wpactrl_end(&control);
     if(!wpactrl_start_g(&control, suppsock.c_str(), 2000)) {
         rescanButton->setEnabled(false);
         statusLabel->setText(tr("Couldn't communicate with wireless subsystem (Code %1)").arg(errno));
@@ -131,7 +178,7 @@ void NetworkSimpleWirelessPage::doScan() {
                     /* Not finished yet, so don't do anything. */
                     return;
                 } else {
-                    status = tr("Select your network from the list.");
+                    status = tr("Select your wireless network.");
                 }
             }
         }
@@ -151,7 +198,11 @@ void NetworkSimpleWirelessPage::initializePage() {
 }
 
 bool NetworkSimpleWirelessPage::isComplete() const {
-    return (ssidListView->currentRow() != -1);
+    if(ssidListView->currentRow() != -1) {
+        return false;
+    }
+
+    return (passphrase->isHidden() || passphrase->text().size() > 0);
 }
 
 int NetworkSimpleWirelessPage::nextId() const {
@@ -217,7 +268,8 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
                             .arg(network.frequency)
                             .arg(fromMacAddress(network.bssid))
                             .arg(network.signal_level));
-        netitem->setData(Qt::UserRole, QString::fromStdString(flags));
+        netitem->setData(Qt::UserRole, QString::fromStdString(flags)
+                                       .split("\0"));
         netitem->setData(Qt::UserRole + 1, network.signal_level);
         netitems.push_back(netitem);
     }
