@@ -50,6 +50,7 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     connect(passphrase, &QLineEdit::textChanged,
             this, &NetworkSimpleWirelessPage::completeChanged);
     passphrase->setEchoMode(QLineEdit::Password);
+    passphrase->setMinimumWidth(255);
     passphrase->hide();
 
     layout = new QVBoxLayout;
@@ -195,7 +196,6 @@ void NetworkSimpleWirelessPage::doScan() {
 
 void NetworkSimpleWirelessPage::initializePage() {
     doScan();
-    passphrase->setMinimumWidth(ssidListView->size().width());
 }
 
 bool NetworkSimpleWirelessPage::isComplete() const {
@@ -278,7 +278,7 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
 
     std::sort(netitems.begin(), netitems.end(),
               [](QListWidgetItem *left, QListWidgetItem *right) {
-        return left->data(Qt::UserRole + 1).toInt() <
+        return left->data(Qt::UserRole + 1).toInt() >
                right->data(Qt::UserRole + 1).toInt();
     });
 
