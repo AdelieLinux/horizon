@@ -288,6 +288,7 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
 
     stralloc_free(&netstr);
     genalloc_free(wpactrl_scanres_t, &nets);
+    stralloc_free(&buf);
 
     return 1;
 }
