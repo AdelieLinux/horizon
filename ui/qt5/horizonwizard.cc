@@ -31,6 +31,9 @@ extern "C" {
 
 #include "intropage.hh"
 #include "inputpage.hh"
+#ifdef NON_LIBRE_FIRMWARE
+#include "firmwarepage.hh"
+#endif  /* NON_LIBRE_FIRMWARE */
 #include "networkingpage.hh"
 #include "networkifacepage.hh"
 #include "netsimplewifipage.hh"
@@ -173,6 +176,9 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 
     setPage(Page_Intro, new IntroPage);
     setPage(Page_Input, new InputPage);
+#ifdef NON_LIBRE_FIRMWARE
+    setPage(Page_Firmware, new FirmwarePage);
+#endif  /* NON_LIBRE_FIRMWARE */
     setPage(Page_Network, new NetworkingPage);
     setPage(Page_Network_Iface, new NetworkIfacePage);
     setPage(Page_Network_Wireless, new NetworkSimpleWirelessPage);

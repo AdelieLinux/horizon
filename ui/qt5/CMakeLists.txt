@@ -17,6 +17,11 @@ set(UI_SOURCES
     hostnamepage.cc
 
     horizon.qrc)
+
+IF(UNSUPPORTED_NONFREE_FIRMWARE)
+    LIST(APPEND UI_SOURCES firmwarepage.cc)
+ENDIF(UNSUPPORTED_NONFREE_FIRMWARE)
+
 add_executable(horizon-qt5 ${UI_SOURCES})
 target_link_libraries(horizon-qt5 Qt5::Network Qt5::Widgets)
 

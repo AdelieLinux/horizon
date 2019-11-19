@@ -1,0 +1,49 @@
+<h2>Firmware</h2>
+
+<p>This page allows you to decide whether or not to install proprietary
+firmware on this computer.</p>
+
+<h3>What is firmware?</h3>
+
+<p>"Firmware" is a component of a hardware driver.  This component is uploaded
+to the hardware itself, which allows the hardware to perform operations or
+control itself.</p>
+
+<p>For example, network devices sometimes contain firmware that allows them to
+perform checksum offloading.</p>
+
+<h3>What is <i>proprietary</i> firmware?</h3>
+
+<p>Proprietary firmware is firmware that is released by the hardware
+manufacturer without source code.  Usually, this proprietary firmware is
+provided without warranty by the hardware manufacturer.  Since it is closed
+source and fully proprietary, it cannot be audited for security or reliability
+issues.</p>
+
+<p>This means that when you load proprietary firmware on to a computer, we
+can no longer provide any assurances to its security or reliability.</p>
+
+<h3>Why would I want to load proprietary firmware?</h3>
+
+<p>Most wireless networking cards, and virtually all 3D graphics cards, utilise
+proprietary firmware.  You may be unable to connect to a wireless network, or
+use certain radio frequencies (such as the 5 GHz band), without proprietary
+firmware.  You may also be unable to use the maximum resolution of your
+graphics card, or utilise the 3D acceleration capabilities of it (including
+OpenGL and Vulkan), without proprietary firmware.</p>
+
+<h3>What are the risks of using proprietary firmware?</h3>
+
+<p>Your system may be compromised by security issues in the firmware.  Your
+system may also become unstable due to improper programming of the
+firmware.</p>
+
+<h3>Which option should I choose?</h3>
+
+<p>Adélie Linux allows you the freedom to choose whether or not you wish to
+install proprietary firmware on your computer.</p>
+
+<p>If you have an elevated threat profile, you should always choose No.</p>
+
+<p>If you want to utilise hardware that requires proprietary firmware despite
+the potential risk, you may choose Yes.</p>
