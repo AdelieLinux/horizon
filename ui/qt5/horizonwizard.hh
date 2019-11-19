@@ -81,7 +81,11 @@ public:
 
     std::string mirror_domain;
     std::string version;
+#ifdef NON_LIBRE_FIRMWARE
+    bool firmware;
+#endif  /* NON_LIBRE_FIRMWARE */
     std::map<std::string, NetworkInterface> interfaces;
+    bool network;
     std::string chosen_auto_iface;
 };
 
