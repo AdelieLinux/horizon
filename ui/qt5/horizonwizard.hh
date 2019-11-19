@@ -54,6 +54,7 @@ public:
         Page_Hostname,          /* hostname */
         Page_PkgSimple,         /* simple package selection */
         Page_PkgCustom,         /* custom package selection */
+        Page_PkgCustomDefault,  /* custom package defaults selection */
         Page_Boot,              /* boot loader configuration */
         Page_Root,              /* root passphrase */
         Page_Accounts,          /* user account configuration */

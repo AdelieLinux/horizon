@@ -62,6 +62,7 @@ static std::map<int, std::string> help_id_map = {
     {HorizonWizard::Page_Hostname, "hostname"},
     {HorizonWizard::Page_PkgSimple, "packages-simple"},
     {HorizonWizard::Page_PkgCustom, "packages-custom"},
+    {HorizonWizard::Page_PkgCustomDefault, "packages-custom-default"},
     {HorizonWizard::Page_Boot, "startup"},
     {HorizonWizard::Page_Root, "rootpw"},
     {HorizonWizard::Page_Accounts, "accounts"},
