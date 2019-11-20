@@ -41,6 +41,7 @@ extern "C" {
 #include "datetimepage.hh"
 #include "hostnamepage.hh"
 #include "pkgsimple.hh"
+#include "bootpage.hh"
 
 static std::map<int, std::string> help_id_map = {
     {HorizonWizard::Page_Intro, "intro"},
@@ -167,6 +168,11 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 
     mirror_domain = "distfiles.adelielinux.org";
     version = "stable";
+    /* TODO XXX:
+     * Determine which platform kernel is being used, if any (-power8 etc)
+     * Determine hardware requirements (easy or mainline)
+     */
+    kernel = "easy-kernel";
 
     /* REQ: UI.Global.Back.Save */
     setOption(IndependentPages);
@@ -188,6 +194,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setPage(Page_DateTime, new DateTimePage);
     setPage(Page_Hostname, new HostnamePage);
     setPage(Page_PkgSimple, new PkgSimplePage);
+    setPage(Page_Boot, new BootPage);
 
     QObject::connect(this, &QWizard::helpRequested, [=](void) {
         if(help_id_map.find(currentId()) == help_id_map.end()) {

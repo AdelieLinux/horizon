@@ -97,6 +97,8 @@ public:
     bool network;
     std::string chosen_auto_iface;
     PackageType pkgtype;
+    bool grub;
+    std::string kernel;
 };
 
 #endif  /* !HORIZONWIZARD_HH */

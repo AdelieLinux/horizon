@@ -6,6 +6,7 @@ set(UI_SOURCES
     horizonwizardpage.cc
     horizonhelpwindow.cc
     main.cc
+    ${CMAKE_SOURCE_DIR}/3rdparty/Section.cpp
 
     intropage.cc
     inputpage.cc
@@ -16,6 +17,7 @@ set(UI_SOURCES
     datetimepage.cc
     hostnamepage.cc
     pkgsimple.cc
+    bootpage.cc
 
     horizon.qrc)
 
@@ -23,6 +25,7 @@ IF(UNSUPPORTED_NONFREE_FIRMWARE)
     LIST(APPEND UI_SOURCES firmwarepage.cc)
 ENDIF(UNSUPPORTED_NONFREE_FIRMWARE)
 
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty)
 add_executable(horizon-qt5 ${UI_SOURCES})
 target_link_libraries(horizon-qt5 Qt5::Network Qt5::Widgets)
 

@@ -24,6 +24,7 @@
         <file>resources/datetime-help.txt</file>
         <file>resources/hostname-help.txt</file>
         <file>resources/packages-simple-help.txt</file>
+        <file>resources/startup-help.txt</file>
     </qresource>
     <qresource prefix="/">
         <file alias="horizon-256.png">../../assets/horizon-256.png</file>

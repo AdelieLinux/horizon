@@ -1,0 +1,46 @@
+<h2>Startup Configuration</h2>
+
+<p>This page allows you to choose options for starting up your computer.</p>
+
+<h3>What is a bootloader?</h3>
+
+<p>A <i>bootloader</i> is the program that runs when you power on your
+computer.  The bootloader is responsible for locating Adélie Linux and/or
+other operating environments on your computer, and then loading them in to
+memory.</p>
+
+<h3>What option should I choose?</h3>
+
+<p>Typically, <strong>you should always choose to install a bootloader</strong>
+unless you have a configuration that will use a different method of booting.
+</p>
+
+<ul>
+<li><strong>Install a boot loader:</strong> <p>This option will install a
+bootloader to your hard disk, replacing any other bootloader if present.</p>
+</li>
+<li><strong>Do not install a boot loader:</strong> <p>This option will not
+install a bootloader to your hard disk.  You may be required to configure a
+bootloader yourself before your computer will start up properly.  Choose this
+option if you already have another operating environment with a bootloader, or
+if your computer has a bootloader in firmware (such as OPAL or UEFI).</p></li>
+</ul>
+
+<hr>
+
+<h3>What are the kernel options?</h3>
+
+<p>The kernel options disclosure allows you to choose which Linux kernel you
+want to use on your computer.  <strong>Only change these options if you have
+hardware that requires it, or your administrator or hardware manufacturer has
+told you that you need a special kernel.</strong></p>
+
+<ul>
+<li><strong>Use the stable kernel:</strong> <p>This option will install the
+LTS version of the Linux kernel, which is well supported and thoroughly tested.
+However, it may not support the newest hardware options.</p></li>
+<li><strong>Use the mainline kernel:</strong> <p>This option will install the
+latest version of the Linux kernel, which has not been as thoroughly tested as
+the stable kernel.  Use this option if you have hardware that requires a newer
+kernel version than LTS.</p></li>
+</ul>
