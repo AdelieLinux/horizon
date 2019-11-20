@@ -15,7 +15,6 @@
 #include <QButtonGroup>
 #include <QGridLayout>
 #include <QLabel>
-#include <QRadioButton>
 #include <QVBoxLayout>
 
 PkgSimplePage::PkgSimplePage(QWidget *parent) : HorizonWizardPage(parent) {
@@ -27,9 +26,9 @@ PkgSimplePage::PkgSimplePage(QWidget *parent) : HorizonWizardPage(parent) {
         "You can install and uninstall more software at any time using the Package Manager.  For more information, see the User Handbook in Online Help."));
     descLabel->setWordWrap(true);
 
-    QRadioButton *standardButton, *mobileButton, *compactButton, *textButton,
-                 *customButton;
-    QLabel *standardLabel, *mobileLabel, *compactLabel, *textLabel, *customLabel;
+    QRadioButton *mobileButton, *compactButton, *textButton, *customButton;
+    QLabel *standardLabel, *mobileLabel, *compactLabel, *textLabel,
+            *customLabel;
     standardButton = new QRadioButton(tr("&Standard"));
     standardButton->setIcon(QIcon::fromTheme("preferences-desktop-theme"));
     standardButton->setIconSize(QSize(32, 32));
@@ -93,6 +92,10 @@ PkgSimplePage::PkgSimplePage(QWidget *parent) : HorizonWizardPage(parent) {
     mainLayout->addStretch();
     mainLayout->addLayout(buttonLayout);
     setLayout(mainLayout);
+}
+
+void PkgSimplePage::initializePage() {
+    standardButton->click();
 }
 
 int PkgSimplePage::nextId() const {

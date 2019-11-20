@@ -15,10 +15,15 @@
 
 #include "horizonwizardpage.hh"
 
+#include <QRadioButton>
+
 class PkgSimplePage : public HorizonWizardPage {
 public:
     PkgSimplePage(QWidget *parent = nullptr);
+    void initializePage();
     int nextId() const;
+private:
+    QRadioButton *standardButton;
 };
 
 #endif  /* !PKGSIMPLE_HH */
