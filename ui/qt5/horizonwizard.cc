@@ -40,6 +40,7 @@ extern "C" {
 #include "netdhcppage.hh"
 #include "datetimepage.hh"
 #include "hostnamepage.hh"
+#include "pkgsimple.hh"
 
 static std::map<int, std::string> help_id_map = {
     {HorizonWizard::Page_Intro, "intro"},
@@ -186,6 +187,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setPage(Page_Network_DHCP, new NetDHCPPage);
     setPage(Page_DateTime, new DateTimePage);
     setPage(Page_Hostname, new HostnamePage);
+    setPage(Page_PkgSimple, new PkgSimplePage);
 
     QObject::connect(this, &QWizard::helpRequested, [=](void) {
         if(help_id_map.find(currentId()) == help_id_map.end()) {

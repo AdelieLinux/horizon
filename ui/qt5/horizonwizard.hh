@@ -77,6 +77,14 @@ public:
         QString mac;
     };
 
+    enum PackageType {
+        Standard,
+        Mobile,
+        Compact,
+        TextOnly,
+        Custom
+    };
+
     HorizonWizard(QWidget *parent = nullptr);
     QShortcut *f1, *f3, *f5, *f8;
 
@@ -88,6 +96,7 @@ public:
     std::map<std::string, NetworkInterface> interfaces;
     bool network;
     std::string chosen_auto_iface;
+    PackageType pkgtype;
 };
 
 #endif  /* !HORIZONWIZARD_HH */

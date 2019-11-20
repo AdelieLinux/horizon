@@ -15,6 +15,7 @@ set(UI_SOURCES
     netdhcppage.cc
     datetimepage.cc
     hostnamepage.cc
+    pkgsimple.cc
 
     horizon.qrc)
 
