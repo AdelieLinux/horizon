@@ -24,7 +24,7 @@ PkgSimplePage::PkgSimplePage(QWidget *parent) : HorizonWizardPage(parent) {
 
     QLabel *descLabel = new QLabel(tr(
         "Select the software you want to install on this computer.\n\n"
-        "You can install and uninstall more software at any time using the Package Manager.  For more information, see the User's Handbook in Online Help."));
+        "You can install and uninstall more software at any time using the Package Manager.  For more information, see the User Handbook in Online Help."));
     descLabel->setWordWrap(true);
 
     QRadioButton *standardButton, *mobileButton, *compactButton, *textButton,
