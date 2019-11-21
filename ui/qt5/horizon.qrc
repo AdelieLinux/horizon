@@ -6,6 +6,8 @@
         <file>resources/network-high.png</file>
         <file>resources/software-high.png</file>
         <file>resources/software-low.png</file>
+        <file>resources/acct-high.png</file>
+        <file>resources/acct-low.png</file>
         <file alias="resources/status-current-high.svg">../../assets/status-current-high.svg</file>
         <file alias="resources/status-current-low.svg">../../assets/status-current-low.svg</file>
         <file alias="resources/status-issue-high.svg">../../assets/status-issue-high.svg</file>
@@ -25,6 +27,7 @@
         <file>resources/hostname-help.txt</file>
         <file>resources/packages-simple-help.txt</file>
         <file>resources/startup-help.txt</file>
+        <file>resources/rootpw-help.txt</file>
     </qresource>
     <qresource prefix="/">
         <file alias="horizon-256.png">../../assets/horizon-256.png</file>

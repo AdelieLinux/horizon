@@ -18,6 +18,7 @@ set(UI_SOURCES
     hostnamepage.cc
     pkgsimple.cc
     bootpage.cc
+    rootpwpage.cc
 
     horizon.qrc)
 
