@@ -20,7 +20,7 @@
 
 BootPage::BootPage(QWidget *parent) : HorizonWizardPage(parent) {
     setTitle(tr("Startup Configuration"));
-    loadWatermark("intro");
+    loadWatermark("software");
 
     QLabel *descLabel = new QLabel(tr(
         "<p>By default, Adélie Linux will install a bootloader to your hard disk.  "
