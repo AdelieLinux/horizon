@@ -133,6 +133,7 @@ void DateTimePage::maybeRaiseCap() {
 
 DateTimePage::DateTimePage(QWidget *parent) : HorizonWizardPage(parent) {
     setTitle(tr("Date and Time Settings"));
+    loadWatermark("intro");
 
     dateEdit = new QDateEdit(QDate::currentDate());
     dateEdit->setDisplayFormat("dd MMMM yyyy");
