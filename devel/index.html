@@ -2,17 +2,12 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <title>Adélie Linux: Project Horizon</title>
-        <meta name="description" content="Information about the Adélie Linux installation system, Project Horizon"/>
+        <title>Project Horizon, by Adélie Linux</title>
+        <meta name="description" content="Information about Adélie Linux's revolutionary installation system, Project Horizon."/>
         <meta name="author" content="Adélie Linux team"/>
-        <link rel="stylesheet" href="https://static.adelielinux.org/css/core/base.min.css" type="text/css"/>
-        <link rel="stylesheet" href="https://static.adelielinux.org/css/screen/typography.css" type="text/css"/>
-        <link rel="stylesheet" href="https://static.adelielinux.org/css/forms/gray-theme.css" type="text/css"/>
-        <link rel="stylesheet" href="https://static.adelielinux.org/css/navigation/hlist.css" type="text/css"/>
-        <link rel="stylesheet" href="https://static.adelielinux.org/font/font-amal.css" type="text/css"/>
-        <link rel="stylesheet" href="https://static.adelielinux.org/css/adelie.css" type="text/css"/>
-        <link rel="stylesheet" href="https://static.adelielinux.org/css/adelie.desktop.css" media="screen and (min-width: 761px)" type="text/css"/>
-        <link rel="stylesheet" href="https://static.adelielinux.org/css/adelie.mobile.css" media="screen and (max-width: 760px)" type="text/css"/>
+        <link rel="stylesheet" href="//static.adelielinux.org/css/bigone.css" type="text/css" integrity="sha256-fHCVxQ83AS2qaOj+1rcM1IEyFjsvRPFJ3RAgmt0SXCQ= sha384-6HotgzfG3srjHdLfgLhJ5ZQcQ79LwOLJriauwftNoHy2/d+Ozs+aaww53qmd0FRA sha512-6B4zZckVHMCjtJEN4TsPTjcQYiTligjB02Q46guI7bIKvoJ8HCHy+o+Bqedn4LkUQjLkyrebPPQCI51HTu2zow==" crossorigin="anonymous"/>
+        <link rel="stylesheet" href="//static.adelielinux.org/css/adelie.desktop.css" media="screen and (min-width: 761px)" type="text/css" integrity="sha256-6tDAt0OGJwu+SzwdLKxaNLs2h5HH0Tu7pexZkuWKQ1c= sha384-k8WmlZEMlE9lyWuv7kwSSw/lnrFFOidReK/+9b0Xm2vO8uyuefunn2qNofVRL7+x sha512-qXiR/1s5MNBFa0VOzPr+pcyKdX75pQ7iEaxI3V6ujoE2hI9WoThbikwrRCL+qjo25RmJxGPl1OH3Qrff+0aF+w==" crossorigin="anonymous"/>
+        <link rel="stylesheet" href="//static.adelielinux.org/css/adelie.mobile.css" media="screen and (max-width: 760px)" type="text/css" integrity="sha256-Eb1aM0ED2J/5+oK2jOdpTgcT855jEytjplBPMPIxoTw= sha384-C7rwd8/bCuiShhC4BI+zfRuHYCS8eIbLIEjnlBUYj8GKEO+G5VkWTs4j9ECizrdN sha512-H/Ocfd9Go4vsxj7pyNqS30kJMN7eN3SYxkG9XkthCYuPKSguLo9ER/E8tqqLVWKIjxOay4ny/PCeTfztqjrOjw==" crossorigin="anonymous"/>
 
         <!--[if lte IE 7]>
         <link rel="stylesheet" href="yaml/core/iehacks.min.css" type="text/css"/>
@@ -25,12 +20,11 @@
                     <ul>
                         <li class="nopad"><img src="https://static.adelielinux.org/img/header.png" alt="[Penguin]"></li>
                         <li><a href="//www.adelielinux.org/">Adélie Home</a></li>
-			<li><a href="https://code.foxkit.us/adelie/horizon/">Git</a></li>
-			<li><a href="/script/">HorizonScript Reference</a></li>
-			<li><a href="/vision/">Project Vision</a></li>
-			<li><a href="/requirements/">Functional Req's</a></li>
-			<li><a href="/coverage/">Coverage Report</a></li>
                         <li><a href="https://www.adelielinux.org/contribute.html">Contribute</a></li>
+                        <li><a href="https://code.foxkit.us/adelie/horizon/">Horizon Git</a></li>
+                        <li><a href="/script/">Script Reference</a></li>
+                        <li><a href="/requirements/">Functional Req's</a></li>
+                        <li><a href="/coverage/">Coverage Report</a></li>
                         <li><a href="https://bts.adelielinux.org/buglist.cgi?product=Horizon&resolution=---">Issues</a></li>
                     </ul>
                 </nav>
@@ -40,11 +34,13 @@
             <div class="ym-wrapper center">
                 <div class="ym-wbox left info box">
                     <h1 class="center">Install.  Deploy.  With ease.</h1>
-                    <p>Project Horizon is the next-generation installation system for Adélie Linux.</p>
+                    <p>Project Horizon is the revolutionary, next-generation installation system for Adélie Linux.
+                    Install on your desktop or portable computer using the friendly UI wizard,
+                    or install on your server cluster with HorizonScript.</p>
                     <p class="center">
                         <a href="https://distfiles.adelielinux.org/adelie/1.0-beta4/iso/" class="ym-button ym-xlarge ym-danger">Download Adélie CD/USB</a>
                         <a href="/script/" class="ym-button ym-xlarge">HorizonScript Reference</a>
-                        <a href="https://help.adelielinux.org/" class="ym-button ym-xlarge">Get Help</a>
+                        <a href="https://help.adelielinux.org/html/install/" class="ym-button ym-xlarge">Handbook</a>
                     </p>
                 </div>
                 <div class="ym-wbox left">
@@ -52,19 +48,20 @@
                         <div class="ym-g33 ym-gl">
                             <div class="ym-gbox">
                                 <h3 class="center">For Administrators</h3>
-                                <p>Read the <a href="/script/">official HorizonScript specification</a> and learn how to write your own installfiles.</p>
+                                <p>Read the <a href="/script/">official HorizonScript specification</a> and learn how to write your own <code>installfile</code>s.</p>
                             </div>
                         </div>
                         <div class="ym-g33 ym-gl">
                             <div class="ym-gbox">
-                                <h3 class="center">For Developers</h3>
-                                <p>Read <a href="/vision/">Horizon Vision</a> and the <a href="/requirements/">Functional Requirements Specification</a>.</p>
+                                <h3 class="center">For Contributors</h3>
+                                <p>Read <a href="/vision/">Horizon Vision</a> and the <a href="/requirements/">Functional Requirements Specification</a>.
+                                View <a href="https://code.foxkit.us/adelie/horizon/">the Git repository</a> and <a href="/coverage/">the current code coverage report</a>.</p>
                             </div>
                         </div>
                         <div class="ym-g33 ym-gr">
                             <div class="ym-gbox">
-                                <h3 class="center">For Maintainers</h3>
-                                <p>View <a href="/coverage/">current code coverage</a>.</p>
+                                <h3 class="center">For End-Users</h3>
+                                <p>Read the <a href="https://help.adelielinux.org/html/install/">Installation Handbook.</p></p>
                             </div>
                         </div>
                     </div>
