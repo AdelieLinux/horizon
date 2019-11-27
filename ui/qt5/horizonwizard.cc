@@ -254,10 +254,10 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
             button(CancelButton), &QAbstractButton::click);
     f3->setWhatsThis(tr("Prompts to exit the installation."));
 
-    f5 = new QShortcut(Qt::Key_F6, this);
-    connect(f5, &QShortcut::activated,
+    f6 = new QShortcut(Qt::Key_F6, this);
+    connect(f6, &QShortcut::activated,
             button(BackButton), &QAbstractButton::click);
-    f5->setWhatsThis(tr("Goes back to the previous page."));
+    f6->setWhatsThis(tr("Goes back to the previous page."));
 
     f8 = new QShortcut(Qt::Key_F8, this);
     connect(f8, &QShortcut::activated,
