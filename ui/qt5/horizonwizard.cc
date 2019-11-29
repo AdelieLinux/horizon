@@ -43,6 +43,7 @@ extern "C" {
 #include "pkgsimple.hh"
 #include "bootpage.hh"
 #include "rootpwpage.hh"
+#include "accountpage.hh"
 
 static std::map<int, std::string> help_id_map = {
     {HorizonWizard::Page_Intro, "intro"},
@@ -197,6 +198,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setPage(Page_PkgSimple, new PkgSimplePage);
     setPage(Page_Boot, new BootPage);
     setPage(Page_Root, new RootPassphrasePage);
+    setPage(Page_Accounts, new AccountPage);
 
     QObject::connect(this, &QWizard::helpRequested, [=](void) {
         if(help_id_map.find(currentId()) == help_id_map.end()) {

@@ -7,6 +7,7 @@ set(UI_SOURCES
     horizonhelpwindow.cc
     main.cc
     ${CMAKE_SOURCE_DIR}/3rdparty/Section.cpp
+    useraccountwidget.cc
 
     intropage.cc
     inputpage.cc
@@ -19,6 +20,7 @@ set(UI_SOURCES
     pkgsimple.cc
     bootpage.cc
     rootpwpage.cc
+    accountpage.cc
 
     horizon.qrc)
 
