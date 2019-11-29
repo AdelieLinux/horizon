@@ -12,6 +12,7 @@
 
 #include "rootpwpage.hh"
 
+#include <QAction>
 #include <QFormLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -34,6 +35,24 @@ RootPassphrasePage::RootPassphrasePage(QWidget *parent)
     rootPW->setWhatsThis(tr("Enter your desired root passphrase here."));
     connect(rootPW, &QLineEdit::textChanged,
             this, &RootPassphrasePage::completeChanged);
+    QAction *togglePass = rootPW->addAction(QIcon::fromTheme("visibility"),
+                                            QLineEdit::TrailingPosition);
+    togglePass->setToolTip(tr("Show the passphrase"));
+    togglePass->setData(true);
+    connect(togglePass, &QAction::triggered,
+            [=](void) {
+        if(togglePass->data().toBool() == true) {
+            togglePass->setData(false);
+            togglePass->setIcon(QIcon::fromTheme("hint"));
+            togglePass->setToolTip(tr("Hide the passphrase"));
+            rootPW->setEchoMode(QLineEdit::Normal);
+        } else {
+            togglePass->setData(true);
+            togglePass->setIcon(QIcon::fromTheme("visibility"));
+            togglePass->setToolTip(tr("Show the passphrase"));
+            rootPW->setEchoMode(QLineEdit::Password);
+        }
+    });
     registerField("rootpw", rootPW);
     confirmPW = new QLineEdit;
     confirmPW->setEchoMode(QLineEdit::Password);
@@ -41,6 +60,24 @@ RootPassphrasePage::RootPassphrasePage(QWidget *parent)
         "Confirm your desired root passphrase by typing it again here."));
     connect(confirmPW, &QLineEdit::textChanged,
             this, &RootPassphrasePage::completeChanged);
+    QAction *toggleConfPass = rootPW->addAction(QIcon::fromTheme("visibility"),
+                                                QLineEdit::TrailingPosition);
+    toggleConfPass->setToolTip(tr("Show the passphrase"));
+    toggleConfPass->setData(true);
+    connect(toggleConfPass, &QAction::triggered,
+            [=](void) {
+        if(toggleConfPass->data().toBool() == true) {
+            toggleConfPass->setData(false);
+            toggleConfPass->setIcon(QIcon::fromTheme("hint"));
+            toggleConfPass->setToolTip(tr("Hide the passphrase"));
+            confirmPW->setEchoMode(QLineEdit::Normal);
+        } else {
+            toggleConfPass->setData(true);
+            toggleConfPass->setIcon(QIcon::fromTheme("visibility"));
+            toggleConfPass->setToolTip(tr("Show the passphrase"));
+            confirmPW->setEchoMode(QLineEdit::Password);
+        }
+    });
     QFormLayout *pwForm = new QFormLayout;
     pwForm->addRow(tr("&Passphrase:"), rootPW);
     pwForm->addRow(tr("&Confirm Passphrase:"), confirmPW);
