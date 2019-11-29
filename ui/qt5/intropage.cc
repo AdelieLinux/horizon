@@ -28,15 +28,12 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
 
 #ifndef HAS_INSTALL_ENV
     descLabel = new QLabel(
-                tr("<p>"
-                   "Horizon will guide you through creation of a basic <code>installfile</code> for installing Adélie Linux on another computer."
-                   "<p>"
-                   "<b>IMPORTANT:</b> You may be allowed to specify an invalid or non-bootable disk layout or network configuration.  "
-                   "For best results, run System Installation directly on the computer you wish to run Adélie Linux."
-                   "<p>"
-                   "For more information about the <code>installfile</code> format and syntax, see the "
-                   "<a href='https://help.adelielinux.org/html/install/'>"
-                   "Adélie Linux Installation Guide</a> on the Internet."));
+                tr("<p>Thank you for choosing the reliable, secure, libre Adélie Linux operating environment.  "
+                   "This process will take about 10-15 minutes.</p>"
+                   "<p>You will create a basic <code>installfile</code, which you can use to install Adélie Linux on a computer over the network or using custom installation media.</p>"
+                   "<p><strong>IMPORTANT:</strong> You may be allowed to specify an invalid or non-bootable disk layout or network configuration.  "
+                   "For best results, run System Installation directly on the computer you wish to run Adélie Linux.</p>"
+                   "<p>For more information about the installfile format and syntax, see the <a href=\"https://help.adelielinux.org/html/install/\">Adélie Linux Installation Handbook</a>.</p>"));
     descLabel->setOpenExternalLinks(true);
     descLabel->setTextFormat(Qt::RichText);
 #else  /* HAS_INSTALL_ENV */
@@ -58,17 +55,17 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
     toolButton->setMenu(toolMenu);
 
     descLabel = new QLabel(
-                tr("Thank you for choosing the reliable, secure, libre Adélie Linux operating system.  "
-                   "This installation process will take about 10-15 minutes.\n\n"
+                tr("Thank you for choosing the reliable, secure, libre Adélie Linux operating environment.  "
+                   "Installation will take about 15-30 minutes.\n\n"
 
-                   "When you're ready to answer a few questions, you can get started by choosing Continue or pressing F8.  "
-                   "If you'd like more information about the installation procedure, choose Help or press F1 at any time.\n\n"
+                   "When you're ready to answer a few questions, choose Continue or press the F8 key.  "
+                   "To learn more about the installation procedure, choose Help or press the F1 key at any time.\n\n"
 
-                   "The installation procedure will not change anything on your computer until the final step.  "
-                   "You can safely exit at any time, with no change to your computer, by choosing Exit or pressing F3.\n\n"
+                   "System Installation will not modify any data or settings on your computer until the final step.  "
+                   "To exit without modifying your computer, choose Exit or press the F3 key.\n\n"
 
-                   "If you are unable to use a mouse, you may press the Tab key to cycle between the available inputs.  "
-                   "The currently selected input will be highlighted."));
+                   "If you cannot use a mouse, you may press the Tab key to cycle between input fields.  "
+                   "The currently selected field will be highlighted."));
 #endif  /* !HAS_INSTALL_ENV */
     descLabel->setWordWrap(true);
 
@@ -76,7 +73,7 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
     layout->addWidget(descLabel);
 #ifdef HAS_INSTALL_ENV
     layout->addStretch();
-    layout->addWidget(toolButton);
+    layout->addWidget(toolButton, 0, Qt::AlignCenter);
 #endif  /* HAS_INSTALL_ENV */
     setLayout(layout);
 }
