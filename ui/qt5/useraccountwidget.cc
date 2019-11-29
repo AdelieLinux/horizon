@@ -12,7 +12,9 @@
 
 #include "useraccountwidget.hh"
 
+#include <QAction>
 #include <QHBoxLayout>
+#include <QMenu>
 #include <QVBoxLayout>
 
 UserAccountWidget::UserAccountWidget(QWidget *parent)
@@ -41,6 +43,24 @@ UserAccountWidget::UserAccountWidget(QWidget *parent)
     passphrase->setPlaceholderText(tr("Passphrase"));
     passphrase->setToolTip(tr("This user's passphrase"));
     passphrase->setWhatsThis(tr("The passphrase will be used to log in to the computer."));
+    QAction *togglePass = passphrase->addAction(QIcon::fromTheme("visibility"),
+                                                QLineEdit::TrailingPosition);
+    togglePass->setToolTip(tr("Show the passphrase"));
+    togglePass->setData(true);
+    connect(togglePass, &QAction::triggered,
+            [=](void) {
+        if(togglePass->data().toBool() == true) {
+            togglePass->setData(false);
+            togglePass->setIcon(QIcon::fromTheme("hint"));
+            togglePass->setToolTip(tr("Hide the passphrase"));
+            passphrase->setEchoMode(QLineEdit::Normal);
+        } else {
+            togglePass->setData(true);
+            togglePass->setIcon(QIcon::fromTheme("visibility"));
+            togglePass->setToolTip(tr("Show the passphrase"));
+            passphrase->setEchoMode(QLineEdit::Password);
+        }
+    });
     passAdminLayout->addWidget(passphrase);
 
     adminTick = new QCheckBox(tr("Admin"));
