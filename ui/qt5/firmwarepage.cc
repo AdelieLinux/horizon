@@ -29,6 +29,7 @@ FirmwarePage::FirmwarePage(QWidget *parent) : HorizonWizardPage(parent) {
 
     noButton = new QRadioButton(tr("&No, do not load firmware on this computer."));
     yesButton = new QRadioButton(tr("&Yes, load firmware on this computer."));
+    yesButton->setChecked(true);
     firmwareChoice = new QButtonGroup;
     firmwareChoice->addButton(noButton);
     firmwareChoice->addButton(yesButton);
