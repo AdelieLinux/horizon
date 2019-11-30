@@ -21,16 +21,13 @@ FirmwarePage::FirmwarePage(QWidget *parent) : HorizonWizardPage(parent) {
     loadWatermark("intro");
 
     QLabel *descLabel = new QLabel(tr(
-        "<p>Your computer may require the use of drivers which use proprietary, closed-source components (or <i>firmware</i>) in order to use certain hardware or functionality.</p>"
-        "<p>Most Wi-Fi network adaptors and 3D graphics cards require proprietary firmware.</p>"
-        "<p>Proprietary firmware cannot be audited for security or reliability issues due to its closed-source nature.  Only install proprietary firmware if you require it.</p>"
-        "<p>If you intend to use this computer to perform security-sensitive tasks, we strongly recommend that you choose not to load firmware on this computer.</p>"
-        "<p>Do you want to load firmware on this computer?</p>"));
-    descLabel->setTextFormat(Qt::RichText);
+        "Your computer may use hardware drivers which require proprietary, closed-source firmware in order to provide functionality.\n\n"
+        "Most Wi-Fi network adaptors and 3D graphics cards require proprietary firmware.  "
+        "However, proprietary firmware cannot be audited for security or reliability issues due to its closed-source nature.\n\n"
+        "Do you want to load firmware on this computer?"));
     descLabel->setWordWrap(true);
 
     noButton = new QRadioButton(tr("&No, do not load firmware on this computer."));
-    noButton->setChecked(true);
     yesButton = new QRadioButton(tr("&Yes, load firmware on this computer."));
     firmwareChoice = new QButtonGroup;
     firmwareChoice->addButton(noButton);
