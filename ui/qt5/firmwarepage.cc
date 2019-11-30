@@ -40,7 +40,6 @@ FirmwarePage::FirmwarePage(QWidget *parent) : HorizonWizardPage(parent) {
     layout->addWidget(yesButton);
     layout->addStretch();
 
-    setField("firmware", QVariant(false));
     connect(firmwareChoice, static_cast<void (QButtonGroup:: *)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
             [=](QAbstractButton *button) {
         if(button == yesButton) horizonWizard()->firmware = true;
