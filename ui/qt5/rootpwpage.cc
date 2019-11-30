@@ -60,8 +60,8 @@ RootPassphrasePage::RootPassphrasePage(QWidget *parent)
         "Confirm your desired root passphrase by typing it again here."));
     connect(confirmPW, &QLineEdit::textChanged,
             this, &RootPassphrasePage::completeChanged);
-    QAction *toggleConfPass = rootPW->addAction(QIcon::fromTheme("visibility"),
-                                                QLineEdit::TrailingPosition);
+    QAction *toggleConfPass = confirmPW->addAction(
+                QIcon::fromTheme("visibility"), QLineEdit::TrailingPosition);
     toggleConfPass->setToolTip(tr("Show the passphrase"));
     toggleConfPass->setData(true);
     connect(toggleConfPass, &QAction::triggered,
