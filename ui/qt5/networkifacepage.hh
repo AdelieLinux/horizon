@@ -13,7 +13,11 @@
 #ifndef NETWORKIFACEPAGE_HH
 #define NETWORKIFACEPAGE_HH
 
+#ifdef HAS_INSTALL_ENV
 #include <QListWidget>
+#else
+#include <QLineEdit>
+#endif  /* HAS_INSTALL_ENV */
 
 #include "horizonwizardpage.hh"
 
@@ -25,7 +29,11 @@ public:
     int nextId() const override;
     bool validatePage() override;
 private:
+#ifdef HAS_INSTALL_ENV
     QListWidget *ifaceList;
+#else
+    QLineEdit *ifaceName;
+#endif  /* HAS_INSTALL_ENV */
 };
 
 #endif /* !NETWORKIFACEPAGE_HH */

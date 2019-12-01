@@ -23,7 +23,8 @@
 NetworkIfacePage::NetworkIfacePage(QWidget *parent) :
     HorizonWizardPage(parent) {
     loadWatermark("network");
-    setTitle(tr("Multiple Network Interfaces Detected"));
+#ifdef HAS_INSTALL_ENV
+    setTitle(tr("Multiple Network Devices Detected"));
 
     ifaceList = new QListWidget(this);
     connect(ifaceList, &QListWidget::currentRowChanged, [=](int row) {
@@ -37,15 +38,27 @@ NetworkIfacePage::NetworkIfacePage(QWidget *parent) :
     ifaceList->setGridSize(QSize(160, 128));
     ifaceList->setIconSize(QSize(96, 96));
     ifaceList->setViewMode(QListView::IconMode);
-    ifaceList->setWhatsThis(tr("A list of network interfaces present in your computer.  Select the interface you wish to use for installation."));
+    ifaceList->setWhatsThis(tr("This is a list of network devices available in your computer.  Select the network device you wish to use for installation."));
+#else
+    setTitle(tr("Enter Network Device Name"));
+
+    ifaceName = new QLineEdit(this);
+    ifaceName->setPlaceholderText(tr("Network Device Name (i.e. eth0)"));
+    ifaceName->setWhatsThis(tr("Enter the name of the computer's network device.  For example, eth0."));
+    connect(ifaceName, &QLineEdit::textEdited, [=]{
+        emit completeChanged();
+        horizonWizard()->chosen_auto_iface = ifaceName->text().toStdString();
+    });
+#endif
 }
 
 void NetworkIfacePage::initializePage() {
     QLabel *descLabel;
     QVBoxLayout *layout;
 
+#ifdef HAS_INSTALL_ENV
     descLabel = new QLabel(tr(
-        "Your computer has more than one network interface device.  Select the one you wish to use during installation."));
+        "Your computer has more than one network device.  Select the one you wish to use during installation."));
     descLabel->setWordWrap(true);
 
     for(auto &iface : horizonWizard()->interfaces) {
@@ -76,18 +89,33 @@ void NetworkIfacePage::initializePage() {
                                                     ifaceList);
         item->setToolTip(iface.second.mac);
     }
+#else
+    descLabel = new QLabel(tr("Enter the name of the network device you will use on this computer."));
+    descLabel->setWordWrap(true);
+#endif  /* HAS_INSTALL_ENV */
 
     layout = new QVBoxLayout;
     layout->addWidget(descLabel);
+#ifdef HAS_INSTALL_ENV
     layout->addWidget(ifaceList);
+#else
+    layout->addStretch();
+    layout->addWidget(ifaceName);
+    layout->addStretch();
+#endif  /* HAS_INSTALL_ENV */
     setLayout(layout);
 }
 
 bool NetworkIfacePage::isComplete() const {
+#ifdef HAS_INSTALL_ENV
     return ifaceList->currentRow() != -1;
+#else
+    return ifaceName->text().size() > 0;
+#endif  /* HAS_INSTALL_ENV */
 }
 
 int NetworkIfacePage::nextId() const {
+#ifdef HAS_INSTALL_ENV
     if(ifaceList->currentRow() < 0) return HorizonWizard::Page_Network_Iface;
 
     auto iterator = horizonWizard()->interfaces.begin();
@@ -99,14 +127,19 @@ int NetworkIfacePage::nextId() const {
     default:
         return HorizonWizard::Page_Network_DHCP;
     }
+#else
+    return HorizonWizard::Page_DateTime;
+#endif  /* HAS_INSTALL_ENV */
 }
 
 bool NetworkIfacePage::validatePage() {
+#ifdef HAS_INSTALL_ENV
     /* What a hack!
      *
      * Independent Pages means the DHCP page is never cleaned, even when Back
      * is chosen.  So, we have to do it from here. */
     horizonWizard()->removePage(HorizonWizard::Page_Network_DHCP);
     horizonWizard()->setPage(HorizonWizard::Page_Network_DHCP, new NetDHCPPage);
+#endif  /* HAS_INSTALL_ENV */
     return true;
 }

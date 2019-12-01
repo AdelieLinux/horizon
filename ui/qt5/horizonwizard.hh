@@ -40,9 +40,6 @@ public:
 #ifdef NON_LIBRE_FIRMWARE
         Page_Firmware,          /* firmware */
 #endif  /* NON_LIBRE_FIRMWARE */
-#ifndef HAS_INSTALL_ENV
-        Page_Network_Define,    /* define network interfaces for target */
-#endif  /* !HAS_INSTALL_ENV */
         Page_Network,           /* network type selection (DHCP/static) */
         Page_Network_Iface,     /* network interface selection */
         Page_Network_Wireless,  /* wireless */
@@ -95,6 +92,7 @@ public:
 #endif  /* NON_LIBRE_FIRMWARE */
     std::map<std::string, NetworkInterface> interfaces;
     bool network;
+    bool net_dhcp;
     std::string chosen_auto_iface;
     PackageType pkgtype;
     bool grub;

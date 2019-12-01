@@ -52,9 +52,6 @@ static std::map<int, std::string> help_id_map = {
 #ifdef NON_LIBRE_FIRMWARE
     {HorizonWizard::Page_Firmware, "firmware"},
 #endif  /* NON_LIBRE_FIRMWARE */
-#ifndef HAS_INSTALL_ENV
-    {HorizonWizard::Page_Network_Define, "network-define"},
-#endif  /* !HAS_INSTALL_ENV */
     {HorizonWizard::Page_Network, "network-start"},
     {HorizonWizard::Page_Network_Iface, "network-iface"},
     {HorizonWizard::Page_Network_Wireless, "network-wifi"},

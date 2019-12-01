@@ -55,8 +55,16 @@ void NetworkingPage::initializePage() {
 
     QObject::connect(radioGroup, static_cast<void (QButtonGroup:: *)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
                      [=](QAbstractButton *button) {
-        if(button == skip) horizonWizard()->network = false;
-        else horizonWizard()->network = true;
+        if(button == skip) {
+            horizonWizard()->network = false;
+        } else {
+            horizonWizard()->network = true;
+            if(button == simple) {
+                horizonWizard()->net_dhcp = true;
+            } else {
+                horizonWizard()->net_dhcp = false;
+            }
+        }
 
         emit completeChanged();
     });
@@ -78,7 +86,7 @@ bool NetworkingPage::isComplete() const {
 
 int NetworkingPage::nextId() const {
     if(radioGroup->checkedButton() == simple) {
-        if(horizonWizard()->interfaces.size() > 1) {
+        if(horizonWizard()->interfaces.size() != 1) {
             return HorizonWizard::Page_Network_Iface;
         } else {
             horizonWizard()->chosen_auto_iface =
