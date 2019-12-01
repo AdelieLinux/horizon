@@ -245,12 +245,20 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setButtonText(CancelButton, tr("E&xit (F3)"));
     setButtonText(BackButton, tr("< &Back (F6)"));
     setButtonText(NextButton, tr("Co&ntinue > (F8)"));
+#ifdef HAS_INSTALL_ENV
+    setButtonText(FinishButton, tr("&Install (F8)"));
+#else
+    setButtonText(FinishButton, tr("&Save (F8)"));
+#endif  /* HAS_INSTALL_ENV */
 
     f1 = new QShortcut(Qt::Key_F1, this);
     connect(f1, &QShortcut::activated,
             button(HelpButton), &QAbstractButton::click);
     f1->setWhatsThis(tr("Activates the Help screen."));
 
+    esc = new QShortcut(Qt::Key_Escape, this);
+    connect(esc, &QShortcut::activated,
+            button(CancelButton), &QAbstractButton::click);
     f3 = new QShortcut(Qt::Key_F3, this);
     connect(f3, &QShortcut::activated,
             button(CancelButton), &QAbstractButton::click);
@@ -264,6 +272,8 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     f8 = new QShortcut(Qt::Key_F8, this);
     connect(f8, &QShortcut::activated,
             button(NextButton), &QAbstractButton::click);
+    connect(f8, &QShortcut::activated,
+            button(FinishButton), &QAbstractButton::click);
     f8->setWhatsThis(tr("Goes forward to the next page."));
 
 #ifdef HAS_INSTALL_ENV

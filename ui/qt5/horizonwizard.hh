@@ -86,7 +86,7 @@ public:
     };
 
     HorizonWizard(QWidget *parent = nullptr);
-    QShortcut *f1, *f3, *f6, *f8;
+    QShortcut *esc, *f1, *f3, *f6, *f8;
 
     std::string mirror_domain;
     std::string version;
