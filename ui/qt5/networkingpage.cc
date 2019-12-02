@@ -49,7 +49,7 @@ void NetworkingPage::initializePage() {
         simple = new QRadioButton(tr("&Automatic - my computer connects to the Internet directly\n"
                                      "or via a modem/router."));
         advanced = new QRadioButton(tr("&Manual - my computer connects to an enterprise network,\n"
-                                       "or I use a static IP address, VPN, or 802.1X."));
+                                       "or I use a static IP address, VPN, or 802.1X security."));
     }
     skip = new QRadioButton(tr("&Skip - I don't want to connect to a network or the Internet."));
 
