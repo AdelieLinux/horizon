@@ -13,6 +13,9 @@
 #include "networkingpage.hh"
 #include "horizonwizard.hh"
 
+#ifdef HAS_INSTALL_ENV
+#   include <QDir>
+#endif  /* HAS_INSTALL_ENV */
 #include <QLabel>
 #include <QVBoxLayout>
 
@@ -38,7 +41,11 @@ void NetworkingPage::initializePage() {
     }
     descLabel->setWordWrap(true);
 
-    if(!horizonWizard()->interfaces.empty()) {
+#ifdef HAS_INSTALL_ENV
+    /* The interface list will be empty if we're in a Runtime Environment. */
+    if(!horizonWizard()->interfaces.empty())
+#endif  /* HAS_INSTALL_ENV */
+    {
         simple = new QRadioButton(tr("&Automatic - my computer connects to the Internet directly\n"
                                      "or via a modem/router."));
         advanced = new QRadioButton(tr("&Manual - my computer connects to an enterprise network,\n"
@@ -77,6 +84,38 @@ void NetworkingPage::initializePage() {
         layout->addWidget(advanced);
     }
     layout->addWidget(skip);
+
+#ifdef HAS_INSTALL_ENV
+    /* REQ: UI.Network.AddressType.MaybeNotDisable
+     *
+     * If we are running in an Installation Environment, we know we require
+     * networking if /packages doesn't exist, because this is a live-only
+     * media.  If we are running in a Runtime Environment, we always require
+     * networking because we set the mirror as distfiles.adelielinux.org.
+     *
+     * This may change in the future, when we have mirror selection
+     * implemented; we may have a way to do "local" mirrors.
+     */
+    if(!QDir("/packages").exists())
+#endif  /* HAS_INSTALL_ENV */
+    {
+        QLabel *warnIcon = new QLabel;
+        warnIcon->setPixmap(QIcon::fromTheme("dialog-warning").pixmap(QSize(16, 16)));
+        warnIcon->setMaximumSize(QSize(16, 16));
+
+        QLabel *warnLabel = new QLabel(tr("Networking cannot be skipped because a network connection is required to install packages."));
+        warnLabel->setWordWrap(true);
+
+        QHBoxLayout *warnLayout = new QHBoxLayout;
+        warnLayout->addSpacing(32);
+        warnLayout->addWidget(warnIcon);
+        warnLayout->addWidget(warnLabel);
+
+        layout->addLayout(warnLayout);
+
+        skip->setEnabled(false);
+    }
+
     setLayout(layout);
 }
 
