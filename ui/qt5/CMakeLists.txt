@@ -31,7 +31,11 @@ ENDIF(UNSUPPORTED_NONFREE_FIRMWARE)
 
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty)
 add_executable(horizon-qt5 ${UI_SOURCES})
-target_link_libraries(horizon-qt5 Qt5::Network Qt5::Widgets)
+target_link_libraries(horizon-qt5 Qt5::Network Qt5::Widgets crypto)
+
+IF("cxx_std_17" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+    set_property(TARGET horizon-qt5 PROPERTY CXX_STANDARD 17)
+ENDIF()
 
 install(TARGETS horizon-qt5 DESTINATION bin)
 

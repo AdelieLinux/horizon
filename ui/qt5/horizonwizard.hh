@@ -83,19 +83,37 @@ public:
     };
 
     HorizonWizard(QWidget *parent = nullptr);
+    void accept();
+    /*! Emit a HorizonScript file with the user's choices. */
+    QString toHScript();
     QShortcut *esc, *f1, *f3, *f6, *f8;
 
+    /*! The domain to use for downloading packages.
+     * @example distfiles.adelielinux.org
+     */
     std::string mirror_domain;
+    /*! The version of Adélie to install.  Typically "1.0". */
     std::string version;
 #ifdef NON_LIBRE_FIRMWARE
+    /*! Determines whether firmware will be installed. */
     bool firmware;
 #endif  /* NON_LIBRE_FIRMWARE */
+    /*! The currently probed network interfaces
+     * @note Only available in Installation Environment. */
     std::map<std::string, NetworkInterface> interfaces;
+    /*! Determines whether networking will be enabled. */
     bool network;
+    /*! Determines whether to use DHCP. */
     bool net_dhcp;
+    /*! Determines the network interface to use. */
     std::string chosen_auto_iface;
+    /*! Determines the packages to install. */
     PackageType pkgtype;
+    /*! If pkgtype is Custom, a list of packages to install. */
+    QStringList packages;
+    /*! Determines whether to install GRUB. */
     bool grub;
+    /*! Determines the kernel to install. */
     std::string kernel;
 };
 

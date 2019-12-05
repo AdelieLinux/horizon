@@ -16,6 +16,9 @@
 #include <QDebug>
 #include <QFile>
 #include <QMessageBox>
+#include <openssl/rand.h>
+
+#include <algorithm>
 #include <map>
 #include <string>
 
@@ -44,6 +47,8 @@ extern "C" {
 #include "bootpage.hh"
 #include "rootpwpage.hh"
 #include "accountpage.hh"
+
+#include "util/keymaps.hh"
 
 static std::map<int, std::string> help_id_map = {
     {HorizonWizard::Page_Intro, "intro"},
@@ -277,4 +282,118 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     interfaces = probe_ifaces();
     tain_now_set_stopwatch_g();
 #endif  /* HAS_INSTALL_ENV */
+}
+
+
+extern "C" char *do_a_crypt(const char *key, const char *setting, char *output);
+
+/*! Make a shadow-compliant crypt string out of +the_pw+. */
+char *encrypt_pw(const char *the_pw) {
+    unsigned char rawsalt[8];
+    RAND_bytes(rawsalt, 8);
+    QByteArray salt_ba(reinterpret_cast<char *>(rawsalt), 8);
+
+    const char *salt = ("$6$" + salt_ba.toBase64(QByteArray::OmitTrailingEquals)
+                       .toStdString() + "$").c_str();
+    char *result = new char[128];
+    if(do_a_crypt(the_pw, salt, result) == nullptr) {
+        delete[] result;
+        return nullptr;
+    }
+    return result;
+}
+
+
+QString HorizonWizard::toHScript() {
+    QStringList lines;
+
+    if(this->network) {
+        lines << "network true";
+
+        if(this->net_dhcp) {
+            lines << QString::fromStdString("netaddress " +
+                                            this->chosen_auto_iface + " dhcp");
+        } else {
+            /* XXX TODO no manual page implemented yet */
+            Q_ASSERT(false);
+        }
+    } else {
+        lines << "network false";
+    }
+
+    lines << ("hostname " + field("hostname").toString());
+
+    switch(this->pkgtype) {
+    case Mobile:
+        lines << "pkginstall powerdevil upower";
+#if __cplusplus >= 201703L
+        [[ fallthrough ]];
+#endif
+    case Standard:
+        lines << "pkginstall adelie-base-posix firefox-esr libreoffice "
+                 "thunderbird vlc kde x11";
+        break;
+    case Compact:
+        lines << "pkginstall adelie-base netsurf featherpad lxqt-desktop "
+                 "abiword gnumeric xorg-apps xorg-drivers xorg-server";
+        break;
+    case TextOnly:
+        lines << "pkginstall adelie-base links tmux";
+        break;
+    case Custom:
+        lines << ("pkginstall " + packages.join(" "));
+        break;
+    }
+
+    char *root = encrypt_pw(field("rootpw").toString().toStdString().c_str());
+    Q_ASSERT(root != nullptr);
+    lines << QString("rootpw ") + root;
+    delete[] root;
+
+    /* XXX TODO someday we'll have language support */
+    lines << "language en_GB.UTF-8";
+
+    auto iterator = valid_keymaps.begin();
+    std::advance(iterator, field("keymap").toInt());
+    lines << ("keymap " + QString::fromStdString(*iterator));
+
+#ifdef NON_LIBRE_FIRMWARE
+    if(this->firmware) {
+        lines << "firmware true";
+    } else {
+        lines << "firmware false";
+    }
+#endif  /* NON_LIBRE_FIRWMARE */
+
+    lines << ("timezone " +
+              dynamic_cast<DateTimePage *>(page(Page_DateTime))->selectedTimeZone());
+
+    for(auto &acctWidget : dynamic_cast<AccountPage *>(page(Page_Accounts))->accountWidgets) {
+        if(acctWidget->accountText().isEmpty()) break;
+
+        char *userpw = encrypt_pw(acctWidget->passphraseText().toStdString().c_str());
+        Q_ASSERT(userpw != nullptr);
+
+        lines << ("username " + acctWidget->accountText());
+        lines << ("useralias " + acctWidget->accountText() + " " +
+                  acctWidget->personalText());
+        lines << ("userpw " + acctWidget->accountText() + " " + userpw);
+        delete[] userpw;
+        if(acctWidget->isAdmin()) {
+            lines << ("usergroups " + acctWidget->accountText() + " " +
+                      "users,lp,audio,cdrom,cdrw,scanner,camera,video,games,usb,kvm,wheel");
+        } else {
+            lines << ("usergroups " + acctWidget->accountText() + " " +
+                      "users,lp,audio,cdrom,cdrw,scanner,camera,video,games");
+        }
+    }
+
+    return lines.join("\n");
+}
+
+
+#include <iostream>
+
+void HorizonWizard::accept() {
+    std::cout << toHScript().toStdString() << std::endl;
 }
