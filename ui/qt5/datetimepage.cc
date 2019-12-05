@@ -16,11 +16,9 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
-#include <QSortFilterProxyModel>
 #include <QTimeZone>
 #include <QVBoxLayout>
 
-#include <iostream>
 #ifdef HAS_INSTALL_ENV
 #   include <sys/capability.h>
 #   include <time.h>
@@ -52,6 +50,8 @@ TimeZone::TimeZone(QByteArray iana) {
 
 TimeZoneModel::TimeZoneModel(QWidget *parent) : QAbstractListModel(parent) {
     for(auto &iana : QTimeZone::availableTimeZoneIds()) {
+        /* we don't support raw timezones because tzdata doesn't */
+        if(iana.startsWith("UTC") && iana.size() > 3) continue;
         TimeZone tzObj(iana);
         zones.push_back(tzObj);
     }
@@ -187,7 +187,7 @@ DateTimePage::DateTimePage(QWidget *parent) : HorizonWizardPage(parent) {
     timeZoneSearch->addAction(QIcon::fromTheme("edit-find"),
                               QLineEdit::LeadingPosition);
     timeZoneSearch->setPlaceholderText(tr("Search for a time zone"));
-    QSortFilterProxyModel *sortModel = new QSortFilterProxyModel(this);
+    sortModel = new QSortFilterProxyModel(this);
     sortModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     sortModel->setSourceModel(&zoneModel);
     connect(timeZoneSearch, &QLineEdit::textChanged, [=](const QString &text) {
@@ -222,7 +222,7 @@ DateTimePage::DateTimePage(QWidget *parent) : HorizonWizardPage(parent) {
 
 QString DateTimePage::selectedTimeZone() {
     QModelIndex curr = timeZoneList->selectionModel()->currentIndex();
-    return zoneModel.data(curr, Qt::ToolTipRole).toString();
+    return sortModel->data(curr, Qt::ToolTipRole).toString();
 }
 
 void DateTimePage::initializePage() {

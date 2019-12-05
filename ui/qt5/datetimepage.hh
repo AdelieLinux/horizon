@@ -18,6 +18,7 @@
 #include <QAbstractListModel>
 #include <QDateEdit>
 #include <QListView>
+#include <QSortFilterProxyModel>
 #include <QTimeEdit>
 #include <QTimer>
 #include <QVector>
@@ -56,6 +57,7 @@ public:
     void cleanupPage();
 
     TimeZoneModel zoneModel;
+    QSortFilterProxyModel *sortModel;
     QString selectedTimeZone();
 
 signals:
