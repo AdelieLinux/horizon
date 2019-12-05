@@ -23,7 +23,6 @@ public:
     AccountPage(QWidget *parent = nullptr);
 
     bool isComplete() const;
-private:
     std::array<UserAccountWidget *, 4> accountWidgets;
 };
 
