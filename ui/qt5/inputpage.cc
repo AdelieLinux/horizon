@@ -16,19 +16,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-/* XXX TODO: Share with hscript/meta.cc - perhaps make a common header? */
-#include <set>
-#include <string>
-const std::set<std::string> valid_keymaps = {
-    "us", "ad", "af", "ara", "al", "am", "at", "az", "by", "be", "bd", "in",
-    "ba", "br", "bg", "ma", "mm", "ca", "cd", "cn", "hr", "cz", "dk", "nl",
-    "bt", "ee", "ir", "iq", "fo", "fi", "fr", "gh", "gn", "ge", "de", "gr",
-    "hu", "is", "il", "it", "jp", "kg", "kh", "kz", "la", "latam", "lt", "lv",
-    "mao", "me", "mk", "mt", "mn", "no", "pl", "pt", "ro", "ru", "rs", "si",
-    "sk", "es", "se", "ch", "sy", "tj", "lk", "th", "tr", "ua", "gb", "uz",
-    "vn", "kr", "ie", "pk", "mv", "za", "epo", "np", "ng", "et", "sn", "brai",
-    "tm", "ml", "tz", "ke", "bw", "ph"
-};
+#include "util/keymaps.hh"
 
 #ifdef HAS_INSTALL_ENV
 #include <QProcess>
