@@ -105,14 +105,14 @@ public:
     bool network;
     /*! Determines whether to use DHCP. */
     bool net_dhcp;
-    /*! Determines the network interface to use. */
-    std::string chosen_auto_iface;
-    /*! Determines the packages to install. */
-    PackageType pkgtype;
-    /*! If pkgtype is Custom, a list of packages to install. */
-    QStringList packages;
     /*! Determines whether to install GRUB. */
     bool grub;
+    /*! Determines the packages to install. */
+    PackageType pkgtype;
+    /*! Determines the network interface to use. */
+    std::string chosen_auto_iface;
+    /*! If pkgtype is Custom, a list of packages to install. */
+    QStringList packages;
     /*! Determines the kernel to install. */
     std::string kernel;
 };

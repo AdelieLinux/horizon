@@ -25,11 +25,15 @@
 #ifdef HAS_INSTALL_ENV
 #   include <libudev.h>
 #   include <net/if.h>      /* ifreq */
+#   include "commitpage.hh"
 extern "C" {
 #   include <skalibs/tai.h> /* STAMP */
 }
 #   include <sys/ioctl.h>   /* ioctl */
 #   include <unistd.h>      /* close */
+#else
+#   include <QFileDialog>
+#   include "writeoutpage.hh"
 #endif  /* HAS_INSTALL_ENV */
 
 #include "intropage.hh"
@@ -201,6 +205,11 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setPage(Page_Boot, new BootPage);
     setPage(Page_Root, new RootPassphrasePage);
     setPage(Page_Accounts, new AccountPage);
+#ifndef HAS_INSTALL_ENV
+    setPage(Page_Write, new WriteoutPage);
+#else  /* HAS_INSTALL_ENV */
+    setPage(Page_Commit, new CommitPage);
+#endif  /* !HAS_INSTALL_ENV */
 
     QObject::connect(this, &QWizard::helpRequested, [=](void) {
         if(help_id_map.find(currentId()) == help_id_map.end()) {
@@ -402,5 +411,28 @@ QString HorizonWizard::toHScript() {
 #include <iostream>
 
 void HorizonWizard::accept() {
-    std::cout << toHScript().toStdString() << std::endl;
+    QFile file;
+#ifdef HAS_INSTALL_ENV
+    file.setFileName("/etc/horizon/installfile");
+#else  /* !HAS_INSTALL_ENV */
+    QFileDialog fileChooser(this);
+    fileChooser.setAcceptMode(QFileDialog::AcceptSave);
+    fileChooser.setNameFilter(tr("Installation Scripts (installfile)"));
+    fileChooser.setViewMode(QFileDialog::List);
+
+    if(fileChooser.exec()) {
+        file.setFileName(fileChooser.selectedFiles().at(0));
+    } else {
+        return;
+    }
+#endif  /* HAS_INSTALL_ENV */
+    if(!file.open(QFile::WriteOnly)) {
+        QMessageBox::critical(this, tr("Couldn't Save Script"),
+                              tr("An issue occurred while saving the installation script: %1").arg(file.errorString()));
+        return;
+    }
+    file.write(toHScript().toUtf8());
+    file.close();
+
+    done(QDialog::Accepted);
 }
