@@ -25,7 +25,11 @@ int scanResults(wpactrl_t *control, char const *s, size_t len, void *page, tain_
 #endif  /* HAS_INSTALL_ENV */
 
 NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
-    : HorizonWizardPage(parent), control(WPACTRL_ZERO) {
+    : HorizonWizardPage(parent)
+#ifdef HAS_INSTALL_ENV
+    , control(WPACTRL_ZERO)
+#endif  /* HAS_INSTALL_ENV */
+    {
     QVBoxLayout *layout;
 
     loadWatermark("network");
