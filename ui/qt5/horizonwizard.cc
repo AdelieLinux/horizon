@@ -345,6 +345,13 @@ QString HorizonWizard::toHScript() {
         break;
     }
 
+    if(this->grub) {
+        lines << "pkginstall grub";
+    }
+
+    lines << ("pkginstall " + QString::fromStdString(this->kernel) + " " +
+              QString::fromStdString(this->kernel) + "-modules");
+
     char *root = encrypt_pw(field("rootpw").toString().toStdString().c_str());
     Q_ASSERT(root != nullptr);
     lines << QString("rootpw ") + root;
