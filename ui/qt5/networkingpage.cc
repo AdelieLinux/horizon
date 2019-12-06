@@ -28,12 +28,18 @@ void NetworkingPage::initializePage() {
     QLabel *descLabel;
     QVBoxLayout *layout;
 
+    radioGroup = new QButtonGroup(this);
+
+#ifdef HAS_INSTALL_ENV
     if(horizonWizard()->interfaces.empty()) {
         descLabel = new QLabel(tr(
             "No supported network interfaces have been detected on your computer.\n\n"
             "You will not be able to connect to a network nor the Internet.\n\n"
             "If you have a network interface attached to your computer, it may not be supported by Adélie Linux.  Please contact our community at https://help.adelielinux.org/ for help."));
-    } else {
+    }
+    else
+#endif  /* HAS_INSTALL_ENV */
+    {
         descLabel = new QLabel(tr(
             "If your computer is directly connected to the Internet via Ethernet or Wi-Fi using a modem or router, choose Automatic.\n\n"
             "If you need to set a static IP address, or you use a VPN or proxy server, choose Manual.\n\n"
@@ -50,14 +56,11 @@ void NetworkingPage::initializePage() {
                                      "or via a modem/router."));
         advanced = new QRadioButton(tr("&Manual - my computer connects to an enterprise network,\n"
                                        "or I use a static IP address, VPN, or 802.1X security."));
-    }
-    skip = new QRadioButton(tr("&Skip - I don't want to connect to a network or the Internet."));
-
-    radioGroup = new QButtonGroup(this);
-    if(!horizonWizard()->interfaces.empty()) {
         radioGroup->addButton(simple);
         radioGroup->addButton(advanced);
     }
+    skip = new QRadioButton(tr("&Skip - I don't want to connect to a network or the Internet."));
+
     radioGroup->addButton(skip);
 
     QObject::connect(radioGroup, static_cast<void (QButtonGroup:: *)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
@@ -79,7 +82,11 @@ void NetworkingPage::initializePage() {
     layout = new QVBoxLayout;
     layout->addWidget(descLabel);
     layout->addSpacing(50);
-    if(!horizonWizard()->interfaces.empty()) {
+#ifdef HAS_INSTALL_ENV
+    /* The interface list will be empty if we're in a Runtime Environment. */
+    if(!horizonWizard()->interfaces.empty())
+#endif  /* HAS_INSTALL_ENV */
+    {
         layout->addWidget(simple);
         layout->addWidget(advanced);
     }
