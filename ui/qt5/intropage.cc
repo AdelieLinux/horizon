@@ -30,7 +30,7 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
     descLabel = new QLabel(
                 tr("<p>Thank you for choosing the reliable, secure, libre Adélie Linux operating environment.  "
                    "This process will take about 10-15 minutes.</p>"
-                   "<p>You will create a basic <code>installfile</code, which you can use to install Adélie Linux on a computer over the network or using custom installation media.</p>"
+                   "<p>Using this wizard, you will create a basic <code>installfile</code>, which you can use to install Adélie Linux on a computer over the network or using custom installation media.</p>"
                    "<p><strong>IMPORTANT:</strong> You may be allowed to specify an invalid or non-bootable disk layout or network configuration.  "
                    "For best results, run System Installation directly on the computer you wish to run Adélie Linux.</p>"
                    "<p>For more information about the installfile format and syntax, see the <a href=\"https://help.adelielinux.org/html/install/\">Adélie Linux Installation Handbook</a>.</p>"));
