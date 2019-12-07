@@ -8,6 +8,8 @@
         <file>resources/software-low.png</file>
         <file>resources/acct-high.png</file>
         <file>resources/acct-low.png</file>
+        <file>resources/finish-high.png</file>
+        <file>resources/finish-low.png</file>
         <file alias="resources/status-current-high.svg">../../assets/status-current-high.svg</file>
         <file alias="resources/status-current-low.svg">../../assets/status-current-low.svg</file>
         <file alias="resources/status-issue-high.svg">../../assets/status-issue-high.svg</file>

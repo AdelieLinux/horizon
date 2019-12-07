@@ -13,9 +13,9 @@
 #ifndef FINISHEDPAGE_HH
 #define FINISHEDPAGE_HH
 
-#include <QWizardPage>
+#include "../horizonwizardpage.hh"
 
-class FinishedPage : public QWizardPage {
+class FinishedPage : public HorizonWizardPage {
 public:
     FinishedPage(QWidget *parent = nullptr);
 };
