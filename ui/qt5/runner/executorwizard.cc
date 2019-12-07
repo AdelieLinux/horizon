@@ -15,6 +15,7 @@
 #include <QAbstractButton>
 
 #include "executepage.hh"
+#include "errorpage.hh"
 #include "finishedpage.hh"
 
 ExecutorWizard::ExecutorWizard(QWidget *parent) : QWizard(parent) {
@@ -23,6 +24,7 @@ ExecutorWizard::ExecutorWizard(QWidget *parent) : QWizard(parent) {
     setFixedSize(QSize(650, 450));
 
     setPage(Page_Execute, new ExecutePage);
+    setPage(Page_Error, new ErrorPage);
     setPage(Page_Finished, new FinishedPage);
 
     setOption(NoBackButtonOnStartPage);

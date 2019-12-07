@@ -12,6 +12,8 @@
 
 #include "executepage.hh"
 
+#include "executorwizard.hh"
+
 #include <QAbstractButton>
 #include <QGridLayout>
 #include <QProcess>
@@ -21,6 +23,7 @@
 ExecutePage::ExecutePage(QWidget *parent) : HorizonWizardPage(parent) {
     setTitle(tr("Installing Adélie Linux…"));
     loadWatermark("intro");
+    failed = false;
 
     QLabel *descLabel = new QLabel(tr("Please wait while System Installation performs the following tasks:"));
     descLabel->setWordWrap(true);
@@ -156,6 +159,7 @@ void ExecutePage::markFailed(Phase phase) {
     labelsForPhase(phase, &icon, &text);
     icon->setPixmap(loadDPIAwarePixmap("status-issue", ".svg"));
     text->setFont(boldFont);
+    failed = true;
 }
 
 void ExecutePage::executorReady() {
@@ -195,4 +199,11 @@ void ExecutePage::executorFinished(int code, QProcess::ExitStatus status) {
 
     wizard()->button(QWizard::CancelButton)->setEnabled(false);
     finishTimer->start();
+}
+
+int ExecutePage::nextId() const {
+    if(failed) {
+        return ExecutorWizard::Page_Error;
+    }
+    return ExecutorWizard::Page_Finished;
 }

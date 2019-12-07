@@ -1,5 +1,5 @@
 /*
- * executepage.cc - Implementation of the UI.Perform page
+ * executepage.hh - Defintion of the UI.Perform page
  * horizon-run-qt5, the Qt 5 executor user interface for
  * Project Horizon
  *
@@ -33,6 +33,9 @@ public:
     };
 
     ExecutePage(QWidget *parent = nullptr);
+    int nextId() const;
+    Phase currentPhase() { return this->current; }
+
 private:
     QLabel *prepareStatus;
     QLabel *prepare;
@@ -55,6 +58,7 @@ private:
     QFile log;
 
     Phase current;
+    bool failed;
 
     Phase stepToPhase(QString step);
     void labelsForPhase(Phase phase, QLabel **icon, QLabel **text);

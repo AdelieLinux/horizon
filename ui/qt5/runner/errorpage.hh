@@ -1,5 +1,5 @@
 /*
- * executorwizard.hh - Definition of the wizard class
+ * errorpage.hh - Definition of the UI.Perform.Error page
  * horizon-run-qt5, the Qt 5 executor user interface for
  * Project Horizon
  *
@@ -10,21 +10,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-#ifndef EXECUTORWIZARD_HH
-#define EXECUTORWIZARD_HH
+#ifndef ERRORPAGE_HH
+#define ERRORPAGE_HH
 
-#include <QWizard>
+#include "../horizonwizardpage.hh"
+#include <QLabel>
 
-class ExecutorWizard : public QWizard {
+class ErrorPage : public HorizonWizardPage {
 public:
-    enum {
-        Page_Execute,
-        Page_Error,
-        Page_Finished
-    };
-
-    ExecutorWizard(QWidget *parent = nullptr);
-    void reject();
+    ErrorPage(QWidget *parent = nullptr);
+    void initializePage();
+private:
+    QLabel *descLabel;
 };
 
-#endif  /* !EXECUTORWIZARD_HH */
+#endif  /* !ERRORPAGE_HH */

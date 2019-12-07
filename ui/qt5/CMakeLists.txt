@@ -27,10 +27,12 @@ set(UI_SOURCES
     horizon.qrc)
 
 set(RUN_QT_SOURCES
+    horizonhelpwindow.cc
     horizonwizardpage.cc
     runner/main.cc
     runner/executorwizard.cc
     runner/executepage.cc
+    runner/errorpage.cc
     runner/finishedpage.cc
 
     horizon.qrc)
