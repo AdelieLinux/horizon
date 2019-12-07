@@ -305,6 +305,7 @@ bool UserPassphrase::execute(ScriptOptions opts) const {
     if(opts.test(Simulate)) {
         std::cout << "usermod -p '" << _passphrase << "' " << _username
                   << std::endl;
+        return true;
     }
 
 #ifdef HAS_INSTALL_ENV
