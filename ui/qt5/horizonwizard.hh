@@ -82,6 +82,16 @@ public:
         Custom
     };
 
+    enum BinShProvider {
+        Dash,
+        Bash
+    };
+
+    enum InitSystem {
+        S6,
+        SysVInit
+    };
+
     HorizonWizard(QWidget *parent = nullptr);
     void accept();
     /*! Emit a HorizonScript file with the user's choices. */
@@ -107,8 +117,14 @@ public:
     bool net_dhcp;
     /*! Determines whether to install GRUB. */
     bool grub;
+    /*! Determines whether to install eudev. */
+    bool eudev;
     /*! Determines the packages to install. */
     PackageType pkgtype;
+    /*! Determines the /bin/sh provider. */
+    BinShProvider binsh;
+    /*! Determines the /sbin/init provider. */
+    InitSystem sbininit;
     /*! Determines the network interface to use. */
     std::string chosen_auto_iface;
     /*! If pkgtype is Custom, a list of packages to install. */

@@ -48,6 +48,7 @@ extern "C" {
 #include "datetimepage.hh"
 #include "hostnamepage.hh"
 #include "pkgsimple.hh"
+#include "pkgdefaults.hh"
 #include "bootpage.hh"
 #include "rootpwpage.hh"
 #include "accountpage.hh"
@@ -180,7 +181,11 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
      * Determine which platform kernel is being used, if any (-power8 etc)
      * Determine hardware requirements (easy or mainline)
      */
+    grub = true;
     kernel = "easy-kernel";
+    binsh = Dash;
+    sbininit = S6;
+    eudev = true;
 
     /* REQ: UI.Global.Back.Save */
     setOption(IndependentPages);
@@ -202,6 +207,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setPage(Page_DateTime, new DateTimePage);
     setPage(Page_Hostname, new HostnamePage);
     setPage(Page_PkgSimple, new PkgSimplePage);
+    setPage(Page_PkgCustomDefault, new PkgDefaultsPage);
     setPage(Page_Boot, new BootPage);
     setPage(Page_Root, new RootPassphrasePage);
     setPage(Page_Accounts, new AccountPage);
@@ -357,6 +363,32 @@ QString HorizonWizard::toHScript() {
     if(this->grub) {
         lines << "pkginstall grub";
     }
+
+    switch(this->binsh) {
+    case Dash:
+        lines << "pkginstall dash-binsh";
+        break;
+    case Bash:
+        lines << "pkginstall bash-binsh";
+        break;
+    }
+
+    switch(this->sbininit) {
+    case S6:
+        lines << "pkginstall s6-linux-init";
+        break;
+    case SysVInit:
+        lines << "pkginstall sysvinit";
+        break;
+    }
+
+    if(this->eudev) {
+        lines << "pkginstall eudev";
+    } else {
+        lines << "pkginstall mdevd";
+    }
+
+    lines << "pkginstall sysklogd";
 
     lines << ("pkginstall " + QString::fromStdString(this->kernel) + " " +
               QString::fromStdString(this->kernel) + "-modules");
