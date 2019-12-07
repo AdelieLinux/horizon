@@ -16,7 +16,9 @@
 #include <QWizardPage>
 #include <string>
 
+#ifndef IN_RUNNER
 #include "horizonwizard.hh"
+#endif  /* !IN_RUNNER */
 
 class HorizonWizardPage : public QWizardPage {
 public:
@@ -24,7 +26,9 @@ public:
 
     QPixmap loadDPIAwarePixmap(std::string pixmap, std::string type = ".png");
     void loadWatermark(std::string page);
+#ifndef IN_RUNNER
     HorizonWizard *horizonWizard() const;
+#endif  /* !IN_RUNNER */
 };
 
 #endif  /* !HORIZONWIZARDPAGE_HH */

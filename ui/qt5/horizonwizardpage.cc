@@ -49,6 +49,8 @@ void HorizonWizardPage::loadWatermark(string page) {
     setPixmap(QWizard::WatermarkPixmap, pixmap);
 }
 
+#ifndef IN_RUNNER
 HorizonWizard *HorizonWizardPage::horizonWizard() const {
     return dynamic_cast<HorizonWizard *>(this->wizard());
 }
+#endif  /* !IN_RUNNER */

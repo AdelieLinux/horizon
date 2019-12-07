@@ -26,6 +26,15 @@ set(UI_SOURCES
 
     horizon.qrc)
 
+set(RUN_QT_SOURCES
+    horizonwizardpage.cc
+    runner/main.cc
+    runner/executorwizard.cc
+    runner/executepage.cc
+    runner/finishedpage.cc
+
+    horizon.qrc)
+
 IF(INSTALL)
     LIST(APPEND UI_SOURCES commitpage.cc)
 ELSE(INSTALL)
@@ -51,5 +60,7 @@ IF(INSTALL)
     pkg_check_modules(LIBX11 REQUIRED x11)
     pkg_check_modules(LibCap REQUIRED libcap)
     target_link_libraries(horizon-qt5 ${BCNM} ${SKARNET} ${LIBUDEV_LIBRARIES} ${LibCap_LIBRARIES} ${LIBX11_LIBRARIES} ${XKBFile_LIBRARIES})
-    # add_executable(horizon-run-qt5 ${RUN_QT_SOURCES})
+    add_executable(horizon-run-qt5 ${RUN_QT_SOURCES})
+    target_link_libraries(horizon-run-qt5 Qt5::Widgets)
+    target_compile_definitions(horizon-run-qt5 PRIVATE IN_RUNNER)
 ENDIF(INSTALL)
