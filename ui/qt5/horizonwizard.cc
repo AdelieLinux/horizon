@@ -429,10 +429,10 @@ QString HorizonWizard::toHScript() {
         delete[] userpw;
         if(acctWidget->isAdmin()) {
             lines << ("usergroups " + acctWidget->accountText() + " " +
-                      "users,lp,audio,cdrom,cdrw,scanner,camera,video,games,usb,kvm,wheel");
+                      "users,lp,audio,cdrom,cdrw,video,games,usb,kvm,wheel");
         } else {
             lines << ("usergroups " + acctWidget->accountText() + " " +
-                      "users,lp,audio,cdrom,cdrw,scanner,camera,video,games");
+                      "users,lp,audio,cdrom,cdrw,video,games");
         }
     }
 
