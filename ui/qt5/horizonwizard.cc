@@ -324,6 +324,7 @@ QString HorizonWizard::toHScript() {
 
     if(this->network) {
         lines << "network true";
+        lines << "pkginstall iproute2";
 
         if(this->net_dhcp) {
             lines << QString::fromStdString("netaddress " +
