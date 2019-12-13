@@ -238,25 +238,6 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
         help.exec();
     });
 
-    /* REQ: UI.Global.Cancel.Confirm */
-    button(CancelButton)->disconnect(this);
-    QObject::connect(button(CancelButton), &QAbstractButton::clicked,
-                     [=](bool) {
-        QMessageBox cancel(QMessageBox::Question,
-                           tr("Exit Adélie Linux System Installation"),
-                   #ifdef HAS_INSTALL_ENV
-                           tr("Adélie Linux has not yet been set up on your computer.  Exiting will reboot your computer.  Do you wish to exit?"),
-                   #else
-                           tr("You have not yet completed the System Installation wizard.  No installfile will be generated.  Do you wish to exit?"),
-                   #endif
-                           QMessageBox::Yes | QMessageBox::No,
-                           this);
-        cancel.setDefaultButton(QMessageBox::No);
-        if(cancel.exec() == QMessageBox::Yes) {
-            reject();
-        }
-    });
-
     /* REQ: Iface.UI.ButtonAccel */
     setButtonText(HelpButton, tr("&Help (F1)"));
     setButtonText(CancelButton, tr("E&xit (F3)"));
@@ -273,9 +254,6 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
             button(HelpButton), &QAbstractButton::click);
     f1->setWhatsThis(tr("Activates the Help screen."));
 
-    esc = new QShortcut(Qt::Key_Escape, this);
-    connect(esc, &QShortcut::activated,
-            button(CancelButton), &QAbstractButton::click);
     f3 = new QShortcut(Qt::Key_F3, this);
     connect(f3, &QShortcut::activated,
             button(CancelButton), &QAbstractButton::click);
@@ -468,4 +446,24 @@ void HorizonWizard::accept() {
     file.close();
 
     done(QDialog::Accepted);
+}
+
+void HorizonWizard::reject() {
+    /* REQ: UI.Global.Cancel.Confirm */
+    QMessageBox cancel(QMessageBox::Question,
+                       tr("Exit Adélie Linux System Installation"),
+               #ifdef HAS_INSTALL_ENV
+                       tr("Adélie Linux has not yet been set up on your computer.  Exiting will reboot your computer.  Do you wish to exit?"),
+               #else
+                       tr("You have not yet completed the System Installation wizard.  No installfile will be generated.  Do you wish to exit?"),
+               #endif
+                       QMessageBox::Yes | QMessageBox::No,
+                       this);
+    cancel.setDefaultButton(QMessageBox::No);
+
+    if(cancel.exec() == QMessageBox::Yes) {
+        done(QDialog::Rejected);
+    } else {
+        return;
+    }
 }
