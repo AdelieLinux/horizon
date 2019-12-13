@@ -11,6 +11,7 @@
  */
 
 #include "pkgsimple.hh"
+#include "pkgdefaults.hh"
 
 #include <QButtonGroup>
 #include <QGridLayout>
@@ -103,4 +104,27 @@ int PkgSimplePage::nextId() const {
         return HorizonWizard::Page_PkgCustom;
 
     return HorizonWizard::Page_Boot;
+}
+
+bool PkgSimplePage::validatePage() {
+    /* This code handles the following scenario:
+     *
+     * - 'Custom' is selected
+     * - A non-default option is selected on the Defaults page (i.e., mdevd)
+     * - Back is chosen
+     * - A non-custom package selection choice is selected
+     *
+     * We need to completely 'reset' the state of the Defaults, including
+     * the selections on the Defaults page, whenever Next is chosen.
+     */
+    if(horizonWizard()->pkgtype == HorizonWizard::Custom) {
+        horizonWizard()->removePage(HorizonWizard::Page_PkgCustomDefault);
+        horizonWizard()->setPage(HorizonWizard::Page_PkgCustomDefault, new PkgDefaultsPage);
+    } else {
+        horizonWizard()->sbininit = HorizonWizard::S6;
+        horizonWizard()->binsh = HorizonWizard::Dash;
+        horizonWizard()->eudev = true;
+    }
+
+    return true;
 }

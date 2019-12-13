@@ -22,6 +22,7 @@ public:
     PkgSimplePage(QWidget *parent = nullptr);
     void initializePage();
     int nextId() const;
+    bool validatePage();
 private:
     QRadioButton *standardButton;
 };

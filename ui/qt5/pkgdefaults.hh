@@ -14,10 +14,17 @@
 #define PKGDEFAULTS_HH
 
 #include "horizonwizardpage.hh"
+#include <QRadioButton>
 
 class PkgDefaultsPage : public HorizonWizardPage {
 public:
     PkgDefaultsPage(QWidget *parent = nullptr);
+
+    void initializePage();
+private:
+    QRadioButton *dashShell, *bashShell,
+                 *s6Init, *sysvInit,
+                 *eudev, *mdevd;
 };
 
 #endif  /* !PKGDEFAULTS_HH */

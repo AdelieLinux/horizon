@@ -37,15 +37,13 @@ PkgDefaultsPage::PkgDefaultsPage(QWidget *parent) : HorizonWizardPage(parent) {
     QButtonGroup *shellGroup = new QButtonGroup;
     QLabel *shellLabel = new QLabel(tr("Shell to use for /bin/sh:"));
 
-    QRadioButton *dashShell = new QRadioButton("Dash");
-    dashShell->setChecked(true);
+    dashShell = new QRadioButton("Dash");
     dashShell->setWhatsThis(tr("Use the lightweight Dash shell.  "
         "This is an Almquist-style shell, also used as /bin/sh on Debian-derived distributions.  "
         "Choose this option for faster boot times and full POSIX compatibility."));
     shellGroup->addButton(dashShell, HorizonWizard::Dash);
 
-    QRadioButton *bashShell = new QRadioButton("Bash");
-    bashShell->setChecked(false);
+    bashShell = new QRadioButton("Bash");
     bashShell->setWhatsThis(tr("Use the Bash shell.  "
         "This shell is popular on GNU systems.  "
         "Choose this option for compatibility with non-portable scripts.  "
@@ -70,13 +68,11 @@ PkgDefaultsPage::PkgDefaultsPage(QWidget *parent) : HorizonWizardPage(parent) {
     QButtonGroup *initGroup = new QButtonGroup;
     QLabel *initLabel = new QLabel(tr("Init system (/sbin/init):"));
 
-    QRadioButton *s6Init = new QRadioButton("s6-linux-init");
-    s6Init->setChecked(true);
+    s6Init = new QRadioButton("s6-linux-init");
     s6Init->setWhatsThis(tr("Use the lightweight, customisable s6-linux-init init system."));
     initGroup->addButton(s6Init, HorizonWizard::S6);
 
-    QRadioButton *sysvInit = new QRadioButton("SysV Init");
-    sysvInit->setChecked(false);
+    sysvInit = new QRadioButton("SysV Init");
     sysvInit->setWhatsThis(tr("Use the traditional sysvinit init system."));
     initGroup->addButton(sysvInit, HorizonWizard::SysVInit);
 
@@ -98,14 +94,12 @@ PkgDefaultsPage::PkgDefaultsPage(QWidget *parent) : HorizonWizardPage(parent) {
     QButtonGroup *udevGroup = new QButtonGroup;
     QLabel *udevLabel = new QLabel(tr("uevent management daemon:"));
 
-    QRadioButton *eudev = new QRadioButton("eudev");
-    eudev->setChecked(true);
+    eudev = new QRadioButton("eudev");
     eudev->setWhatsThis(tr("Use the traditional, UDev-compatible eudev system.  "
         "It is highly recommended that you use eudev unless you know it is inappropriate for your use case."));
     udevGroup->addButton(eudev, true);
 
-    QRadioButton *mdevd = new QRadioButton("mdevd");
-    mdevd->setChecked(false);
+    mdevd = new QRadioButton("mdevd");
     mdevd->setWhatsThis(tr("Use the minimalist, lightweight mdevd system.  "
         "This is the skarnet fork of mdevd.  "
         "Choosing this option on a desktop system will require manual intervention."));
@@ -125,4 +119,36 @@ PkgDefaultsPage::PkgDefaultsPage(QWidget *parent) : HorizonWizardPage(parent) {
     mainLayout->addStretch();
 
     setLayout(mainLayout);
+}
+
+void PkgDefaultsPage::initializePage() {
+    switch(horizonWizard()->binsh) {
+    case HorizonWizard::Dash:
+        dashShell->setChecked(true);
+        bashShell->setChecked(false);
+        break;
+    case HorizonWizard::Bash:
+        dashShell->setChecked(false);
+        bashShell->setChecked(true);
+        break;
+    }
+
+    switch(horizonWizard()->sbininit) {
+    case HorizonWizard::S6:
+        s6Init->setChecked(true);
+        sysvInit->setChecked(false);
+        break;
+    case HorizonWizard::SysVInit:
+        s6Init->setChecked(false);
+        sysvInit->setChecked(true);
+        break;
+    }
+
+    if(horizonWizard()->eudev) {
+        eudev->setChecked(true);
+        mdevd->setChecked(false);
+    } else {
+        eudev->setChecked(false);
+        mdevd->setChecked(true);
+    }
 }
