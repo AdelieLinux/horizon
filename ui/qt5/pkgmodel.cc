@@ -251,12 +251,12 @@ void PkgItemModel::loadPackages() {
 
     QByteArray raw_pkgs = myList.readAll();
     QList<QByteArray> pkgs = raw_pkgs.split('\n');
-    int indent, lastIndent = 0;
+    int lastIndent = 0;
     PkgItem *temp = new PkgItem(_root, "Placeholder", "Placeholder", "Used for loading only");
     PkgItem *last = temp;
 
     for(auto &pkg : pkgs) {
-        indent = 0;
+        int indent = 0;
 
         if(pkg.isEmpty()) continue;
 
