@@ -105,6 +105,7 @@ ExecutePage::Phase ExecutePage::stepToPhase(QString step) {
     if(step == "pkgdb") return Pkg;
     if(step == "post-metadata") return PostMeta;
     Q_ASSERT(false);
+    return Prepare;
 }
 
 void ExecutePage::labelsForPhase(Phase phase, QLabel **icon, QLabel **text) {
