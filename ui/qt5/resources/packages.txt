@@ -1,0 +1,62 @@
+Desktop Environments		X11-based desktop environments.	preferences-theme
+ KDE Plasma 5	plasma-desktop	The KDE Plasma desktop environment.	kde-frameworks
+ LXQt	lxqt-desktop	Lightweight desktop environment using the Openbox window manager and Qt widgets.	qt
+ MATE	mate-complete	The MATE desktop environment, featuring a classic desktop experience with Gtk+ 2.	mate-logo
+ XFCE	xfce-desktop	The XFCE desktop environment.	xfce4-logo
+Documentation	doc	Install documentation for the software you select.	application-x-fictionbook
+Games		Video games for your Adélie Linux computer.	applications-games
+ Mednafen	mednaffe	An emulator for playing games from many types of 8-bit and 16-bit home consoles.
+ OpenTTD	openttd	Transportation simulation game.
+ TORCS	torcs	The Open Racing Car Simulator, a racing simulation.
+ Trigger	trigger-rally	A rally racing game.	applications-games
+ X-Moto	xmoto	A motorcross game
+Internet Software		Software to explore the Internet.	applications-internet
+ Firefox Web browser	firefox-esr	Popular, powerful Web browser.  Includes JavaScript and multimedia (audio/video) playback support.
+ Netsurf Web browser	netsurf	Lightweight Web browser.  Does not include JavaScript support.
+ Otter Browser	otter-browser	WebKit-based Web browser with JavaScript support.
+ Thunderbird Email	thunderbird	Read and compose email, and participate in newsgroups.
+KDE Applications	kde	A variety of cohesive applications including a word processor, media player, and many games.	kde-logo
+ Default Theme	adelie-kde-theme	The Adélie KDE theme, including wallpapers and colour themes.	kcontrol
+ Educational Software	kde-education	Computer-assisted learning software.	applications-education-mathematics
+ Games	kde-games	A variety of arcade games, card games, strategy games, and more.	applications-games
+ Graphics	kde-graphics	Photo viewing and editing software, including digital cameras and photo albums.	applications-graphics
+ Multimedia	kde-multimedia	Audio/video playback, recording, and editing.	applications-multimedia
+ System Utilities	kde-system	Utilities for managing and maintaining your computer.	applications-system
+ User Manager	user-manager	The KDE user account manager, for creating and modifying user accounts.	preferences-system-users
+ Utilities	kde-utilities	Miscellaneous accessories.	applications-utilities
+Multimedia Software		Software to play audio and video.	applications-multimedia
+ MPV	mpv	Command-line based multimedia player.
+ VLC Media Player	vlc	Multimedia player with support for a wide variety of audio and video types.
+Office and Productivity Software		Software to take care of business.	applications-office
+ AbiWord	abiword	Lightweight word processor.
+ Calligra	calligra	KDE office suite featuring a word processor, spreadsheet, project planning, and presentation software.	calligrawords
+ FeatherPad	featherpad	Lightweight text editor.	kwrite
+ Gnumeric	gnumeric	Lightweight spreadsheet.
+ LibreOffice	libreoffice	Extensible office suite featuring a word processor, spreadsheet, database, and presentation software.
+Programming Environments		Interpreters, language tools, and development environments.	applications-interfacedesign
+ Development Tools	build-tools	Tools used to create, build, and test software.	applications-development
+ Ada	gcc-gnat	The Ada programming language.	applications-interfacedesign
+ COBOL	gnucobol	The COBOL programming language.	applications-interfacedesign
+ Go	gcc-go	The Go programming language.	text-x-go
+ Java	openjdk8-jdk	The Java 8 programming environment.	java
+ Node.js	node	The Node JavaScript programming environment.	javascript
+ Perl	perl	The Perl programming language.	text-x-perl
+ PHP 7	php7	The PHP 7 programming language.	application-x-php
+ Python	python3	The Python programming language. (3.6)	python
+ Ruby	ruby	The Ruby programming language.	text-x-ruby
+ Rust	rust	The Rust programming language.	text-x-rust
+Server Software		Software for sharing computer resources with others over a network.	network-server
+ Apache Web server	apache-httpd	The world's most popular Web server.	yast-network_services
+ MariaDB	mariadb	A popular relational database server.	network-server
+ NFS Server	nfs-utils	Unix file sharing system.	yast-samba-server
+ OpenSSH	openssh	Remote shell and file transferring system.	text-x-script
+ PostgreSQL	postgresql	Reliable, professional relational database server.	openoffice4-base
+ Postfix	postfix	Server for transmitting email.	internet-mail
+ Qmail		netqmail	Server for transmitting email.	internet-mail
+Window Managers		Individual window managers that are not part of a desktop environment.	window_list
+ Awesome	awesome	The Awesome window manager.	window_list
+ Fluxbox	fluxbox	The Fluxbox window manager.	window_list
+ i3	i3wm	The i3 window manager.	window_list
+ iceWM	icewm	The iceWM window manager.	ice
+ Openbox	openbox	The Openbox window manager.	openbox
+ spectrwm	spectrwm	The spectrwm window manager.	window_list

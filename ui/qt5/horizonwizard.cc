@@ -48,6 +48,7 @@ extern "C" {
 #include "datetimepage.hh"
 #include "hostnamepage.hh"
 #include "pkgsimple.hh"
+#include "pkgcustom.hh"
 #include "pkgdefaults.hh"
 #include "bootpage.hh"
 #include "rootpwpage.hh"
@@ -207,6 +208,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setPage(Page_DateTime, new DateTimePage);
     setPage(Page_Hostname, new HostnamePage);
     setPage(Page_PkgSimple, new PkgSimplePage);
+    setPage(Page_PkgCustom, new PkgCustomPage);
     setPage(Page_PkgCustomDefault, new PkgDefaultsPage);
     setPage(Page_Boot, new BootPage);
     setPage(Page_Root, new RootPassphrasePage);

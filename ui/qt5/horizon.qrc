@@ -33,5 +33,6 @@
     </qresource>
     <qresource prefix="/">
         <file alias="horizon-256.png">../../assets/horizon-256.png</file>
+	<file alias="packages.txt">resources/packages.txt</file>
     </qresource>
 </RCC>

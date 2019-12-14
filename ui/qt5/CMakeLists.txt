@@ -19,6 +19,8 @@ set(UI_SOURCES
     datetimepage.cc
     hostnamepage.cc
     pkgsimple.cc
+    pkgmodel.cc
+    pkgcustom.cc
     pkgdefaults.cc
     bootpage.cc
     rootpwpage.cc
