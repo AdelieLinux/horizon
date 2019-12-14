@@ -416,6 +416,10 @@ QString HorizonWizard::toHScript() {
             lines << ("usergroups " + acctWidget->accountText() + " " +
                       "users,lp,audio,cdrom,cdrw,video,games");
         }
+        if(!acctWidget->avatarPath().isEmpty()) {
+            lines << ("usericon " + acctWidget->accountText() + " " +
+                      acctWidget->avatarPath());
+        }
     }
 
     return lines.join("\n");

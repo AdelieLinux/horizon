@@ -28,6 +28,8 @@ public:
     QString accountText(void) const;
     /*! Sets the current text in the Account Name text entry. */
     void setAccountText(QString);
+    /*! Returns the current avatar location (or an empty string). */
+    QString avatarPath(void) const;
     /*! Returns the current text in the passphrase entry. */
     QString passphraseText(void) const;
     /*! Returns the current text in the Personal Name text entry. */
@@ -50,6 +52,7 @@ private:
     QLineEdit *passphrase;
     QPushButton *aviButton;
     QCheckBox *adminTick;
+    QString aviPath;
     /*! When set, auto-update of accountName from personalName is prevented. */
     bool acctEverTouched;
 };

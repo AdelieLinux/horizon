@@ -27,10 +27,12 @@ public:
     void reject() override;
 };
 
-WaitDialog::WaitDialog(QWidget *parent) : QDialog(parent) {
+WaitDialog::WaitDialog(QWidget *parent) : QDialog(parent,
+                                                  Qt::FramelessWindowHint) {
    setWindowTitle(tr("Loading..."));
    QVBoxLayout *layout = new QVBoxLayout;
-   QLabel *descLabel = new QLabel(tr("System Installation is loading.\n\nPlease wait a moment."));
+   QLabel *descLabel = new QLabel(tr("System Installation is loading.\n\n"
+                                     "Please wait a moment."));
    descLabel->setAlignment(Qt::AlignCenter);
    layout->addWidget(descLabel);
    setLayout(layout);

@@ -12,6 +12,7 @@
 
 #include "useraccountwidget.hh"
 
+#include "avatardialog.hh"
 #include <QAction>
 #include <QHBoxLayout>
 #include <QMenu>
@@ -78,6 +79,14 @@ UserAccountWidget::UserAccountWidget(QWidget *parent)
     aviButton->setIconSize(QSize(32, 32));
     aviButton->setToolTip(tr("Change this user's avatar"));
     aviButton->setWhatsThis(tr("Allows you to choose the user's avatar, which will be shown on the log in screen."));
+    connect(aviButton, &QPushButton::clicked, [=]{
+        AvatarDialog *d = new AvatarDialog;
+        if(d->exec() == QDialog::Accepted) {
+            aviPath = d->avatar();
+            aviButton->setIcon(QPixmap(aviPath));
+        }
+        d->deleteLater();
+    });
     overallLayout->addWidget(aviButton);
     overallLayout->addLayout(detailLayout);
 
@@ -125,6 +134,10 @@ QString UserAccountWidget::accountText(void) const {
 void UserAccountWidget::setAccountText(QString account) {
     accountName->setText(account);
     accountName->textEdited(account);
+}
+
+QString UserAccountWidget::avatarPath() const {
+    return aviPath;
 }
 
 QString UserAccountWidget::passphraseText(void) const {

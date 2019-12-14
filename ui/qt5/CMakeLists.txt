@@ -8,6 +8,7 @@ set(UI_SOURCES
     main.cc
     ${CMAKE_SOURCE_DIR}/3rdparty/Section.cpp
     useraccountwidget.cc
+    avatardialog.cc
     crypt_sha512.c
 
     intropage.cc
