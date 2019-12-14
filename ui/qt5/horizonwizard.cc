@@ -337,6 +337,7 @@ QString HorizonWizard::toHScript() {
         lines << "pkginstall adelie-base links tmux";
         break;
     case Custom:
+        lines << "pkginstall adelie-base-posix";
         lines << ("pkginstall " + packages.join(" "));
         break;
     }

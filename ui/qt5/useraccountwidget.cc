@@ -101,7 +101,7 @@ UserAccountWidget::UserAccountWidget(QWidget *parent)
                 .normalized(QString::NormalizationForm_KC)
                 /* Casefold */
                 .toLower();
-        QStringList components = result.split(" ");
+        QStringList components = result.split(" ", QString::SkipEmptyParts);
         if(components.size() > 1) {
             result = "";
             for(int next = 0; next < components.size() - 1; next++) {
@@ -109,6 +109,8 @@ UserAccountWidget::UserAccountWidget(QWidget *parent)
             }
             result += components.at(components.size() - 1);
         }
+        /* if SkipEmptyParts causes components to be 1, but still has space */
+        result.replace(" ", "");
         accountName->setText(result.left(32));
         emit validityChanged();
     });
