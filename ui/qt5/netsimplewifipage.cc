@@ -55,6 +55,7 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     wpactrl_filter_add(&control, "CTRL-EVENT-CONNECTED");
     notify = nullptr;
     connNotify = nullptr;
+    dialog = nullptr;
 #endif  /* HAS_INSTALL_ENV */
 
     passphrase = new QLineEdit(this);
