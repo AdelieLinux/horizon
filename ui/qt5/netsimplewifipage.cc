@@ -18,7 +18,9 @@
 #include <QVBoxLayout>
 
 #ifdef HAS_INSTALL_ENV
+#   include <QApplication>
 #   include <QMessageBox>
+#   include <QProgressBar>
 int scanResults(wpactrl_t *control, char const *s, size_t len, void *page, tain_t *) {
     NetworkSimpleWirelessPage *our_page = reinterpret_cast<NetworkSimpleWirelessPage *>(page);
     return our_page->processScan(control, s, len);
@@ -48,7 +50,11 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
 #ifdef HAS_INSTALL_ENV
     exchange_item.filter = "CTRL-EVENT-SCAN-RESULTS";
     exchange_item.cb = &scanResults;
+    wpactrl_filter_add(&control, "CTRL-EVENT-ASSOC-REJECT");
+    wpactrl_filter_add(&control, "CTRL-EVENT-AUTH-REJECT");
+    wpactrl_filter_add(&control, "CTRL-EVENT-CONNECTED");
     notify = nullptr;
+    connNotify = nullptr;
 #endif  /* HAS_INSTALL_ENV */
 
     passphrase = new QLineEdit(this);
@@ -306,24 +312,69 @@ bool NetworkSimpleWirelessPage::validatePage() {
         return false;
     }
 
-    const char *ssid, *pass;
+    if(dialog != nullptr) dialog->deleteLater();
+    dialog = new QProgressDialog(this);
+    dialog->setCancelButton(nullptr);
+
+    QProgressBar *bar = new QProgressBar;
+    bar->setRange(0, 0);
+    bar->setFixedSize(QSize(150, 24));
+    dialog->setBar(bar);
+    dialog->setLabelText(tr("Connecting..."));
+    dialog->setMinimumDuration(1);
+
+    dialog->show();
+    QApplication::processEvents(QEventLoop::AllEvents, 1000);
+
+    if(connNotify != nullptr) {
+        connNotify->setEnabled(false);
+        connNotify->deleteLater();
+        connNotify = nullptr;
+    }
+
+    connNotify = new QSocketNotifier(wpactrl_fd(&control), QSocketNotifier::Read, this);
+    connect(connNotify, &QSocketNotifier::activated, [=](int) {
+        QString status;
+
+        if(wpactrl_update(&control) < 0) {
+            dialog->setLabelText(tr("Issue communicating with wireless subsystem."));
+        } else {
+            char *msg = wpactrl_msg(&control);
+            if(msg == nullptr) {
+                return;
+            }
+            wpactrl_ackmsg(&control);
+            qDebug() << msg;
+        }
+        connNotify->setEnabled(false);
+        connNotify->deleteLater();
+        connNotify = nullptr;
+        return;
+    });
+
+    char *ssid, *pass;
 
     if(passphrase->isHidden()) {
         pass = nullptr;
     } else {
         std::string password = ("\"" + passphrase->text().toStdString() + "\"");
-        pass = password.c_str();
+        pass = strdup(password.c_str());
     }
     std::string network = ("\"" + items[0]->text().toStdString() + "\"");
-    ssid = network.c_str();
+    ssid = strdup(network.c_str());
 
     tain_now_g();
     if(wpactrl_associate_g(&control, ssid, pass) == 0) {
+        dialog->hide();
         QMessageBox::critical(this, tr("Could Not Connect"),
                               tr("An issue occurred connecting to the specified wireless network.  "
                                  "Ensure your passphrase is correct and try again."));
-        return false;
     }
+
+    dialog->setLabelText(tr("Associating..."));
+    free(ssid);
+    free(pass);
+    return false;
 #endif  /* HAS_INSTALL_ENV */
 
     /* What a hack!
