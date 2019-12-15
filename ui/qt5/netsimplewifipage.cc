@@ -301,14 +301,19 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
 
 bool NetworkSimpleWirelessPage::validatePage() {
 #ifdef HAS_INSTALL_ENV
+    QList<QListWidgetItem *> items = ssidListView->selectedItems();
+    if(items.size() == 0) {
+        return false;
+    }
+
     const char *ssid, *pass;
 
     if(passphrase->isHidden()) {
         pass = nullptr;
     } else {
-        pass = passphrase->text().toStdString().c_str();
+        pass = ("\"" + passphrase->text().toStdString() + "\"").c_str();
     }
-    ssid = ssidListView->selectedItems()[0]->text().toStdString().c_str();
+    ssid = ("\"" + items[0]->text().toStdString() + "\"").c_str();
 
     tain_now_g();
     if(wpactrl_associate_g(&control, ssid, pass) == 0) {
