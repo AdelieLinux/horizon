@@ -302,12 +302,19 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
 bool NetworkSimpleWirelessPage::validatePage() {
 #ifdef HAS_INSTALL_ENV
     const char *ssid, *pass;
-    if(passphrase->isHidden()) pass = nullptr;
-    else pass = passphrase->text().toStdString().c_str();
+
+    if(passphrase->isHidden()) {
+        pass = nullptr;
+    } else {
+        pass = passphrase->text().toStdString().c_str();
+    }
     ssid = ssidListView->selectedItems()[0]->text().toStdString().c_str();
 
+    tain_now_g();
     if(wpactrl_associate_g(&control, ssid, pass) == 0) {
-        QMessageBox::critical(this, tr("Could Not Connect"), tr("An issue occurred connecting to the specified wireless network.  Ensure your passphrase is correct and try again."));
+        QMessageBox::critical(this, tr("Could Not Connect"),
+                              tr("An issue occurred connecting to the specified wireless network.  "
+                                 "Ensure your passphrase is correct and try again."));
         return false;
     }
 #endif  /* HAS_INSTALL_ENV */
