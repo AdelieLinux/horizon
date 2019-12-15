@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     WaitDialog d;
     d.show();
     app.setOverrideCursor(Qt::WaitCursor);
-    app.processEvents(QEventLoop::AllEvents, 300);
+    app.processEvents(QEventLoop::AllEvents, 1000);
 
     app.setWindowIcon(QIcon(":/horizon-256.png"));
 
