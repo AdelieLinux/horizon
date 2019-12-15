@@ -311,9 +311,11 @@ bool NetworkSimpleWirelessPage::validatePage() {
     if(passphrase->isHidden()) {
         pass = nullptr;
     } else {
-        pass = ("\"" + passphrase->text().toStdString() + "\"").c_str();
+        std::string password = ("\"" + passphrase->text().toStdString() + "\"");
+        pass = password.c_str();
     }
-    ssid = ("\"" + items[0]->text().toStdString() + "\"").c_str();
+    std::string network = ("\"" + items[0]->text().toStdString() + "\"");
+    ssid = network.c_str();
 
     tain_now_g();
     if(wpactrl_associate_g(&control, ssid, pass) == 0) {
