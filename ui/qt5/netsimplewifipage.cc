@@ -343,9 +343,10 @@ bool NetworkSimpleWirelessPage::validatePage() {
             if(raw_msg == nullptr) {
                 return;
             }
-            wpactrl_ackmsg(&control);
             QString msg(raw_msg);
             msg = msg.remove(0, 3);
+
+            wpactrl_ackmsg(&control);
 
             if(msg.startsWith("CTRL-EVENT-CONNECTED")) {
                 /* Happy day! */
