@@ -254,16 +254,17 @@ void NetworkSimpleWirelessPage::associate() {
     connect(connNotify, &QSocketNotifier::activated,
             this, &NetworkSimpleWirelessPage::processAssociateMessage);
 
-    char *ssid, *pass;
+    const char *ssid, *pass;
+    std::string password, network;
 
     if(passphrase->isHidden()) {
         pass = nullptr;
     } else {
-        std::string password = ("\"" + passphrase->text().toStdString() + "\"");
-        pass = strdup(password.c_str());
+        password = ("\"" + passphrase->text().toStdString() + "\"");
+        pass = password.c_str();
     }
-    std::string network = ("\"" + items[0]->text().toStdString() + "\"");
-    ssid = strdup(network.c_str());
+    network = ("\"" + items[0]->text().toStdString() + "\"");
+    ssid = network.c_str();
 
     tain_now_g();
     if(wpactrl_associate_g(&control, ssid, pass) == 0) {
@@ -275,8 +276,6 @@ void NetworkSimpleWirelessPage::associate() {
         dialog->setLabelText(tr("Associating..."));
     }
 
-    free(ssid);
-    free(pass);
     return;
 }
 
