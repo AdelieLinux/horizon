@@ -335,17 +335,38 @@ bool NetworkSimpleWirelessPage::validatePage() {
 
     connNotify = new QSocketNotifier(wpactrl_fd(&control), QSocketNotifier::Read, this);
     connect(connNotify, &QSocketNotifier::activated, [=](int) {
-        QString status;
-
         if(wpactrl_update(&control) < 0) {
             dialog->setLabelText(tr("Issue communicating with wireless subsystem."));
         } else {
-            char *msg = wpactrl_msg(&control);
-            if(msg == nullptr) {
+            char *raw_msg = wpactrl_msg(&control);
+            if(raw_msg == nullptr) {
                 return;
             }
             wpactrl_ackmsg(&control);
-            qDebug() << msg;
+            QString msg(raw_msg);
+            msg = msg.remove(0, 3);
+
+            if(msg.startsWith("CTRL-EVENT-CONNECTED")) {
+                /* Happy day! */
+                dialog->setRange(0, 1);
+                dialog->setValue(1);
+                dialog->setLabelText(tr("Connected."));
+            } else if(msg.startsWith("CTRL-EVENT-ASSOC-REJECT")) {
+                dialog->hide();
+                QMessageBox::critical(this, tr("Could Not Connect"),
+                                      tr("An issue occurred connecting to the specified wireless network.  "
+                                         "You may need to move closer to your wireless gateway, or reset your hardware and try again.\n\n"
+                                         "Technical details: %1").arg(msg));
+            } else if(msg.startsWith("CTRL-EVENT-AUTH-REJECT")) {
+                dialog->hide();
+                QMessageBox::critical(this, tr("Could Not Connect"),
+                                      tr("An issue occurred connecting to the specified wireless network.  "
+                                         "Ensure your passphrase is correct and try again.\n\n"
+                                         "Technical details: %1").arg(msg));
+            } else {
+                /* unknown message. */
+                return;
+            }
         }
         connNotify->setEnabled(false);
         connNotify->deleteLater();
