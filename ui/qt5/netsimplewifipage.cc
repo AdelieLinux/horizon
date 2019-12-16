@@ -50,9 +50,6 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
 #ifdef HAS_INSTALL_ENV
     exchange_item.filter = "CTRL-EVENT-SCAN-RESULTS";
     exchange_item.cb = &scanResults;
-    wpactrl_filter_add(&control, "CTRL-EVENT-ASSOC-REJECT");
-    wpactrl_filter_add(&control, "CTRL-EVENT-AUTH-REJECT");
-    wpactrl_filter_add(&control, "CTRL-EVENT-CONNECTED");
     notify = nullptr;
     connNotify = nullptr;
     dialog = nullptr;
@@ -332,6 +329,10 @@ bool NetworkSimpleWirelessPage::validatePage() {
         connNotify->deleteLater();
         connNotify = nullptr;
     }
+
+    wpactrl_filter_add(&control, "CTRL-EVENT-ASSOC-REJECT");
+    wpactrl_filter_add(&control, "CTRL-EVENT-AUTH-REJECT");
+    wpactrl_filter_add(&control, "CTRL-EVENT-CONNECTED");
 
     connNotify = new QSocketNotifier(wpactrl_fd(&control), QSocketNotifier::Read, this);
     connect(connNotify, &QSocketNotifier::activated, [=](int) {
