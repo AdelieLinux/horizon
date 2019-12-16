@@ -281,6 +281,8 @@ void NetworkSimpleWirelessPage::associate() {
 }
 
 void NetworkSimpleWirelessPage::processAssociateMessage(int) {
+    QString error;
+
     if(wpactrl_update(&control) < 0) {
         dialog->setLabelText(tr("Issue communicating with wireless subsystem."));
     } else {
@@ -301,25 +303,28 @@ void NetworkSimpleWirelessPage::processAssociateMessage(int) {
             associated = true;
             horizonWizard()->next();
         } else if(msg.startsWith("CTRL-EVENT-ASSOC-REJECT")) {
-            dialog->hide();
-            QMessageBox::critical(this, tr("Could Not Connect"),
-                                  tr("An issue occurred connecting to the specified wireless network.  "
-                                     "You may need to move closer to your wireless gateway, or reset your hardware and try again.\n\n"
-                                     "Technical details: %1").arg(msg));
+            error = tr("There was an issue connecting to your wireless network.  "
+                       "You may need to move closer to your wireless gateway, or reset your hardware and try again.\n\n"
+                       "Technical details: %1").arg(msg);
         } else if(msg.startsWith("CTRL-EVENT-AUTH-REJECT")) {
-            dialog->hide();
-            QMessageBox::critical(this, tr("Could Not Connect"),
-                                  tr("An issue occurred connecting to the specified wireless network.  "
-                                     "Ensure your passphrase is correct and try again.\n\n"
-                                     "Technical details: %1").arg(msg));
+            error = tr("There was an issue connecting to your wireless network.  "
+                       "Ensure your passphrase is correct and try again.\n\n"
+                       "Technical details: %1").arg(msg);
         } else {
             /* unknown message. */
             return;
         }
     }
+
     connNotify->setEnabled(false);
     connNotify->deleteLater();
     connNotify = nullptr;
+
+    if(!associated) {
+        dialog->hide();
+        QMessageBox::critical(this, tr("Could Not Connect"), error);
+    }
+
     return;
 }
 
