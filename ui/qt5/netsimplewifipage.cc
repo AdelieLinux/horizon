@@ -30,7 +30,7 @@ int scanResults(wpactrl_t *control, char const *s, size_t len, void *page, tain_
 NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     : HorizonWizardPage(parent)
 #ifdef HAS_INSTALL_ENV
-    , control(WPACTRL_ZERO)
+    , control(WPACTRL_ZERO), associated(false)
 #endif  /* HAS_INSTALL_ENV */
     {
     QVBoxLayout *layout;
@@ -220,6 +220,109 @@ int NetworkSimpleWirelessPage::nextId() const {
 }
 
 #ifdef HAS_INSTALL_ENV
+void NetworkSimpleWirelessPage::associate() {
+    QList<QListWidgetItem *> items = ssidListView->selectedItems();
+    if(items.size() == 0) {
+        return;
+    }
+
+    if(dialog != nullptr) dialog->deleteLater();
+    dialog = new QProgressDialog(this);
+    dialog->setCancelButton(nullptr);
+
+    QProgressBar *bar = new QProgressBar;
+    bar->setRange(0, 0);
+    bar->setFixedSize(QSize(150, 24));
+    dialog->setBar(bar);
+    dialog->setLabelText(tr("Connecting..."));
+    dialog->setMinimumDuration(1);
+
+    dialog->show();
+    QApplication::processEvents(QEventLoop::AllEvents, 1000);
+
+    if(connNotify != nullptr) {
+        connNotify->setEnabled(false);
+        connNotify->deleteLater();
+        connNotify = nullptr;
+    }
+
+    wpactrl_filter_add(&control, "CTRL-EVENT-ASSOC-REJECT");
+    wpactrl_filter_add(&control, "CTRL-EVENT-AUTH-REJECT");
+    wpactrl_filter_add(&control, "CTRL-EVENT-CONNECTED");
+
+    connNotify = new QSocketNotifier(wpactrl_fd(&control), QSocketNotifier::Read, this);
+    connect(connNotify, &QSocketNotifier::activated,
+            this, &NetworkSimpleWirelessPage::processAssociateMessage);
+
+    char *ssid, *pass;
+
+    if(passphrase->isHidden()) {
+        pass = nullptr;
+    } else {
+        std::string password = ("\"" + passphrase->text().toStdString() + "\"");
+        pass = strdup(password.c_str());
+    }
+    std::string network = ("\"" + items[0]->text().toStdString() + "\"");
+    ssid = strdup(network.c_str());
+
+    tain_now_g();
+    if(wpactrl_associate_g(&control, ssid, pass) == 0) {
+        dialog->hide();
+        QMessageBox::critical(this, tr("Could Not Connect"),
+                              tr("An issue occurred connecting to the specified wireless network.  "
+                                 "Ensure your passphrase is correct and try again."));
+    } else {
+        dialog->setLabelText(tr("Associating..."));
+    }
+
+    free(ssid);
+    free(pass);
+    return;
+}
+
+void NetworkSimpleWirelessPage::processAssociateMessage(int) {
+    if(wpactrl_update(&control) < 0) {
+        dialog->setLabelText(tr("Issue communicating with wireless subsystem."));
+    } else {
+        char *raw_msg = wpactrl_msg(&control);
+        if(raw_msg == nullptr) {
+            return;
+        }
+        QString msg(raw_msg);
+        msg = msg.remove(0, 3);
+
+        wpactrl_ackmsg(&control);
+
+        if(msg.startsWith("CTRL-EVENT-CONNECTED")) {
+            /* Happy day! */
+            dialog->setRange(0, 1);
+            dialog->setValue(1);
+            dialog->setLabelText(tr("Connected."));
+            associated = true;
+            horizonWizard()->next();
+        } else if(msg.startsWith("CTRL-EVENT-ASSOC-REJECT")) {
+            dialog->hide();
+            QMessageBox::critical(this, tr("Could Not Connect"),
+                                  tr("An issue occurred connecting to the specified wireless network.  "
+                                     "You may need to move closer to your wireless gateway, or reset your hardware and try again.\n\n"
+                                     "Technical details: %1").arg(msg));
+        } else if(msg.startsWith("CTRL-EVENT-AUTH-REJECT")) {
+            dialog->hide();
+            QMessageBox::critical(this, tr("Could Not Connect"),
+                                  tr("An issue occurred connecting to the specified wireless network.  "
+                                     "Ensure your passphrase is correct and try again.\n\n"
+                                     "Technical details: %1").arg(msg));
+        } else {
+            /* unknown message. */
+            return;
+        }
+    }
+    connNotify->setEnabled(false);
+    connNotify->deleteLater();
+    connNotify = nullptr;
+    return;
+}
+
 int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
     assert(c == &control);
     std::vector<QListWidgetItem *> netitems;
@@ -304,108 +407,19 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
 #endif  /* HAS_INSTALL_ENV */
 
 bool NetworkSimpleWirelessPage::validatePage() {
-#ifdef HAS_INSTALL_ENV
-    QList<QListWidgetItem *> items = ssidListView->selectedItems();
-    if(items.size() == 0) {
-        return false;
-    }
-
-    if(dialog != nullptr) dialog->deleteLater();
-    dialog = new QProgressDialog(this);
-    dialog->setCancelButton(nullptr);
-
-    QProgressBar *bar = new QProgressBar;
-    bar->setRange(0, 0);
-    bar->setFixedSize(QSize(150, 24));
-    dialog->setBar(bar);
-    dialog->setLabelText(tr("Connecting..."));
-    dialog->setMinimumDuration(1);
-
-    dialog->show();
-    QApplication::processEvents(QEventLoop::AllEvents, 1000);
-
-    if(connNotify != nullptr) {
-        connNotify->setEnabled(false);
-        connNotify->deleteLater();
-        connNotify = nullptr;
-    }
-
-    wpactrl_filter_add(&control, "CTRL-EVENT-ASSOC-REJECT");
-    wpactrl_filter_add(&control, "CTRL-EVENT-AUTH-REJECT");
-    wpactrl_filter_add(&control, "CTRL-EVENT-CONNECTED");
-
-    connNotify = new QSocketNotifier(wpactrl_fd(&control), QSocketNotifier::Read, this);
-    connect(connNotify, &QSocketNotifier::activated, [=](int) {
-        if(wpactrl_update(&control) < 0) {
-            dialog->setLabelText(tr("Issue communicating with wireless subsystem."));
-        } else {
-            char *raw_msg = wpactrl_msg(&control);
-            if(raw_msg == nullptr) {
-                return;
-            }
-            QString msg(raw_msg);
-            msg = msg.remove(0, 3);
-
-            wpactrl_ackmsg(&control);
-
-            if(msg.startsWith("CTRL-EVENT-CONNECTED")) {
-                /* Happy day! */
-                dialog->setRange(0, 1);
-                dialog->setValue(1);
-                dialog->setLabelText(tr("Connected."));
-            } else if(msg.startsWith("CTRL-EVENT-ASSOC-REJECT")) {
-                dialog->hide();
-                QMessageBox::critical(this, tr("Could Not Connect"),
-                                      tr("An issue occurred connecting to the specified wireless network.  "
-                                         "You may need to move closer to your wireless gateway, or reset your hardware and try again.\n\n"
-                                         "Technical details: %1").arg(msg));
-            } else if(msg.startsWith("CTRL-EVENT-AUTH-REJECT")) {
-                dialog->hide();
-                QMessageBox::critical(this, tr("Could Not Connect"),
-                                      tr("An issue occurred connecting to the specified wireless network.  "
-                                         "Ensure your passphrase is correct and try again.\n\n"
-                                         "Technical details: %1").arg(msg));
-            } else {
-                /* unknown message. */
-                return;
-            }
-        }
-        connNotify->setEnabled(false);
-        connNotify->deleteLater();
-        connNotify = nullptr;
-        return;
-    });
-
-    char *ssid, *pass;
-
-    if(passphrase->isHidden()) {
-        pass = nullptr;
-    } else {
-        std::string password = ("\"" + passphrase->text().toStdString() + "\"");
-        pass = strdup(password.c_str());
-    }
-    std::string network = ("\"" + items[0]->text().toStdString() + "\"");
-    ssid = strdup(network.c_str());
-
-    tain_now_g();
-    if(wpactrl_associate_g(&control, ssid, pass) == 0) {
-        dialog->hide();
-        QMessageBox::critical(this, tr("Could Not Connect"),
-                              tr("An issue occurred connecting to the specified wireless network.  "
-                                 "Ensure your passphrase is correct and try again."));
-    }
-
-    dialog->setLabelText(tr("Associating..."));
-    free(ssid);
-    free(pass);
-    return false;
-#endif  /* HAS_INSTALL_ENV */
-
     /* What a hack!
      *
      * Independent Pages means the DHCP page is never cleaned, even when Back
      * is chosen.  So, we have to do it from here. */
     horizonWizard()->removePage(HorizonWizard::Page_Network_DHCP);
     horizonWizard()->setPage(HorizonWizard::Page_Network_DHCP, new NetDHCPPage);
+
+#ifdef HAS_INSTALL_ENV
+    if(associated) return true;
+
+    associate();
+    return false;
+#else  /* !HAS_INSTALL_ENV */
     return true;
+#endif  /* HAS_INSTALL_ENV */
 }
