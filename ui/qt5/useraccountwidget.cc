@@ -67,6 +67,9 @@ UserAccountWidget::UserAccountWidget(QWidget *parent)
     adminTick = new QCheckBox(tr("Admin"));
     adminTick->setToolTip(tr("Allows this user to perform administrative tasks"));
     adminTick->setWhatsThis(tr("If ticked, allows this user to perform administrative tasks on the computer."));
+    connect(adminTick, &QCheckBox::stateChanged, [=]{
+        emit validityChanged();
+    });
     passAdminLayout->addWidget(adminTick);
 
     QVBoxLayout *detailLayout = new QVBoxLayout;
