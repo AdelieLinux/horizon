@@ -32,6 +32,7 @@ CommitPage::CommitPage(QWidget *parent) : HorizonWizardPage(parent) {
     choices = new QLabel;
     choices->setFrameStyle(QFrame::Panel | QFrame::Sunken);
     choices->setTextFormat(Qt::RichText);
+    choices->setWordWrap(true);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(descLabel);

@@ -36,6 +36,7 @@ PkgDefaultsPage::PkgDefaultsPage(QWidget *parent) : HorizonWizardPage(parent) {
     /******************** /bin/sh provider ********************/
     QButtonGroup *shellGroup = new QButtonGroup;
     QLabel *shellLabel = new QLabel(tr("Shell to use for /bin/sh:"));
+    shellLabel->setWordWrap(true);
 
     dashShell = new QRadioButton("Dash");
     dashShell->setWhatsThis(tr("Use the lightweight Dash shell.  "
@@ -67,6 +68,7 @@ PkgDefaultsPage::PkgDefaultsPage(QWidget *parent) : HorizonWizardPage(parent) {
     /******************** /sbin/init provider ********************/
     QButtonGroup *initGroup = new QButtonGroup;
     QLabel *initLabel = new QLabel(tr("Init system (/sbin/init):"));
+    initLabel->setWordWrap(true);
 
     s6Init = new QRadioButton("s6-linux-init");
     s6Init->setWhatsThis(tr("Use the lightweight, customisable s6-linux-init init system."));
@@ -93,6 +95,7 @@ PkgDefaultsPage::PkgDefaultsPage(QWidget *parent) : HorizonWizardPage(parent) {
     /******************** device event handler ********************/
     QButtonGroup *udevGroup = new QButtonGroup;
     QLabel *udevLabel = new QLabel(tr("uevent management daemon:"));
+    udevLabel->setWordWrap(true);
 
     eudev = new QRadioButton("eudev");
     eudev->setWhatsThis(tr("Use the traditional, UDev-compatible eudev system.  "

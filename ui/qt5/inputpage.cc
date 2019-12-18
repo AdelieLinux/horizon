@@ -34,6 +34,7 @@ InputPage::InputPage(QWidget *parent) : HorizonWizardPage(parent) {
     setTitle(tr("Keyboard Layout"));
 
     descLabel = new QLabel(tr("Choose the layout of your keyboard."));
+    descLabel->setWordWrap(true);
 
     /* REQ: UI.Input.LayoutList */
     layoutList = new QListWidget(this);

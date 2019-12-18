@@ -59,7 +59,6 @@ void NetworkIfacePage::initializePage() {
 #ifdef HAS_INSTALL_ENV
     descLabel = new QLabel(tr(
         "Your computer has more than one network device.  Select the one you wish to use during installation."));
-    descLabel->setWordWrap(true);
 
     for(auto &iface : horizonWizard()->interfaces) {
         QIcon ifaceIcon;
@@ -91,8 +90,8 @@ void NetworkIfacePage::initializePage() {
     }
 #else
     descLabel = new QLabel(tr("Enter the name of the network device you will use on this computer."));
-    descLabel->setWordWrap(true);
 #endif  /* HAS_INSTALL_ENV */
+    descLabel->setWordWrap(true);
 
     layout = new QVBoxLayout;
     layout->addWidget(descLabel);

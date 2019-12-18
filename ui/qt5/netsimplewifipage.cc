@@ -39,6 +39,7 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     setTitle(tr("Select Your Network"));
 
     statusLabel = new QLabel(tr("Scanning for networks..."));
+    statusLabel->setWordWrap(true);
 
     rescanButton = new QPushButton(tr("&Rescan Networks"));
     connect(rescanButton, &QPushButton::clicked, [=](void) { doScan(); });

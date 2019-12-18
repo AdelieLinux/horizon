@@ -24,13 +24,16 @@ NetDHCPPage::NetDHCPPage(QWidget *parent) : HorizonWizardPage(parent) {
     loadWatermark("network");
 
     QLabel *overall = new QLabel(tr("Please wait while System Installation performs the following tasks:"));
+    overall->setWordWrap(true);
     information = new QLabel;
     information->setWordWrap(true);
 
     addrStatus = new QLabel;
     address = new QLabel(tr("Obtain a network address"));
+    address->setWordWrap(true);
     inetStatus = new QLabel;
     inet = new QLabel(tr("Check Internet connectivity"));
+    inet->setWordWrap(true);
 
     QGridLayout *progressLayout = new QGridLayout;
     progressLayout->addWidget(addrStatus, 0, 0);
