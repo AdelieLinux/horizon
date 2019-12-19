@@ -197,6 +197,7 @@ arch ppc
                     </example>
                 </para>
             </formalpara>
+        </section>
         <section id="language">
             <title><literal>language</literal></title>
             <formalpara id="language.name">
