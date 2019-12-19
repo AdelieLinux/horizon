@@ -74,6 +74,16 @@ public:
         QString mac;
     };
 
+    enum Arch {
+        aarch64,
+        armv7,
+        pmmx,
+        ppc,
+        ppc64,
+        x86_64,
+        UnknownCPU
+    };
+
     enum PackageType {
         Standard,
         Mobile,
@@ -105,6 +115,14 @@ public:
     std::string mirror_domain;
     /*! The version of Adélie to install.  Typically "1.0". */
     std::string version;
+    /*! The architecture being installed. */
+    Arch arch;
+    /*! The disk to erase and partition based on the system. */
+    std::string auto_erase_disk;
+    /*! The HorizonScript lines describing what to do about partitioning.
+     *  If auto_erase_disk is set, this is not used.
+     *  Otherwise, this should have any relevant disklabel/partition/fs etc. */
+    QStringList part_lines;
 #ifdef NON_LIBRE_FIRMWARE
     /*! Determines whether firmware will be installed. */
     bool firmware;

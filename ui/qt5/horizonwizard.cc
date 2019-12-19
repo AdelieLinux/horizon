@@ -276,6 +276,27 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 #ifdef HAS_INSTALL_ENV
     interfaces = probe_ifaces();
     tain_now_set_stopwatch_g();
+
+#   if defined(__powerpc64__)
+    arch = ppc64;
+#   elif defined(__powerpc__)
+    arch = ppc;
+#   elif defined(__aarch64__)
+    arch = aarch64;
+#   elif defined(__arm__)
+    arch = armv7;
+#   elif defined(__i386__)
+    arch = pmmx;
+#   elif defined(__x86_64__)
+    arch = x86_64;
+#   else
+#       error You are attempting to compile the Installation Environment UI \
+on an unknown architecture.  Please add a definition to horizonwizard.hh, a \
+setting in this preprocessor block, and a case statement for the automatic \
+partitioner to continue.  You may also wish to add an option to archpage.cc.
+#   endif
+#else  /* !HAS_INSTALL_ENV */
+    arch = UnknownCPU;
 #endif  /* HAS_INSTALL_ENV */
 }
 
@@ -318,6 +339,60 @@ QString HorizonWizard::toHScript() {
     }
 
     lines << ("hostname " + field("hostname").toString());
+
+    switch(arch) {
+    case aarch64:
+        lines << "arch aarch64";
+        break;
+    case armv7:
+        lines << "arch armv7";
+        break;
+    case pmmx:
+        lines << "arch pmmx";
+        break;
+    case ppc:
+        lines << "arch ppc";
+        break;
+    case ppc64:
+        lines << "arch ppc64";
+        break;
+    case x86_64:
+        lines << "arch x86_64";
+        break;
+    case UnknownCPU:
+        /* no arch line.  hopefully it's run on the target. */
+        break;
+    }
+
+    if(auto_erase_disk.empty()) {
+        lines << part_lines;
+    } else {
+        /* XXX TODO: examples for thoughts on auto-partition setups are in
+         * architecture-specific comments below */
+        switch(arch) {
+        case aarch64:
+            /* Do GPT stuff */
+            break;
+        case armv7:
+            /* Run away */
+            break;
+        case pmmx:
+            /* Do MBR stuff */
+            break;
+        case ppc:
+            /* Do APM stuff */
+            break;
+        case ppc64:
+            /* Figure stuff out */
+            break;
+        case x86_64:
+            /* Do EFI */
+            break;
+        case UnknownCPU:
+            /* Probably MBR, as it's the most common. */
+            break;
+        }
+    }
 
     switch(this->pkgtype) {
     case Mobile:
