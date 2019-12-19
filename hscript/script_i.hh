@@ -46,6 +46,8 @@ struct Script::ScriptPrivate {
     std::set<std::string> packages;
     /*! The root shadow line. */
     std::unique_ptr<RootPassphrase> rootpw;
+    /*! The system CPU architecture. */
+    std::unique_ptr<Arch> arch;
     /*! The system language. */
     std::unique_ptr<Language> lang;
     /*! The system keymap. */
@@ -145,6 +147,16 @@ struct Script::ScriptPrivate {
             packages.insert(pkg);
         }
         delete install;
+        return true;
+    }
+
+    bool store_arch(Key* obj, int line, int *errors, int *, ScriptOptions) {
+        if(arch) {
+            DUPLICATE_ERROR(arch, "arch", arch->value())
+            return false;
+        }
+        std::unique_ptr<Arch> a(dynamic_cast<Arch *>(obj));
+        arch = std::move(a);
         return true;
     }
 

@@ -259,6 +259,9 @@ bool Horizon::Script::validate() const {
     /* REQ: Runner.Validate.rootpw */
     if(!internal->rootpw->validate(opts)) failures++;
 
+    /* REQ: Runner.Validate.arch */
+    if(internal->arch && !internal->arch->validate(opts)) failures++;
+
     /* REQ: Runner.Validate.language */
     if(internal->lang && !internal->lang->validate(opts)) failures++;
 

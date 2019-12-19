@@ -163,11 +163,65 @@ bool Hostname::execute(ScriptOptions opts) const {
 }
 
 
+static std::set<std::string> valid_arches = {
+    "aarch64", "aarch64_be", "alpha", "armel", "armhf", "armv7",
+    "m68k", "mips", "mips64", "mipsel", "mips64el",
+    "pmmx", "ppc", "ppc64",
+    "riscv", "riscv64",
+    "s390x", "sparc", "sparc64",
+    "x86", "x86_64"
+};
+
+
+Key *Arch::parseFromData(const std::string &data, int lineno, int *errors,
+                         int *warnings) {
+    if(data.find_first_not_of("abcdefghijklmnopqrstuvwyxz1234567890") !=
+            std::string::npos) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "arch: expected CPU architecture name",
+                     "'" + data + "' is not a valid CPU architecture name");
+        return nullptr;
+    }
+
+    if(valid_arches.find(data) == valid_arches.end()) {
+        if(warnings) *warnings += 1;
+        output_warning("installfile:" + std::to_string(lineno),
+                       "arch: unknown CPU architecture '" + data + "'");
+    }
+
+    return new Arch(lineno, data);
+}
+
+bool Arch::execute(ScriptOptions opts) const {
+    output_info("installfile:" + std::to_string(line),
+                "arch: setting system CPU architecture to " + value());
+
+    if(opts.test(Simulate)) {
+        std::cout << "printf '" << this->value() << "\\" << "n'"
+                  << " > /target/etc/apk/arch" << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    std::ofstream arch_f("/target/etc/apk/arch", std::ios_base::trunc);
+    if(!arch_f) {
+        output_error("installfile:" + std::to_string(line),
+                     "arch: cannot write target CPU architecture information");
+        return false;
+    }
+
+    arch_f << this->value() << std::endl;
+#endif
+    return true;
+}
+
+
 static std::regex valid_pkg("[0-9A-Za-z+_.-]*((>?<|[<>]?=|[~>])[0-9A-Za-z-_.]+)?");
 
 
-Key *PkgInstall::parseFromData(const std::string &data, int lineno, int *errors,
-                               int *warnings) {
+Key *PkgInstall::parseFromData(const std::string &data, int lineno,
+                               int *errors, int *warnings) {
     std::string next_pkg;
     std::istringstream stream(data);
     std::set<std::string> all_pkgs;

@@ -156,6 +156,13 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             expect(last_command_started.stderr).to include("set domain name 'we-sing-it-proudly.new-romantics.club'")
         end
     end
+    context "simulating 'arch' execution" do
+        it "sets the architecture properly" do
+            use_fixture '0223-arch-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("printf 'ppc64\\n' > /target/etc/apk/arch")
+        end
+    end
     context "simulating 'repository' execution" do
         it "outputs default repositories when none are specified" do
             use_fixture '0001-basic.installfile'

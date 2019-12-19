@@ -203,6 +203,24 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*language.*invalid/)
                 end
             end
+            context "for 'arch' key" do
+                    it "succeeds with valid architecture" do
+                    use_fixture '0223-arch-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "warns on unrecognised architecture" do
+                    use_fixture '0224-arch-unknown.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/warning: .*arch.*unknown CPU/)
+                end
+                it "fails on malformed architecture name" do
+                    use_fixture '0225-arch-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*arch.*expected/)
+                end
+            end
             context "for 'nameserver' key" do
                 it "succeeds with IPv4 and IPv6 addresses" do
                     use_fixture '0183-nameserver-basic.installfile'

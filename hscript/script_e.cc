@@ -438,6 +438,11 @@ bool Script::execute() const {
     }
 #endif  /* HAS_INSTALL_ENV */
 
+    /* REQ: Runner.Execute.pkginstall.arch */
+    if(internal->arch) {
+        EXECUTE_OR_FAIL("arch", internal->arch)
+    }
+
     /* REQ: Runner.Execute.pkginstall */
     output_info("internal", "installing packages to target");
     std::ostringstream pkg_list;

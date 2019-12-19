@@ -40,6 +40,7 @@ const std::map<std::string, key_parse_fn> valid_keys = {
     {"pkginstall", &PkgInstall::parseFromData},
     {"rootpw", &RootPassphrase::parseFromData},
 
+    {"arch", &Arch::parseFromData},
     {"language", &Language::parseFromData},
     {"keymap", &Keymap::parseFromData},
     {"firmware", &Firmware::parseFromData},
@@ -92,6 +93,8 @@ bool Script::ScriptPrivate::store_key(const std::string &key_name, Key *obj,
         return store_hostname(obj, lineno, errors, warnings, opts);
     } else if(key_name == "pkginstall") {
         return store_pkginstall(obj, lineno, errors, warnings, opts);
+    } else if(key_name == "arch") {
+        return store_arch(obj, lineno, errors, warnings, opts);
     } else if(key_name == "rootpw") {
         return store_rootpw(obj, lineno, errors, warnings, opts);
     } else if(key_name == "language") {

@@ -30,6 +30,15 @@ public:
     bool execute(ScriptOptions) const override;
 };
 
+class Arch : public StringKey {
+private:
+    Arch(int _line, const std::string &arch) :
+        StringKey(_line, arch) {}
+public:
+    static Key *parseFromData(const std::string &, int, int *, int *);
+    bool execute(ScriptOptions) const override;
+};
+
 class PkgInstall : public Key {
 private:
     const std::set<std::string> _pkgs;
