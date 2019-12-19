@@ -202,6 +202,14 @@
                     <title>Runner.Validate.rootpw.Crypt</title>
                     <para>The system shall verify that the value for the <literal>rootpw</literal> key is in the format: <literal>$</literal>, either <literal>2</literal> for Blowfish or <literal>6</literal> for SHA-512, <literal>$</literal>, and then variant data.</para>
                 </formalpara>
+                <formalpara id="Runner.Validate.arch">
+                    <title>Runner.Validate.arch</title>
+                    <para>The system shall verify that the HorizonScript contains zero or one <literal>arch</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Validate.arch.Validity">
+                    <title>Runner.Validate.arch.Validity</title>
+                    <para>The system shall warn if the value specified in <literal>arch</literal> is not recognised as a valid APK-supported CPU architecture.  This shall not be a fatal error, because not all Tier 3 systems may be recognised.</para>
+                </formalpara>
                 <formalpara id="Runner.Validate.language">
                     <title>Runner.Validate.language</title>
                     <para>The system shall verify that the HorizonScript contains zero or one <literal>language</literal> key.</para>
@@ -759,6 +767,10 @@
                 <formalpara id="Runner.Execute.pkginstall.APKDB">
                     <title>Runner.Execute.pkginstall.APKDB</title>
                     <para>The system shall initialise the APK database in the target namespace before installing packages.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.pkginstall.arch">
+                    <title>Runner.Execute.pkginstall.arch</title>
+                    <para>If a <literal>arch</literal> key is specified in the HorizonScript, the system shall set the architecture of the target computer before installing packages and after initialising the APK database.</para>
                 </formalpara>
                 <formalpara id="Runner.Execute.rootpw">
                     <title>Runner.Execute.rootpw</title>

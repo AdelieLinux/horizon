@@ -141,6 +141,62 @@ rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59
     <section id="opt_keys">
         <title>Optional Keys</title>
         <para>Each key specified in this section may be present in a HorizonScript.  This section additionally defines the default value or action taken if the specified key is not present.</para>
+        <section id="arch">
+            <title><literal>arch</literal></title>
+            <formalpara id="arch.name">
+                <title>Name</title>
+                <para><literal>arch</literal></para>
+            </formalpara>
+            <formalpara id="arch.purpose">
+                <title>Purpose</title>
+                <para>The <literal>arch</literal> key determines the CPU architecture of the target computer.  The value of this key will be written to the <filename>/etc/apk/arch</filename> file in the target computer, which influences what packages are installed.</para>
+            </formalpara>
+            <formalpara id="arch.format">
+                <title>Format</title>
+                <para>
+                    The <literal>arch</literal> key is a single string value that specifies a valid, APK-recognised CPU architecture.  Currently recongised architectures for the Horizon 1.0 release include:
+                    <itemizedlist id="arch.recognised">
+                        <listitem><para><literal>aarch64</literal> (64-bit little-endian ARMv8)</para></listitem>
+                        <listitem><para><literal>aarch64_be</literal> (64-bit big-endian ARMv8)</para></listitem>
+                        <listitem><para><literal>alpha</literal> (64-bit DEC Alpha)</para></listitem>
+                        <listitem><para><literal>armel</literal> (32-bit ARMv5 or newer)</para></listitem>
+                        <listitem><para><literal>armhf</literal> (32-bit ARM with hardware VFP)</para></listitem>
+                        <listitem><para><literal>armv7</literal> (32-bit ARMv7)</para></listitem>
+                        <listitem><para><literal>m68k</literal> (32-bit Motorola 68020 or newer)</para></listitem>
+                        <listitem><para><literal>mips</literal> (32-bit big-endian MIPS, MIPS III or newer)</para></listitem>
+                        <listitem><para><literal>mips64</literal> (64-bit big-endian MIPS, MIPS III or newer)</para></listitem>
+                        <listitem><para><literal>mipsel</literal> (32-bit little-endian MIPS, MIPS III or newer)</para></listitem>
+                        <listitem><para><literal>mips64el</literal> (64-bit little-endian MIPS, MIPS III or newer)</para></listitem>
+                        <listitem><para><literal>pmmx</literal> (32-bit x86 with MMX extensions)</para></listitem>
+                        <listitem><para><literal>ppc</literal> (32-bit PowerPC)</para></listitem>
+                        <listitem><para><literal>ppc64</literal> (64-bit big-endian POWER/PowerPC with AltiVec/VMX Extensions)</para></listitem>
+                        <listitem><para><literal>riscv</literal> (32-bit RISC-V)</para></listitem>
+                        <listitem><para><literal>riscv64</literal> (64-bit RISC-V)</para></listitem>
+                        <listitem><para><literal>s390x</literal> (64-bit IBM System/390)</para></listitem>
+                        <listitem><para><literal>sparc</literal> (32-bit SPARC)</para></listitem>
+                        <listitem><para><literal>sparc64</literal> (64-bit SPARCv9 or newer)</para></listitem>
+                        <listitem><para><literal>x86</literal> (32-bit x86, 486-class or newer)</para></listitem>
+                        <listitem><para><literal>x86_64</literal> (64-bit x86)</para></listitem>
+                    </itemizedlist>
+                    <warning><title>Warning</title><para>Not all of the architectures listed here are supported by Adélie Linux at this time.</para></warning>
+                </para>
+            </formalpara>
+            <formalpara id="arch.default">
+                <title>Default</title>
+                <para>If the <literal>arch</literal> key is not present, the packages installed to the target will be the same CPU architecture as the system that executes the HorizonScript.  Typically, this is the intended behaviour and the <literal>arch</literal> key will not need to be specified.  However, if the HorizonScript will be executed on a different computer than the target &mdash; for example, if the target is an embedded system or single-board computer that is not capable of running the Horizon system &mdash; this key can be used to install packages compatible with the target.</para>
+            </formalpara>
+            <formalpara id="arch.examples">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>arch</literal> Key</title>
+                        <programlisting>
+arch ppc
+                        </programlisting>
+                        <para>This sets the CPU architecture of the target computer to 32-bit PowerPC.</para>
+                    </example>
+                </para>
+            </formalpara>
         <section id="language">
             <title><literal>language</literal></title>
             <formalpara id="language.name">
