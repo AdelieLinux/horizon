@@ -37,6 +37,10 @@ public:
         Page_Intro,             /* introduction */
         Page_Input,             /* keyboard layout */
         Page_Partition,         /* partitioning */
+        Page_PartitionDisk,     /* disk selection */
+        Page_PartitionChoose,   /* erase, use free, manual, use existing */
+        Page_PartitionManual,   /* manual */
+        Page_PartitionMount,    /* choose mountpoints - manual and existing */
 #ifdef NON_LIBRE_FIRMWARE
         Page_Firmware,          /* firmware */
 #endif  /* NON_LIBRE_FIRMWARE */
@@ -117,8 +121,10 @@ public:
     std::string version;
     /*! The architecture being installed. */
     Arch arch;
-    /*! The disk to erase and partition based on the system. */
-    std::string auto_erase_disk;
+    /*! Whether to erase the disk when automatically partitioning. */
+    bool erase;
+    /*! The disk to partition automatically. */
+    std::string auto_disk;
     /*! The HorizonScript lines describing what to do about partitioning.
      *  If auto_erase_disk is set, this is not used.
      *  Otherwise, this should have any relevant disklabel/partition/fs etc. */
@@ -130,6 +136,8 @@ public:
     /*! The currently probed network interfaces
      * @note Only available in Installation Environment. */
     std::map<std::string, NetworkInterface> interfaces;
+    /*! Determines the network interface to use. */
+    std::string chosen_auto_iface;
     /*! Determines whether networking will be enabled. */
     bool network;
     /*! Determines whether to use DHCP. */
@@ -138,14 +146,12 @@ public:
     bool grub;
     /*! Determines whether to install eudev. */
     bool eudev;
-    /*! Determines the packages to install. */
-    PackageType pkgtype;
     /*! Determines the /bin/sh provider. */
     BinShProvider binsh;
     /*! Determines the /sbin/init provider. */
     InitSystem sbininit;
-    /*! Determines the network interface to use. */
-    std::string chosen_auto_iface;
+    /*! Determines the packages to install. */
+    PackageType pkgtype;
     /*! If pkgtype is Custom, a list of packages to install. */
     QStringList packages;
     /*! Determines the kernel to install. */
