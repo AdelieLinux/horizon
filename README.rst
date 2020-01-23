@@ -11,7 +11,7 @@
 :Status:
  Development
 :Copyright:
- © 2015-2019 Adélie Linux.
+ © 2015-2020 Adélie Linux.
  Code: AGPL-3.0 license.
  Documentation: CC BY-NC-SA open source license.
 
@@ -94,7 +94,7 @@ To build the entirety of Project Horizon, you will need:
 
 * libudev development files (eudev-dev)
 
-* BCNM
+* `BCNM`_
 
 * cURL development files (curl-dev)
 
@@ -103,7 +103,7 @@ To build the entirety of Project Horizon, you will need:
   Horizon makes full use of the C++17 <filesystem> library if it is
   available, but will fall back to requiring Boost if it isn't.
 
-To build the Horizon UI for Installation Environments, you will additionally
+To build Horizon UI for Installation Environments, you will additionally
 need:
 
 * LibCap development files (libcap-dev)
@@ -112,11 +112,13 @@ need:
 
 * XKB File development files (libxkbfile-dev)
 
+* Linux kernel header files (linux-headers)
+
 To run the test suite, you will additionally need:
 
 * RSpec (ruby-rspec)
 
-* Aruba
+* `Aruba`_
 
 * Valgrind (valgrind)
 
@@ -128,7 +130,11 @@ For full operation, Project Horizon requires the following packages to be
 present on the computer where it runs (either the Runtime or Installation
 Environment):
 
-* tzdata (`timezone` key validation and execution)
+* tzdata (``timezone`` key validation and execution)
+
+.. _`BCNM`: https://www.skarnet.org/software/bcnm/
+
+.. _`Aruba`: https://github.com/cucumber/aruba
 
 
 Build options
@@ -239,6 +245,14 @@ Horizon, including:
 * The Simulator, which allows you to view how the Horizon Runner would
   interpret your installfile.  The Simulator additionally allows you to
   output the interpretation of your installfile to a shell script.
+
+
+``ui``: User interface code
+```````````````````````````
+The ``ui`` directory includes the source code for Project Horizon's front end,
+including:
+
+* ``qt5``, the Qt 5 user interface.
 
 
 ``util``: Shared utility code
