@@ -23,24 +23,12 @@ NetDHCPPage::NetDHCPPage(QWidget *parent) : HorizonWizardPage(parent) {
     setTitle(tr("Automatic Network Configuration"));
     loadWatermark("network");
 
-    QLabel *overall = new QLabel(tr("Please wait while System Installation performs the following tasks:"));
-    overall->setWordWrap(true);
     information = new QLabel;
     information->setWordWrap(true);
 
-    addrStatus = new QLabel;
-    address = new QLabel(tr("Obtain a network address"));
-    address->setWordWrap(true);
-    inetStatus = new QLabel;
-    inet = new QLabel(tr("Check Internet connectivity"));
-    inet->setWordWrap(true);
-
-    QGridLayout *progressLayout = new QGridLayout;
-    progressLayout->addWidget(addrStatus, 0, 0);
-    progressLayout->addWidget(address, 0, 1);
-    progressLayout->addWidget(inetStatus, 1, 0);
-    progressLayout->addWidget(inet, 1, 1);
-    progressLayout->setColumnStretch(1, 100);
+    progress = new StepProgressWidget;
+    progress->addStep(tr("Obtain a network address"));
+    progress->addStep(tr("Check Internet connectivity"));
 
     logButton = new QPushButton(tr("Review DHCP Log"));
     logButton->setHidden(true);
@@ -52,9 +40,7 @@ NetDHCPPage::NetDHCPPage(QWidget *parent) : HorizonWizardPage(parent) {
     });
 
     QVBoxLayout *overallLayout = new QVBoxLayout(this);
-    overallLayout->addWidget(overall);
-    overallLayout->addSpacing(40);
-    overallLayout->addLayout(progressLayout);
+    overallLayout->addWidget(progress);
     overallLayout->addSpacing(40);
     overallLayout->addWidget(information);
     overallLayout->addWidget(logButton, 0, Qt::AlignCenter);
@@ -68,7 +54,7 @@ void NetDHCPPage::startDHCP() {
                           "-j", "/var/log/horizon/dhcpcd.log", iface});
     connect(dhcpcd, &QProcess::errorOccurred,
             [=](QProcess::ProcessError error) {
-        addrStatus->setPixmap(loadDPIAwarePixmap("status-issue", ".svg"));
+        progress->setStepStatus(0, StepProgressWidget::Failed);
         if(error == QProcess::FailedToStart) {
             information->setText(tr("The Installation Environment is missing a critical component.  dhcpcd could not be loaded."));
             logButton->setHidden(true);
@@ -84,16 +70,11 @@ void NetDHCPPage::startDHCP() {
 
 void NetDHCPPage::dhcpFinished(int exitcode) {
     if(exitcode != 0) {
-        addrStatus->setPixmap(loadDPIAwarePixmap("status-issue", ".svg"));
+        progress->setStepStatus(0, StepProgressWidget::Failed);
         information->setText(tr("The system could not obtain an address."));
         logButton->setHidden(false);
     } else {
-        addrStatus->setPixmap(loadDPIAwarePixmap("status-success", ".svg"));
-        inetStatus->setPixmap(loadDPIAwarePixmap("status-current", ".svg"));
-        QFont addrFont = address->font();
-        inet->setFont(addrFont);
-        addrFont.setBold(false);
-        address->setFont(addrFont);
+        progress->stepPassed(0);
         checkInet();
     }
 }
@@ -110,7 +91,7 @@ void NetDHCPPage::inetFinished() {
     assert(inetReply);
 
     if(inetReply->error()) {
-        inetStatus->setPixmap(loadDPIAwarePixmap("status-issue", ".svg"));
+        progress->setStepStatus(1, StepProgressWidget::Failed);
         information->setText(tr("Couldn't connect to %1: %2")
                              .arg(QString::fromStdString(horizonWizard()->mirror_domain))
                              .arg(inetReply->errorString()));
@@ -121,7 +102,7 @@ void NetDHCPPage::inetFinished() {
 
     const QVariant redirUrl = inetReply->attribute(QNetworkRequest::RedirectionTargetAttribute);
     if(!redirUrl.isNull()) {
-        inetStatus->setPixmap(loadDPIAwarePixmap("status-issue", ".svg"));
+        progress->setStepStatus(1, StepProgressWidget::Failed);
         /* XXX TODO BAD UNIMPLEMENTED !!!! LOOK AT ME DO NOT RELEASE YET !!!! */
         information->setText(tr("Received redirect to %2 while connecting to %1."
                                 "God help us if we don't ship Otter Browser and have to handle captive portals with QtWebKitWidgets.")
@@ -137,7 +118,7 @@ void NetDHCPPage::inetFinished() {
             result[2] != '\n') {
         QString res_str(result.left(512));
         if(result.size() > 512) res_str += "...";
-        inetStatus->setPixmap(loadDPIAwarePixmap("status-issue", ".svg"));
+        progress->setStepStatus(1, StepProgressWidget::Failed);
         information->setText(tr("Received unexpected %3 byte reply from %1: %2")
                              .arg(QString::fromStdString(horizonWizard()->mirror_domain))
                              .arg(res_str).arg(result.size()));
@@ -146,10 +127,7 @@ void NetDHCPPage::inetFinished() {
         return;
     }
 
-    inetStatus->setPixmap(loadDPIAwarePixmap("status-success", ".svg"));
-    QFont inetFont = inet->font();
-    inetFont.setBold(false);
-    inet->setFont(inetFont);
+    progress->stepPassed(1);
 
     information->setText(tr("Your computer has successfully connected to the network.  You may now proceed."));
 
@@ -160,14 +138,7 @@ void NetDHCPPage::inetFinished() {
 void NetDHCPPage::initializePage() {
     assert(!horizonWizard()->chosen_auto_iface.empty());
 
-    addrStatus->setPixmap(loadDPIAwarePixmap("status-current", ".svg"));
-    inetStatus->clear();
-
-    QFont addrFont = address->font();
-    addrFont.setBold(true);
-    address->setFont(addrFont);
-    addrFont.setBold(false);
-    inet->setFont(addrFont);
+    progress->setStepStatus(0, StepProgressWidget::InProgress);
 
     startDHCP();
 }

@@ -25,55 +25,23 @@ ExecutePage::ExecutePage(QWidget *parent) : HorizonWizardPage(parent) {
     loadWatermark("intro");
     failed = false;
 
-    QLabel *descLabel = new QLabel(tr("Please wait while System Installation performs the following tasks:"));
-    descLabel->setWordWrap(true);
-
-    prepareStatus = new QLabel;
-    prepare = new QLabel(tr("Prepare installation"));
-    validateStatus = new QLabel;
-    validate = new QLabel(tr("Validate installation"));
-    diskStatus = new QLabel;
-    disk = new QLabel(tr("Configure hard disk(s)"));
-    preMetaStatus = new QLabel;
-    preMeta = new QLabel(tr("Initial configuration"));
-    netStatus = new QLabel;
-    net = new QLabel(tr("Networking configuration"));
-    pkgStatus = new QLabel;
-    pkg = new QLabel(tr("Install software"));
-    postMetaStatus = new QLabel;
-    postMeta = new QLabel(tr("Final configuration"));
-
-    QGridLayout *progressLayout = new QGridLayout;
-    progressLayout->addWidget(prepareStatus, 0, 0);
-    progressLayout->addWidget(prepare, 0, 1);
-    progressLayout->addWidget(validateStatus, 1, 0);
-    progressLayout->addWidget(validate, 1, 1);
-    progressLayout->addWidget(diskStatus, 2, 0);
-    progressLayout->addWidget(disk, 2, 1);
-    progressLayout->addWidget(preMetaStatus, 3, 0);
-    progressLayout->addWidget(preMeta, 3, 1);
-    progressLayout->addWidget(netStatus, 4, 0);
-    progressLayout->addWidget(net, 4, 1);
-    progressLayout->addWidget(pkgStatus, 5, 0);
-    progressLayout->addWidget(pkg, 5, 1);
-    progressLayout->addWidget(postMetaStatus, 6, 0);
-    progressLayout->addWidget(postMeta, 6, 1);
-    progressLayout->setColumnStretch(1, 100);
-
-    normalFont = validate->font();
-    boldFont = normalFont;
-    boldFont.setBold(true);
+    progress = new StepProgressWidget;
+    progress->addStep(tr("Prepare installation"));
+    progress->addStep(tr("Validate installation"));
+    progress->addStep(tr("Configure hard disk(s)"));
+    progress->addStep(tr("Initial configuration"));
+    progress->addStep(tr("Networking configuration"));
+    progress->addStep(tr("Install software"));
+    progress->addStep(tr("Final configuration"));
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(descLabel);
-    mainLayout->addStretch();
-    mainLayout->addLayout(progressLayout);
+    mainLayout->addWidget(progress);
     mainLayout->addStretch();
 
     setLayout(mainLayout);
 
     finishTimer = new QTimer(this);
-    finishTimer->setInterval(1500);
+    finishTimer->setInterval(5000);
     finishTimer->setSingleShot(true);
     connect(finishTimer, &QTimer::timeout, [=]{
         wizard()->next();
@@ -108,58 +76,16 @@ ExecutePage::Phase ExecutePage::stepToPhase(QString step) {
     return Prepare;
 }
 
-void ExecutePage::labelsForPhase(Phase phase, QLabel **icon, QLabel **text) {
-    switch(phase) {
-    case Prepare:
-        *icon = prepareStatus;
-        *text = prepare;
-        break;
-    case Validate:
-        *icon = validateStatus;
-        *text = validate;
-        break;
-    case Disk:
-        *icon = diskStatus;
-        *text = disk;
-        break;
-    case PreMeta:
-        *icon = preMetaStatus;
-        *text = preMeta;
-        break;
-    case Net:
-        *icon = netStatus;
-        *text = net;
-        break;
-    case Pkg:
-        *icon = pkgStatus;
-        *text = pkg;
-        break;
-    case PostMeta:
-        *icon = postMetaStatus;
-        *text = postMeta;
-        break;
-    }
-}
-
 void ExecutePage::markRunning(Phase phase) {
-    QLabel *icon, *text;
-    labelsForPhase(phase, &icon, &text);
-    icon->setPixmap(loadDPIAwarePixmap("status-current", ".svg"));
-    text->setFont(boldFont);
+    progress->setStepStatus(phase, StepProgressWidget::InProgress);
 }
 
 void ExecutePage::markFinished(Phase phase) {
-    QLabel *icon, *text;
-    labelsForPhase(phase, &icon, &text);
-    icon->setPixmap(loadDPIAwarePixmap("status-success", ".svg"));
-    text->setFont(normalFont);
+    progress->setStepStatus(phase, StepProgressWidget::Finished);
 }
 
 void ExecutePage::markFailed(Phase phase) {
-    QLabel *icon, *text;
-    labelsForPhase(phase, &icon, &text);
-    icon->setPixmap(loadDPIAwarePixmap("status-issue", ".svg"));
-    text->setFont(boldFont);
+    progress->setStepStatus(phase, StepProgressWidget::Failed);
     failed = true;
 }
 

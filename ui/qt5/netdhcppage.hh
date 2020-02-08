@@ -14,6 +14,7 @@
 #define NETDHCPPAGE_HH
 
 #include "horizonwizardpage.hh"
+#include "stepprogresswidget.hh"
 
 #include <QLabel>
 #include <QNetworkAccessManager>
@@ -27,10 +28,7 @@ public:
     void initializePage();
     bool isComplete() const;
 private:
-    QLabel *addrStatus;
-    QLabel *address;
-    QLabel *inetStatus;
-    QLabel *inet;
+    StepProgressWidget *progress;
     QLabel *information;
     QPushButton *logButton;
 

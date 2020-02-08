@@ -14,6 +14,7 @@
 #define EXECUTEPAGE_HH
 
 #include "../horizonwizardpage.hh"
+#include "../stepprogresswidget.hh"
 
 #include <QFile>
 #include <QLabel>
@@ -37,22 +38,7 @@ public:
     Phase currentPhase() { return this->current; }
 
 private:
-    QLabel *prepareStatus;
-    QLabel *prepare;
-    QLabel *validateStatus;
-    QLabel *validate;
-    QLabel *diskStatus;
-    QLabel *disk;
-    QLabel *preMetaStatus;
-    QLabel *preMeta;
-    QLabel *netStatus;
-    QLabel *net;
-    QLabel *pkgStatus;
-    QLabel *pkg;
-    QLabel *postMetaStatus;
-    QLabel *postMeta;
-
-    QFont normalFont, boldFont;
+    StepProgressWidget *progress;
     QProcess *executor;
     QTimer *finishTimer;
     QFile log;
@@ -61,7 +47,6 @@ private:
     bool failed;
 
     Phase stepToPhase(QString step);
-    void labelsForPhase(Phase phase, QLabel **icon, QLabel **text);
     void markRunning(Phase phase);
     void markFinished(Phase phase);
     void markFailed(Phase phase);

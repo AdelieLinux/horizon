@@ -7,6 +7,7 @@ set(UI_SOURCES
     horizonhelpwindow.cc
     main.cc
     ${CMAKE_SOURCE_DIR}/3rdparty/Section.cpp
+    stepprogresswidget.cc
     useraccountwidget.cc
     avatardialog.cc
     crypt_sha512.c
@@ -32,6 +33,7 @@ set(UI_SOURCES
 set(RUN_QT_SOURCES
     horizonhelpwindow.cc
     horizonwizardpage.cc
+    stepprogresswidget.cc
     runner/main.cc
     runner/executorwizard.cc
     runner/executepage.cc
