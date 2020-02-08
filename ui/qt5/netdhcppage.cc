@@ -63,14 +63,15 @@ NetDHCPPage::NetDHCPPage(QWidget *parent) : HorizonWizardPage(parent) {
 void NetDHCPPage::startDHCP() {
     QProcess *dhcpcd = new QProcess(this);
     QString iface(QString::fromStdString(horizonWizard()->chosen_auto_iface));
-    dhcpcd->setProgram("dhcpcd");
+    dhcpcd->setProgram("/sbin/dhcpcd");
     dhcpcd->setArguments({"-q", "-t", "15", "-n",
                           "-j", "/var/log/horizon/dhcpcd.log", iface});
     connect(dhcpcd, &QProcess::errorOccurred,
             [=](QProcess::ProcessError error) {
         addrStatus->setPixmap(loadDPIAwarePixmap("status-issue", ".svg"));
         if(error == QProcess::FailedToStart) {
-            information->setText(tr("The Installation Environment is missing a critical component: dhcpcd could not be run."));
+            information->setText(tr("The Installation Environment is missing a critical component.  dhcpcd could not be loaded."));
+            logButton->setHidden(true);
         } else {
             information->setText(tr("The system has encountered an internal issue."));
             logButton->setHidden(false);
