@@ -184,11 +184,17 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
         end
     end
     context "simulating 'netaddress' execution" do
-        it "configures addressing correctly" do
+        it "configures IPv6 addressing correctly" do
             use_fixture '0042-netaddress-valid-static6.installfile'
             run_simulate
             # The end quote is missing deliberately.
             expect(last_command_started.stdout).to include('config_eth0="2600:1702:2a80:1b9f:5bbc:af4c:5dd1:a183/64')
+        end
+        it "configures IPv4 addressing correctly" do
+            use_fixture '0041-netaddress-valid-static4.installfile'
+            run_simulate
+            # The end quote is missing deliberately.
+            expect(last_command_started.stdout).to include('config_eth0="172.16.1.11/16')
         end
         it "configures routing correctly" do
             use_fixture '0048-netaddress-gateway4.installfile'
