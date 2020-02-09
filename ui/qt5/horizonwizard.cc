@@ -191,6 +191,8 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     binsh = Dash;
     sbininit = S6;
     eudev = true;
+    ipv4.use = false;
+    ipv6.use = false;
 
     /* REQ: UI.Global.Back.Save */
     setOption(IndependentPages);
@@ -335,8 +337,28 @@ QString HorizonWizard::toHScript() {
             lines << QString::fromStdString("netaddress " +
                                             this->chosen_auto_iface + " dhcp");
         } else {
-            /* XXX TODO no manual page implemented yet */
-            Q_ASSERT(false);
+            Q_ASSERT(this->ipv6.use || this->ipv4.use);
+
+            if(this->ipv6.use) {
+                QString addrL = QString::fromStdString("netaddress " +
+                                                       this->chosen_auto_iface);
+                addrL += " static " + this->ipv6.address + " " + this->ipv6.mask;
+                if(this->ipv6.gateway.size() > 0) {
+                    addrL += " " + this->ipv6.gateway;
+                }
+                lines << addrL;
+                lines << ("nameserver " + this->ipv6.dns);
+            }
+            if(this->ipv4.use) {
+                QString addrL = QString::fromStdString("netaddress " +
+                                                       this->chosen_auto_iface);
+                addrL += " static " + this->ipv4.address + " " + this->ipv4.mask;
+                if(this->ipv4.gateway.size() > 0) {
+                    addrL += " " + this->ipv4.gateway;
+                }
+                lines << addrL;
+                lines << ("nameserver " + this->ipv4.dns);
+            }
         }
     } else {
         lines << "network false";
@@ -400,7 +422,7 @@ QString HorizonWizard::toHScript() {
 
     switch(this->pkgtype) {
     case Mobile:
-        lines << "pkginstall powerdevil upower";
+        lines << "pkginstall pm-utils pm-quirks powerdevil upower";
 #if __cplusplus >= 201703L
         [[ fallthrough ]];
 #endif

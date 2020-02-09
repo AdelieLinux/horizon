@@ -78,6 +78,19 @@ public:
         QString mac;
     };
 
+    struct NetworkConfig {
+        /*! Whether to use this configuration or not. */
+        bool use;
+        /*! The IP address. */
+        QString address;
+        /*! The subnet mask (v4) / prefix length (v6). */
+        QString mask;
+        /*! The default gateway to use. */
+        QString gateway;
+        /*! The DNS server to use. */
+        QString dns;
+    };
+
     enum Arch {
         aarch64,
         armv7,
@@ -142,6 +155,10 @@ public:
     bool network;
     /*! Determines whether to use DHCP. */
     bool net_dhcp;
+    /*! If not DHCP, possibly contains IPv4 info. */
+    NetworkConfig ipv4;
+    /*! If not DHCP, possibly contains IPv6 info. */
+    NetworkConfig ipv6;
     /*! Determines whether to install GRUB. */
     bool grub;
     /*! Determines whether to install eudev. */
