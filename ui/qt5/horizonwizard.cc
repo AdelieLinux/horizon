@@ -229,8 +229,8 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
             QMessageBox nohelp(QMessageBox::Warning,
                                tr("No Help Available"),
                                tr("Help is not available for the current page."
-                                  "  Consult the Installation Guide for more "
-                                  "information."),
+                                  "  Consult the Installation Handbook for "
+                                  "more information."),
                                QMessageBox::Ok,
                                this);
             nohelp.exec();
