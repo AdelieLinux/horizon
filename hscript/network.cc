@@ -24,6 +24,7 @@
 #   define IFNAMSIZ 16
 #endif
 #include "network.hh"
+#include "util/net.hh"
 #include "util/output.hh"
 
 using namespace Horizon::Keys;
@@ -183,7 +184,8 @@ Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
 
         /* There are two kinds of prefixes for IPv4: prefix length, like IPv6,
          * and mask, which is the old style used by i.e. Windows. */
-        if(::inet_pton(AF_INET, prefix.c_str(), &addr_buf) != 1) {
+        real_prefix = subnet_mask_to_cidr(prefix.c_str());
+        if(real_prefix < 1) {
             try {
                 real_prefix = std::stoi(prefix);
             } catch(const std::exception &) {
@@ -192,14 +194,6 @@ Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
                              "netaddress: can't parse prefix length/mask",
                              "a network mask or prefix length is required");
                 return nullptr;
-            }
-        } else {
-            uint32_t tmp;
-            memcpy(&tmp, addr_buf, 4);
-            tmp = ntohl(tmp);
-            real_prefix = 1;
-            while((tmp <<= 1) & 0x80000000) {
-                real_prefix++;
             }
         }
 

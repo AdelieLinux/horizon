@@ -14,6 +14,8 @@
 #define __HORIZON_NET_HH_
 
 #include <algorithm>
+#include <arpa/inet.h>          /* inet_pton */
+#include <cstring>              /* memcpy */
 #include <string>
 
 /*! Determine if a string starts with a valid, supported protocol
@@ -31,6 +33,23 @@ static bool is_valid_url(const std::string &url) {
         return true;
     }
     return false;
+}
+
+static int subnet_mask_to_cidr(const char *mask) {
+    char addr_buf[4];
+    uint32_t tmp;
+    int real_prefix = ::inet_pton(AF_INET, mask, &addr_buf);
+
+    /* helpfully, we need to init real_prefix to 1 anyway;
+     * if inet_pton doesn't return 1, we failed to convert */
+    if(real_prefix == 1) {
+        memcpy(&tmp, addr_buf, 4);
+        tmp = ntohl(tmp);
+        while((tmp <<= 1) & 0x80000000) {
+            real_prefix++;
+        }
+    }
+    return real_prefix;
 }
 
 #endif /* !__HORIZON_NET_HH */
