@@ -26,10 +26,14 @@ public:
     SubnetBox(QWidget *parent = nullptr);
     QString subnetMask() const;
     int subnetCIDR() const;
+    void setSubnetCIDR(int value);
 
 public slots:
     void subnetEdited(const QString &text);
     void cidrEdited(int value);
+
+signals:
+    void valueChanged(int value);
 
 private:
     QHBoxLayout *layout;

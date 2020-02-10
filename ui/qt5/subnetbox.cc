@@ -40,10 +40,16 @@ int SubnetBox::subnetCIDR(void) const {
     return cidr->value();
 }
 
+void SubnetBox::setSubnetCIDR(int value) {
+    cidr->setValue(value);
+    cidrEdited(value);
+}
+
 void SubnetBox::subnetEdited(const QString &text) {
     int value = subnet_mask_to_cidr(text.toUtf8());
     if(value > 0) {
         cidr->setValue(value);
+        emit valueChanged(value);
     }
 }
 
@@ -60,6 +66,11 @@ void SubnetBox::cidrEdited(int value) {
     }
     snprintf(temp, 4, "%d", lastfilled);
     data.append(temp);
+    for(int i = 3; i > bytes; i--) {
+        data.append(".0");
+    }
 
     subnet->setText(data);
+
+    emit valueChanged(value);
 }
