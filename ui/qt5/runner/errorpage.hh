@@ -22,6 +22,7 @@ public:
     void initializePage();
 private:
     QLabel *descLabel;
+    QLabel *deetLabel;
 };
 
 #endif  /* !ERRORPAGE_HH */
