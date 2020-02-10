@@ -18,6 +18,7 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QSpinBox>
+#include "subnetbox.hh"
 
 class NetManualPage : public HorizonWizardPage {
 public:
@@ -32,6 +33,7 @@ private:
     QLineEdit *v6Addr, *v6Gateway, *v6DNS;
     QSpinBox *v6Prefix;
     QLineEdit *v4Addr, *v4Gateway, *v4DNS;
+    SubnetBox *v4Prefix;
 };
 
 #endif /* !NETMANUALPAGE_HH */

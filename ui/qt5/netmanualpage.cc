@@ -28,6 +28,8 @@ NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
     useV4->setChecked(true);
     v4Addr = new QLineEdit;
     v4Addr->setInputMask("900.900.900.900;_");
+    v4Prefix = new SubnetBox;
+    v4Prefix->setSubnetCIDR(24);
     v4Gateway = new QLineEdit;
     v4Gateway->setInputMask("900.900.900.900;_");
     v4DNS = new QLineEdit;
@@ -45,6 +47,9 @@ NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
         this->horizonWizard()->ipv4.address = v4Addr->text();
         emit completeChanged();
     });
+    connect(v4Prefix, &SubnetBox::valueChanged, [=] {
+        this->horizonWizard()->ipv4.mask = QString::number(v4Prefix->subnetCIDR());
+    });
     connect(v4Gateway, &QLineEdit::textEdited, [=] {
         this->horizonWizard()->ipv4.gateway = v4Gateway->text();
         emit completeChanged();
@@ -58,6 +63,8 @@ NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
     v4Pane->addSpacing(20);
     v4Pane->addWidget(new QLabel(tr("IPv4 Address:")));
     v4Pane->addWidget(v4Addr);
+    v4Pane->addWidget(new QLabel(tr("IPv4 Subnet:")));
+    v4Pane->addWidget(v4Prefix);
     v4Pane->addWidget(new QLabel(tr("IPv4 Gateway:")));
     v4Pane->addWidget(v4Gateway);
     v4Pane->addWidget(new QLabel(tr("IPv4 DNS Server:")));
@@ -67,12 +74,16 @@ NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
     useV6 = new QCheckBox(tr("Enable IPv&6"));
     useV6->setChecked(true);
     v6Addr = new QLineEdit;
+    v6Prefix = new QSpinBox;
+    v6Prefix->setRange(1, 128);
+    v6Prefix->setValue(64);
     v6Gateway = new QLineEdit;
     v6DNS = new QLineEdit;
     v6DNS->setText("2620:fe::fe");
 
     connect(useV6, &QCheckBox::toggled, [=](bool ticked) {
         v6Addr->setEnabled(ticked);
+        v6Prefix->setEnabled(ticked);
         v6Gateway->setEnabled(ticked);
         v6DNS->setEnabled(ticked);
         this->horizonWizard()->ipv6.use = true;
@@ -81,6 +92,9 @@ NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
     connect(v6Addr, &QLineEdit::textEdited, [=] {
         this->horizonWizard()->ipv6.address = v6Addr->text();
         emit completeChanged();
+    });
+    connect(v6Prefix, QOverload<int>::of(&QSpinBox::valueChanged), [=] {
+        this->horizonWizard()->ipv6.mask = QString::number(v6Prefix->value());
     });
     connect(v6Gateway, &QLineEdit::textEdited, [=] {
         this->horizonWizard()->ipv6.gateway = v6Gateway->text();
@@ -95,6 +109,8 @@ NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
     v6Pane->addSpacing(20);
     v6Pane->addWidget(new QLabel(tr("IPv6 Address:")));
     v6Pane->addWidget(v6Addr);
+    v6Pane->addWidget(new QLabel(tr("IPv6 Subnet Prefix:")));
+    v6Pane->addWidget(v6Prefix);
     v6Pane->addWidget(new QLabel(tr("IPv6 Gateway:")));
     v6Pane->addWidget(v6Gateway);
     v6Pane->addWidget(new QLabel(tr("IPv6 DNS Server:")));
@@ -126,8 +142,10 @@ void NetManualPage::initializePage() {
     }
 
     this->horizonWizard()->ipv4.use = true;
+    this->horizonWizard()->ipv4.mask = QString::number(24);
     this->horizonWizard()->ipv4.dns = "9.9.9.9";
     this->horizonWizard()->ipv6.use = true;
+    this->horizonWizard()->ipv6.mask = QString::number(64);
     this->horizonWizard()->ipv6.dns = "2620:fe::fe";
 }
 
