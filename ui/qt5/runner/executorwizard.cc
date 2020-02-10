@@ -18,7 +18,8 @@
 #include "errorpage.hh"
 #include "finishedpage.hh"
 
-ExecutorWizard::ExecutorWizard(QWidget *parent) : QWizard(parent) {
+ExecutorWizard::ExecutorWizard(QWidget *parent, bool _autom)
+    : QWizard(parent), automatic(_autom) {
     setWindowTitle(tr("Adélie Linux System Installation"));
 
     setFixedSize(QSize(650, 450));
@@ -32,7 +33,7 @@ ExecutorWizard::ExecutorWizard(QWidget *parent) : QWizard(parent) {
     setOption(NoCancelButtonOnLastPage);
 
     QList<QWizard::WizardButton> buttonLayout;
-    buttonLayout << Stretch << FinishButton << CancelButton;
+    buttonLayout << Stretch << FinishButton;
     setButtonLayout(buttonLayout);
 }
 

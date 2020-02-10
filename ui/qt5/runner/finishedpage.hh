@@ -18,6 +18,7 @@
 class FinishedPage : public HorizonWizardPage {
 public:
     FinishedPage(QWidget *parent = nullptr);
+    void initializePage() override;
 };
 
 #endif  /* !FINISHEDPAGE_HH */

@@ -23,8 +23,11 @@ public:
         Page_Finished
     };
 
-    ExecutorWizard(QWidget *parent = nullptr);
+    ExecutorWizard(QWidget *parent = nullptr, bool automatic = false);
     void reject();
+    bool isAutomatic() { return this->automatic; };
+private:
+    bool automatic;
 };
 
 #endif  /* !EXECUTORWIZARD_HH */

@@ -10,12 +10,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#include "executorwizard.hh"
 #include "finishedpage.hh"
 
 #include <QFileDialog>
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QTimer>
 #include <QVBoxLayout>
 
 FinishedPage::FinishedPage(QWidget *parent) : HorizonWizardPage(parent) {
@@ -54,4 +56,16 @@ FinishedPage::FinishedPage(QWidget *parent) : HorizonWizardPage(parent) {
     layout->addWidget(owo, 0, Qt::AlignCenter);
 
     setLayout(layout);
+}
+
+void FinishedPage::initializePage() {
+    if(static_cast<ExecutorWizard *>(wizard())->isAutomatic()) {
+        QTimer *finishTimer = new QTimer(this);
+        finishTimer->setInterval(15000);
+        finishTimer->setSingleShot(true);
+        connect(finishTimer, &QTimer::timeout, [=]{
+            wizard()->accept();
+        });
+        finishTimer->start();
+    }
 }
