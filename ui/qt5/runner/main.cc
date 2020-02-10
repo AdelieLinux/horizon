@@ -11,6 +11,7 @@
  */
 
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QIcon>
 #include <QLibraryInfo>
 #include <QTranslator>
@@ -19,6 +20,9 @@
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    app.setOrganizationName("Adélie Linux");
+    app.setApplicationName("Horizon Runner GUI");
+    app.setApplicationVersion(VERSTR);
 
     QString translatorFileName = QLatin1String("qt_");
     translatorFileName += QLocale::system().name();
@@ -32,7 +36,29 @@ int main(int argc, char *argv[]) {
 
     app.setWindowIcon(QIcon(":/horizon-256.png"));
 
-    ExecutorWizard wizard;
+    QCommandLineParser parser;
+    parser.setApplicationDescription(app.tr("Executes a HorizonScript with graphical progress indication."));
+    QCommandLineOption help = parser.addHelpOption();
+    QCommandLineOption version = parser.addVersionOption();
+    QCommandLineOption automatic("automatic", app.tr("Runs the Executor in Automatic mode.  After installation, the system will be restarted automatically."));
+    parser.addOption(automatic);
+
+    if(!parser.parse(app.arguments())) {
+        parser.showHelp(1);
+        return 1;
+    }
+
+    if(parser.isSet(help)) {
+        parser.showHelp();
+        return 0;
+    }
+
+    if(parser.isSet(version)) {
+        parser.showVersion();
+        return 0;
+    }
+
+    ExecutorWizard wizard(nullptr, parser.isSet(automatic));
     wizard.show();
 
     return app.exec();
