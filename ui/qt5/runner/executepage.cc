@@ -60,6 +60,8 @@ ExecutePage::ExecutePage(QWidget *parent) : HorizonWizardPage(parent) {
             this, &ExecutePage::executorReady);
     connect(executor, &QProcess::readyReadStandardOutput,
             this, &ExecutePage::executorOutReady);
+    connect(executor, &QProcess::errorOccurred,
+            this, &ExecutePage::executorErrored);
     connect(executor, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
             this, &ExecutePage::executorFinished);
     executor->start();
@@ -124,6 +126,12 @@ void ExecutePage::executorFinished(int code, QProcess::ExitStatus status) {
         markFailed(this->current);
     }
 
+    wizard()->button(QWizard::CancelButton)->setEnabled(false);
+    finishTimer->start();
+}
+
+void ExecutePage::executorErrored(QProcess::ProcessError what) {
+    markFailed(this->current);
     wizard()->button(QWizard::CancelButton)->setEnabled(false);
     finishTimer->start();
 }

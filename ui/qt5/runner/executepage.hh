@@ -53,6 +53,7 @@ private:
 
     void executorReady();
     void executorOutReady();
+    void executorErrored(QProcess::ProcessError what);
     void executorFinished(int code, QProcess::ExitStatus status);
 };
 
