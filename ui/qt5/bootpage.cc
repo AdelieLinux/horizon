@@ -75,8 +75,8 @@ BootPage::BootPage(QWidget *parent) : HorizonWizardPage(parent) {
     mainLayout->addSpacing(25);
     mainLayout->addWidget(yesGrub);
     mainLayout->addWidget(noGrub);
-    mainLayout->addStretch();
-    mainLayout->addWidget(kernDisclosure);
+    //mainLayout->addStretch();
+    //mainLayout->addWidget(kernDisclosure);
     setLayout(mainLayout);
 }
 
