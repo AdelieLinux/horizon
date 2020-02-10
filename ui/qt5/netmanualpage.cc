@@ -12,10 +12,11 @@
 
 #include "netmanualpage.hh"
 
+#include <algorithm>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QComboBox>
 #include <QLabel>
-#include <QLineEdit>
 
 NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
     loadWatermark("network");
@@ -38,6 +39,7 @@ NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
 
     connect(useV4, &QCheckBox::toggled, [=](bool ticked) {
         v4Addr->setEnabled(ticked);
+        v4Prefix->setEnabled(ticked);
         v4Gateway->setEnabled(ticked);
         v4DNS->setEnabled(ticked);
         this->horizonWizard()->ipv4.use = ticked;
@@ -86,7 +88,7 @@ NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
         v6Prefix->setEnabled(ticked);
         v6Gateway->setEnabled(ticked);
         v6DNS->setEnabled(ticked);
-        this->horizonWizard()->ipv6.use = true;
+        this->horizonWizard()->ipv6.use = ticked;
         emit completeChanged();
     });
     connect(v6Addr, &QLineEdit::textEdited, [=] {
@@ -135,11 +137,66 @@ NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
 }
 
 void NetManualPage::initializePage() {
-    if(horizonWizard()->interfaces.size() != 1) {
-        ifaceWidget->show();
-    } else {
-        ifaceWidget->hide();
+    if(horizonWizard()->interfaces.size() > 1) {
+        /* The first interface will either be the only one,
+         * or the default in the list. */
+        auto iface = horizonWizard()->interfaces.begin();
+        horizonWizard()->chosen_auto_iface = iface->first;
     }
+
+#ifdef HAS_INSTALL_ENV
+    if(horizonWizard()->interfaces.size() != 1)
+    {
+        QComboBox *ifaceBox = new QComboBox;
+        ifaceWidget->layout()->addWidget(new QLabel(tr("Use interface: ")));
+        ifaceWidget->layout()->addWidget(ifaceBox);
+
+        for(auto &iface : horizonWizard()->interfaces) {
+            QIcon ifaceIcon;
+            QString ifaceDevName = QString::fromStdString(iface.first);
+            QString ifaceName;
+
+            switch(iface.second.type) {
+            case HorizonWizard::Wireless:
+                ifaceIcon = QIcon::fromTheme("network-wireless");
+                ifaceName = tr("Wi-Fi (%1)").arg(ifaceDevName);
+                break;
+            case HorizonWizard::Ethernet:
+                ifaceIcon = QIcon::fromTheme("network-wired");
+                ifaceName = tr("Ethernet (%1)").arg(ifaceDevName);
+                break;
+            case HorizonWizard::Bonded:
+                ifaceIcon = QIcon::fromTheme("network-card");
+                ifaceName = tr("Bond (%1)").arg(ifaceDevName);
+                break;
+            case HorizonWizard::Unknown:
+                ifaceIcon = QIcon::fromTheme("network-card");
+                ifaceName = ifaceDevName;
+                break;
+            }
+            ifaceBox->addItem(ifaceIcon, ifaceName);
+        }
+        connect(ifaceBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
+            auto iterator = horizonWizard()->interfaces.begin();
+            std::advance(iterator, index);
+            horizonWizard()->chosen_auto_iface = iterator->first;
+        });
+    } else {
+        auto iface = horizonWizard()->interfaces.begin();
+        ifaceWidget->layout()->addWidget(new QLabel(
+            tr("Configuring interface %1 (%2)")
+            .arg(QString::fromStdString(iface->first))
+            .arg(iface->second.mac)));
+    }
+#else   /* !HAS_INSTALL_ENV */
+    QLineEdit *ifaceBox = new QLineEdit;
+    ifaceBox->setPlaceholderText(tr("Interface name (eth0, wlan0, ...)"));
+    ifaceWidget->layout()->addWidget(new QLabel(tr("Use interface: ")));
+    ifaceWidget->layout()->addWidget(ifaceBox);
+    connect(ifaceBox, &QLineEdit::textEdited, [=] {
+        horizonWizard()->chosen_auto_iface = ifaceBox->text().toStdString();
+    });
+#endif  /* HAS_INSTALL_ENV */
 
     this->horizonWizard()->ipv4.use = true;
     this->horizonWizard()->ipv4.mask = QString::number(24);
