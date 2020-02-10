@@ -44,6 +44,7 @@ extern "C" {
 #include "networkingpage.hh"
 #include "networkifacepage.hh"
 #include "netsimplewifipage.hh"
+#include "netmanualpage.hh"
 #include "netdhcppage.hh"
 #include "datetimepage.hh"
 #include "hostnamepage.hh"
@@ -211,6 +212,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setPage(Page_Network_Iface, new NetworkIfacePage);
     setPage(Page_Network_Wireless, new NetworkSimpleWirelessPage);
     setPage(Page_Network_DHCP, new NetDHCPPage);
+    setPage(Page_Network_Manual, new NetManualPage);
     setPage(Page_DateTime, new DateTimePage);
     setPage(Page_Hostname, new HostnamePage);
     setPage(Page_PkgSimple, new PkgSimplePage);

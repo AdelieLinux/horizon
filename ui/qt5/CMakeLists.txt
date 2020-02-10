@@ -18,6 +18,7 @@ set(UI_SOURCES
     networkifacepage.cc
     netsimplewifipage.cc
     netdhcppage.cc
+    netmanualpage.cc
     datetimepage.cc
     hostnamepage.cc
     pkgsimple.cc
