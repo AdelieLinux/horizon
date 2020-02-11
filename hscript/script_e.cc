@@ -21,6 +21,7 @@
 #include "script.hh"
 #include "script_i.hh"
 
+#include "util.hh"
 #include "util/filesystem.hh"
 
 namespace Horizon {
@@ -395,6 +396,17 @@ bool Script::execute() const {
                 EXECUTE_FAILURE("network");
                 return false;
             }
+            for(auto &iface : ifaces) {
+                fs::create_symlink("/etc/init.d/net.lo",
+                                   "/etc/init.d/net." + iface, ec);
+                if(ec) {
+                    output_error("internal", "could not use networking on "
+                                 + iface, ec.message());
+                    EXECUTE_FAILURE("network");
+                } else {
+                    run_command("service", {"net." + iface, "start"});
+                }
+            }
             if(!internal->nses.empty()) {
                 if(dhcp) {
                     fs::copy_file("/target/etc/resolv.conf.head",
@@ -498,7 +510,7 @@ bool Script::execute() const {
                                        iface, ec);
                     if(ec) {
                         output_error("internal", "could not auto-start "
-                                     "networking on" + iface, ec.message());
+                                     "networking on " + iface, ec.message());
                     }
                 }
             }
