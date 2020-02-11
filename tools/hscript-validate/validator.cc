@@ -9,12 +9,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#include <boost/program_options.hpp>
 #include <unistd.h>
 #include "hscript/script.hh"
 #include "util/output.hh"
-#include "3rdparty/clipp.h"
 
 bool pretty = false;
+
+static int cli_failure(boost::program_options::options_description cli) {
+        std::cout << cli << std::endl;
+        return EXIT_FAILURE;
+}
 
 int main(int argc, char *argv[]) {
     const Horizon::Script *my_script;
@@ -28,25 +33,51 @@ int main(int argc, char *argv[]) {
         pretty = true;  /* LCOV_EXCL_LINE */
     }
 
-    auto cli = (
-                clipp::value("installfile", installfile),
-                clipp::option("-i", "--install").doc("Set Installation Environment flag (DANGEROUS)")(
-                    [&opts] { opts.set(ScriptOptionFlags::InstallEnvironment); }
-                ),
-                clipp::option("-k", "--keep-going").doc("Continue parsing after errors")(
-                    [&opts] { opts.set(ScriptOptionFlags::KeepGoing); }
-                ),
-                clipp::option("-n", "--no-colour").doc("Do not 'prettify' output")(
-                    [] { pretty = false; }
-                ),
-                clipp::option("-s", "--strict").doc("Strict parsing")(
-                    [&opts] { opts.set(ScriptOptionFlags::StrictMode); }
-                )
-    );
-    if(!clipp::parse(argc, argv, cli)) {
-        std::cout << "usage:" << std::endl;
-        std::cout << clipp::usage_lines(cli, "hscript-validate") << std::endl;
-        return EXIT_FAILURE;
+    boost::program_options::options_description cli_hidden;
+    cli_hidden.add_options()
+        ("installfile", "Installfile to load");
+    boost::program_options::options_description cli_visible("Allowed options");
+    cli_visible.add_options()
+        ("install,i", "Set Installation Environment flag (DANGEROUS)")
+        ("keep-going,k", "Continue parsing after errors")
+        ("no-colour,n", "Do not 'prettify' output")
+        ("strict,s", "Strict parsing");
+    boost::program_options::options_description cli;
+    cli.add(cli_visible).add(cli_hidden);
+    boost::program_options::positional_options_description cli_pos;
+    cli_pos.add("installfile", -1);
+    boost::program_options::variables_map args;
+    try {
+        boost::program_options::store(
+            boost::program_options::command_line_parser(argc, argv)
+                .options(cli)
+                .positional(cli_pos)
+                .run(),
+            args);
+        boost::program_options::notify(args);
+    } catch(const boost::program_options::error& cli_err) {
+        std::cout << "An invalid option was entered." << std::endl;
+        return cli_failure(cli_visible);
+    }
+
+    if (args.count("installfile")) {
+        installfile = args["installfile"].as<std::string>();
+    } else {
+        std::cout << "You must provide an installfile." << std::endl;
+        return cli_failure(cli_visible);
+    }
+
+    if (args.count("install")) {
+        opts.set(ScriptOptionFlags::InstallEnvironment);
+    }
+    if (args.count("keep-going")) {
+        opts.set(ScriptOptionFlags::KeepGoing);
+    }
+    if (args.count("no-colour")) {
+        pretty = false;
+    }
+    if (args.count("strict")) {
+        opts.set(ScriptOptionFlags::StrictMode);
     }
 
     bold_if_pretty(std::cout);

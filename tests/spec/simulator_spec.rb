@@ -8,11 +8,11 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
     context "argument passing" do
         it "requires an installfile to be specified" do
             run_command 'hscript-simulate'
-            expect(last_command_started).to have_output(/usage/)
+            expect(last_command_started).to have_output(/Allowed options/)
         end
         it "supports Strict Mode" do
             run_command 'hscript-simulate foo -s'
-            expect(last_command_started).to_not have_output(/usage/)
+            expect(last_command_started).to_not have_output(/Allowed options/)
         end
         it "doesn't output ANSI colours when instructed not to" do
             run_command 'hscript-simulate foo -n'
