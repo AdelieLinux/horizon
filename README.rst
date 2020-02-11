@@ -97,6 +97,10 @@ To build the entirety of Project Horizon, you will need:
   Horizon makes full use of the C++17 <filesystem> library if it is
   available, but will fall back to requiring Boost if it isn't.
 
+To build the simulator and validator, you will additionally need:
+
+ * Boost.ProgramOptions (boost-dev)
+
 To build Horizon UI for Installation Environments, you will additionally
 need:
 

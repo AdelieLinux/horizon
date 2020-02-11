@@ -11,11 +11,11 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
     context "Utility argument passing" do
         it "requires an installfile to be specified" do
             run_command 'hscript-validate'
-            expect(last_command_started).to have_output(/usage/)
+            expect(last_command_started).to have_output(/Allowed options/)
         end
         it "accepts -i flag" do
             run_command 'hscript-validate foo -i'
-            expect(last_command_started).to_not have_output(/usage/)
+            expect(last_command_started).to_not have_output(/Allowed options/)
         end
         it "doesn't output ANSI colours when instructed not to" do
             run_command 'hscript-validate foo -n'
