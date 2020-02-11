@@ -77,6 +77,7 @@ IF(INSTALL)
     endif()
     set(BUILD_SHARED_LIBS ON)
 
+    add_subdirectory(diskman)
     add_subdirectory(executor)
 ELSE(INSTALL)
     set(BUILD_SHARED_LIBS OFF)

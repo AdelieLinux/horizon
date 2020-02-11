@@ -90,12 +90,6 @@ To build the entirety of Project Horizon, you will need:
 
 * Qt 5 (Core; Network; Widgets) (qt5-qtbase-dev)
 
-* GNU Parted development files (parted-dev)
-
-* libudev development files (eudev-dev)
-
-* `BCNM`_
-
 * cURL development files (curl-dev)
 
 * Either a C++17 environment, or Boost.Filesystem (boost-dev)
@@ -105,6 +99,16 @@ To build the entirety of Project Horizon, you will need:
 
 To build Horizon UI for Installation Environments, you will additionally
 need:
+
+* GNU Parted development files (parted-dev)
+
+* libudev development files (eudev-dev)
+
+* `BCNM`_
+
+* blkid and libfdisk development files (util-linux-dev)
+
+* Boost.PropertyTree (boost-dev)
 
 * LibCap development files (libcap-dev)
 
@@ -206,6 +210,13 @@ The ``devel`` directory contains the Vision document, the Functional Software
 Requirements Specification for Project Horizon, and the official HorizonScript
 Specification.  The documents are written in DocBook XML; the HTML and PDF
 versions are not stored in this repository.
+
+
+``diskman``: Disk Manipulation library
+``````````````````````````````````````
+The ``diskman`` directory includes the source code for the DiskMan library,
+which is used by Horizon front ends for probing and displaying block device
+information.
 
 
 ``executor``: HorizonScript Executor
