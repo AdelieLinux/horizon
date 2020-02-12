@@ -2,6 +2,7 @@
     <qresource prefix="/wizard_pixmaps">
         <file>resources/intro-high.png</file>
         <file>resources/intro-low.png</file>
+        <file>resources/disk-low.png</file>
         <file>resources/network-low.png</file>
         <file>resources/network-high.png</file>
         <file>resources/software-high.png</file>

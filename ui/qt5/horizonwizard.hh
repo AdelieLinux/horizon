@@ -13,10 +13,12 @@
 #ifndef HORIZONWIZARD_HH
 #define HORIZONWIZARD_HH
 
+#include <diskman/disk.hh>
 #include <QShortcut>
 #include <QWizard>
 #include <map>
 #include <string>
+#include <vector>
 
 inline QString fromMacAddress(char address[6]) {
     char buf[18];
@@ -134,12 +136,16 @@ public:
     std::string version;
     /*! The architecture being installed. */
     Arch arch;
+#ifdef HAS_INSTALL_ENV
+    /*! The disks present on this computer. */
+    std::vector<Horizon::DiskMan::Disk> disks;
+#endif
     /*! Whether to erase the disk when automatically partitioning. */
     bool erase;
     /*! The disk to partition automatically. */
     std::string auto_disk;
     /*! The HorizonScript lines describing what to do about partitioning.
-     *  If auto_erase_disk is set, this is not used.
+     *  If auto_disk is set, this is not used.
      *  Otherwise, this should have any relevant disklabel/partition/fs etc. */
     QStringList part_lines;
 #ifdef NON_LIBRE_FIRMWARE

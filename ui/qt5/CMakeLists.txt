@@ -15,6 +15,7 @@ set(UI_SOURCES
 
     intropage.cc
     inputpage.cc
+    partitionpage.cc
     networkingpage.cc
     networkifacepage.cc
     netsimplewifipage.cc
@@ -45,7 +46,9 @@ set(RUN_QT_SOURCES
     horizon.qrc)
 
 IF(INSTALL)
-    LIST(APPEND UI_SOURCES commitpage.cc)
+    LIST(APPEND UI_SOURCES
+        commitpage.cc
+        partitionprobe.cc)
 ELSE(INSTALL)
     LIST(APPEND UI_SOURCES writeoutpage.cc)
 ENDIF(INSTALL)
@@ -68,7 +71,7 @@ IF(INSTALL)
     pkg_check_modules(XKBFile REQUIRED xkbfile)
     pkg_check_modules(LIBX11 REQUIRED x11)
     pkg_check_modules(LibCap REQUIRED libcap)
-    target_link_libraries(horizon-qt5 ${BCNM} ${SKARNET} ${LIBUDEV_LIBRARIES} ${LibCap_LIBRARIES} ${LIBX11_LIBRARIES} ${XKBFile_LIBRARIES})
+    target_link_libraries(horizon-qt5 ${BCNM} ${SKARNET} ${LIBUDEV_LIBRARIES} ${LibCap_LIBRARIES} ${LIBX11_LIBRARIES} ${XKBFile_LIBRARIES} diskman)
     add_executable(horizon-run-qt5 ${RUN_QT_SOURCES})
     target_link_libraries(horizon-run-qt5 Qt5::Widgets)
     target_compile_definitions(horizon-run-qt5 PRIVATE IN_RUNNER)

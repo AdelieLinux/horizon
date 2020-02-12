@@ -38,6 +38,7 @@ extern "C" {
 
 #include "intropage.hh"
 #include "inputpage.hh"
+#include "partitionpage.hh"
 #ifdef NON_LIBRE_FIRMWARE
 #include "firmwarepage.hh"
 #endif  /* NON_LIBRE_FIRMWARE */
@@ -205,6 +206,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 
     setPage(Page_Intro, new IntroPage);
     setPage(Page_Input, new InputPage);
+    setPage(Page_Partition, new PartitionPage);
 #ifdef NON_LIBRE_FIRMWARE
     setPage(Page_Firmware, new FirmwarePage);
 #endif  /* NON_LIBRE_FIRMWARE */
