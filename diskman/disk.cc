@@ -111,6 +111,7 @@ Disk::Disk(void *creation, int type, bool partition) {
                             fdisk_table_get_partition(parts, next);
                     _partitions.push_back(Partition(*this, part, 0));
                 }
+                fdisk_unref_table(parts);
             }
         } else if(type == 0) {
             /* fallback to udev, if available */
@@ -120,8 +121,7 @@ Disk::Disk(void *creation, int type, bool partition) {
             struct udev *udev = udev_device_get_udev(device);
             struct udev_enumerate *part_enum = udev_enumerate_new(udev);
             if(part_enum != NULL) {
-                struct udev_list_entry *first, *item;
-                struct udev_device *part_device = NULL;
+                struct udev_list_entry *first;
 
                 udev_enumerate_add_match_subsystem(part_enum, "block");
                 udev_enumerate_add_match_property(part_enum, "DEVTYPE",
@@ -131,13 +131,17 @@ Disk::Disk(void *creation, int type, bool partition) {
 
                 first = udev_enumerate_get_list_entry(part_enum);
                 if(first != NULL) {
+                    struct udev_list_entry *item;
                     udev_list_entry_foreach(item, first) {
                         const char *path = udev_list_entry_get_name(item);
-                        if(part_device != NULL) udev_device_unref(part_device);
-                        part_device = udev_device_new_from_syspath(udev, path);
-                        _partitions.push_back(Partition(*this, part_device, 1));
+                        struct udev_device *part_device = udev_device_new_from_syspath(udev, path);
+                        if(part_device != nullptr) {
+                            _partitions.push_back(Partition(*this, part_device, 1));
+                            udev_device_unref(part_device);
+                        }
                     }
                 }
+                udev_enumerate_unref(part_enum);
             }
         } else {
             std::cerr << "Cannot load partitions for " << _name << std::endl;

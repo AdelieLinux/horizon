@@ -32,13 +32,20 @@ Partition::Partition(Disk &d, void *creation, int type) {
         } else {
             this->_size = 0;
         }
-        const char *name = fdisk_partname(d.node().c_str(),
-                                          fdisk_partition_get_partno(part) + 1);
-        const char *value;
+        char *name = fdisk_partname(d.node().c_str(),
+                                    fdisk_partition_get_partno(part) + 1);
+        char *value;
         value = blkid_get_tag_value(nullptr, "TYPE", name);
-        if(value != nullptr) this->_fs_type = std::string(value);
+        if(value != nullptr) {
+            this->_fs_type = std::string(value);
+            free(value);
+        }
         value = blkid_get_tag_value(nullptr, "LABEL", name);
-        if(value != nullptr) this->_label = std::string(value);
+        if(value != nullptr) {
+            this->_label = std::string(value);
+            free(value);
+        }
+        free(name);
         break;
     }
     case 1: { /* udev */

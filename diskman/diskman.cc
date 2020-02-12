@@ -52,14 +52,14 @@ std::vector<Disk> DiskMan::find_disks(bool include_part, bool include_vg,
     udev_enumerate_add_match_property(disk_enum, "DEVTYPE", "disk");
     udev_enumerate_scan_devices(disk_enum);
     first = udev_enumerate_get_list_entry(disk_enum);
-    if(first == NULL) {
+    if(first == nullptr) {
         std::cerr << "No block devices found" << std::endl;
         return {};
     }
 
     udev_list_entry_foreach(item, first) {
         const char *path = udev_list_entry_get_name(item);
-        if(device != NULL) udev_device_unref(device);
+        if(device != nullptr) udev_device_unref(device);
         device = udev_device_new_from_syspath(pImpl->udev, path);
         std::string name(udev_device_get_sysname(device));
         if(name.compare(0, 4, "loop") == 0
@@ -77,6 +77,11 @@ std::vector<Disk> DiskMan::find_disks(bool include_part, bool include_vg,
         }
         disks.push_back(Disk(device, 0, include_part));
     }
+
+    if(device != nullptr) {
+        udev_device_unref(device);
+    }
+    udev_enumerate_unref(disk_enum);
 
     return disks;
 }
