@@ -13,8 +13,10 @@
 #ifndef DISKMAN__DISK_HH
 #define DISKMAN__DISK_HH
 
-#include <memory>
 #include <string>
+#include <vector>
+
+#include "partition.hh"
 
 namespace Horizon {
 namespace DiskMan {
@@ -62,6 +64,22 @@ public:
     /*! Retrieve the label of the file system written on this disk.
      *  Only valid if has_fs() is true. */
     const std::string fs_label() const { return this->_fs_label; }
+
+    /*! Retrieve the total size of the disk.
+     * @returns The size of the disk, in mebibytes (MiB). */
+    uint32_t total_size() const { return this->total_mb; }
+    /*! Retrieve the amount of free space available on the disk.
+     * @returns The size of free space on the disk, in mebibytes (MiB). */
+    uint32_t free_space() const { return this->free_mb; }
+    /*! Retrieve the size of the largest contiguous block of free space on
+     *  the disk.
+     * @returns The size of the largest contiguous free space block on the
+     *          disk, in mebibytes (MiB). */
+    uint32_t contiguous_block() const { return this->contiguous_mb; }
+
+    /*! Retrieve the partitions contained in the label, if any.
+     * @note You may only call this method if *has_label* is true. */
+    const std::vector<Partition> partitions() const;
 private:
     /*! The name of the disk ("sda") */
     std::string _name;
@@ -78,6 +96,8 @@ private:
     bool _has_label;
     /*! The type of disk label used, if +has_label+ is true */
     enum Label _label;
+    /*! Partitions inside the disklabel */
+    std::vector<Partition> _partitions;
 
     /*! Whether this disk has a direct filesystem (non-labelled) */
     bool _has_fs;
@@ -86,7 +106,14 @@ private:
     /*! The label of the file system, if +has_fs+ is true */
     std::string _fs_label;
 
-    Disk(void *creation, bool partition);
+    /*! Total size of this disk, in mebibytes */
+    uint32_t total_mb;
+    /*! Free space on this disk, in mebibytes */
+    uint32_t free_mb;
+    /*! Largest contiguous block of free space on this disk, in mebibytes */
+    uint32_t contiguous_mb;
+
+    Disk(void *creation, int type, bool partition);
     friend class DiskMan;
 };
 

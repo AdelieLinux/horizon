@@ -71,7 +71,11 @@ std::vector<Disk> DiskMan::find_disks(bool include_part, bool include_vg,
             /* Skip LVM volumes if requested. */
             continue;
         }
-        disks.push_back(Disk(device, include_part));
+        if(udev_device_get_property_value(device, "ID_CDROM") != nullptr) {
+            /* REQ: UI.Partition.Install.Ignore */
+            continue;
+        }
+        disks.push_back(Disk(device, 0, include_part));
     }
 
     return disks;
