@@ -38,11 +38,11 @@ extern "C" {
 
 #include "intropage.hh"
 #include "inputpage.hh"
-#include "partitionpage.hh"
-#include "partitiondiskpage.hh"
 #ifdef NON_LIBRE_FIRMWARE
 #include "firmwarepage.hh"
 #endif  /* NON_LIBRE_FIRMWARE */
+#include "partitionpage.hh"
+#include "partitiondiskpage.hh"
 #include "networkingpage.hh"
 #include "networkifacepage.hh"
 #include "netsimplewifipage.hh"
@@ -62,14 +62,14 @@ extern "C" {
 static std::map<int, std::string> help_id_map = {
     {HorizonWizard::Page_Intro, "intro"},
     {HorizonWizard::Page_Input, "input"},
+#ifdef NON_LIBRE_FIRMWARE
+    {HorizonWizard::Page_Firmware, "firmware"},
+#endif  /* NON_LIBRE_FIRMWARE */
     {HorizonWizard::Page_Partition, "partition"},
     {HorizonWizard::Page_PartitionDisk, "partition-disk"},
     {HorizonWizard::Page_PartitionChoose, "partition-manipulation"},
     {HorizonWizard::Page_PartitionManual, "partition-manual"},
     {HorizonWizard::Page_PartitionMount, "partition-mountpoints"},
-#ifdef NON_LIBRE_FIRMWARE
-    {HorizonWizard::Page_Firmware, "firmware"},
-#endif  /* NON_LIBRE_FIRMWARE */
     {HorizonWizard::Page_Network, "network-start"},
     {HorizonWizard::Page_Network_Iface, "network-iface"},
     {HorizonWizard::Page_Network_Wireless, "network-wifi"},
@@ -207,11 +207,11 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 
     setPage(Page_Intro, new IntroPage);
     setPage(Page_Input, new InputPage);
-    setPage(Page_Partition, new PartitionPage);
-    setPage(Page_PartitionDisk, new PartitionDiskPage);
 #ifdef NON_LIBRE_FIRMWARE
     setPage(Page_Firmware, new FirmwarePage);
 #endif  /* NON_LIBRE_FIRMWARE */
+    setPage(Page_Partition, new PartitionPage);
+    setPage(Page_PartitionDisk, new PartitionDiskPage);
     setPage(Page_Network, new NetworkingPage);
     setPage(Page_Network_Iface, new NetworkIfacePage);
     setPage(Page_Network_Wireless, new NetworkSimpleWirelessPage);

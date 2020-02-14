@@ -38,14 +38,14 @@ public:
     enum {
         Page_Intro,             /* introduction */
         Page_Input,             /* keyboard layout */
+#ifdef NON_LIBRE_FIRMWARE
+        Page_Firmware,          /* firmware */
+#endif  /* NON_LIBRE_FIRMWARE */
         Page_Partition,         /* partitioning */
         Page_PartitionDisk,     /* disk selection */
         Page_PartitionChoose,   /* erase, use free, manual, use existing */
         Page_PartitionManual,   /* manual */
         Page_PartitionMount,    /* choose mountpoints - manual and existing */
-#ifdef NON_LIBRE_FIRMWARE
-        Page_Firmware,          /* firmware */
-#endif  /* NON_LIBRE_FIRMWARE */
         Page_Network,           /* network type selection (DHCP/static) */
         Page_Network_Iface,     /* network interface selection */
         Page_Network_Wireless,  /* wireless */
