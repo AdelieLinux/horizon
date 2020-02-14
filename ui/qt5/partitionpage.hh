@@ -27,7 +27,7 @@
 class PartitionPage : public HorizonWizardPage {
 public:
     PartitionPage(QWidget *parent = nullptr);
-    void initializePage();
+    void initializePage() override;
     bool isComplete() const override;
 private:
 #ifdef HAS_INSTALL_ENV

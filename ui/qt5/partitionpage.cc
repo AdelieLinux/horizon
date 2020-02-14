@@ -4,7 +4,7 @@
  * horizon-qt5, the Qt 5 user interface for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -14,6 +14,7 @@
 #include "partitionpage.hh"
 
 #include <QVBoxLayout>
+#include "partitiondiskpage.hh"
 
 PartitionPage::PartitionPage(QWidget *parent) : HorizonWizardPage(parent) {
     loadWatermark("disk");
@@ -89,6 +90,10 @@ void PartitionPage::processDisks(void *disk_obj) {
     /* Copy our disk information into the wizard's global object */
     horizonWizard()->disks.swap(*disks);
     delete disks;
+
+    /* ensure that the Disk page receives our new disk information */
+    horizonWizard()->removePage(HorizonWizard::Page_PartitionDisk);
+    horizonWizard()->setPage(HorizonWizard::Page_PartitionDisk, new PartitionDiskPage);
 
     scanDone = true;
     emit completeChanged();

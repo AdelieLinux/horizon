@@ -14,6 +14,6 @@
 
 void PartitionProbeThread::run() {
     vector<Disk> *disks = new vector<Disk>{myMan.find_disks(true, true, false)};
-    sleep(3);
+    sleep(1);
     emit foundDisks(disks);
 }

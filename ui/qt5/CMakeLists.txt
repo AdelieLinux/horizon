@@ -16,6 +16,7 @@ set(UI_SOURCES
     intropage.cc
     inputpage.cc
     partitionpage.cc
+    partitiondiskpage.cc
     networkingpage.cc
     networkifacepage.cc
     netsimplewifipage.cc
