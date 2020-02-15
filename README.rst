@@ -99,7 +99,7 @@ To build the entirety of Project Horizon, you will need:
 
 To build the simulator and validator, you will additionally need:
 
- * Boost.ProgramOptions (boost-dev)
+* Boost.ProgramOptions (boost-dev)
 
 To build Horizon UI for Installation Environments, you will additionally
 need:
@@ -112,7 +112,7 @@ need:
 
 * blkid and libfdisk development files (util-linux-dev)
 
-* Boost.PropertyTree (boost-dev)
+* Boost.PropertyTree (for JSON parsing) (boost-dev)
 
 * LibCap development files (libcap-dev)
 
@@ -249,6 +249,18 @@ utility, which prints the UID of the owner of a given file.  This is used
 during HorizonScript shell script execution.
 
 
+``tests``: Test infrastructure
+``````````````````````````````
+The ``tests`` directory includes the ``fixtures`` directory, which is a
+collection of dozens of example installfiles that exercise the parsing
+and validation code of libhscript.  Some of these installfiles are
+purposefully invalid, and others contain edge cases to ensure that the
+library is written and implemented correctly.
+
+It also contains the ``spec`` directory, which is a series of RSpec tests
+designed to use the fixtures and ensure the correct output is given.
+
+
 ``tools``: Tooling and accessories
 ``````````````````````````````````
 The ``tools`` directory includes the source code for tools related to Project
@@ -276,24 +288,12 @@ The ``util`` directory includes source code that is common between libraries
 and tools.
 
 
-``tests``: Test infrastructure
-``````````````````````````````
-The ``tests`` directory includes the ``fixtures`` directory, which is a
-collection of dozens of example installfiles that exercise the parsing
-and validation code of libhscript.  Some of these installfiles are
-purposefully invalid, and others contain edge cases to ensure that the
-library is written and implemented correctly.
-
-It also contains the ``spec`` directory, which is a series of RSpec tests
-designed to use the fixtures and ensure the correct output is given.
-
-
 ``3rdparty``: External code
 ```````````````````````````
 The ``3rdparty`` directory contains vendored code.  Currently, this is only
-the clipp_ project, used by the ``tools`` for argument parsing.
+the qt-collapsible-section_ project, used by the Qt 5 UI for slide-out sections.
 
-.. _clipp: https://github.com/muellan/clipp
+.. _qt-collapsible-section: https://github.com/Elypson/qt-collapsible-section
 
 
 
@@ -303,7 +303,7 @@ Contributing
 See the CONTIRIBUTING.rst_ file in the same directory as this README for
 more details on how to contribute to Project Horizon.
 
-.. _CONTRIBUTING.rst: ./CONTRIBUTING.rst
+.. _CONTRIBUTING.rst: https://code.foxkit.us/adelie/horizon/blob/master/CONTRIBUTING.rst
 
 
 
