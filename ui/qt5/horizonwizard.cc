@@ -43,6 +43,7 @@ extern "C" {
 #endif  /* NON_LIBRE_FIRMWARE */
 #include "partitionpage.hh"
 #include "partitiondiskpage.hh"
+#include "partitionchoicepage.hh"
 #include "networkingpage.hh"
 #include "networkifacepage.hh"
 #include "netsimplewifipage.hh"
@@ -212,6 +213,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 #endif  /* NON_LIBRE_FIRMWARE */
     setPage(Page_Partition, new PartitionPage);
     setPage(Page_PartitionDisk, new PartitionDiskPage);
+    setPage(Page_PartitionChoose, new PartitionChoicePage);
     setPage(Page_Network, new NetworkingPage);
     setPage(Page_Network_Iface, new NetworkIfacePage);
     setPage(Page_Network_Wireless, new NetworkSimpleWirelessPage);
@@ -396,7 +398,7 @@ QString HorizonWizard::toHScript() {
         break;
     }
 
-    if(auto_disk.empty()) {
+    if(chosen_disk.empty()) {
         lines << part_lines;
     } else {
         /* XXX TODO: examples for thoughts on auto-partition setups are in

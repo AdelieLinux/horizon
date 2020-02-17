@@ -140,10 +140,12 @@ public:
     /*! The disks present on this computer. */
     std::vector<Horizon::DiskMan::Disk> disks;
 #endif
+    /*! Whether to automatically partition the disk. */
+    bool auto_part;
     /*! Whether to erase the disk when automatically partitioning. */
     bool erase;
-    /*! The disk to partition automatically. */
-    std::string auto_disk;
+    /*! The disk to install to. */
+    std::string chosen_disk;
     /*! The HorizonScript lines describing what to do about partitioning.
      *  If auto_disk is set, this is not used.
      *  Otherwise, this should have any relevant disklabel/partition/fs etc. */

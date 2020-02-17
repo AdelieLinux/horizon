@@ -14,6 +14,7 @@
 
 #include <QLabel>
 #include <QVBoxLayout>
+#include "partitionchoicepage.hh"
 
 QIcon iconForDisk(Horizon::DiskMan::Disk disk) {
     QString iconName;
@@ -44,8 +45,18 @@ PartitionDiskPage::PartitionDiskPage(QWidget *parent)
     descLabel->setWordWrap(true);
 
     diskChooser = new QListWidget;
-    connect(diskChooser, &QListWidget::currentItemChanged,
-            this, &PartitionDiskPage::completeChanged);
+    connect(diskChooser, &QListWidget::currentItemChanged, [=]{
+        if(diskChooser->currentItem() != nullptr) {
+            QVariant itemData = diskChooser->currentItem()->data(Qt::UserRole);
+            horizonWizard()->chosen_disk = itemData.toString().toStdString();
+
+            /* ensure that the Choice page receives our new disk information */
+            horizonWizard()->removePage(HorizonWizard::Page_PartitionChoose);
+            horizonWizard()->setPage(HorizonWizard::Page_PartitionChoose,
+                                     new PartitionChoicePage);
+        }
+        emit completeChanged();
+    });
     diskChooser->setAutoFillBackground(true);
     diskChooser->setFrameShape(QFrame::NoFrame);
     diskChooser->setIconSize(QSize(32, 32));
@@ -72,6 +83,7 @@ void PartitionDiskPage::initializePage() {
                     .arg(disk.contiguous_block()).arg(disk.total_size())};
         QListWidgetItem *item = new QListWidgetItem(iconForDisk(disk), name, diskChooser);
         item->setToolTip(QString::fromStdString(disk.dev_path()));
+        item->setData(Qt::UserRole, QString::fromStdString(disk.node()));
     }
 
     if(horizonWizard()->disks.size() == 0) {
