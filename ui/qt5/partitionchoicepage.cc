@@ -83,9 +83,6 @@ PartitionChoicePage::PartitionChoicePage(QWidget *parent)
 void PartitionChoicePage::initializePage() {
     Q_ASSERT(horizonWizard()->chosen_disk.size() > 0);
 
-    QString chosen{QString::fromStdString(horizonWizard()->chosen_disk)};
-    descLabel->setText(descLabel->text().arg(chosen));
-
     /* these options are, as of right now, always available */
     eraseButton->setHidden(false);
     eraseLabel->setHidden(false);
@@ -109,8 +106,20 @@ void PartitionChoicePage::initializePage() {
             fitInButton->setHidden(false);
             fitInLabel->setHidden(false);
         }
+    } else {
+        if(d->has_fs()) {
+            useExistingButton->setHidden(false);
+            useExistingLabel->setHidden(false);
+        } else {
+            /* No label and no FS. */
+            descLabel->setText(tr("The disk at %1 does not contain a recognised disklabel or file system.  "
+                                  "It may be empty, or it may contain data that isn't readable by System Installation.\n\n"
+                                  "Continuing will erase any data present on the disk, if any."));
+        }
     }
 
+    QString chosen{QString::fromStdString(horizonWizard()->chosen_disk)};
+    descLabel->setText(descLabel->text().arg(chosen));
 }
 
 bool PartitionChoicePage::isComplete() const {
