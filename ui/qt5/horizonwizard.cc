@@ -44,6 +44,7 @@ extern "C" {
 #include "partitionpage.hh"
 #include "partitiondiskpage.hh"
 #include "partitionchoicepage.hh"
+#include "partitionmanualpage.hh"
 #include "networkingpage.hh"
 #include "networkifacepage.hh"
 #include "netsimplewifipage.hh"
@@ -218,6 +219,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 #endif  /* HAS_INSTALL_ENV */
     setPage(Page_PartitionDisk, new PartitionDiskPage);
     setPage(Page_PartitionChoose, new PartitionChoicePage);
+    setPage(Page_PartitionManual, new PartitionManualPage);
     setPage(Page_Network, new NetworkingPage);
     setPage(Page_Network_Iface, new NetworkIfacePage);
     setPage(Page_Network_Wireless, new NetworkSimpleWirelessPage);
