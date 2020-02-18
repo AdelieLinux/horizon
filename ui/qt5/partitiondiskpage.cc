@@ -41,8 +41,11 @@ PartitionDiskPage::PartitionDiskPage(QWidget *parent)
     loadWatermark("disk");
     setTitle(tr("Select Installation Disk"));
 
-    QLabel *descLabel = new QLabel(tr("Choose the hard disk on which to install Adélie Linux."));
+    QLabel *descLabel = new QLabel;
     descLabel->setWordWrap(true);
+
+#ifdef HAS_INSTALL_ENV
+    descLabel->setText(tr("Choose the hard disk on which to install Adélie Linux."));
 
     diskChooser = new QListWidget;
     connect(diskChooser, &QListWidget::currentItemChanged, [=]{
@@ -66,6 +69,16 @@ PartitionDiskPage::PartitionDiskPage(QWidget *parent)
                                .arg(color.red()).arg(color.green()).arg(color.blue()));
     diskChooser->setWrapping(true);
     diskChooser->setWhatsThis(tr("This is a list of hard disk drives found in your computer.  Select the hard disk you wish to use for installation."));
+#else  /* !HAS_INSTALL_ENV */
+    descLabel->setText(tr("Enter the path to the hard disk device on which to install Adélie Linux.  For instance, /dev/sda or /dev/nvme0n1.\n\nDo not input the path to a partition."));
+
+    diskChooser = new QLineEdit;
+    connect(diskChooser, &QLineEdit::textEdited, [=](QString text) {
+        horizonWizard()->chosen_disk = text.toStdString();
+        emit completeChanged();
+    });
+    diskChooser->setPlaceholderText(tr("/dev/..."));
+#endif  /* HAS_INSTALL_ENV */
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addSpacing(10);
@@ -76,6 +89,7 @@ PartitionDiskPage::PartitionDiskPage(QWidget *parent)
 }
 
 void PartitionDiskPage::initializePage() {
+#ifdef HAS_INSTALL_ENV
     for(auto disk : horizonWizard()->disks) {
         QString name{QString("%1 (%2)\n%3 MB available of %4 MB")
                     .arg(QString::fromStdString(disk.model()))
@@ -100,8 +114,13 @@ void PartitionDiskPage::initializePage() {
         myLayout->addWidget(explanation, 0, Qt::AlignCenter);
         myLayout->addStretch();
     }
+#endif  /* HAS_INSTALL_ENV */
 }
 
 bool PartitionDiskPage::isComplete() const {
+#ifdef HAS_INSTALL_ENV
     return diskChooser->currentIndex().row() != -1;
+#else  /* !HAS_INSTALL_ENV */
+    return !diskChooser->text().isEmpty();
+#endif  /* HAS_INSTALL_ENV */
 }

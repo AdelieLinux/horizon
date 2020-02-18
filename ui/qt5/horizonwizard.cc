@@ -66,7 +66,9 @@ static std::map<int, std::string> help_id_map = {
 #ifdef NON_LIBRE_FIRMWARE
     {HorizonWizard::Page_Firmware, "firmware"},
 #endif  /* NON_LIBRE_FIRMWARE */
+#ifdef HAS_INSTALL_ENV
     {HorizonWizard::Page_Partition, "partition"},
+#endif  /* HAS_INSTALL_ENV */
     {HorizonWizard::Page_PartitionDisk, "partition-disk"},
     {HorizonWizard::Page_PartitionChoose, "partition-manipulation"},
     {HorizonWizard::Page_PartitionManual, "partition-manual"},
@@ -211,7 +213,9 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 #ifdef NON_LIBRE_FIRMWARE
     setPage(Page_Firmware, new FirmwarePage);
 #endif  /* NON_LIBRE_FIRMWARE */
+#ifdef HAS_INSTALL_ENV
     setPage(Page_Partition, new PartitionPage);
+#endif  /* HAS_INSTALL_ENV */
     setPage(Page_PartitionDisk, new PartitionDiskPage);
     setPage(Page_PartitionChoose, new PartitionChoicePage);
     setPage(Page_Network, new NetworkingPage);
@@ -398,7 +402,7 @@ QString HorizonWizard::toHScript() {
         break;
     }
 
-    if(chosen_disk.empty()) {
+    if(chosen_disk.empty() || !auto_part) {
         lines << part_lines;
     } else {
         /* XXX TODO: examples for thoughts on auto-partition setups are in

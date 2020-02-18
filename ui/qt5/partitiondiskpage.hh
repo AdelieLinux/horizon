@@ -15,7 +15,11 @@
 
 #include "horizonwizardpage.hh"
 
-#include <QListWidget>
+#ifdef HAS_INSTALL_ENV
+#   include <QListWidget>
+#else  /* !HAS_INSTALL_ENV */
+#   include <QLineEdit>
+#endif  /* HAS_INSTALL_ENV */
 
 class PartitionDiskPage : public HorizonWizardPage {
 public:
@@ -23,7 +27,11 @@ public:
     void initializePage() override;
     bool isComplete() const override;
 private:
+#ifdef HAS_INSTALL_ENV
     QListWidget *diskChooser;
+#else  /* !HAS_INSTALL_ENV */
+    QLineEdit *diskChooser;
+#endif  /* HAS_INSTALL_ENV */
 };
 
 #endif  /* !PARTITIONDISKPAGE_HH */

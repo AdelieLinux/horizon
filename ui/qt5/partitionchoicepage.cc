@@ -89,6 +89,7 @@ void PartitionChoicePage::initializePage() {
     manualButton->setHidden(false);
     manualLabel->setHidden(false);
 
+#ifdef HAS_INSTALL_ENV
     Horizon::DiskMan::Disk *d = nullptr;
     for(auto &disk : horizonWizard()->disks) {
         if(disk.node() == horizonWizard()->chosen_disk) {
@@ -117,6 +118,11 @@ void PartitionChoicePage::initializePage() {
                                   "Continuing will erase any data present on the disk, if any."));
         }
     }
+#else  /* !HAS_INSTALL_ENV */
+    /* Go ahead and give the user the choice to use existing. */
+    useExistingButton->setHidden(false);
+    useExistingLabel->setHidden(false);
+#endif  /* HAS_INSTALL_ENV */
 
     QString chosen{QString::fromStdString(horizonWizard()->chosen_disk)};
     descLabel->setText(descLabel->text().arg(chosen));

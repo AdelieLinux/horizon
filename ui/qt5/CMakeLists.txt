@@ -15,7 +15,6 @@ set(UI_SOURCES
 
     intropage.cc
     inputpage.cc
-    partitionpage.cc
     partitiondiskpage.cc
     partitionchoicepage.cc
     networkingpage.cc
@@ -50,7 +49,8 @@ set(RUN_QT_SOURCES
 IF(INSTALL)
     LIST(APPEND UI_SOURCES
         commitpage.cc
-        partitionprobe.cc)
+        partitionprobe.cc
+        partitionpage.cc)
 ELSE(INSTALL)
     LIST(APPEND UI_SOURCES writeoutpage.cc)
 ENDIF(INSTALL)
