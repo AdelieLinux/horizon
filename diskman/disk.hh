@@ -80,6 +80,11 @@ public:
     /*! Retrieve the partitions contained in the label, if any.
      * @note You may only call this method if *has_label* is true. */
     const std::vector<Partition> partitions() const;
+
+    /*! Attempt to (re)load the partition table from the disk.
+     * @returns true if the partition table was loaded successfully.
+     * @note The partition array will not be modified if a failure occurs. */
+    bool reload_partitions();
 private:
     /*! The name of the disk ("sda") */
     std::string _name;

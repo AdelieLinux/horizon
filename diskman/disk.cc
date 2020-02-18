@@ -79,7 +79,10 @@ Disk::Disk(void *creation, int type, bool partition) {
             unsigned long ssize = fdisk_get_sector_size(ctxt);
             total_mb = (fdisk_get_nsectors(ctxt) * ssize) / 1048576;
             struct fdisk_table *frees = nullptr;
-            if(fdisk_get_freespaces(ctxt, &frees) == 0) {
+            if(fdisk_has_label(ctxt) != 1) {
+                /* Disk has no label, so consider it empty */
+                free_mb = contiguous_mb = total_mb;
+            } else if(fdisk_get_freespaces(ctxt, &frees) == 0) {
                 for(size_t next = 0; next < fdisk_table_get_nents(frees);
                     next++) {
                     /* Each entry in frees is a "free space partition". */
@@ -101,18 +104,8 @@ Disk::Disk(void *creation, int type, bool partition) {
     }
 
     if(partition) {
-        if(ctxt != nullptr) {
-            /* retrieve partitions using libfdisk */
-            struct fdisk_table *parts = nullptr;
-            if(fdisk_get_partitions(ctxt, &parts) == 0) {
-                for(size_t next = 0; next < fdisk_table_get_nents(parts);
-                    next++) {
-                    struct fdisk_partition *part =
-                            fdisk_table_get_partition(parts, next);
-                    _partitions.push_back(Partition(*this, part, 0));
-                }
-                fdisk_unref_table(parts);
-            }
+        if(reload_partitions()) {
+            /* We're good */
         } else if(type == 0) {
             /* fallback to udev, if available */
             std::cerr << "Falling back to udev partition probing" << std::endl;
@@ -151,6 +144,37 @@ Disk::Disk(void *creation, int type, bool partition) {
     if(ctxt != nullptr) {
         fdisk_unref_context(ctxt);
     }
+}
+
+bool Disk::reload_partitions() {
+    bool success = false;
+    struct fdisk_context *ctxt = fdisk_new_context();
+    struct fdisk_table *parts = nullptr;
+
+    if(ctxt == nullptr) {
+        return false;
+    }
+
+    /* Open the device in read-only mode.  We don't need to write to it */
+    if(fdisk_assign_device(ctxt, _node.c_str(), 1) != 0) {
+        goto destroy_context;
+    }
+
+    if(fdisk_get_partitions(ctxt, &parts) == 0) {
+        _partitions.clear();
+        for(size_t next = 0; next < fdisk_table_get_nents(parts);
+            next++) {
+            struct fdisk_partition *part =
+                    fdisk_table_get_partition(parts, next);
+            _partitions.push_back(Partition(*this, part, 0));
+        }
+        success = true;
+        fdisk_unref_table(parts);
+    }
+
+destroy_context:
+    fdisk_unref_context(ctxt);
+    return success;
 }
 
 const std::vector<Partition> Disk::partitions() const {
