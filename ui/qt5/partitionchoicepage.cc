@@ -13,6 +13,7 @@
 #include "partitionchoicepage.hh"
 
 #include <QLabel>
+#include <QMessageBox>
 #include <QVBoxLayout>
 
 PartitionChoicePage::PartitionChoicePage(QWidget *parent)
@@ -140,4 +141,16 @@ int PartitionChoicePage::nextId() const {
     } else {
         return HorizonWizard::Page_Network;
     }
+}
+
+bool PartitionChoicePage::validatePage() {
+    if(buttons->checkedButton() == eraseButton) {
+        return (QMessageBox::critical(this, tr("Erase Disk"),
+                tr("You have chosen to ERASE %1.  "
+                   "All data on %1 will be permanently erased.\n\n"
+                   "Do you wish to continue?").arg(QString::fromStdString(horizonWizard()->chosen_disk)),
+                QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes);
+    }
+
+    return true;
 }

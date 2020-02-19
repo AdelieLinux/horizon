@@ -25,6 +25,7 @@ public:
     void initializePage() override;
     bool isComplete() const override;
     int nextId() const override;
+    bool validatePage() override;
 private:
     QLabel *descLabel;
     QButtonGroup *buttons;
