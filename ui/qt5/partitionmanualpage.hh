@@ -24,6 +24,7 @@ public:
     PartitionManualPage(QWidget *parent = nullptr);
 #ifndef HAS_INSTALL_ENV
     bool isComplete() const override;
+    int nextId() const override;
 private:
     QTextEdit *partitionEdit;
 #endif  /* !HAS_INSTALL_ENV */

@@ -66,4 +66,9 @@ PartitionManualPage::PartitionManualPage(QWidget *parent)
 bool PartitionManualPage::isComplete() const {
     return partitionEdit->toPlainText().size() > 0;
 }
+
+int PartitionManualPage::nextId() const {
+    /* Skip the Mount page for 'mount' keyword in the partitioning commands. */
+    return HorizonWizard::Page_Network;
+}
 #endif  /* !HAS_INSTALL_ENV */
