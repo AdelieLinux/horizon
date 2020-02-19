@@ -36,6 +36,23 @@ QIcon iconForDisk(Horizon::DiskMan::Disk disk) {
     return QIcon::fromTheme(iconName);
 }
 
+QString prettySizeForMB(uint32_t mbyte) {
+    static const char prefixes[5] = {'M', 'G', 'T', 'E', 'Z'};
+    size_t prefix = 0;
+    float size = mbyte;
+
+    while(size > 2048) {
+        size /= 1024;
+        prefix++;
+    }
+    while(prefix > sizeof(prefixes)) {
+        size *= 1024;
+        prefix--;
+    }
+
+    return QString{"%1 %2B"}.arg(size, 0, 'f', 2).arg(prefixes[prefix]);
+}
+
 PartitionDiskPage::PartitionDiskPage(QWidget *parent)
     : HorizonWizardPage(parent) {
     loadWatermark("disk");
@@ -91,10 +108,11 @@ PartitionDiskPage::PartitionDiskPage(QWidget *parent)
 void PartitionDiskPage::initializePage() {
 #ifdef HAS_INSTALL_ENV
     for(auto disk : horizonWizard()->disks) {
-        QString name{QString("%1 (%2)\n%3 MB available of %4 MB")
+        QString name{QString("%1 (%2)\n%3 available of %4")
                     .arg(QString::fromStdString(disk.model()))
                     .arg(QString::fromStdString(disk.name()))
-                    .arg(disk.contiguous_block()).arg(disk.total_size())};
+                    .arg(prettySizeForMB(disk.contiguous_block()))
+                    .arg(prettySizeForMB(disk.total_size()))};
         QListWidgetItem *item = new QListWidgetItem(iconForDisk(disk), name, diskChooser);
         item->setToolTip(QString::fromStdString(disk.dev_path()));
         item->setData(Qt::UserRole, QString::fromStdString(disk.node()));
