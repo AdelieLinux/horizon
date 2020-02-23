@@ -3,7 +3,7 @@
  * horizon-qt5, the Qt 5 user interface for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -34,7 +34,7 @@ PkgDefaultsPage::PkgDefaultsPage(QWidget *parent) : HorizonWizardPage(parent) {
 
 
     /******************** /bin/sh provider ********************/
-    QButtonGroup *shellGroup = new QButtonGroup;
+    QButtonGroup *shellGroup = new QButtonGroup(this);
     QLabel *shellLabel = new QLabel(tr("Shell to use for /bin/sh:"));
     shellLabel->setWordWrap(true);
 
@@ -66,7 +66,7 @@ PkgDefaultsPage::PkgDefaultsPage(QWidget *parent) : HorizonWizardPage(parent) {
 
 
     /******************** /sbin/init provider ********************/
-    QButtonGroup *initGroup = new QButtonGroup;
+    QButtonGroup *initGroup = new QButtonGroup(this);
     QLabel *initLabel = new QLabel(tr("Init system (/sbin/init):"));
     initLabel->setWordWrap(true);
 
@@ -93,7 +93,7 @@ PkgDefaultsPage::PkgDefaultsPage(QWidget *parent) : HorizonWizardPage(parent) {
 
 
     /******************** device event handler ********************/
-    QButtonGroup *udevGroup = new QButtonGroup;
+    QButtonGroup *udevGroup = new QButtonGroup(this);
     QLabel *udevLabel = new QLabel(tr("uevent management daemon:"));
     udevLabel->setWordWrap(true);
 

@@ -73,6 +73,7 @@ void PartitionPage::scanDisks() {
     }
 
     thread = new PartitionProbeThread;
+    thread->setParent(this);
     connect(thread, &PartitionProbeThread::foundDisks,
             this, &PartitionPage::processDisks);
     thread->start();

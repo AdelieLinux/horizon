@@ -3,7 +3,7 @@
  * horizon-qt5, the Qt 5 user interface for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -34,7 +34,7 @@ BootPage::BootPage(QWidget *parent) : HorizonWizardPage(parent) {
     yesGrub->setWhatsThis(tr("This option will install a bootloader to your hard disk, replacing any other bootloader if present."));
     noGrub = new QRadioButton(tr("&Do not install a boot loader."));
     noGrub->setWhatsThis(tr("This option will not install a bootloader to your hard disk.  You may be required to configure a bootloader yourself before your computer will start up properly."));
-    QButtonGroup *grubChoices = new QButtonGroup;
+    QButtonGroup *grubChoices = new QButtonGroup(this);
     grubChoices->addButton(yesGrub, true);
     grubChoices->addButton(noGrub, false);
     connect(grubChoices, static_cast<void (QButtonGroup:: *)(int)>(&QButtonGroup::buttonClicked),
