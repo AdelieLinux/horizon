@@ -78,25 +78,25 @@ QPixmap StepProgressWidget::loadDPIAwarePixmap(QString pixmap, QString type) {
 }
 
 void StepProgressWidget::setStepStatus(int16_t step, Status status) {
-    QLabel *stat = statuses.at(step);
-    QLabel *info = infos.at(step);
+    QLabel *statLabel = statuses.at(step);
+    QLabel *infoLabel = infos.at(step);
 
     switch(status) {
     case NotStarted:
-        stat->clear();
-        info->setFont(normalFont);
+        statLabel->clear();
+        infoLabel->setFont(normalFont);
         break;
     case InProgress:
-        stat->setPixmap(loadDPIAwarePixmap("status-current", ".svg"));
-        info->setFont(boldFont);
+        statLabel->setPixmap(loadDPIAwarePixmap("status-current", ".svg"));
+        infoLabel->setFont(boldFont);
         break;
     case Finished:
-        stat->setPixmap(loadDPIAwarePixmap("status-success", ".svg"));
-        info->setFont(normalFont);
+        statLabel->setPixmap(loadDPIAwarePixmap("status-success", ".svg"));
+        infoLabel->setFont(normalFont);
         break;
     case Failed:
-        stat->setPixmap(loadDPIAwarePixmap("status-issue", ".svg"));
-        info->setFont(boldFont);
+        statLabel->setPixmap(loadDPIAwarePixmap("status-issue", ".svg"));
+        infoLabel->setFont(boldFont);
         break;
     }
 }

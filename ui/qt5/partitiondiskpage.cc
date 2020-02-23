@@ -45,7 +45,7 @@ QString prettySizeForMB(uint32_t mbyte) {
         size /= 1024;
         prefix++;
     }
-    while(prefix > sizeof(prefixes)) {
+    while(prefix >= sizeof(prefixes)) {
         size *= 1024;
         prefix--;
     }

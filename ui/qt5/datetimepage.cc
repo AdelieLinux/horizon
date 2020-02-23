@@ -160,10 +160,9 @@ DateTimePage::DateTimePage(QWidget *parent) : HorizonWizardPage(parent) {
             clock_settime(CLOCK_REALTIME, &ts);
         }
     });
-    connect(timeEdit, &QTimeEdit::timeChanged, [=](const QTime &time) {
-        if(timeEdit->isEnabled() && time != QTime::currentTime()) {
-            QDateTime *newDT = new QDateTime(QDate::currentDate(), time,
-                                             Qt::UTC);
+    connect(timeEdit, &QTimeEdit::timeChanged, [=](const QTime &qtime) {
+        if(timeEdit->isEnabled() && qtime != QTime::currentTime()) {
+            QDateTime *newDT = new QDateTime(QDate::currentDate(), qtime);
             struct timespec ts = {newDT->toSecsSinceEpoch(), 0};
             clock_settime(CLOCK_REALTIME, &ts);
         }

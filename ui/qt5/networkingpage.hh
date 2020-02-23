@@ -23,8 +23,8 @@ public:
     NetworkingPage(QWidget *parent = nullptr);
 
     void initializePage() override;
-    bool isComplete() const;
-    int nextId() const;
+    bool isComplete() const override;
+    int nextId() const override;
 private:
     QButtonGroup *radioGroup;
     QRadioButton *simple, *advanced, *skip;

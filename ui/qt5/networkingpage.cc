@@ -22,13 +22,19 @@
 NetworkingPage::NetworkingPage(QWidget *parent) : HorizonWizardPage(parent) {
     loadWatermark("network");
     setTitle(tr("Networking Setup"));
+
+    radioGroup = new QButtonGroup(this);
+
+    simple = new QRadioButton(tr("&Automatic - my computer connects to the Internet directly\n"
+                                 "or via a modem/router."));
+    advanced = new QRadioButton(tr("&Manual - my computer connects to an enterprise network,\n"
+                                   "or I use a static IP address, VPN, or 802.1X security."));
+    skip = new QRadioButton(tr("&Skip - I don't want to connect to a network or the Internet."));
 }
 
 void NetworkingPage::initializePage() {
     QLabel *descLabel;
     QVBoxLayout *layout;
-
-    radioGroup = new QButtonGroup(this);
 
 #ifdef HAS_INSTALL_ENV
     if(horizonWizard()->interfaces.empty()) {
@@ -52,15 +58,9 @@ void NetworkingPage::initializePage() {
     if(!horizonWizard()->interfaces.empty())
 #endif  /* HAS_INSTALL_ENV */
     {
-        simple = new QRadioButton(tr("&Automatic - my computer connects to the Internet directly\n"
-                                     "or via a modem/router."));
-        advanced = new QRadioButton(tr("&Manual - my computer connects to an enterprise network,\n"
-                                       "or I use a static IP address, VPN, or 802.1X security."));
         radioGroup->addButton(simple);
         radioGroup->addButton(advanced);
     }
-    skip = new QRadioButton(tr("&Skip - I don't want to connect to a network or the Internet."));
-
     radioGroup->addButton(skip);
 
     QObject::connect(radioGroup, static_cast<void (QButtonGroup:: *)(QAbstractButton *)>(&QButtonGroup::buttonClicked),

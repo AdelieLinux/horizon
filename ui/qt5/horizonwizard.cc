@@ -383,7 +383,7 @@ QString nameForPartitionOnDisk(const std::string &dev, int part) {
 
 
 /*! Determine the correct disk label based on the target platform. */
-QStringList eraseDiskForArch(const std::string raw_disk,
+QStringList eraseDiskForArch(const std::string &raw_disk,
                              HorizonWizard::Arch arch,
                              HorizonWizard::Subarch subarch) {
     QString disk = QString::fromStdString(raw_disk);
@@ -414,7 +414,7 @@ QStringList eraseDiskForArch(const std::string raw_disk,
 
 
 /*! Determine the correct boot disk layout based on the target platform. */
-QStringList bootForArch(const std::string raw_disk, HorizonWizard::Arch arch,
+QStringList bootForArch(const std::string &raw_disk, HorizonWizard::Arch arch,
                         HorizonWizard::Subarch subarch, int *start) {
     QString disk = QString::fromStdString(raw_disk);
 
