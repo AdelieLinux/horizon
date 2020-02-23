@@ -23,6 +23,7 @@
 #include <string>
 
 #ifdef HAS_INSTALL_ENV
+#   include <QApplication>
 #   include <QProcess>
 #   include <libudev.h>
 #   include <net/if.h>      /* ifreq */
@@ -717,7 +718,11 @@ void HorizonWizard::reject() {
     cancel.setDefaultButton(QMessageBox::No);
 
     if(cancel.exec() == QMessageBox::Yes) {
+#ifdef HAS_INSTALL_ENV
+        qApp->exit(1);
+#else  /* !HAS_INSTALL_ENV */
         done(QDialog::Rejected);
+#endif  /* HAS_INSTALL_ENV */
     } else {
         return;
     }
