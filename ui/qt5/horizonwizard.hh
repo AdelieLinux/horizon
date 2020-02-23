@@ -103,6 +103,13 @@ public:
         UnknownCPU
     };
 
+    enum Subarch {
+        NoSubarch,
+        ppc64_PowerMac,
+        ppc64_pSeries,
+        ppc64_PowerNV
+    };
+
     enum PackageType {
         Standard,
         Mobile,
@@ -136,6 +143,8 @@ public:
     std::string version;
     /*! The architecture being installed. */
     Arch arch;
+    /*! If relevant, the subtype of the architecture being installed. */
+    Subarch subarch;
 #ifdef HAS_INSTALL_ENV
     /*! The disks present on this computer. */
     std::vector<Horizon::DiskMan::Disk> disks;

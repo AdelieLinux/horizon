@@ -23,6 +23,7 @@
 #include <string>
 
 #ifdef HAS_INSTALL_ENV
+#   include <QProcess>
 #   include <libudev.h>
 #   include <net/if.h>      /* ifreq */
 #   include "commitpage.hh"
@@ -182,6 +183,34 @@ std::map<std::string, HorizonWizard::NetworkInterface> probe_ifaces(void) {
 #endif  /* HAS_INSTALL_ENV */
 
 
+#if defined(HAS_INSTALL_ENV) && defined(__powerpc64__)
+HorizonWizard::Subarch determinePowerPCPlatform() {
+    if(!QFile::exists("/tmp/horizon-platform")) {
+        QProcess p;
+        p.execute("horizon-ppc64-detect");
+    }
+
+    QFile platform;
+    platform.setFileName("/tmp/horizon-platform");
+    if(!platform.open(QFile::ReadOnly)) {
+        qDebug() << "can't read PowerPC platform type!";
+        return HorizonWizard::ppc64_pSeries;
+    }
+
+    QByteArray result = platform.readAll();
+    platform.close();
+
+    if(result.startsWith("PowerMac")) {
+        return HorizonWizard::ppc64_PowerMac;
+    } else if(result.startsWith("PowerNV")) {
+        return HorizonWizard::ppc64_PowerNV;
+    } else {
+        return HorizonWizard::ppc64_pSeries;
+}
+}
+#endif
+
+
 HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setWindowTitle(tr("Adélie Linux System Installation"));
 
@@ -189,6 +218,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 
     mirror_domain = "distfiles.adelielinux.org";
     version = "stable";
+    subarch = NoSubarch;
     /* TODO XXX:
      * Determine which platform kernel is being used, if any (-power8 etc)
      * Determine hardware requirements (easy or mainline)
@@ -302,6 +332,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
 
 #   if defined(__powerpc64__)
     arch = ppc64;
+    subarch = determinePowerPCPlatform();
 #   elif defined(__powerpc__)
     arch = ppc;
 #   elif defined(__aarch64__)
@@ -340,6 +371,99 @@ char *encrypt_pw(const char *the_pw) {
         return nullptr;
     }
     return result;
+}
+
+
+/*! Determine the node name of a given partition. */
+QString nameForPartitionOnDisk(const std::string &dev, int part) {
+    const std::string maybe_p(::isdigit(dev[dev.size() - 1]) ? "p" : "");
+    std::string raw_root = dev + maybe_p + std::to_string(part);
+    return QString::fromStdString(raw_root);
+}
+
+
+/*! Determine the correct disk label based on the target platform. */
+QStringList eraseDiskForArch(const std::string raw_disk,
+                             HorizonWizard::Arch arch,
+                             HorizonWizard::Subarch subarch) {
+    QString disk = QString::fromStdString(raw_disk);
+
+    switch(arch) {
+    case HorizonWizard::aarch64:/* 64-bit ARM mostly uses GPT */
+    case HorizonWizard::x86_64: /* 64-bit Intel uses GPT */
+        return {QString{"disklabel %1 gpt"}.arg(disk)};
+    case HorizonWizard::ppc:    /* 32-bit PowerPC: we only support Power Mac */
+        return {QString{"disklabel %1 apm"}.arg(disk)};
+    case HorizonWizard::ppc64:  /* Complicated */
+        switch(subarch) {
+        case HorizonWizard::ppc64_PowerMac:
+            return {QString{"disklabel %1 apm"}.arg(disk)};
+        case HorizonWizard::ppc64_PowerNV:
+            return {QString{"disklabel %1 gpt"}.arg(disk)};
+        case HorizonWizard::ppc64_pSeries:
+        default:
+            return {QString{"disklabel %1 mbr"}.arg(disk)};
+        }
+    case HorizonWizard::armv7:  /* your guess is as good as mine */
+    case HorizonWizard::pmmx:   /* 32-bit Intel requires MBR */
+    case HorizonWizard::UnknownCPU: /* safe enough as a fallback */
+    default:
+        return {QString{"disklabel %1 mbr"}.arg(disk)};
+    }
+}
+
+
+/*! Determine the correct boot disk layout based on the target platform. */
+QStringList bootForArch(const std::string raw_disk, HorizonWizard::Arch arch,
+                        HorizonWizard::Subarch subarch, int *start) {
+    QString disk = QString::fromStdString(raw_disk);
+
+    switch(arch) {
+    case HorizonWizard::aarch64:/* 64-bit ARM: assume UEFI */
+        return {
+            QString{"partition %1 %2 256M esp"}.arg(disk).arg(*start),
+            QString{"fs %1 fat32"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
+            QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
+        };
+    case HorizonWizard::x86_64: /* 64-bit Intel: support UEFI and BIOS */
+        return {
+            QString{"partition %1 %2 1M bios"}.arg(disk).arg((*start)++),
+            QString{"partition %1 %2 256M esp"}.arg(disk).arg(*start),
+            QString{"fs %1 fat32"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
+            QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
+        };
+    case HorizonWizard::ppc:    /* 32-bit PowerPC: we only support Power Mac */
+        return {
+            QString{"partition %1 %2 16M boot"}.arg(disk).arg(*start),
+            QString{"fs %1 hfs+"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
+            QString{"mount %1 /boot/grub"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
+        };
+    case HorizonWizard::ppc64:  /* Complicated */
+        switch(subarch) {
+        case HorizonWizard::ppc64_PowerMac: /* as ppc32 */
+            return {
+                QString{"partition %1 %2 16M boot"}.arg(disk).arg(*start),
+                QString{"fs %1 hfs+"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
+                QString{"mount %1 /boot/grub"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
+            };
+        case HorizonWizard::ppc64_PowerNV:  /* doesn't need a separate /boot */
+            return {};
+        case HorizonWizard::ppc64_pSeries:  /* PReP boot partition */
+        default:
+            return {
+                QString{"partition %1 %2 10M prep"}.arg(disk).arg((*start)++),
+            };
+        }
+    case HorizonWizard::armv7:
+    case HorizonWizard::pmmx:   /* 32-bit Intel, bog standard GRUB */
+    case HorizonWizard::UnknownCPU: /* safe enough as a fallback */
+    default:
+        return {
+            QString{"partition %1 %2 256M boot"}.arg(disk).arg(*start),
+            QString{"fs %1 ext2"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
+            QString{"mount %1 /boot"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
+        };
+    }
 }
 
 
@@ -407,34 +531,42 @@ QString HorizonWizard::toHScript() {
         break;
     }
 
-    if(chosen_disk.empty() || !auto_part) {
+    if(chosen_disk.empty()) {
+        lines << part_lines;
+    } else if(!auto_part) {
         lines << part_lines;
     } else {
-        /* XXX TODO: examples for thoughts on auto-partition setups are in
-         * architecture-specific comments below */
-        switch(arch) {
-        case aarch64:
-            /* Do GPT stuff */
-            break;
-        case armv7:
-            /* Run away */
-            break;
-        case pmmx:
-            /* Do MBR stuff */
-            break;
-        case ppc:
-            /* Do APM stuff */
-            break;
-        case ppc64:
-            /* Figure stuff out */
-            break;
-        case x86_64:
-            /* Do EFI */
-            break;
-        case UnknownCPU:
-            /* Probably MBR, as it's the most common. */
-            break;
+        /* We have a chosen disk, and will be automatically partitioning it. */
+        int start = 1;
+
+        if(erase) {
+            lines << eraseDiskForArch(chosen_disk, arch, subarch);
+        } else {
+#ifdef HAS_INSTALL_ENV
+            Disk *disk = nullptr;
+            for(auto &d_iter : disks) {
+                if(d_iter.node() == chosen_disk) {
+                    disk = &d_iter;
+                    break;
+                }
+            }
+            Q_ASSERT(disk != nullptr);
+            start = disk->partitions().size() + 1;
+#else  /* !HAS_INSTALL_ENV */
+            Q_ASSERT(false);
+#endif  /* HAS_INSTALL_ENV */
         }
+
+        if(this->grub) {
+            lines << bootForArch(chosen_disk, arch, subarch, &start);
+        }
+
+        /* Create the root partition */
+        lines << QString{"partition %1 %2 fill"}
+                 .arg(QString::fromStdString(chosen_disk)).arg(start);
+        QString root_part = nameForPartitionOnDisk(chosen_disk, start);
+        lines << QString{"fs %1 ext4"}.arg(root_part);
+        lines << QString{"mount %1 /"}.arg(root_part);
     }
 
     switch(this->pkgtype) {
@@ -543,8 +675,6 @@ QString HorizonWizard::toHScript() {
     return lines.join("\n");
 }
 
-
-#include <iostream>
 
 void HorizonWizard::accept() {
     QFile file;
