@@ -219,7 +219,7 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     mirror_domain = "distfiles.adelielinux.org";
     version = "stable";
     subarch = NoSubarch;
-    /* TODO XXX:
+    /* handwavy-future:
      * Determine which platform kernel is being used, if any (-power8 etc)
      * Determine hardware requirements (easy or mainline)
      */
@@ -630,7 +630,7 @@ QString HorizonWizard::toHScript() {
     lines << QString("rootpw ") + root;
     delete[] root;
 
-    /* XXX TODO someday we'll have language support */
+    /* handwavy-future: When we have language support, set it here */
     lines << "language en_GB.UTF-8";
 
     auto iterator = valid_keymaps.begin();

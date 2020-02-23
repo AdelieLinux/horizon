@@ -131,7 +131,6 @@ Key *RootPassphrase::parseFromData(const std::string &data, int lineno,
 }
 
 bool RootPassphrase::validate(ScriptOptions) const {
-    /* XXX TODO: not sure what other validation we can / should do here. */
     return true;
 }
 
