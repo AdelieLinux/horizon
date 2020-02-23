@@ -1,0 +1,3 @@
+#!/bin/sh
+
+grep platform /proc/cpuinfo | cut -d':' -f2 | cut -d' ' -f2 > /tmp/horizon-platform
