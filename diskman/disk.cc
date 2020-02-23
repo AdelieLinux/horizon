@@ -76,8 +76,8 @@ Disk::Disk(void *creation, int type, bool partition) {
     if(ctxt != nullptr) {
         /* Open the device in read-only mode.  We don't need to write to it */
         if(fdisk_assign_device(ctxt, _node.c_str(), 1) == 0) {
-            unsigned long ssize = fdisk_get_sector_size(ctxt);
-            total_mb = (fdisk_get_nsectors(ctxt) * ssize) / 1048576;
+            _sector = fdisk_get_sector_size(ctxt);
+            total_mb = (fdisk_get_nsectors(ctxt) * _sector) / 1048576;
             struct fdisk_table *frees = nullptr;
             if(fdisk_has_label(ctxt) != 1) {
                 /* Disk has no label, so consider it empty */
@@ -90,7 +90,7 @@ Disk::Disk(void *creation, int type, bool partition) {
                             fdisk_table_get_partition(frees, next);
                     fdisk_sector_t size;
                     if(!fdisk_partition_has_size(part)) continue;
-                    size = (fdisk_partition_get_size(part) * ssize) / 1048576;
+                    size = (fdisk_partition_get_size(part) * _sector) / 1048576;
                     free_mb += size;
                     if(size > contiguous_mb) contiguous_mb = size;
                 }

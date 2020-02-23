@@ -27,8 +27,7 @@ Partition::Partition(Disk &d, void *creation, int type) {
     case 0: { /* libfdisk */
         struct fdisk_partition *part = static_cast<struct fdisk_partition *>(creation);
         if(fdisk_partition_has_size(part)) {
-            /* XXX BUG FIXME TODO sector size */
-            this->_size = fdisk_partition_get_size(part) * 512;
+            this->_size = fdisk_partition_get_size(part) * d.sector_size();
         } else {
             this->_size = 0;
         }

@@ -77,6 +77,9 @@ public:
      *          disk, in mebibytes (MiB). */
     uint32_t contiguous_block() const { return this->contiguous_mb; }
 
+    /*! Retrieve the sector size of the disk. */
+    uint32_t sector_size() const { return this->_sector; }
+
     /*! Retrieve the partitions contained in the label, if any.
      * @note You may only call this method if *has_label* is true. */
     const std::vector<Partition> partitions() const;
@@ -117,6 +120,8 @@ private:
     uint32_t free_mb;
     /*! Largest contiguous block of free space on this disk, in mebibytes */
     uint32_t contiguous_mb;
+    /*! Size of this disk's sectors, in bytes */
+    uint32_t _sector;
 
     Disk(void *creation, int type, bool partition);
     friend class DiskMan;
