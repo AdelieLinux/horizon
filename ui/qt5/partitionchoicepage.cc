@@ -26,6 +26,10 @@ PartitionChoicePage::PartitionChoicePage(QWidget *parent)
 
     eraseButton = new QRadioButton(tr("&Erase and Use Whole Disk"));
     eraseButton->setHidden(true);
+    connect(eraseButton, &QRadioButton::clicked, [=] {
+        horizonWizard()->auto_part = true;
+        horizonWizard()->erase = true;
+    });
     eraseLabel = new QLabel(tr("The entire disk will be erased and then automatically partitioned.<br><strong>Warning: This will destroy all existing data on the disk.</strong>"));
     eraseLabel->setHidden(true);
     eraseLabel->setIndent(25);
@@ -34,6 +38,10 @@ PartitionChoicePage::PartitionChoicePage(QWidget *parent)
 
     fitInButton = new QRadioButton(tr("Use &Free Space"));
     fitInButton->setHidden(true);
+    connect(fitInButton, &QRadioButton::clicked, [=] {
+        horizonWizard()->auto_part = true;
+        horizonWizard()->erase = false;
+    });
     fitInLabel = new QLabel(tr("The free space on the disk will be automatically partitioned for use with Adélie.  Existing data will be preserved."));
     fitInLabel->setHidden(true);
     fitInLabel->setIndent(25);
@@ -41,6 +49,10 @@ PartitionChoicePage::PartitionChoicePage(QWidget *parent)
 
     useExistingButton = new QRadioButton(tr("Use Existing &Partition"));
     useExistingButton->setHidden(true);
+    connect(useExistingButton, &QRadioButton::clicked, [=] {
+        horizonWizard()->auto_part = false;
+        horizonWizard()->erase = false;
+    });
     useExistingLabel = new QLabel(tr("No partitions will be modified.  You must select the partition on which you wish to install Adélie."));
     useExistingLabel->setHidden(true);
     useExistingLabel->setIndent(25);
@@ -48,6 +60,10 @@ PartitionChoicePage::PartitionChoicePage(QWidget *parent)
 
     manualButton = new QRadioButton(tr("&Manual"));
     manualButton->setHidden(true);
+    connect(manualButton, &QRadioButton::clicked, [=] {
+        horizonWizard()->auto_part = false;
+        horizonWizard()->erase = false;
+    });
     manualLabel = new QLabel(tr("Open a partitioning tool."));
     manualLabel->setHidden(true);
     manualLabel->setIndent(25);
