@@ -836,6 +836,8 @@ disklabel /dev/nvme0n1 gpt
                     <orderedlist id="partition.format.types">
                         <listitem><para><literal>boot</literal> &mdash; Marks the partition as bootable.  On MBR disk labels, this enables the Bootable flag.  On APM disk labels, this sets the partition type to <literal>Apple_Bootstrap</literal>.  On GPT disk labels, this sets the partition's type to BIOS Boot.</para></listitem>
                         <listitem><para><literal>esp</literal> &mdash; Marks the partition as an EFI System Partition (ESP).  This type is only valid on GPT disk labels.</para></listitem>
+                        <listitem><para><literal>bios</literal> &mdash; Marks the partition as a BIOS Boot partition.  This type is only valid on GPT disk labels.</para></listitem>
+                        <listitem><para><literal>prep</literal> &mdash; Marks the partition as a PowerPC Boot partition.  This type is only valid on MBR disk labels.</para></listitem>
                     </orderedlist>
                     <literal>partition</literal> may appear many times per block device file name; the exact maximum depend on the disk label in use on the block device.  It is invalid to specify a <literal>partition</literal> for a partition number that already exists on the block device.  It is invalid to specify a <literal>partition</literal> for a block device that does not have a disk label supported by Horizon.
                 </para>
