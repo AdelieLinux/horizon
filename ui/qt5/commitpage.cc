@@ -43,13 +43,25 @@ CommitPage::CommitPage(QWidget *parent) : HorizonWizardPage(parent) {
 }
 
 void CommitPage::initializePage() {
-    QString netString, zoneString, softString;
+    QString diskString, netString, zoneString, softString;
 
     auto iterator = valid_keymaps.begin();
     Q_ASSERT(field("keymap").toUInt() <= valid_keymaps.size());
     std::advance(iterator, field("keymap").toUInt());
 
-    if(horizonWizard()->network && horizonWizard()->net_dhcp &&
+    if(horizonWizard()->auto_part) {
+        if(horizonWizard()->erase) {
+            diskString = QString{"Erase and Partition %1"}
+                    .arg(QString::fromStdString(horizonWizard()->chosen_disk));
+        } else {
+            diskString = QString{"Install to Free Space on %1"}
+                    .arg(QString::fromStdString(horizonWizard()->chosen_disk));
+        }
+    } else {
+        diskString = "Custom Partitioning";
+    }
+
+    if(horizonWizard()->network &&
        horizonWizard()->interfaces.size() > 1) {
         QString iface = QString::fromStdString(horizonWizard()->chosen_auto_iface);
         netString = tr("Enabled (via %1)").arg(iface);
@@ -80,14 +92,16 @@ void CommitPage::initializePage() {
         break;
     }
 
-    choices->setText(tr("<br>\n"
-            "<p><b>Keyboard Layout</b>: %1</p>\n"
-            "<p><b>Networking</b>: %2</p>\n"
-            "<p><b>Time Zone</b>: %3</p>\n"
-            "<p><b>Software Selection</b>: %4</p>\n"
-            "<p><b>Hostname</b>: %5</p>\n"
+    choices->setText(tr("<br>"
+            "<p><b>Disk Layout:</b> %1</p>\n"
+            "<p><b>Keyboard Layout</b>: %2</p>\n"
+            "<p><b>Networking</b>: %3</p>\n"
+            "<p><b>Time Zone</b>: %4</p>\n"
+            "<p><b>Software Selection</b>: %5</p>\n"
+            "<p><b>Hostname</b>: %6</p>\n"
             "<p><b>Root Passphrase</b>: <i>[saved]</i></p>\n"
             "<br>")
+            .arg(diskString)
             .arg(QString::fromStdString(*iterator))
             .arg(netString)
             .arg(zoneString)
