@@ -190,6 +190,7 @@ public:
         Ext2,
         Ext3,
         Ext4,
+        HFSPlus,
         JFS,
         VFAT,
         XFS

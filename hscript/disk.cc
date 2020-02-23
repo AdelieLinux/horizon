@@ -583,7 +583,7 @@ bool Partition::execute(ScriptOptions opts) const {
 
 
 const static std::set<std::string> valid_fses = {
-    "ext2", "ext3", "ext4", "jfs", "vfat", "xfs"
+    "ext2", "ext3", "ext4", "hfs+", "jfs", "vfat", "xfs"
 };
 
 
@@ -627,6 +627,8 @@ Key *Filesystem::parseFromData(const std::string &data, int lineno,
         type = Ext3;
     } else if(fstype == "ext4") {
         type = Ext4;
+    } else if(fstype == "hfs+") {
+        type = HFSPlus;
     } else if(fstype == "jfs") {
         type = JFS;
     } else if(fstype == "vfat") {
@@ -659,6 +661,10 @@ bool Filesystem::execute(ScriptOptions opts) const {
         break;
     case Ext4:
         cmd = "mkfs.ext4";
+        break;
+    case HFSPlus:
+        cmd = "mkfs.hfsplus";
+        args.push_back("-w");
         break;
     case JFS:
         cmd = "mkfs.jfs";
