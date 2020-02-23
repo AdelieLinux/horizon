@@ -21,8 +21,10 @@
 class AccountPage : public HorizonWizardPage {
 public:
     AccountPage(QWidget *parent = nullptr);
-
-    bool isComplete() const;
+    bool isComplete() const override;
+#ifdef HAS_INSTALL_ENV
+    bool validatePage() override;
+#endif
     std::array<UserAccountWidget *, 4> accountWidgets;
 };
 

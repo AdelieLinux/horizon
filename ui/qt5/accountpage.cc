@@ -11,6 +11,9 @@
  */
 
 #include "accountpage.hh"
+#ifdef HAS_INSTALL_ENV
+#   include "commitpage.hh"
+#endif  /* HAS_INSTALL_ENV */
 
 #include <algorithm>
 #include <QLabel>
@@ -51,3 +54,13 @@ bool AccountPage::isComplete() const {
         return widget->isValid();
     });
 }
+
+#ifdef HAS_INSTALL_ENV
+bool AccountPage::validatePage() {
+    /* hack to re-initialise page in case the user goes back */
+    horizonWizard()->removePage(HorizonWizard::Page_Commit);
+    horizonWizard()->setPage(HorizonWizard::Page_Commit, new CommitPage);
+
+    return true;
+}
+#endif  /* HAS_INSTALL_ENV */
