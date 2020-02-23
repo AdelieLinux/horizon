@@ -126,7 +126,7 @@ public:
     void reject();
     /*! Emit a HorizonScript file with the user's choices. */
     QString toHScript();
-    QShortcut *f1, *f3, *f6, *f8;
+    QShortcut *f1, *f3, *f6, *f8, *f10;
 
     /*! The domain to use for downloading packages.
      * @example distfiles.adelielinux.org

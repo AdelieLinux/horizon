@@ -266,9 +266,9 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setButtonText(BackButton, tr("< &Back (F6)"));
     setButtonText(NextButton, tr("Co&ntinue > (F8)"));
 #ifdef HAS_INSTALL_ENV
-    setButtonText(FinishButton, tr("&Install (F8)"));
+    setButtonText(FinishButton, tr("&Install (F10)"));
 #else
-    setButtonText(FinishButton, tr("&Save (F8)"));
+    setButtonText(FinishButton, tr("&Save (F10)"));
 #endif  /* HAS_INSTALL_ENV */
 
     f1 = new QShortcut(Qt::Key_F1, this);
@@ -289,9 +289,12 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     f8 = new QShortcut(Qt::Key_F8, this);
     connect(f8, &QShortcut::activated,
             button(NextButton), &QAbstractButton::click);
-    connect(f8, &QShortcut::activated,
-            button(FinishButton), &QAbstractButton::click);
     f8->setWhatsThis(tr("Goes forward to the next page."));
+
+    f10 = new QShortcut(Qt::Key_F10, this);
+    connect(f10, &QShortcut::activated,
+            button(FinishButton), &QAbstractButton::click);
+    f10->setWhatsThis(tr("Finishes the wizard."));
 
 #ifdef HAS_INSTALL_ENV
     interfaces = probe_ifaces();
