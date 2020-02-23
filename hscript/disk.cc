@@ -458,11 +458,15 @@ Key *Partition::parseFromData(const std::string &data, int lineno, int *errors,
             type = Boot;
         } else if(typecode == "esp") {
             type = ESP;
+        } else if(typecode == "bios") {
+            type = BIOS;
+        } else if(typecode == "prep") {
+            type = PReP;
         } else {
             if(errors) *errors += 1;
             output_error("installfile:" + std::to_string(lineno),
                          "partition: expected type code, got: " + typecode,
-                         "valid type codes are 'boot' and 'esp'");
+                         "valid type codes are: boot esp bios prep");
             return nullptr;
         }
     }
@@ -556,6 +560,24 @@ bool Partition::execute(ScriptOptions opts) const {
                      this->device());
         ped_disk_destroy(disk);
         return false;
+    }
+
+    switch(_type) {
+    case Boot:
+        ped_partition_set_flag(me, PED_PARTITION_BOOT, 1);
+        break;
+    case ESP:
+        ped_partition_set_flag(me, PED_PARTITION_ESP, 1);
+        break;
+    case BIOS:
+        ped_partition_set_flag(me, PED_PARTITION_BIOS_GRUB, 1);
+        break;
+    case PReP:
+        ped_partition_set_flag(me, PED_PARTITION_PREP, 1);
+        break;
+    case None:
+        /* we good */
+        break;
     }
 
     int res = ped_disk_add_partition(disk, me, ped_constraint_any(dev));

@@ -83,7 +83,11 @@ public:
         /*! Bootable */
         Boot,
         /*! EFI System Partition (GPT only) */
-        ESP
+        ESP,
+        /*! GRUB BIOS (GPT only) */
+        BIOS,
+        /*! PReP boot (MBR only) */
+        PReP
     };
 private:
     const std::string _block;
