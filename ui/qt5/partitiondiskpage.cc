@@ -62,7 +62,7 @@ PartitionDiskPage::PartitionDiskPage(QWidget *parent)
     descLabel->setWordWrap(true);
 
 #ifdef HAS_INSTALL_ENV
-    descLabel->setText(tr("Choose the hard disk on which to install Adélie Linux."));
+    descLabel->setText(tr("Select the hard disk on which to install Adélie Linux."));
 
     diskChooser = new QListWidget;
     connect(diskChooser, &QListWidget::currentItemChanged, [=]{

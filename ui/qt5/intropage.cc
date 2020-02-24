@@ -3,7 +3,7 @@
  * horizon-qt5, the Qt 5 user interface for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -39,6 +39,7 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
 #else  /* HAS_INSTALL_ENV */
     QMenu *toolMenu;
     toolButton = new QPushButton(tr("Launch &Tool..."), this);
+    toolButton->setWhatsThis(tr("Displays a menu of utilities that you can launch from the Installation Environment."));
     toolMenu = new QMenu("&Tools", toolButton);
     connect(toolMenu->addAction("&Terminal"), &QAction::triggered, [=](void) {
         QProcess p;

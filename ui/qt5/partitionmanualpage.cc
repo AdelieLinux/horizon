@@ -35,6 +35,7 @@ PartitionManualPage::PartitionManualPage(QWidget *parent)
                           "When you have finished partitioning the disk, quit the partitioning utility and choose Next."));
 
     QPushButton *button = new QPushButton(tr("Launch Partitioner"));
+    button->setWhatsThis(tr("Opens the partition editor."));
     connect(button, &QPushButton::clicked, [=]{
         QProcess p;
         p.execute("partitionmanager");
@@ -46,7 +47,7 @@ PartitionManualPage::PartitionManualPage(QWidget *parent)
     setTitle(tr("Enter Partitioning Information"));
 
     descLabel->setText(tr("Enter the partitioning commands you wish to use for the target computer.\n\n"
-                          "For a list of valid commands, choose Help or review the HorizonScript Reference."));
+                          "For a list of valid commands, review the HorizonScript Reference."));
 
     partitionEdit = new QTextEdit;
     connect(partitionEdit, &QTextEdit::textChanged, [=]{
@@ -56,6 +57,7 @@ PartitionManualPage::PartitionManualPage(QWidget *parent)
     partitionEdit->setAcceptRichText(false);
     partitionEdit->setFontFamily("monospace");
     partitionEdit->setReadOnly(false);
+    partitionEdit->setWhatsThis(tr("Input the HorizonScript commands to partition the disk."));
     layout->addWidget(partitionEdit);
 #endif  /* HAS_INSTALL_ENV */
 

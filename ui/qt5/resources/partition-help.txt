@@ -1,5 +1,6 @@
-<h2>Partitioning the Hard Disk Drive</h2>
+<h2>Disk Detection</h2>
 
-Please help the user partition the disk drive here.
-
-Do not ship this content.
+<p>System Installation will detect the hard disk drives connected to your
+computer, including size and partitions.  This process may take a few moments
+depending on the speed of your disks and how they are connected to your
+computer.</p>

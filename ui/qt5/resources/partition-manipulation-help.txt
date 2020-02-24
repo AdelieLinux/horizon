@@ -1,0 +1,36 @@
+<h2>Select Partitioning Type</h2>
+
+<p>This page allows you to select how you want to partition the disk you have
+selected for installation.  Depending on the disk's current configuration, you
+may have any of the following options:</p>
+
+<ul>
+<li>
+<p><strong>Erase and Use Whole Disk</strong>: This option will erase all data
+currently on the disk, and then configure the entire disk to be used for Adélie
+Linux.</p>
+<p><strong>Ensure any data on this disk has been backed up to other media
+before selecting this option.</strong>  You will not be able to recover any
+data from the disk after installation is completed.</p>
+</li>
+<li>
+<p><strong>Use Free Space</strong>: This option will install Adélie Linux in to
+the free space present on the selected disk.  No existing data will be erased.
+</p>
+</li>
+<li>
+<p><strong>Use Exising Partition(s)</strong>: This option will allow you to
+choose a partition already present on the selected disk for installation.  You
+may select to erase the partition, or install to a partition that is already
+formatted.</p>
+<p>Note: If an existing Linux or Unix system is already present on the selected
+partition, it may be damaged.  Always ensure that you select a partition that
+can be used exclusively by Adélie Linux.</p>
+</li>
+<li>
+<p><strong>Manual</strong>: This option will open a partition editor for you to
+manipulate partitions in whatever way you wish.  After you are finished in the
+partition editor, you will be able to select the mount points of the partitions.
+</p>
+</li>
+</ul>

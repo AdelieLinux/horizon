@@ -7,6 +7,9 @@ your computer.</p>
 <p>Each step of the installation system has a help screen just like this one,
 accessible via the 'Help' button in the lower left corner of the screen.</p>
 
+<p>You can view the pages of this help screen by using the scroll bar, or by
+pressing the Page Up and Page Down keys.</p>
+
 
 <hr>
 

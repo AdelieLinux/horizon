@@ -302,6 +302,12 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setButtonText(FinishButton, tr("&Save (F10)"));
 #endif  /* HAS_INSTALL_ENV */
 
+    button(HelpButton)->setWhatsThis(tr("Activates the Help screen."));
+    button(CancelButton)->setWhatsThis(tr("Prompts to close System Installation."));
+    button(BackButton)->setWhatsThis(tr("Goes back to the previous page of System Installation."));
+    button(NextButton)->setWhatsThis(tr("Goes forward to the next page of System Installation."));
+    button(FinishButton)->setWhatsThis(tr("Completes the information gathering phase of System Installation."));
+
     f1 = new QShortcut(Qt::Key_F1, this);
     connect(f1, &QShortcut::activated,
             button(HelpButton), &QAbstractButton::click);
@@ -310,22 +316,22 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     f3 = new QShortcut(Qt::Key_F3, this);
     connect(f3, &QShortcut::activated,
             button(CancelButton), &QAbstractButton::click);
-    f3->setWhatsThis(tr("Prompts to exit the installation."));
+    f3->setWhatsThis(tr("Prompts to close System Installation."));
 
     f6 = new QShortcut(Qt::Key_F6, this);
     connect(f6, &QShortcut::activated,
             button(BackButton), &QAbstractButton::click);
-    f6->setWhatsThis(tr("Goes back to the previous page."));
+    f6->setWhatsThis(tr("Goes back to the previous page of System Installation."));
 
     f8 = new QShortcut(Qt::Key_F8, this);
     connect(f8, &QShortcut::activated,
             button(NextButton), &QAbstractButton::click);
-    f8->setWhatsThis(tr("Goes forward to the next page."));
+    f8->setWhatsThis(tr("Goes forward to the next page of System Installation."));
 
     f10 = new QShortcut(Qt::Key_F10, this);
     connect(f10, &QShortcut::activated,
             button(FinishButton), &QAbstractButton::click);
-    f10->setWhatsThis(tr("Finishes the wizard."));
+    f10->setWhatsThis(tr("Completes the information gathering phase of System Installation."));
 
 #ifdef HAS_INSTALL_ENV
     interfaces = probe_ifaces();

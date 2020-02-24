@@ -1,0 +1,7 @@
+<h2>Select Installation Disk</h2>
+
+<p>This page allows you to select the hard disk drive on which to install
+Adélie Linux.</p>
+
+<p>The model name and size of each disk is shown, including the available
+space on the disk.</p>

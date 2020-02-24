@@ -27,9 +27,12 @@ NetworkingPage::NetworkingPage(QWidget *parent) : HorizonWizardPage(parent) {
 
     simple = new QRadioButton(tr("&Automatic - my computer connects to the Internet directly\n"
                                  "or via a modem/router."));
+    simple->setWhatsThis(tr("This option will configure your network automatically using DHCP."));
     advanced = new QRadioButton(tr("&Manual - my computer connects to an enterprise network,\n"
-                                   "or I use a static IP address, VPN, or 802.1X security."));
+                                   "or I use a static IP address."));
+    advanced->setWhatsThis(tr("This option will prompt you for your network information."));
     skip = new QRadioButton(tr("&Skip - I don't want to connect to a network or the Internet."));
+    skip->setWhatsThis(tr("This option disables networking on this computer.  You can configure your computer's networking after installation."));
 }
 
 void NetworkingPage::initializePage() {
@@ -48,7 +51,7 @@ void NetworkingPage::initializePage() {
     {
         descLabel = new QLabel(tr(
             "If your computer is directly connected to the Internet via Ethernet or Wi-Fi using a modem or router, choose Automatic.\n\n"
-            "If you need to set a static IP address, or you use a VPN or proxy server, choose Manual.\n\n"
+            "If you need to set a static IP address, or you use a proxy server, choose Manual.\n\n"
             "If you don't want to configure networking or you don't want to use this computer on the Internet, choose Skip."));
     }
     descLabel->setWordWrap(true);

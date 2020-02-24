@@ -19,18 +19,19 @@
 PartitionChoicePage::PartitionChoicePage(QWidget *parent)
     : HorizonWizardPage(parent) {
     loadWatermark("disk");
-    setTitle(tr("Choose Partitioning Type"));
+    setTitle(tr("Select Partitioning Type"));
 
     descLabel = new QLabel(tr("Select the method you wish to use for partitioning %1:"));
     descLabel->setWordWrap(true);
 
     eraseButton = new QRadioButton(tr("&Erase and Use Whole Disk"));
     eraseButton->setHidden(true);
+    eraseButton->setWhatsThis(tr("This option will erase all data currently on the disk, and then configure the entire disk to be used for Adélie Linux."));
     connect(eraseButton, &QRadioButton::clicked, [=] {
         horizonWizard()->auto_part = true;
         horizonWizard()->erase = true;
     });
-    eraseLabel = new QLabel(tr("The entire disk will be erased and then automatically partitioned.<br><strong>Warning: This will destroy all existing data on the disk.</strong>"));
+    eraseLabel = new QLabel(tr("The entire disk will be erased and then automatically partitioned.<p><strong>Warning: This will destroy all existing data on the disk.</strong>"));
     eraseLabel->setHidden(true);
     eraseLabel->setIndent(25);
     eraseLabel->setTextFormat(Qt::RichText);
@@ -38,6 +39,7 @@ PartitionChoicePage::PartitionChoicePage(QWidget *parent)
 
     fitInButton = new QRadioButton(tr("Use &Free Space"));
     fitInButton->setHidden(true);
+    fitInButton->setWhatsThis(tr("This option will install Adélie Linux in to the free space present on the selected disk.  No existing data will be erased."));
     connect(fitInButton, &QRadioButton::clicked, [=] {
         horizonWizard()->auto_part = true;
         horizonWizard()->erase = false;
@@ -49,6 +51,7 @@ PartitionChoicePage::PartitionChoicePage(QWidget *parent)
 
     useExistingButton = new QRadioButton(tr("Use Existing &Partition"));
     useExistingButton->setHidden(true);
+    useExistingButton->setWhatsThis(tr("This option will allow you to choose a partition already present on the selected disk for installation.  You may select to erase the partition, or install to a partition that is already formatted."));
     connect(useExistingButton, &QRadioButton::clicked, [=] {
         horizonWizard()->auto_part = false;
         horizonWizard()->erase = false;
@@ -60,6 +63,7 @@ PartitionChoicePage::PartitionChoicePage(QWidget *parent)
 
     manualButton = new QRadioButton(tr("&Manual"));
     manualButton->setHidden(true);
+    manualButton->setWhatsThis(tr("This option will open a partition editor for you to manipulate partitions in whatever way you wish.  After you are finished in the partition editor, you will be able to select the mount points of the partitions."));
     connect(manualButton, &QRadioButton::clicked, [=] {
         horizonWizard()->auto_part = false;
         horizonWizard()->erase = false;
