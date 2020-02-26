@@ -298,6 +298,51 @@ firmware false
                 </para>
             </formalpara>
         </section>
+        <section id="netconfigtype">
+            <title><literal>netconfigtype</literal></title>
+            <formalpara id="netconfigtype.name">
+                <title>Name</title>
+                <para><literal>netconfigtype</literal></para>
+            </formalpara>
+            <formalpara id="netconfigtype.purpose">
+                <title>Purpose</title>
+                <para>The <literal>netconfigtype</literal> key determines the desired network configuration type used on the target computer.</para>
+            </formalpara>
+            <formalpara id="netconfigtype.format">
+                <title>Format</title>
+                <para>The <literal>netconfigtype</literal> key is a single string that describes the desired network configuration system used on the target computer.  <literal>netconfigtype</literal> may appear at most once in a HorizonScript.
+                    Currently recognised network configuration systems for Horizon 1.0 are:
+                    <orderedlist id="netconfigtype.format.items">
+                        <listitem><para><literal>netifrc</literal> &mdash; The netifrc system, as used by Adélie Linux</para></listitem>
+                        <listitem><para><literal>eni</literal> &mdash; The /etc/network/interfaces system, as used by Alpine Linux</para></listitem>
+                        <!-- <listitem><para><literal>networkmanager</literal> &mdash; The NetworkManager system, usable by both Adélie and Alpine Linux</para></listitem> -->
+                    </orderedlist>
+                </para>
+            </formalpara>
+            <formalpara id="netconfigtype.default">
+                <title>Default</title>
+                <para>If no <literal>netconfigtype</literal> key is specified, the system will default to the <literal>netifrc</literal> configuration system.</para>
+            </formalpara>
+            <formalpara id="netconfigtype.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>netconfigtype</literal> Key &mdash; netifrc</title>
+                        <programlisting>
+netconfigtype netifrc
+                        </programlisting>
+                        <para>This configures the target computer to use netifrc for network configuration.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>netconfigtype</literal> Key &mdash; /etc/network/interfaces</title>
+                        <programlisting>
+netconfigtype eni
+                        </programlisting>
+                        <para>This configures the target computer to use an /etc/network/interfaces file for network configuration.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
         <section id="netaddress">
             <title><literal>netaddress</literal></title>
             <formalpara id="netaddress.name">
@@ -330,8 +375,8 @@ firmware false
                 <title>Default</title>
                 <para>There is no default for this key.  It is invalid to enable networking and not provide at least one <literal>netaddress</literal> key.</para>
             </formalpara>
-            <formalpara id="netaddress.example">
-                <title>Example</title>
+            <formalpara id="netaddress.examples">
+                <title>Examples</title>
                 <para>
                     <example>
                         <title>The <literal>netaddress</literal> Key &mdash; Simple DHCP</title>

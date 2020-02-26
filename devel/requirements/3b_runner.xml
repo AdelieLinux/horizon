@@ -162,6 +162,22 @@
                     <title>Runner.Validate.network.netssid.Key</title>
                     <para>If the third value of a <literal>netssid</literal> tuple is a valid security type and not <literal>none</literal>, the system shall ensure that the <literal>netssid</literal> tuple has a fourth value that specifies the security key.</para>
                 </formalpara>
+                <formalpara id="Runner.Validate.netconfigtype">
+                    <title>Runner.Validate.netconfigtype</title>
+                    <para>The system shall verify that the HorizonScript contains zero or one <literal>netconfigtype</literal> key.</para>
+                </formalpara>
+                <formalpara id="Runner.Validate.netconfigtype.Validity">
+                    <title>Runner.Validate.netconfigtype.Validity</title>
+                    <para>If the HorizonScript contains a <literal>netconfigtype</literal> key, the system shall ensure that the <literal>netconfigtype</literal> key has a valid form of a single string containing a recognised network configuration type.</para>
+                </formalpara>
+                <formalpara id="Runner.Validate.netconfigtype.netifrc">
+                    <title>Runner.Validate.netconfigtype.netifrc</title>
+                    <para>If the value of the <literal>netconfigtype</literal> key is <literal>netifrc</literal>, the system shall write any network configuration in a manner that can be used by the netifrc package.</para>
+                </formalpara>
+                <formalpara id="Runner.Validate.netconfigtype.eni">
+                    <title>Runner.Validate.netconfigtype.eni</title>
+                    <para>If the value of the <literal>netconfigtype</literal> key is <literal>eni</literal>, the system shall write any network configuration to a <filename>/etc/network/interfaces</filename> file that conforms to the standard provided.</para>
+                </formalpara>
                 <formalpara id="Runner.Validate.nameserver">
                     <title>Runner.Validate.nameserver</title>
                     <para>The system shall verify any <literal>nameserver</literal> keys contained in the HorizonScript.</para>
