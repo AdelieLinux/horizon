@@ -3,7 +3,7 @@
  * libhscript, the HorizonScript library for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -62,7 +62,7 @@ bool is_block_device(const std::string &key, long line,
 
 
 Key *DiskId::parseFromData(const std::string &data, int lineno, int *errors,
-                           int *) {
+                           int *, const Script *script) {
     std::string block, ident;
     std::string::size_type block_end = data.find_first_of(' ');
     if(block_end == std::string::npos) {
@@ -75,13 +75,13 @@ Key *DiskId::parseFromData(const std::string &data, int lineno, int *errors,
 
     block = data.substr(0, block_end);
     ident = data.substr(block_end + 1);
-    return new DiskId(lineno, block, ident);
+    return new DiskId(script, lineno, block, ident);
 }
 
-bool DiskId::validate(ScriptOptions options) const {
+bool DiskId::validate() const {
 #ifdef HAS_INSTALL_ENV
     /* We only validate if running in an Installation Environment. */
-    if(options.test(InstallEnvironment)) {
+    if(script->options().test(InstallEnvironment)) {
         /* Unlike 'mount', 'diskid' *does* require that the block device exist
          * before installation begins.  This test is always valid. */
         return is_block_device("diskid", this->lineno(), _block);
@@ -91,14 +91,14 @@ bool DiskId::validate(ScriptOptions options) const {
     return true;
 }
 
-bool DiskId::execute(ScriptOptions options) const {
+bool DiskId::execute() const {
     bool match = false;
 
     output_info("installfile:" + std::to_string(line),
                 "diskid: Checking " + _block + " for identification string " +
                 _ident);
 
-    if(!options.test(InstallEnvironment)) return true;
+    if(!script->options().test(InstallEnvironment)) return true;
 
 #ifdef HAS_INSTALL_ENV
     struct udev *udev;
@@ -156,7 +156,7 @@ bool DiskId::execute(ScriptOptions options) const {
 
 
 Key *DiskLabel::parseFromData(const std::string &data, int lineno, int *errors,
-                              int *) {
+                              int *, const Script *script) {
     std::string block, label;
     std::string::size_type sep = data.find_first_of(' ');
     LabelType type;
@@ -188,13 +188,13 @@ Key *DiskLabel::parseFromData(const std::string &data, int lineno, int *errors,
         return nullptr;
     }
 
-    return new DiskLabel(lineno, block, type);
+    return new DiskLabel(script, lineno, block, type);
 }
 
-bool DiskLabel::validate(ScriptOptions options) const {
+bool DiskLabel::validate() const {
 #ifdef HAS_INSTALL_ENV
     /* REQ: Runner.Validate.disklabel.Block */
-    if(options.test(InstallEnvironment)) {
+    if(script->options().test(InstallEnvironment)) {
         /* disklabels are created before any others, so we can check now */
         return is_block_device("disklabel", this->lineno(), _block);
     }
@@ -203,7 +203,7 @@ bool DiskLabel::validate(ScriptOptions options) const {
     return true;
 }
 
-bool DiskLabel::execute(ScriptOptions options) const {
+bool DiskLabel::execute() const {
     std::string type_str;
     switch(this->type()) {
     case APM:
@@ -221,7 +221,7 @@ bool DiskLabel::execute(ScriptOptions options) const {
                 "disklabel: creating new " + type_str + " disklabel on " +
                 device());
 
-    if(options.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "parted -ms " << this->device() << " mklabel "
                   << type_str << std::endl;
         return true;
@@ -262,7 +262,7 @@ bool DiskLabel::execute(ScriptOptions options) const {
 
 
 Key *Encrypt::parseFromData(const std::string &data, int lineno, int *errors,
-                            int *) {
+                            int *, const Script *script) {
     std::string::size_type sep = data.find(' ');
     std::string dev, pass;
 
@@ -280,14 +280,14 @@ Key *Encrypt::parseFromData(const std::string &data, int lineno, int *errors,
         return nullptr;
     }
 
-    return new Encrypt(lineno, dev, pass);
+    return new Encrypt(script, lineno, dev, pass);
 }
 
-bool Encrypt::validate(ScriptOptions) const {
+bool Encrypt::validate() const {
     return true;
 }
 
-bool Encrypt::execute(ScriptOptions) const {
+bool Encrypt::execute() const {
     return false;
 }
 
@@ -397,7 +397,7 @@ bool parse_size_string(const std::string &in_size, uint64_t *out_size,
 
 
 Key *Partition::parseFromData(const std::string &data, int lineno, int *errors,
-                              int *) {
+                              int *, const Script *script) {
     std::string block, pno, size_str, typecode;
     std::string::size_type next_pos, last_pos;
     int part_no;
@@ -471,12 +471,12 @@ Key *Partition::parseFromData(const std::string &data, int lineno, int *errors,
         }
     }
 
-    return new Partition(lineno, block, part_no, size_type, size, type);
+    return new Partition(script, lineno, block, part_no, size_type, size, type);
 }
 
-bool Partition::validate(ScriptOptions opts) const {
+bool Partition::validate() const {
 #ifdef HAS_INSTALL_ENV
-    if(opts.test(InstallEnvironment)) {
+    if(script->options().test(InstallEnvironment)) {
         /* REQ: Runner.Validate.partition.Block */
         return is_block_device("partition", this->lineno(), this->device());
     }
@@ -484,12 +484,12 @@ bool Partition::validate(ScriptOptions opts) const {
     return true;
 }
 
-bool Partition::execute(ScriptOptions opts) const {
+bool Partition::execute() const {
     output_info("installfile:" + std::to_string(this->lineno()),
                 "partition: creating partition #" + std::to_string(_partno) +
                 " on " + _block);
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         output_error("installfile:" + std::to_string(this->lineno()),
                      "partition: Not supported in Simulation mode");
         return true;
@@ -610,7 +610,7 @@ const static std::set<std::string> valid_fses = {
 
 
 Key *Filesystem::parseFromData(const std::string &data, int lineno,
-                               int *errors, int *) {
+                               int *errors, int *, const Script *script) {
     if(std::count(data.begin(), data.end(), ' ') != 1) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
@@ -659,15 +659,15 @@ Key *Filesystem::parseFromData(const std::string &data, int lineno,
         type = XFS;
     }
 
-    return new Filesystem(lineno, device, type);
+    return new Filesystem(script, lineno, device, type);
 }
 
-bool Filesystem::validate(ScriptOptions) const {
+bool Filesystem::validate() const {
     /* Validation is done during parsing. */
     return true;
 }
 
-bool Filesystem::execute(ScriptOptions opts) const {
+bool Filesystem::execute() const {
     std::string cmd;
     std::vector<std::string> args;
 
@@ -712,7 +712,7 @@ bool Filesystem::execute(ScriptOptions opts) const {
 
     args.push_back(_block);
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << cmd;
         for(auto &&arg : args) {
             std::cout << " " << arg;
@@ -733,7 +733,7 @@ bool Filesystem::execute(ScriptOptions opts) const {
 
 
 Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
-                          int *) {
+                          int *, const Script *script) {
     std::string dev, where, opt;
     std::string::size_type where_pos, opt_pos;
     bool any_failure = false;
@@ -775,14 +775,14 @@ Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
 
     if(any_failure) return nullptr;
 
-    return new Mount(lineno, dev, where, opt);
+    return new Mount(script, lineno, dev, where, opt);
 }
 
-bool Mount::validate(ScriptOptions) const {
+bool Mount::validate() const {
     return true;
 }
 
-bool Mount::execute(ScriptOptions options) const {
+bool Mount::execute() const {
     const std::string actual_mount = "/target" + this->mountpoint();
     const char *fstype = nullptr;
 #ifdef HAS_INSTALL_ENV
@@ -790,7 +790,7 @@ bool Mount::execute(ScriptOptions options) const {
 #endif
 
     /* We have to get the filesystem for the node. */
-    if(options.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         fstype = "auto";
     }
 #ifdef HAS_INSTALL_ENV
@@ -808,7 +808,7 @@ bool Mount::execute(ScriptOptions options) const {
     output_info("installfile:" + std::to_string(this->lineno()),
                 "mount: mounting " + this->device() + " on " +
                 this->mountpoint());
-    if(options.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "mount ";
         if(!this->options().empty()) {
             std::cout << "-o " << this->options() << " ";
@@ -851,7 +851,7 @@ bool Mount::execute(ScriptOptions options) const {
     char pass = (this->mountpoint() == "/" ? '1' : '0');
     const std::string fstab_opts = (this->options().empty() ?
                                         "defaults" : this->options());
-    if(options.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         if(this->mountpoint() == "/") {
             std::cout << "mkdir -p /target/etc" << std::endl;
         }

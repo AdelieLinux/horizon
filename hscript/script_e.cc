@@ -87,7 +87,7 @@ bool Script::execute() const {
     output_error(phase, "The HorizonScript failed to execute",\
                  "Check the log file for more details.")
 #define EXECUTE_OR_FAIL(phase, obj) \
-    if(!obj->execute(opts)) {\
+    if(!obj->execute()) {\
         EXECUTE_FAILURE(phase);\
         return false;\
     }
@@ -212,7 +212,7 @@ bool Script::execute() const {
         }
 
         for(auto &ssid : internal->ssids) {
-            if(!ssid->execute(opts)) {
+            if(!ssid->execute()) {
                 EXECUTE_FAILURE("ssid");
                 /* "Soft" error.  Not fatal. */
             }
@@ -256,7 +256,7 @@ bool Script::execute() const {
         }
 
         for(auto &addr : internal->addresses) {
-            if(!addr->execute(opts)) {
+            if(!addr->execute()) {
                 EXECUTE_FAILURE("netaddress");
                 /* "Soft" error.  Not fatal. */
             } else {

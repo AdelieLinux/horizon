@@ -3,7 +3,7 @@
  * libhscript, the HorizonScript library for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -122,26 +122,26 @@ static bool string_is_crypt(const std::string &pw, const std::string &key,
 
 
 Key *RootPassphrase::parseFromData(const std::string &data, int lineno,
-                                   int *errors, int *) {
+                                   int *errors, int *, const Script *script) {
     if(!string_is_crypt(data, "rootpw", lineno)) {
         if(errors) *errors += 1;
         return nullptr;
     }
-    return new RootPassphrase(lineno, data);
+    return new RootPassphrase(script, lineno, data);
 }
 
-bool RootPassphrase::validate(ScriptOptions) const {
+bool RootPassphrase::validate() const {
     return true;
 }
 
-bool RootPassphrase::execute(ScriptOptions options) const {
+bool RootPassphrase::execute() const {
     const std::string root_line = "root:" + this->_value + ":" +
             std::to_string(time(nullptr) / 86400) + ":0:::::";
 
     output_info("installfile:" + std::to_string(this->lineno()),
                 "rootpw: setting root passphrase");
 
-    if(options.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "(printf '" << root_line << "\\" << "n'; "
                   << "cat /target/etc/shadow | sed '1d') > /tmp/shadow"
                   << std::endl
@@ -190,7 +190,7 @@ bool RootPassphrase::execute(ScriptOptions options) const {
 
 
 Key *Username::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *) {
+                             int *, const Script *script) {
     if(!is_valid_name(data.c_str())) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
@@ -206,14 +206,14 @@ Key *Username::parseFromData(const std::string &data, int lineno, int *errors,
         return nullptr;
     }
 
-    return new Username(lineno, data);
+    return new Username(script, lineno, data);
 }
 
-bool Username::execute(ScriptOptions opts) const {
+bool Username::execute() const {
     output_info("installfile:" + std::to_string(line),
                 "username: creating account " + _value);
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "useradd -c \"Adélie User\" -m -U " << _value
                   << std::endl;
         return true;
@@ -232,7 +232,7 @@ bool Username::execute(ScriptOptions opts) const {
 
 
 Key *UserAlias::parseFromData(const std::string &data, int lineno, int *errors,
-                              int *) {
+                              int *, const Script *script) {
     /* REQ: Runner.Validate.useralias.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {
@@ -243,18 +243,19 @@ Key *UserAlias::parseFromData(const std::string &data, int lineno, int *errors,
         return nullptr;
     }
 
-    return new UserAlias(lineno, data.substr(0, sep), data.substr(sep + 1));
+    return new UserAlias(script, lineno, data.substr(0, sep),
+                         data.substr(sep + 1));
 }
 
-bool UserAlias::validate(ScriptOptions) const {
+bool UserAlias::validate() const {
     return true;
 }
 
-bool UserAlias::execute(ScriptOptions opts) const {
+bool UserAlias::execute() const {
     output_info("installfile:" + std::to_string(line),
                 "useralias: setting GECOS name for " + _username);
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "usermod -c \"" << _alias << "\" " << _username
                   << std::endl;
         return true;
@@ -272,7 +273,7 @@ bool UserAlias::execute(ScriptOptions opts) const {
 
 
 Key *UserPassphrase::parseFromData(const std::string &data, int lineno,
-                                   int *errors, int *) {
+                                   int *errors, int *, const Script *script) {
     /* REQ: Runner.Validate.userpw.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {
@@ -289,19 +290,20 @@ Key *UserPassphrase::parseFromData(const std::string &data, int lineno,
         return nullptr;
     }
 
-    return new UserPassphrase(lineno, data.substr(0, sep), data.substr(sep + 1));
+    return new UserPassphrase(script, lineno, data.substr(0, sep),
+                              data.substr(sep + 1));
 }
 
-bool UserPassphrase::validate(ScriptOptions) const {
+bool UserPassphrase::validate() const {
     /* If it's parseable, it's valid. */
     return true;
 }
 
-bool UserPassphrase::execute(ScriptOptions opts) const {
+bool UserPassphrase::execute() const {
     output_info("installfile:" + std::to_string(line),
                 "userpw: setting passphrase for " + _username);
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "usermod -p '" << _passphrase << "' " << _username
                   << std::endl;
         return true;
@@ -319,7 +321,7 @@ bool UserPassphrase::execute(ScriptOptions opts) const {
 
 
 Key *UserIcon::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *) {
+                             int *, const Script *script) {
     /* REQ: Runner.Validate.usericon.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {
@@ -338,15 +340,15 @@ Key *UserIcon::parseFromData(const std::string &data, int lineno, int *errors,
         return nullptr;
     }
 
-    return new UserIcon(lineno, data.substr(0, sep), icon_path);
+    return new UserIcon(script, lineno, data.substr(0, sep), icon_path);
 }
 
-bool UserIcon::validate(ScriptOptions) const {
+bool UserIcon::validate() const {
     /* TODO XXX: ensure URL is accessible */
     return true;
 }
 
-bool UserIcon::execute(ScriptOptions opts) const {
+bool UserIcon::execute() const {
     const std::string as_path("/target/var/lib/AccountsService/icons/" +
                               _username);
     const std::string face_path("/target/home/" + _username + "/.face");
@@ -354,7 +356,7 @@ bool UserIcon::execute(ScriptOptions opts) const {
     output_info("installfile:" + std::to_string(line),
                 "usericon: setting avatar for " + _username);
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         if(_icon_path[0] == '/') {
             std::cout << "cp " << _icon_path << " " << as_path << std::endl;
         } else {
@@ -403,7 +405,7 @@ bool UserIcon::execute(ScriptOptions opts) const {
 
 
 Key *UserGroups::parseFromData(const std::string &data, int lineno,
-                               int *errors, int *) {
+                               int *errors, int *, const Script *script) {
     /* REQ: Runner.Validate.usergroups.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {
@@ -438,15 +440,15 @@ Key *UserGroups::parseFromData(const std::string &data, int lineno,
         return nullptr;
     }
 
-    return new UserGroups(lineno, data.substr(0, sep), group_set);
+    return new UserGroups(script, lineno, data.substr(0, sep), group_set);
 }
 
-bool UserGroups::validate(ScriptOptions) const {
+bool UserGroups::validate() const {
     /* All validation is done in parsing stage */
     return true;
 }
 
-bool UserGroups::execute(ScriptOptions opts) const {
+bool UserGroups::execute() const {
     output_info("installfile:" + std::to_string(line),
                 "usergroups: setting group membership for " + _username);
 
@@ -457,7 +459,7 @@ bool UserGroups::execute(ScriptOptions opts) const {
     /* remove the last comma. */
     groups.pop_back();
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "usermod -aG " << groups << " " << _username << std::endl;
         return true;
     }

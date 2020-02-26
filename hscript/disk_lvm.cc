@@ -3,7 +3,7 @@
  * libhscript, the HorizonScript library for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -26,7 +26,7 @@ using namespace Horizon::Keys;
 bool parse_size_string(const std::string &, uint64_t *, SizeType *);
 
 Key *LVMPhysical::parseFromData(const std::string &data, int lineno,
-                                int *errors, int *) {
+                                int *errors, int *, const Script *script) {
     if(data.size() < 6 || data.substr(0, 5) != "/dev/") {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
@@ -34,14 +34,14 @@ Key *LVMPhysical::parseFromData(const std::string &data, int lineno,
         return nullptr;
     }
 
-    return new LVMPhysical(lineno, data);
+    return new LVMPhysical(script, lineno, data);
 }
 
-bool LVMPhysical::execute(ScriptOptions opts) const {
+bool LVMPhysical::execute() const {
     output_info("installfile:" + std::to_string(line),
                 "lvm_pv: creating physical volume on " + _value);
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "pvcreate --force " << _value << std::endl;
         return true;
     }
@@ -117,7 +117,7 @@ bool is_valid_lvm_lv_name(const std::string &name) {
 
 
 Key *LVMGroup::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *) {
+                             int *, const Script *script) {
     std::string::size_type space = data.find_first_of(' ');
     if(space == std::string::npos || data.size() == space + 1) {
         if(errors) *errors += 1;
@@ -144,16 +144,16 @@ Key *LVMGroup::parseFromData(const std::string &data, int lineno, int *errors,
         return nullptr;
     }
 
-    return new LVMGroup(lineno, pv, name);
+    return new LVMGroup(script, lineno, pv, name);
 }
 
-bool LVMGroup::validate(ScriptOptions) const {
+bool LVMGroup::validate() const {
     /* validation occurs during parsing */
     return true;
 }
 
 /* LCOV_EXCL_START */
-bool LVMGroup::test_pv(ScriptOptions) const {
+bool LVMGroup::test_pv() const {
 #ifdef HAS_INSTALL_ENV
     const char *fstype = blkid_get_tag_value(nullptr, "TYPE",
                                              this->pv().c_str());
@@ -214,11 +214,11 @@ bool does_vg_exist_on_pv(const std::string &vg, const std::string &pv,
 }
 #endif /* HAS_INSTALL_ENV */
 
-bool LVMGroup::execute(ScriptOptions opts) const {
+bool LVMGroup::execute() const {
     output_info("installfile:" + std::to_string(line),
                 "lvm_vg: creating volume group " + _vgname + " on " + _pv);
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "vgcreate " << _vgname << " " << _pv << std::endl;
         return true;
     }
@@ -244,7 +244,7 @@ bool LVMGroup::execute(ScriptOptions opts) const {
 
 
 Key *LVMVolume::parseFromData(const std::string &data, int lineno, int *errors,
-                              int *) {
+                              int *, const Script *script) {
     std::string vg, name, size_str;
     std::string::size_type name_start, size_start;
     SizeType size_type;
@@ -287,14 +287,14 @@ Key *LVMVolume::parseFromData(const std::string &data, int lineno, int *errors,
         return nullptr;
     }
 
-    return new LVMVolume(lineno, vg, name, size_type, size);
+    return new LVMVolume(script, lineno, vg, name, size_type, size);
 }
 
-bool LVMVolume::validate(ScriptOptions) const {
+bool LVMVolume::validate() const {
     return true;
 }
 
-bool LVMVolume::execute(ScriptOptions opts) const {
+bool LVMVolume::execute() const {
     output_info("installfile:" + std::to_string(line),
                 "lvm_lv: creating volume " + _lvname + " on " + _vg);
     std::string param, size;
@@ -314,7 +314,7 @@ bool LVMVolume::execute(ScriptOptions opts) const {
         break;
     }
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "lvcreate " << param << " " << size << " -n "
                   << _lvname << " " << _vg << std::endl;
         return true;

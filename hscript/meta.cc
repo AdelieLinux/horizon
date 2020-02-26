@@ -3,7 +3,7 @@
  * libhscript, the HorizonScript library for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -26,7 +26,7 @@
 using namespace Horizon::Keys;
 
 Key *Hostname::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *) {
+                             int *, const Script *script) {
     std::string valid_chars("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.");
     if(data.find_first_not_of(valid_chars) != std::string::npos) {
         if(errors) *errors += 1;
@@ -35,10 +35,10 @@ Key *Hostname::parseFromData(const std::string &data, int lineno, int *errors,
                      "'" + data + "' is not a valid hostname");
         return nullptr;
     }
-    return new Hostname(lineno, data);
+    return new Hostname(script, lineno, data);
 }
 
-bool Hostname::validate(ScriptOptions) const {
+bool Hostname::validate() const {
     /* Validate that the name is a valid machine or DNS name */
     bool any_failure = false;
     std::string::size_type last_dot = 0, next_dot = 0;
@@ -73,7 +73,7 @@ bool Hostname::validate(ScriptOptions) const {
     return !any_failure;
 }
 
-bool Hostname::execute(ScriptOptions opts) const {
+bool Hostname::execute() const {
     /* Set the hostname of the target computer */
     std::string actual;
     std::string::size_type dot = this->_value.find_first_of('.');
@@ -91,7 +91,7 @@ bool Hostname::execute(ScriptOptions opts) const {
     /* Runner.Execute.hostname. */
     output_info("installfile:" + std::to_string(this->lineno()),
                 "hostname: set hostname to '" + actual + "'");
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "hostname " << actual << std::endl;
     }
 #ifdef HAS_INSTALL_ENV
@@ -108,7 +108,7 @@ bool Hostname::execute(ScriptOptions opts) const {
     /* Runner.Execute.hostname.Write. */
     output_info("installfile:" + std::to_string(this->lineno()),
                 "hostname: write '" + actual + "' to /etc/hostname");
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "printf '%s' " << actual << " > /target/etc/hostname"
                   << std::endl;
     }
@@ -130,7 +130,7 @@ bool Hostname::execute(ScriptOptions opts) const {
         const std::string domain(this->_value.substr(dot + 1));
         output_info("installfile:" + std::to_string(this->lineno()),
                     "hostname: set domain name '" + domain + "'");
-        if(opts.test(Simulate)) {
+        if(script->options().test(Simulate)) {
             std::cout << "mkdir -p /target/etc/conf.d" << std::endl;
             std::cout << "printf 'dns_domain_lo=\"" << domain
                       << "\"\\" << "n' >> /target/etc/conf.d/net" << std::endl;
@@ -174,7 +174,7 @@ static std::set<std::string> valid_arches = {
 
 
 Key *Arch::parseFromData(const std::string &data, int lineno, int *errors,
-                         int *warnings) {
+                         int *warnings, const Script *script) {
     if(data.find_first_not_of("abcdefghijklmnopqrstuvwyxz1234567890") !=
             std::string::npos) {
         if(errors) *errors += 1;
@@ -190,14 +190,14 @@ Key *Arch::parseFromData(const std::string &data, int lineno, int *errors,
                        "arch: unknown CPU architecture '" + data + "'");
     }
 
-    return new Arch(lineno, data);
+    return new Arch(script, lineno, data);
 }
 
-bool Arch::execute(ScriptOptions opts) const {
+bool Arch::execute() const {
     output_info("installfile:" + std::to_string(line),
                 "arch: setting system CPU architecture to " + value());
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "printf '" << this->value() << "\\" << "n'"
                   << " > /target/etc/apk/arch" << std::endl;
         return true;
@@ -221,7 +221,8 @@ static std::regex valid_pkg("[0-9A-Za-z+_.-]*((>?<|[<>]?=|[~>])[0-9A-Za-z-_.]+)?
 
 
 Key *PkgInstall::parseFromData(const std::string &data, int lineno,
-                               int *errors, int *warnings) {
+                               int *errors, int *warnings,
+                               const Script *script) {
     std::string next_pkg;
     std::istringstream stream(data);
     std::set<std::string> all_pkgs;
@@ -243,18 +244,18 @@ Key *PkgInstall::parseFromData(const std::string &data, int lineno,
         }
         all_pkgs.insert(next_pkg);
     }
-    return new PkgInstall(lineno, all_pkgs);
+    return new PkgInstall(script, lineno, all_pkgs);
 }
 
 
 /* LCOV_EXCL_START */
-bool PkgInstall::validate(ScriptOptions) const {
+bool PkgInstall::validate() const {
     /* Any validation errors would have occurred above. */
     return true;
 }
 
 
-bool PkgInstall::execute(ScriptOptions) const {
+bool PkgInstall::execute() const {
     /* Package installation is handled in Script::execute. */
     return true;
 }
@@ -290,7 +291,7 @@ const std::set<std::string> valid_langs = {
 
 
 Key *Language::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *) {
+                             int *, const Script *script) {
     if(data.length() < 2 ||
        valid_langs.find(data.substr(0, 2)) == valid_langs.end()) {
         if(errors) *errors += 1;
@@ -323,15 +324,15 @@ Key *Language::parseFromData(const std::string &data, int lineno, int *errors,
         }
     }
 
-    return new Language(lineno, data);
+    return new Language(script, lineno, data);
 }
 
-bool Language::execute(ScriptOptions opts) const {
+bool Language::execute() const {
     output_info("installfile:" + std::to_string(this->lineno()),
                 "language: setting default system language to " +
                 this->value());
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "printf '#!/bin/sh\\" << "nexport LANG=\"%s\"\\" << "n' "
                   << this->value() << " > /target/etc/profile.d/language.sh"
                   << std::endl
@@ -369,7 +370,7 @@ bool Language::execute(ScriptOptions opts) const {
 #include "util/keymaps.hh"
 
 Key *Keymap::parseFromData(const std::string &data, int lineno, int *errors,
-                           int *) {
+                           int *, const Script *script) {
     if(valid_keymaps.find(data) == valid_keymaps.end()) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
@@ -377,14 +378,14 @@ Key *Keymap::parseFromData(const std::string &data, int lineno, int *errors,
         return nullptr;
     }
 
-    return new Keymap(lineno, data);
+    return new Keymap(script, lineno, data);
 }
 
-bool Keymap::validate(ScriptOptions) const {
+bool Keymap::validate() const {
     return true;
 }
 
-bool Keymap::execute(ScriptOptions opts) const {
+bool Keymap::execute() const {
     const std::string conf("# KEYBOARD CONFIGURATION FILE\n\
 \n\
 # Consult the keyboard(5) manual page.\n\
@@ -400,7 +401,7 @@ BACKSPACE=guess"
     output_info("installfile:" + std::to_string(line),
                 "keymap: setting system keyboard map to " + _value);
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "cat >/target/etc/default/keyboard <<-KEYCONF"
                   << std::endl;
         std::cout << conf << std::endl;
@@ -424,7 +425,7 @@ BACKSPACE=guess"
 
 
 Key *Firmware::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *) {
+                             int *, const Script *script) {
     bool value;
     if(!BooleanKey::parse(data, "installfile:" + std::to_string(lineno),
                           "firmware", &value)) {
@@ -448,11 +449,11 @@ Key *Firmware::parseFromData(const std::string &data, int lineno, int *errors,
         return nullptr;
 #endif
     }
-    return new Firmware(lineno, value);
+    return new Firmware(script, lineno, value);
 }
 
 /* LCOV_EXCL_START */
-bool Firmware::execute(ScriptOptions) const {
+bool Firmware::execute() const {
     /* By itself, this does nothing. */
     return true;
 }
@@ -460,7 +461,7 @@ bool Firmware::execute(ScriptOptions) const {
 
 
 Key *Timezone::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *warnings) {
+                             int *warnings, const Script *script) {
     if(data.find_first_of(" .\\") != std::string::npos || data[0] == '/') {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
@@ -483,14 +484,14 @@ Key *Timezone::parseFromData(const std::string &data, int lineno, int *errors,
         }
     }
 
-    return new Timezone(lineno, data);
+    return new Timezone(script, lineno, data);
 }
 
-bool Timezone::execute(ScriptOptions opts) const {
+bool Timezone::execute() const {
     output_info("installfile:" + std::to_string(this->lineno()),
                 "timezone: setting system timezone to " + this->value());
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         /* If the target doesn't have tzdata installed, copy the zoneinfo from
          * the Horizon environment. */
         std::cout << "([ -f /target/usr/share/zoneinfo/" << this->value()
@@ -532,27 +533,27 @@ bool Timezone::execute(ScriptOptions opts) const {
 
 
 Key *Repository::parseFromData(const std::string &data, int lineno, int *errors,
-                               int *) {
+                               int *, const Script *script) {
     if(data.empty() || (data[0] != '/' && data.compare(0, 4, "http"))) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
                      "repository: must be absolute path or HTTP(S) URL");
         return nullptr;
     }
-    return new Repository(lineno, data);
+    return new Repository(script, lineno, data);
 }
 
-bool Repository::validate(ScriptOptions) const {
+bool Repository::validate() const {
     /* TODO XXX: Ensure URL is accessible if networking is available */
     return true;
 }
 
-bool Repository::execute(ScriptOptions opts) const {
+bool Repository::execute() const {
     /* Runner.Execute.repository. */
     output_info("installfile:" + std::to_string(this->lineno()),
                 "repository: write '" + this->value() +
                 "' to /etc/apk/repositories");
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "echo '" << this->value() <<
                      "' >> /target/etc/apk/repositories" << std::endl;
         return true;
@@ -578,7 +579,7 @@ bool Repository::execute(ScriptOptions opts) const {
 
 
 Key *SigningKey::parseFromData(const std::string &data, int lineno,
-                               int *errors, int *) {
+                               int *errors, int *, const Script *script) {
     if(data.empty() || (data[0] != '/' && data.compare(0, 8, "https://"))) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
@@ -586,14 +587,14 @@ Key *SigningKey::parseFromData(const std::string &data, int lineno,
         return nullptr;
     }
 
-    return new SigningKey(lineno, data);
+    return new SigningKey(script, lineno, data);
 }
 
-bool SigningKey::validate(ScriptOptions) const {
+bool SigningKey::validate() const {
     return true;
 }
 
-bool SigningKey::execute(ScriptOptions opts) const {
+bool SigningKey::execute() const {
     /* everything after the last / in the value is the filename */
     const std::string name(_value.substr(_value.find_last_of('/') + 1));
 
@@ -602,7 +603,7 @@ bool SigningKey::execute(ScriptOptions opts) const {
     output_info("installfile:" + std::to_string(line),
                 "signingkey: trusting " + name + " for repository signing");
 
-    if(opts.test(Simulate)) {
+    if(script->options().test(Simulate)) {
         std::cout << "mkdir -p /target/etc/apk/keys" << std::endl;
         if(_value[0] == '/') {
             std::cout << "cp " << _value << " " << target << std::endl;

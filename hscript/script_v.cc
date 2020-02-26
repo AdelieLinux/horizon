@@ -3,7 +3,7 @@
  * libhscript, the HorizonScript library for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -45,18 +45,17 @@ namespace Horizon {
  * @param opts      The ScriptOptions in use.
  * @returns A count of errors encountered, or 0 if the account is valid.
  */
-int validate_one_account(const std::string &name, UserDetail *detail,
-                         ScriptOptions opts) {
+int validate_one_account(const std::string &name, UserDetail *detail) {
     int failures = 0;
 
     /* REQ: Runner.Validate.username */
-    if(!detail->name->validate(opts)) failures++;
+    if(!detail->name->validate()) failures++;
 
     /* REQ: Runner.Validate.useralias */
-    if(detail->alias && !detail->alias->validate(opts)) failures++;
+    if(detail->alias && !detail->alias->validate()) failures++;
 
     /* REQ: Runner.Validate.userpw */
-    if(detail->passphrase && !detail->passphrase->validate(opts)) failures++;
+    if(detail->passphrase && !detail->passphrase->validate()) failures++;
 
     /* REQ: Runner.Validate.userpw.None */
     if(!detail->passphrase) {
@@ -67,13 +66,13 @@ int validate_one_account(const std::string &name, UserDetail *detail,
     }
 
     /* REQ: Runner.Validate.usericon */
-    if(detail->icon && !detail->icon->validate(opts)) failures++;
+    if(detail->icon && !detail->icon->validate()) failures++;
 
     if(detail->groups.size() > 0) {
         std::set<std::string> seen_groups;
         for(auto &group : detail->groups) {
             /* REQ: Runner.Validate.usergroups */
-            if(!group->validate(opts)) failures++;
+            if(!group->validate()) failures++;
 
             /* REQ: Runner.Validate.usergroups.Unique */
             const std::set<std::string> these = group->groups();
@@ -108,11 +107,11 @@ int validate_one_account(const std::string &name, UserDetail *detail,
  * Adélie Linux.  Both system/ and user/ will be added.
  */
 bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
-                       bool firmware = false) {
+                       const Script *s, bool firmware = false) {
     Repository *sys_key = dynamic_cast<Repository *>(
         Repository::parseFromData(
             "https://distfiles.adelielinux.org/adelie/stable/system", 0,
-            nullptr, nullptr
+            nullptr, nullptr, s
         )
     );
     if(!sys_key) {
@@ -124,7 +123,7 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
     Repository *user_key = dynamic_cast<Repository *>(
         Repository::parseFromData(
             "https://distfiles.adelielinux.org/adelie/stable/user", 0,
-            nullptr, nullptr
+            nullptr, nullptr, s
         )
     );
     if(!user_key) {
@@ -140,7 +139,7 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
         Repository *fw_key = dynamic_cast<Repository *>(
             Repository::parseFromData(
                 "https://distfiles.apkfission.net/adelie-stable/nonfree",
-                0, nullptr, nullptr
+                0, nullptr, nullptr, s
             )
         );
         if(!fw_key) {
@@ -162,10 +161,11 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
  * for Adélie Linux.
  */
 bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys,
-                           bool firmware = false) {
+                           const Script *s, bool firmware = false) {
     SigningKey *key = dynamic_cast<SigningKey *>(
         SigningKey::parseFromData(
-            "/etc/apk/keys/packages@adelielinux.org.pub", 0, nullptr, nullptr)
+            "/etc/apk/keys/packages@adelielinux.org.pub", 0, nullptr, nullptr,
+            s)
     );
     if(!key) {
         output_error("internal", "failed to create default repository signing key");
@@ -179,7 +179,7 @@ bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys,
     if(firmware) {
         SigningKey *fkey = dynamic_cast<SigningKey *>(SigningKey::parseFromData(
             "/etc/apk/keys/packages@pleroma.apkfission.net-5ac0b300.rsa.pub",
-                                                          0, nullptr, nullptr)
+                                                       0, nullptr, nullptr, s)
         );
         if(!fkey) {
             output_error("internal", "failed to create firmware signing key");
@@ -189,7 +189,7 @@ bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys,
         keys.push_back(std::move(fw_key));
         fkey = dynamic_cast<SigningKey *>(SigningKey::parseFromData(
             "/etc/apk/keys/packages@pleroma.apkfission.net-5ac04808.rsa.pub",
-                                              0, nullptr, nullptr));
+                                              0, nullptr, nullptr, s));
         if(fkey) {
             std::unique_ptr<SigningKey> fw_key2(fkey);
             keys.push_back(std::move(fw_key2));
@@ -211,7 +211,7 @@ bool Horizon::Script::validate() const {
 #endif /* HAS_INSTALL_ENV */
 
     /* REQ: Runner.Validate.network */
-    if(!internal->network->validate(opts)) failures++;
+    if(!internal->network->validate()) failures++;
 
     /* REQ: Runner.Validate.network.netaddress */
     if(internal->network->test() && internal->addresses.size() == 0) {
@@ -221,7 +221,7 @@ bool Horizon::Script::validate() const {
                      "networking.");
     }
     for(auto &address : internal->addresses) {
-        if(!address->validate(opts)) failures++;
+        if(!address->validate()) failures++;
 
         /* REQ: Runner.Validate.network.netaddress.Count */
         if(seen_iface.find(address->iface()) == seen_iface.end()) {
@@ -239,7 +239,7 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Validate.nameserver */
     for(auto &ns : internal->nses) {
-        if(!ns->validate(opts)) failures++;
+        if(!ns->validate()) failures++;
     }
     if(internal->nses.size() > MAXNS) {
         output_warning("installfile:" +
@@ -250,33 +250,33 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Validate.network.netssid */
     for(auto &ssid : internal->ssids) {
-        if(!ssid->validate(opts)) failures++;
+        if(!ssid->validate()) failures++;
     }
 
     /* REQ: Runner.Validate.hostname */
-    if(!internal->hostname->validate(opts)) failures++;
+    if(!internal->hostname->validate()) failures++;
 
     /* REQ: Runner.Validate.rootpw */
-    if(!internal->rootpw->validate(opts)) failures++;
+    if(!internal->rootpw->validate()) failures++;
 
     /* REQ: Runner.Validate.arch */
-    if(internal->arch && !internal->arch->validate(opts)) failures++;
+    if(internal->arch && !internal->arch->validate()) failures++;
 
     /* REQ: Runner.Validate.language */
-    if(internal->lang && !internal->lang->validate(opts)) failures++;
+    if(internal->lang && !internal->lang->validate()) failures++;
 
     /* REQ: Runner.Validate.keymap */
-    if(internal->keymap && !internal->keymap->validate(opts)) failures++;
+    if(internal->keymap && !internal->keymap->validate()) failures++;
 
 #ifdef NON_LIBRE_FIRMWARE
     /* REQ: Runner.Validate.firmware */
-    if(internal->firmware && !internal->firmware->validate(opts)) failures++;
+    if(internal->firmware && !internal->firmware->validate()) failures++;
 #endif
 
     /* REQ: Runner.Execute.timezone */
     if(!internal->tzone) {
         Timezone *utc = dynamic_cast<Timezone *>
-                (Timezone::parseFromData("UTC", 0, &failures, nullptr));
+                (Timezone::parseFromData("UTC", 0, &failures, nullptr, this));
         if(!utc) {
             output_error("internal", "failed to create default timezone");
             return false;
@@ -286,11 +286,11 @@ bool Horizon::Script::validate() const {
     }
 
     /* REQ: Runner.Validate.timezone */
-    if(!internal->tzone->validate(opts)) failures++;
+    if(!internal->tzone->validate()) failures++;
 
     /* REQ: Script.repository */
     if(internal->repos.size() == 0) {
-        if(!add_default_repos(internal->repos
+        if(!add_default_repos(internal->repos, this
 #ifdef NON_LIBRE_FIRMWARE
                               , internal->firmware && internal->firmware->test()
 #endif
@@ -301,7 +301,7 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Validate.repository */
     for(auto &repo : internal->repos) {
-        if(!repo->validate(opts)) failures++;
+        if(!repo->validate()) failures++;
     }
     if(internal->repos.size() > 10) {
         failures++;
@@ -312,7 +312,7 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Script.signingkey */
     if(internal->repo_keys.size() == 0) {
-        if(!add_default_repo_keys(internal->repo_keys
+        if(!add_default_repo_keys(internal->repo_keys, this
 #ifdef NON_LIBRE_FIRMWARE
                             , internal->firmware && internal->firmware->test()
 #endif
@@ -323,7 +323,7 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Validate.signingkey */
     for(auto &key : internal->repo_keys) {
-        if(!key->validate(opts)) failures++;
+        if(!key->validate()) failures++;
     }
     if(internal->repo_keys.size() > 10) {
         failures++;
@@ -335,11 +335,11 @@ bool Horizon::Script::validate() const {
 
     for(auto &acct : internal->accounts) {
         UserDetail *detail = acct.second.get();
-        failures += validate_one_account(acct.first, detail, opts);
+        failures += validate_one_account(acct.first, detail);
     }
 
 #define VALIDATE_OR_SKIP(obj) \
-    if(!obj->validate(opts)) {\
+    if(!obj->validate()) {\
         failures++;\
         continue;\
     }
@@ -447,7 +447,7 @@ bool Horizon::Script::validate() const {
             /* Okay, let's see if a PV already exists there... */
             if(opts.test(InstallEnvironment)) {
 #ifdef HAS_INSTALL_ENV
-                if(!vg->test_pv(opts)) {
+                if(!vg->test_pv()) {
                     failures++;
                     output_error("installfile:" + to_string(vg->lineno()),
                                  "lvm_vg: a physical volume does not exist on "

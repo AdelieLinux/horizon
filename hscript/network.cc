@@ -3,7 +3,7 @@
  * libhscript, the HorizonScript library for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -31,24 +31,24 @@ using namespace Horizon::Keys;
 
 
 Key *Network::parseFromData(const std::string &data, int lineno, int *errors,
-                            int *) {
+                            int *, const Script *script) {
     bool value;
     if(!BooleanKey::parse(data, "installfile:" + std::to_string(lineno),
                           "network", &value)) {
         if(errors) *errors += 1;
         return nullptr;
     }
-    return new Network(lineno, value);
+    return new Network(script, lineno, value);
 }
 
-bool Network::execute(ScriptOptions) const {
+bool Network::execute() const {
     /* The network key, by itself, does nothing. */
     return true;
 }
 
 
 Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
-                               int *) {
+                               int *, const Script *script) {
     long elements = std::count(data.cbegin(), data.cend(), ' ') + 1;
     std::string::size_type type_pos, addr_pos, prefix_pos, gw_pos, next_end;
     std::string iface, type, addr, prefix, gw;
@@ -89,7 +89,8 @@ Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
                          "accept further elements");
             return nullptr;
         }
-        return new NetAddress(lineno, iface, AddressType::DHCP, "", 0, "");
+        return new NetAddress(script, lineno, iface, AddressType::DHCP, "", 0,
+                              "");
     } else if(!type.compare("slaac")) {
         if(elements > 2) {
             if(errors) *errors += 1;
@@ -98,7 +99,8 @@ Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
                          "accept further elements");
             return nullptr;
         }
-        return new NetAddress(lineno, iface, AddressType::SLAAC, "", 0, "");
+        return new NetAddress(script, lineno, iface, AddressType::SLAAC, "", 0,
+                              "");
     } else if(type.compare("static")) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
@@ -171,7 +173,7 @@ Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
             return nullptr;
         }
 
-        return new NetAddress(lineno, iface, AddressType::Static, addr,
+        return new NetAddress(script, lineno, iface, AddressType::Static, addr,
                               static_cast<uint8_t>(real_prefix), gw);
     } else if(addr.find('.') != std::string::npos) {
         /* IPv4 */
@@ -215,7 +217,7 @@ Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
             return nullptr;
         }
 
-        return new NetAddress(lineno, iface, AddressType::Static, addr,
+        return new NetAddress(script, lineno, iface, AddressType::Static, addr,
                               static_cast<uint8_t>(real_prefix), gw);
     } else {
         /* IPvBad */
@@ -227,8 +229,8 @@ Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
     }
 }
 
-bool NetAddress::validate(ScriptOptions opts) const {
-    if(!opts.test(InstallEnvironment)) {
+bool NetAddress::validate() const {
+    if(!script->options().test(InstallEnvironment)) {
         return true;
     }
 
@@ -259,7 +261,7 @@ bool NetAddress::validate(ScriptOptions opts) const {
     return true;  /* LCOV_EXCL_LINE */
 }
 
-bool NetAddress::execute(ScriptOptions) const {
+bool NetAddress::execute() const {
     output_info("installfile:" + std::to_string(this->lineno()),
                 "netaddress: adding configuration for " + _iface);
 
@@ -302,7 +304,7 @@ bool NetAddress::execute(ScriptOptions) const {
 
 
 Key *Nameserver::parseFromData(const std::string &data, int lineno,
-                               int *errors, int *) {
+                               int *errors, int *, const Script *script) {
     char addr_buf[16];
     static const std::string valid_chars("1234567890ABCDEFabcdef:.");
 
@@ -339,11 +341,11 @@ Key *Nameserver::parseFromData(const std::string &data, int lineno,
         }
     }
 
-    return new Nameserver(lineno, data);
+    return new Nameserver(script, lineno, data);
 }
 
-bool Nameserver::execute(ScriptOptions opts) const {
-    if(opts.test(Simulate)) {
+bool Nameserver::execute() const {
+    if(script->options().test(Simulate)) {
         std::cout << "printf 'nameserver %s\\" << "n' " << _value
                   << " >>/target/etc/resolv.conf" << std::endl;
         return true;
@@ -363,7 +365,7 @@ bool Nameserver::execute(ScriptOptions opts) const {
 
 
 Key *NetSSID::parseFromData(const std::string &data, int lineno, int *errors,
-                            int *) {
+                            int *, const Script *script) {
     std::string iface, ssid, secstr, passphrase;
     SecurityType type;
     std::string::size_type start, pos, next;
@@ -443,12 +445,12 @@ Key *NetSSID::parseFromData(const std::string &data, int lineno, int *errors,
         }
         passphrase = data.substr(pos + 1);
     }
-    return new NetSSID(lineno, iface, ssid, type, passphrase);
+    return new NetSSID(script, lineno, iface, ssid, type, passphrase);
 }
 
-bool NetSSID::validate(ScriptOptions options) const {
+bool NetSSID::validate() const {
     /* REQ: Runner.Validate.network.netssid.Interface */
-    if(!options.test(InstallEnvironment)) {
+    if(!script->options().test(InstallEnvironment)) {
         return true;
     }
 
@@ -488,7 +490,7 @@ bool NetSSID::validate(ScriptOptions options) const {
 #endif
 }
 
-bool NetSSID::execute(ScriptOptions) const {
+bool NetSSID::execute() const {
     output_info("installfile:" + std::to_string(this->lineno()),
                 "netssid: configuring SSID " + _ssid);
 

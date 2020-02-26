@@ -30,7 +30,8 @@
 #define SCRIPT_LINE_MAX 512
 
 
-typedef Horizon::Keys::Key *(*key_parse_fn)(const std::string &, int, int*, int*);
+typedef Horizon::Keys::Key *(*key_parse_fn)(const std::string &, int, int*,
+                                            int*, const Horizon::Script *);
 
 using namespace Horizon::Keys;
 
@@ -203,6 +204,7 @@ const Script *Script::load(std::istream &sstream,
     using namespace Horizon::Keys;
 
     Script *the_script = new Script;
+    the_script->opts = opts;
 
     int lineno = 0;
     char nextline[SCRIPT_LINE_MAX];
@@ -248,7 +250,7 @@ const Script *Script::load(std::istream &sstream,
         }
 
         Key *key_obj = valid_keys.at(key)(line.substr(value_begin), lineno,
-                                          &errors, &warnings);
+                                          &errors, &warnings, the_script);
         if(!key_obj) {
             PARSER_ERROR("value for key '" + key + "' was invalid")
             continue;
@@ -309,7 +311,6 @@ const Script *Script::load(std::istream &sstream,
         delete the_script;
         return nullptr;
     } else {
-        the_script->opts = opts;
         return the_script;
     }
 

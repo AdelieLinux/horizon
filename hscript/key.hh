@@ -3,7 +3,7 @@
  * libhscript, the HorizonScript library for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -25,9 +25,11 @@ namespace Keys {
  */
 class Key {
 protected:
+    /*! The script that owns this Key. */
+    const Script *script;
     /*! The line number where this Key appeared. */
     long line;
-    Key(long _line) : line(_line) {}
+    Key(const Script *_s, long _line) : script(_s), line(_line) {}
 public:
     virtual ~Key();
 
@@ -42,19 +44,19 @@ public:
     /* LCOV_EXCL_START */
     static Key *parseFromData(const std::string &data UNUSED,
                               int lineno UNUSED, int *errors UNUSED,
-                              int *warnings UNUSED) {
+                              int *warnings UNUSED, const Script *s UNUSED) {
         return nullptr;
     }
     /* LCOV_EXCL_STOP */
 #undef UNUSED
 
     /*! Determines if the data associated with the Key is valid. */
-    virtual bool validate(ScriptOptions) const = 0;
+    virtual bool validate() const = 0;
 
     /*! Executes the action associated with this Key.
      * @note Will always return `false` if `validate` is `false`.
      */
-    virtual bool execute(ScriptOptions) const = 0;
+    virtual bool execute() const = 0;
 
     long lineno() const { return this->line; }
 };
@@ -69,7 +71,8 @@ public:
 class BooleanKey : public Key {
 protected:
     const bool value;
-    BooleanKey(int _line, bool my_value) : Key(_line), value(my_value) {}
+    BooleanKey(const Script *_s, int _line, bool my_value) : Key(_s, _line),
+                                                             value(my_value) {}
 
     /*! Parse a string into a boolean.
      * @param what      The string to attempt parsing.
@@ -87,7 +90,7 @@ public:
     bool test() const { return this->value; }
 
     /*! Key will fail to init if valid is invalid. */
-    bool validate(ScriptOptions) const override;
+    bool validate() const override;
 };
 
 
@@ -95,8 +98,8 @@ public:
 class StringKey : public Key {
 protected:
     const std::string _value;
-    StringKey(int _line, const std::string &my_str) :
-        Key(_line), _value(my_str) {}
+    StringKey(const Script *_s, int _line, const std::string &my_str) :
+        Key(_s, _line), _value(my_str) {}
 
 public:
     /*! Retrieve the value of this key. */
@@ -105,7 +108,7 @@ public:
     /*! By default, key will be considered valid since it parsed.
      * This method should be overridden when further consideration is needed.
      */
-    bool validate(ScriptOptions) const override;
+    bool validate() const override;
 };
 
 }
