@@ -317,4 +317,80 @@ const Script *Script::load(std::istream &sstream,
 #undef PARSER_ERROR
 }
 
+/* LCOV_EXCL_START */
+const Keys::Key *Script::getOneValue(std::string name) const {
+    if(name == "network") {
+        return this->internal->network.get();
+    } else if(name == "hostname") {
+        return this->internal->hostname.get();
+    } else if(name == "arch") {
+        return this->internal->arch.get();
+    } else if(name == "rootpw") {
+        return this->internal->rootpw.get();
+    } else if(name == "language") {
+        return this->internal->lang.get();
+    } else if(name == "keymap") {
+        return this->internal->keymap.get();
+    } else if(name == "firmware") {
+#ifdef NON_LIBRE_FIRMWARE
+        return this->internal->firmware.get();
+#else  /* !NON_LIBRE_FIRMWARE */
+        return nullptr;
+#endif  /* NON_LIBRE_FIRMWARE */
+    } else if(name == "timezone") {
+        return this->internal->tzone.get();
+    }
+
+    assert("Unknown key given to getOneValue." == nullptr);
+    return nullptr;
+}
+
+const std::vector<Keys::Key *> Script::getValues(std::string name) const {
+    std::vector<Keys::Key *> values;
+
+    if(name == "netaddress") {
+        for(auto &addr : this->internal->addresses) values.push_back(addr.get());
+    } else if(name == "nameserver") {
+        for(auto &ns : this->internal->nses) values.push_back(ns.get());
+    } else if(name == "netssid") {
+        for(auto &ssid : this->internal->ssids) values.push_back(ssid.get());
+    } else if(name == "pkginstall") {
+        /* XXX */
+    } else if(name == "repository") {
+        for(auto &repo : this->internal->repos) values.push_back(repo.get());
+    } else if(name == "signing_key") {
+        for(auto &key : this->internal->repo_keys) values.push_back(key.get());
+    } else if(name == "username" || name == "useralias" || name == "userpw" ||
+              name == "usericon" || name == "usergroups") {
+        /* XXX */
+    } else if(name == "diskid") {
+        for(auto &id : this->internal->diskids) values.push_back(id.get());
+    } else if(name == "disklabel") {
+        for(auto &label : this->internal->disklabels) values.push_back(label.get());
+    } else if(name == "partition") {
+        for(auto &part : this->internal->partitions) values.push_back(part.get());
+    } else if(name == "lvm_pv") {
+        for(auto &pv : this->internal->lvm_pvs) values.push_back(pv.get());
+    } else if(name == "lvm_vg") {
+        for(auto &vg : this->internal->lvm_vgs) values.push_back(vg.get());
+    } else if(name == "lvm_lv") {
+        for(auto &lv : this->internal->lvm_lvs) values.push_back(lv.get());
+    } else if(name == "encrypt") {
+        /* XXX */
+    } else if(name == "fs") {
+        for(auto &fs : this->internal->fses) values.push_back(fs.get());
+    } else if(name == "mount") {
+        for(auto &mnt : this->internal->mounts) values.push_back(mnt.get());
+    } else {
+        assert("Unknown key given to getValues." == nullptr);
+    }
+
+    return values;
+}
+/* LCOV_EXCL_STOP */
+
+ScriptOptions Script::options() const {
+    return this->opts;
+}
+
 }

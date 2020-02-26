@@ -20,6 +20,12 @@
 
 namespace Horizon {
 
+namespace Keys {
+
+class Key;
+
+}
+
 /**** Script option flags ****/
 
 enum ScriptOptionFlags {
@@ -74,6 +80,22 @@ public:
     /*! Executes the HorizonScript. */
     bool execute() const;
 
+    /*! Retrieve the value of a specified key in this HorizonScript.
+     * @param name      The name of the key to retrieve.
+     * @return The key object, if one exists.  nullptr if the key has not been
+     *         specified.
+     */
+    const Keys::Key *getOneValue(std::string name) const;
+
+    /*! Retrieve all values for a specified key in this HorizonScript.
+     * @param name      The name of the key to retrieve.
+     * @return A std::vector of the key objects.  The vector may be empty if
+     *         no values exist for the specified key.
+     */
+    const std::vector<Keys::Key *> getValues(std::string name) const;
+
+    /*! Retrieve the options set for this HorizonScript object. */
+    ScriptOptions options() const;
 private:
     struct ScriptPrivate;
     /*! Internal data. */
