@@ -29,6 +29,8 @@ StepProgressWidget::StepProgressWidget(QWidget *parent) : QWidget(parent) {
     myFont.setBold(true);
     boldFont = myFont;
 
+    setWhatsThis(tr("Displays the current status of System Installation tasks."));
+
     stepGrid = new QGridLayout;
     stepGrid->setColumnStretch(1, 100);
 

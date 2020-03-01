@@ -138,9 +138,11 @@ DateTimePage::DateTimePage(QWidget *parent) : HorizonWizardPage(parent) {
     dateEdit = new QDateEdit(QDate::currentDate());
     dateEdit->setDisplayFormat("dd MMMM yyyy");
     dateEdit->setEnabled(false);
+    dateEdit->setWhatsThis(tr("Allows you to input the current date."));
     timeEdit = new QTimeEdit(QTime::currentTime());
     timeEdit->setDisplayFormat("HH:mm:ss");
     timeEdit->setEnabled(false);
+    timeEdit->setWhatsThis(tr("Allows you to input the current time."));
 
 #ifdef HAS_INSTALL_ENV
     /* explanations:
@@ -186,6 +188,7 @@ DateTimePage::DateTimePage(QWidget *parent) : HorizonWizardPage(parent) {
     timeZoneSearch->addAction(QIcon::fromTheme("edit-find"),
                               QLineEdit::LeadingPosition);
     timeZoneSearch->setPlaceholderText(tr("Search for a time zone"));
+    timeZoneSearch->setWhatsThis(tr("Type here to search for a time zone."));
     sortModel = new QSortFilterProxyModel(this);
     sortModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     sortModel->setSourceModel(&zoneModel);
@@ -195,6 +198,7 @@ DateTimePage::DateTimePage(QWidget *parent) : HorizonWizardPage(parent) {
     timeZoneList = new QListView;
     timeZoneList->setModel(sortModel);
     timeZoneList->setSelectionMode(QAbstractItemView::SingleSelection);
+    timeZoneList->setWhatsThis(tr("This list contains all time zones known to the system.  Select the one you wish to use for representing time on this computer."));
     connect(timeZoneList->selectionModel(), &QItemSelectionModel::currentChanged,
             [=]() {
         emit timezoneChanged();

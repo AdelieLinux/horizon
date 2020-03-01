@@ -27,15 +27,20 @@ NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
     QVBoxLayout *v4Pane = new QVBoxLayout;
     useV4 = new QCheckBox(tr("Enable IPv&4"));
     useV4->setChecked(true);
+    useV4->setWhatsThis(tr("Enables the IPv4 protocol for network connectivity."));
     v4Addr = new QLineEdit;
     v4Addr->setInputMask("900.900.900.900;_");
+    v4Addr->setWhatsThis(tr("The IPv4 address for this computer."));
     v4Prefix = new SubnetBox;
     v4Prefix->setSubnetCIDR(24);
+    v4Prefix->setWhatsThis(tr("The subnet prefix/mask for this computer's IPv4 network."));
     v4Gateway = new QLineEdit;
     v4Gateway->setInputMask("900.900.900.900;_");
+    v4Gateway->setWhatsThis(tr("The default gateway for IPv4 traffic."));
     v4DNS = new QLineEdit;
     v4DNS->setInputMask("900.900.900.900;_");
     v4DNS->setText("9.9.9.9");
+    v4DNS->setWhatsThis(tr("The DNS server to use for IPv4 name resolution."));
 
     connect(useV4, &QCheckBox::toggled, [=](bool ticked) {
         v4Addr->setEnabled(ticked);
@@ -75,13 +80,18 @@ NetManualPage::NetManualPage(QWidget *parent) : HorizonWizardPage(parent) {
     QVBoxLayout *v6Pane = new QVBoxLayout;
     useV6 = new QCheckBox(tr("Enable IPv&6"));
     useV6->setChecked(true);
+    useV6->setWhatsThis(tr("Enables the IPv6 protocol for network connectivity."));
     v6Addr = new QLineEdit;
+    v6Addr->setWhatsThis(tr("The IPv6 address for this computer."));
     v6Prefix = new QSpinBox;
     v6Prefix->setRange(1, 128);
     v6Prefix->setValue(64);
+    v6Prefix->setWhatsThis(tr("The subnet prefix for this computer's IPv6 network."));
     v6Gateway = new QLineEdit;
+    v6Gateway->setWhatsThis(tr("The default gateway for IPv6 traffic."));
     v6DNS = new QLineEdit;
     v6DNS->setText("2620:fe::fe");
+    v4DNS->setWhatsThis(tr("The DNS server to use for IPv6 name resolution."));
 
     connect(useV6, &QCheckBox::toggled, [=](bool ticked) {
         v6Addr->setEnabled(ticked);
@@ -148,6 +158,7 @@ void NetManualPage::initializePage() {
     if(horizonWizard()->interfaces.size() != 1)
     {
         QComboBox *ifaceBox = new QComboBox;
+        ifaceBox->setWhatsThis(tr("The network interface to use for this computer's primary network connection.  You may configure additional interfaces after installation."));
         ifaceWidget->layout()->addWidget(new QLabel(tr("Use interface: ")));
         ifaceWidget->layout()->addWidget(ifaceBox);
 
