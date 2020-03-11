@@ -783,7 +783,8 @@ bool Mount::validate() const {
 }
 
 bool Mount::execute() const {
-    const std::string actual_mount = "/target" + this->mountpoint();
+    const std::string actual_mount(script->targetDirectory() +
+                                   this->mountpoint());
     const char *fstype = nullptr;
 #ifdef HAS_INSTALL_ENV
     error_code ec;
@@ -853,24 +854,26 @@ bool Mount::execute() const {
                                         "defaults" : this->options());
     if(script->options().test(Simulate)) {
         if(this->mountpoint() == "/") {
-            std::cout << "mkdir -p /target/etc" << std::endl;
+            std::cout << "mkdir -p " << script->targetDirectory() << "/etc"
+                      << std::endl;
         }
         std::cout << "printf '%s\\t%s\\t%s\\t%s\\t0\\t" << pass << "\\"
                   << "n' " << this->device() << " " << this->mountpoint()
                   << " " << fstype << " " << fstab_opts
-                  << " >> /target/etc/fstab" << std::endl;
+                  << " >> " << script->targetDirectory() << "/etc/fstab"
+                  << std::endl;
     }
 #ifdef HAS_INSTALL_ENV
     else {
         if(this->mountpoint() == "/") {
-            fs::create_directory("/target/etc", ec);
+            fs::create_directory(script->targetDirectory() + "/etc", ec);
             if(ec) {
                 output_error("installfile:" + std::to_string(this->lineno()),
                              "mount: failed to create /etc for target",
                              ec.message());
                 return false;
             }
-            fs::permissions("/target/etc", rwxr_xr_x,
+            fs::permissions(script->targetDirectory() + "/etc", rwxr_xr_x,
                 #if defined(FS_IS_STDCXX)
                             fs::perm_options::replace,
                 #endif
@@ -881,7 +884,7 @@ bool Mount::execute() const {
                                ec.message());
             }
         }
-        std::ofstream fstab_f("/target/etc/fstab");
+        std::ofstream fstab_f(script->targetDirectory() + "/etc/fstab");
         if(!fstab_f) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "mount: failure opening /etc/fstab for writing");

@@ -347,12 +347,14 @@ Key *Nameserver::parseFromData(const std::string &data, int lineno,
 bool Nameserver::execute() const {
     if(script->options().test(Simulate)) {
         std::cout << "printf 'nameserver %s\\" << "n' " << _value
-                  << " >>/target/etc/resolv.conf" << std::endl;
+                  << " >>" << script->targetDirectory() << "/etc/resolv.conf"
+                  << std::endl;
         return true;
     }
 
 #ifdef HAS_INSTALL_ENV
-    std::ofstream resolvconf("/target/etc/resolv.conf", std::ios_base::app);
+    std::ofstream resolvconf(script->targetDirectory() + "/etc/resolv.conf",
+                             std::ios_base::app);
     if(!resolvconf) {
         output_error("installfile:" + std::to_string(line),
                      "nameserver: couldn't write configuration to target");

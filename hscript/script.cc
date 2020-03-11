@@ -168,6 +168,7 @@ bool Script::ScriptPrivate::store_key(const std::string &key_name, Key *obj,
 
 Script::Script() {
     internal = new ScriptPrivate;
+    internal->target = "/target";
 }
 
 Script::~Script() {
@@ -319,6 +320,14 @@ const Script *Script::load(std::istream &sstream,
 }
 
 /* LCOV_EXCL_START */
+const std::string Script::targetDirectory() const {
+    return this->internal->target;
+}
+
+void Script::setTargetDirectory(const std::string &dir) {
+    this->internal->target = dir;
+}
+
 const Keys::Key *Script::getOneValue(std::string name) const {
     if(name == "network") {
         return this->internal->network.get();

@@ -38,6 +38,9 @@ struct UserDetail {
 };
 
 struct Script::ScriptPrivate {
+    /*! Determines the target directory (usually /target) */
+    std::string target;
+
     /*! Determines whether or not to enable networking. */
     std::unique_ptr<Network> network;
     /*! The target system's hostname. */

@@ -80,6 +80,12 @@ public:
     /*! Executes the HorizonScript. */
     bool execute() const;
 
+    /*! Retrieve the current target directory. */
+    const std::string targetDirectory() const;
+
+    /*! Set the current target directory. */
+    void setTargetDirectory(const std::string &dir);
+
     /*! Retrieve the value of a specified key in this HorizonScript.
      * @param name      The name of the key to retrieve.
      * @return The key object, if one exists.  nullptr if the key has not been

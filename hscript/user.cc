@@ -143,17 +143,21 @@ bool RootPassphrase::execute() const {
 
     if(script->options().test(Simulate)) {
         std::cout << "(printf '" << root_line << "\\" << "n'; "
-                  << "cat /target/etc/shadow | sed '1d') > /tmp/shadow"
+                  << "cat " << script->targetDirectory() << "/etc/shadow |"
+                  << "sed '1d') > /tmp/shadow"
                   << std::endl
-                  << "mv /tmp/shadow /target/etc/shadow" << std::endl
-                  << "chown root:shadow /target/etc/shadow" << std::endl
-                  << "chmod 640 /target/etc/shadow" << std::endl;
+                  << "mv /tmp/shadow " << script->targetDirectory()
+                  << "/etc/shadow" << std::endl
+                  << "chown root:shadow " << script->targetDirectory()
+                  << "/etc/shadow" << std::endl
+                  << "chmod 640 " << script->targetDirectory()
+                  << "/etc/shadow" << std::endl;
         return true;
     }
 
 #ifdef HAS_INSTALL_ENV
     /* This was tested on gwyn during development. */
-    std::ifstream old_shadow("/target/etc/shadow");
+    std::ifstream old_shadow(script->targetDirectory() + "/etc/shadow");
     if(!old_shadow) {
         output_error("installfile:" + std::to_string(this->lineno()),
                      "rootpw: cannot open existing shadow file");
@@ -175,7 +179,8 @@ bool RootPassphrase::execute() const {
 
     old_shadow.close();
 
-    std::ofstream new_shadow("/target/etc/shadow", std::ios_base::trunc);
+    std::ofstream new_shadow(script->targetDirectory() + "/etc/shadow",
+                             std::ios_base::trunc);
     if(!new_shadow) {
         output_error("installfile:" + std::to_string(this->lineno()),
                      "rootpw: cannot replace target shadow file");
@@ -349,9 +354,10 @@ bool UserIcon::validate() const {
 }
 
 bool UserIcon::execute() const {
-    const std::string as_path("/target/var/lib/AccountsService/icons/" +
-                              _username);
-    const std::string face_path("/target/home/" + _username + "/.face");
+    const std::string as_path(script->targetDirectory() +
+                              "/var/lib/AccountsService/icons/" + _username);
+    const std::string face_path(script->targetDirectory() + "/home/" +
+                                _username + "/.face");
 
     output_info("installfile:" + std::to_string(line),
                 "usericon: setting avatar for " + _username);
@@ -363,8 +369,10 @@ bool UserIcon::execute() const {
             std::cout << "curl -LO " << as_path << " " << _icon_path
                       << std::endl;
         }
-        std::cout << "cp " << as_path << " " << face_path << ".icon" << std::endl;
-        std::cout << "chown $(hscript-printowner /target/home/" << _username
+        std::cout << "cp " << as_path << " " << face_path << ".icon"
+                  << std::endl;
+        std::cout << "chown $(hscript-printowner " << script->targetDirectory()
+                  << "/home/" << _username
                   << ") " << face_path << ".icon" << std::endl;
         std::cout << "ln -s .face.icon " << face_path << std::endl;
         return true;

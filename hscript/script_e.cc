@@ -28,25 +28,23 @@ namespace Horizon {
 
 static bool icon_dir_created = false;
 
-void maybe_create_icon_dir(ScriptOptions opts) {
+void maybe_create_icon_dir(ScriptOptions opts, const std::string &target) {
     if(icon_dir_created) return;
     icon_dir_created = true;
 
+    const std::string icon_dir(target + "/var/lib/AccountsService/icons");
+
     if(opts.test(Simulate)) {
-        std::cout << "mkdir -p /target/var/lib/AccountsService/icons"
-                  << std::endl
-                  << "chown root:root /target/var/lib/AccountsService/icons"
-                  << std::endl
-                  << "chmod 775 /target/var/lib/AccountsService/icons"
-                  << std::endl;
+        std::cout << "mkdir -p " << icon_dir << std::endl
+                  << "chown root:root " << icon_dir << std::endl
+                  << "chmod 775 " << icon_dir << std::endl;
         return;
     }
 #ifdef HAS_INSTALL_ENV
     else {
         error_code ec;
-        if(!fs::exists("/target/var/lib/AccountsService/icons", ec)) {
-            fs::create_directories("/target/var/lib/AccountsService/icons",
-                                   ec);
+        if(!fs::exists(icon_dir, ec)) {
+            fs::create_directories(icon_dir, ec);
             if(ec) {
                 output_error("internal", "couldn't create icon dir",
                              ec.message());
@@ -60,6 +58,7 @@ bool Script::execute() const {
     bool success;
     error_code ec;
     std::set<std::string> ifaces;
+    const std::string targ_etc(targetDirectory() + "/etc");
 
     /* assume create_directory will give us the error if removal fails */
     if(fs::exists("/tmp/horizon", ec)) {
@@ -167,12 +166,12 @@ bool Script::execute() const {
 
     /* REQ: Runner.Execute.repository */
     if(opts.test(Simulate)) {
-        std::cout << "mkdir -p /target/etc/apk" << std::endl;
+        std::cout << "mkdir -p " << targ_etc << "/apk" << std::endl;
     }
 #ifdef HAS_INSTALL_ENV
     else {
-        if(!fs::exists("/target/etc/apk", ec)) {
-            fs::create_directory("/target/etc/apk", ec);
+        if(!fs::exists(targ_etc + "/apk", ec)) {
+            fs::create_directory(targ_etc + "/apk", ec);
             if(ec) {
                 output_error("internal", "failed to initialise APK");
                 EXECUTE_FAILURE("pre-metadata");
@@ -221,7 +220,8 @@ bool Script::execute() const {
         if(opts.test(Simulate)) {
             std::ifstream wpai("/tmp/horizon/wpa_supplicant.conf");
             if(wpai) {
-                std::cout << "cat >/target/etc/wpa_supplicant/wpa_supplicant.conf "
+                std::cout << "cat >" << targetDirectory()
+                          << "/etc/wpa_supplicant/wpa_supplicant.conf "
                           << "<<- WPA_EOF" << std::endl
                           << wpai.rdbuf() << std::endl
                           << "WPA_EOF" << std::endl;
@@ -232,11 +232,12 @@ bool Script::execute() const {
         }
 #ifdef HAS_INSTALL_ENV
         else {
-            if(!fs::exists("/target/etc/wpa_supplicant", ec)) {
-                fs::create_directory("/target/etc/wpa_supplicant", ec);
+            const std::string wpa_dir(targ_etc + "/wpa_supplicant");
+            if(!fs::exists(wpa_dir, ec)) {
+                fs::create_directory(wpa_dir, ec);
             }
             fs::copy_file("/tmp/horizon/wpa_supplicant.conf",
-                          "/target/etc/wpa_supplicant/wpa_supplicant.conf",
+                          wpa_dir + "/wpa_supplicant.conf",
                           fs_overwrite, ec);
             if(ec) {
                 output_error("internal", "cannot save wireless networking "
@@ -280,21 +281,21 @@ bool Script::execute() const {
         }
 
         if(opts.test(Simulate)) {
-            std::cout << "mkdir -p /target/etc/conf.d" << std::endl;
-            std::cout << "cat >>/target/etc/conf.d/net <<- NETCONF_EOF"
+            std::cout << "mkdir -p " << targ_etc << "/conf.d" << std::endl;
+            std::cout << "cat >>/" << targ_etc << "/conf.d/net <<- NETCONF_EOF"
                       << std::endl << conf.str() << std::endl
                       << "NETCONF_EOF" << std::endl;
         }
 #ifdef HAS_INSTALL_ENV
         else {
-            if(!fs::exists("/target/etc/conf.d")) {
-                fs::create_directory("/target/etc/conf.d", ec);
+            if(!fs::exists(targ_etc + "/conf.d")) {
+                fs::create_directory(targ_etc + "/conf.d", ec);
                 if(ec) {
                     output_error("internal", "could not create /etc/conf.d "
                                  "directory", ec.message());
                 }
             }
-            std::ofstream conf_file("/target/etc/conf.d/net",
+            std::ofstream conf_file(targ_etc + "/conf.d/net",
                                     std::ios_base::app);
             if(!conf_file) {
                 output_error("internal", "cannot save network configuration "
@@ -320,11 +321,11 @@ bool Script::execute() const {
             const std::string domain(hostname.substr(dot + 1));
             if(opts.test(Simulate)) {
                 std::cout << "printf 'domain " << domain << "\\"
-                          << "n >>/target/etc/resolv.conf" << std::endl;
+                          << "n >>" << targ_etc << "/resolv.conf" << std::endl;
             }
 #ifdef HAS_INSTALL_ENV
             else {
-                std::ofstream resolvconf("/target/etc/resolv.conf",
+                std::ofstream resolvconf(targ_etc + "/resolv.conf",
                                          std::ios_base::app);
                 if(!resolvconf) {
                     output_error("internal", "failed to open resolv.conf");
@@ -338,14 +339,14 @@ bool Script::execute() const {
 
         if(dhcp) {
             if(opts.test(Simulate)) {
-                std::cout << "mv /target/etc/resolv.conf "
-                          << "/target/etc/resolv.conf.head" << std::endl;
+                std::cout << "mv " << targ_etc << "/resolv.conf "
+                          << targ_etc << "/resolv.conf.head" << std::endl;
             }
 #ifdef HAS_INSTALL_ENV
             else {
-                if(fs::exists("/target/etc/resolv.conf", ec)) {
-                    fs::rename("/target/etc/resolv.conf",
-                               "/target/etc/resolv.conf.head", ec);
+                if(fs::exists(targ_etc + "/resolv.conf", ec)) {
+                    fs::rename(targ_etc + "/resolv.conf",
+                               targ_etc + "/resolv.conf.head", ec);
                     if(ec) {
                         output_error("internal",
                                      "cannot save nameserver configuration",
@@ -366,20 +367,22 @@ bool Script::execute() const {
 
         if(opts.test(Simulate)) {
             if(do_wpa) {
-                std::cout << "cp /target/etc/wpa_supplicant/wpa_supplicant.conf "
+                std::cout << "cp " << targ_etc
+                          << "/wpa_supplicant/wpa_supplicant.conf "
                           << "/etc/wpa_supplicant/wpa_supplicant.conf"
                           << std::endl;
             }
-            std::cout << "cp /target/etc/conf.d/net /etc/conf.d/net"
+            std::cout << "cp " << targ_etc << "/conf.d/net /etc/conf.d/net"
                       << std::endl;
             if(!internal->nses.empty()) {
-                std::cout << "cp /target/etc/resolv.conf* /etc/" << std::endl;
+                std::cout << "cp " << targ_etc << "/resolv.conf* /etc/"
+                          << std::endl;
             }
         }
 #ifdef HAS_INSTALL_ENV
         else {
             if(do_wpa) {
-                fs::copy_file("/target/etc/wpa_supplicant/wpa_supplicant.conf",
+                fs::copy_file(targ_etc + "/wpa_supplicant/wpa_supplicant.conf",
                           "/etc/wpa_supplicant/wpa_supplicant.conf",
                           fs_overwrite, ec);
                 if(ec) {
@@ -388,7 +391,7 @@ bool Script::execute() const {
                     EXECUTE_FAILURE("network");
                 }
             }
-            fs::copy_file("/target/etc/conf.d/net", "/etc/conf.d/net",
+            fs::copy_file(targ_etc + "/conf.d/net", "/etc/conf.d/net",
                           fs_overwrite, ec);
             if(ec) {
                 output_error("internal", "cannot use networking configuration "
@@ -409,10 +412,10 @@ bool Script::execute() const {
             }
             if(!internal->nses.empty()) {
                 if(dhcp) {
-                    fs::copy_file("/target/etc/resolv.conf.head",
+                    fs::copy_file(targ_etc + "/resolv.conf.head",
                                   "/etc/resolv.conf.head", ec);
                 } else {
-                    fs::copy_file("/target/etc/resolv.conf",
+                    fs::copy_file(targ_etc + "/resolv.conf",
                                   "/etc/resolv.conf", ec);
                 }
 
@@ -439,11 +442,13 @@ bool Script::execute() const {
     /* REQ: Runner.Execute.pkginstall.APKDB */
     output_info("internal", "initialising APK");
     if(opts.test(Simulate)) {
-        std::cout << "apk --root /target --initdb add" << std::endl;
+        std::cout << "/sbin/apk --root " << targetDirectory() << " --initdb add"
+                  << std::endl;
     }
 #ifdef HAS_INSTALL_ENV
     else {
-        if(system("apk --root /target --initdb add") != 0) {
+        if(run_command("/sbin/apk",
+                       {"--root", targetDirectory(), "--initdb", "add"}) != 0) {
             EXECUTE_FAILURE("pkginstall");
             return false;
         }
@@ -457,22 +462,31 @@ bool Script::execute() const {
 
     /* REQ: Runner.Execute.pkginstall */
     output_info("internal", "installing packages to target");
-    std::ostringstream pkg_list;
-    for(auto &pkg : this->internal->packages) {
-        pkg_list << pkg << " ";
-    }
     if(opts.test(Simulate)) {
-        std::cout << "apk --root /target update" << std::endl;
-        std::cout << "apk --root /target add " << pkg_list.str() << std::endl;
+        std::ostringstream pkg_list;
+        for(auto &pkg : this->internal->packages) {
+            pkg_list << pkg << " ";
+        }
+
+        std::cout << "apk --root " << targetDirectory() << " update"
+                  << std::endl;
+        std::cout << "apk --root " << targetDirectory() << " add "
+                  << pkg_list.str() << std::endl;
     }
 #ifdef HAS_INSTALL_ENV
     else {
-        if(system("apk --root /target update") != 0) {
+        if(run_command("/sbin/apk",
+                       {"--root", targetDirectory(), "update"}) != 0) {
             EXECUTE_FAILURE("pkginstall");
             return false;
         }
-        std::string apk_invoc = "apk --root /target add " + pkg_list.str();
-        if(system(apk_invoc.c_str()) != 0) {
+
+        std::vector<std::string> params = {"--root", targetDirectory(), "add"};
+        std::copy(this->internal->packages.begin(),
+                  this->internal->packages.end(),
+                  params.end());
+
+        if(run_command("/sbin/apk", params) != 0) {
             EXECUTE_FAILURE("pkginstall");
             return false;
         }
@@ -489,24 +503,24 @@ bool Script::execute() const {
         /* REQ: Runner.Execute.netaddress.OpenRC */
         if(opts.test(Simulate)) {
             for(auto &iface : ifaces) {
-                std::cout << "ln -s /etc/init.d/net.lo /target/etc/init.d/net."
-                          << iface << std::endl;
+                std::cout << "ln -s /etc/init.d/net.lo " << targ_etc
+                          << "/init.d/net." << iface << std::endl;
                 std::cout << "ln -s /etc/init.d/net." << iface
-                          << " /target/etc/runlevels/default/net." << iface
-                          << std::endl;
+                          << " " << targ_etc << "/runlevels/default/net."
+                          << iface << std::endl;
             }
         }
 #ifdef HAS_INSTALL_ENV
         else {
             for(auto &iface : ifaces) {
                 fs::create_symlink("/etc/init.d/net.lo",
-                                   "/target/etc/init.d/net." + iface, ec);
+                                   targ_etc + "/init.d/net." + iface, ec);
                 if(ec) {
                     output_error("internal", "could not set up networking on "
                                  + iface, ec.message());
                 } else {
                     fs::create_symlink("/etc/init.d/net." + iface,
-                                       "/target/etc/runlevels/default/net." +
+                                       targ_etc + "/runlevels/default/net." +
                                        iface, ec);
                     if(ec) {
                         output_error("internal", "could not auto-start "
@@ -544,7 +558,7 @@ bool Script::execute() const {
             }
         }
         if(acct.second->icon) {
-            maybe_create_icon_dir(opts);
+            maybe_create_icon_dir(opts, targetDirectory());
             EXECUTE_OR_FAIL("usericon", acct.second->icon)
         }
     }

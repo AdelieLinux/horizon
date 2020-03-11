@@ -109,12 +109,13 @@ bool Hostname::execute() const {
     output_info("installfile:" + std::to_string(this->lineno()),
                 "hostname: write '" + actual + "' to /etc/hostname");
     if(script->options().test(Simulate)) {
-        std::cout << "printf '%s' " << actual << " > /target/etc/hostname"
-                  << std::endl;
+        std::cout << "printf '%s' " << actual << " > "
+                  << script->targetDirectory() << "/etc/hostname" << std::endl;
     }
 #ifdef HAS_INSTALL_ENV
     else {
-        std::ofstream hostname_f("/target/etc/hostname", std::ios_base::trunc);
+        std::ofstream hostname_f(script->targetDirectory() + "/etc/hostname",
+                                 std::ios_base::trunc);
         if(!hostname_f) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "hostname: could not open /etc/hostname for writing");
@@ -131,23 +132,26 @@ bool Hostname::execute() const {
         output_info("installfile:" + std::to_string(this->lineno()),
                     "hostname: set domain name '" + domain + "'");
         if(script->options().test(Simulate)) {
-            std::cout << "mkdir -p /target/etc/conf.d" << std::endl;
+            std::cout << "mkdir -p " << script->targetDirectory()
+                      << "/etc/conf.d" << std::endl;
             std::cout << "printf 'dns_domain_lo=\"" << domain
-                      << "\"\\" << "n' >> /target/etc/conf.d/net" << std::endl;
+                      << "\"\\" << "n' >> " << script->targetDirectory()
+                      << "/etc/conf.d/net" << std::endl;
         }
 #ifdef HAS_INSTALL_ENV
         else {
-            if(!fs::exists("/target/etc/conf.d")) {
+            if(!fs::exists(script->targetDirectory() + "/etc/conf.d")) {
                 error_code ec;
-                fs::create_directory("/target/etc/conf.d", ec);
+                fs::create_directory(script->targetDirectory() +
+                                     "/etc/conf.d", ec);
                 if(ec) {
                     output_error("installfile:" + std::to_string(line),
                                  "hostname: could not create /etc/conf.d "
                                  "directory", ec.message());
                 }
             }
-            std::ofstream net_conf_f("/target/etc/conf.d/net",
-                                     std::ios_base::app);
+            std::ofstream net_conf_f(script->targetDirectory() +
+                                     "/etc/conf.d/net", std::ios_base::app);
             if(!net_conf_f) {
                 output_error("installfile:" + std::to_string(this->lineno()),
                              "hostname: could not open /etc/conf.d/net for "
@@ -199,12 +203,14 @@ bool Arch::execute() const {
 
     if(script->options().test(Simulate)) {
         std::cout << "printf '" << this->value() << "\\" << "n'"
-                  << " > /target/etc/apk/arch" << std::endl;
+                  << " > " << script->targetDirectory() << "/etc/apk/arch"
+                  << std::endl;
         return true;
     }
 
 #ifdef HAS_INSTALL_ENV
-    std::ofstream arch_f("/target/etc/apk/arch", std::ios_base::trunc);
+    std::ofstream arch_f(script->targetDirectory() + "/etc/apk/arch",
+                         std::ios_base::trunc);
     if(!arch_f) {
         output_error("installfile:" + std::to_string(line),
                      "arch: cannot write target CPU architecture information");
@@ -334,20 +340,21 @@ bool Language::execute() const {
 
     if(script->options().test(Simulate)) {
         std::cout << "printf '#!/bin/sh\\" << "nexport LANG=\"%s\"\\" << "n' "
-                  << this->value() << " > /target/etc/profile.d/language.sh"
-                  << std::endl
-                  << "chmod a+x /target/etc/profile.d/language.sh"
-                  << std::endl;
+                  << this->value() << " > " << script->targetDirectory()
+                  << "/etc/profile.d/00-language.sh" << std::endl
+                  << "chmod a+x " << script->targetDirectory()
+                  << "/etc/profile.d/00-language.sh" << std::endl;
         return true;
     }
 
 #ifdef HAS_INSTALL_ENV
-    const char *lang_path = "/target/etc/profile.d/language.sh";
+    std::string lang_path = script->targetDirectory() +
+            "/etc/profile.d/00-language.sh";
     std::ofstream lang_f(lang_path, std::ios_base::trunc);
     error_code ec;
     if(!lang_f) {
         output_error("installfile:" + std::to_string(this->lineno()),
-                     "language: could not open /etc/profile.d/language.sh "
+                     "language: could not open /etc/profile.d/00-language.sh "
                      "for writing");
         return false;
     }
@@ -358,7 +365,7 @@ bool Language::execute() const {
     fs::permissions(lang_path, rwxr_xr_x, ec);
     if(ec) {
         output_error("installfile:" + std::to_string(this->lineno()),
-                     "language: could not set /etc/profile.d/language.sh "
+                     "language: could not set /etc/profile.d/00-language.sh "
                      "as executable", ec.message());
         return false;
     }
@@ -402,15 +409,15 @@ BACKSPACE=guess"
                 "keymap: setting system keyboard map to " + _value);
 
     if(script->options().test(Simulate)) {
-        std::cout << "cat >/target/etc/default/keyboard <<-KEYCONF"
-                  << std::endl;
+        std::cout << "cat >" << script->targetDirectory()
+                  << "/etc/default/keyboard <<-KEYCONF" << std::endl;
         std::cout << conf << std::endl;
         std::cout << "KEYCONF" << std::endl;
         return true;
     }
 
 #ifdef HAS_INSTALL_ENV
-    std::ofstream keyconf("/target/etc/default/keyboard",
+    std::ofstream keyconf(script->targetDirectory() + "/etc/default/keyboard",
                           std::ios_base::trunc);
     if(!keyconf) {
         output_error("installfile:" + std::to_string(line),
@@ -494,19 +501,23 @@ bool Timezone::execute() const {
     if(script->options().test(Simulate)) {
         /* If the target doesn't have tzdata installed, copy the zoneinfo from
          * the Horizon environment. */
-        std::cout << "([ -f /target/usr/share/zoneinfo/" << this->value()
+        std::cout << "([ -f " << script->targetDirectory()
+                  << "/usr/share/zoneinfo/" << this->value()
                   << " ] && ln -s /usr/share/zoneinfo/" << this->value()
-                  << " /target/etc/localtime) || cp /usr/share/zoneinfo/"
-                  << this->value() << " /target/etc/localtime" << std::endl;
+                  << " " << script->targetDirectory() << "/etc/localtime) || "
+                  << "cp /usr/share/zoneinfo/" << this->value()
+                  << " " << script->targetDirectory() << "/etc/localtime"
+                  << std::endl;
         return true;
     }
 
 #ifdef HAS_INSTALL_ENV
     std::string zi_path = "/usr/share/zoneinfo/" + this->value();
-    std::string target_zi = "/target" + zi_path;
+    std::string target_zi = script->targetDirectory() + zi_path;
+    std::string target_lt = script->targetDirectory() + "/etc/localtime";
     error_code ec;
     if(fs::exists(target_zi, ec)) {
-        fs::create_symlink(zi_path, "/target/etc/localtime", ec);
+        fs::create_symlink(zi_path, target_lt, ec);
         if(ec) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "timezone: failed to create symbolic link",
@@ -517,7 +528,7 @@ bool Timezone::execute() const {
     } else {
         /* The target doesn't have tzdata installed.  We copy the zoneinfo
          * file from the Horizon environment to the target. */
-        fs::copy_file(zi_path, "/target/etc/localtime", ec);
+        fs::copy_file(zi_path, target_lt, ec);
         if(ec) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "timezone: failed to prepare target environment",
@@ -554,13 +565,14 @@ bool Repository::execute() const {
                 "repository: write '" + this->value() +
                 "' to /etc/apk/repositories");
     if(script->options().test(Simulate)) {
-        std::cout << "echo '" << this->value() <<
-                     "' >> /target/etc/apk/repositories" << std::endl;
+        std::cout << "echo '" << this->value()
+                  << "' >> " << script->targetDirectory()
+                  << "/etc/apk/repositories" << std::endl;
         return true;
     }
 
 #ifdef HAS_INSTALL_ENV
-    std::ofstream repo_f("/target/etc/apk/repositories",
+    std::ofstream repo_f(script->targetDirectory() + "/etc/apk/repositories",
                          std::ios_base::app);
     if(!repo_f) {
         output_error("installfile:" + std::to_string(this->lineno()),
@@ -598,13 +610,14 @@ bool SigningKey::execute() const {
     /* everything after the last / in the value is the filename */
     const std::string name(_value.substr(_value.find_last_of('/') + 1));
 
-    const std::string target("/target/etc/apk/keys/" + name);
+    const std::string target_dir(script->targetDirectory() + "/etc/apk/keys/");
+    const std::string target(target_dir + name);
 
     output_info("installfile:" + std::to_string(line),
                 "signingkey: trusting " + name + " for repository signing");
 
     if(script->options().test(Simulate)) {
-        std::cout << "mkdir -p /target/etc/apk/keys" << std::endl;
+        std::cout << "mkdir -p " << target_dir << std::endl;
         if(_value[0] == '/') {
             std::cout << "cp " << _value << " " << target << std::endl;
         } else {
@@ -615,8 +628,8 @@ bool SigningKey::execute() const {
 
 #ifdef HAS_INSTALL_ENV
     error_code ec;
-    if(!fs::exists("/target/etc/apk/keys")) {
-        fs::create_directory("/target/etc/apk/keys", ec);
+    if(!fs::exists(target_dir)) {
+        fs::create_directory(target_dir, ec);
         if(ec) {
             output_error("installfile:" + std::to_string(line),
                          "signingkey: could not initialise target repository "
