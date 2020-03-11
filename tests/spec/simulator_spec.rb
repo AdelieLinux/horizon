@@ -285,18 +285,18 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
         it "doesn't configure language by default" do
             use_fixture '0001-basic.installfile'
             run_simulate
-            expect(last_command_started.stdout).to_not include("/target/etc/profile.d/language.sh")
+            expect(last_command_started.stdout).to_not include("/target/etc/profile.d/00-language.sh")
         end
         it "configures language correctly" do
             use_fixture '0116-language-country.installfile'
             run_simulate
             # leading space also serves as regression test for 1d89a45
-            expect(last_command_started.stdout).to include(" ie_IE > /target/etc/profile.d/language.sh")
+            expect(last_command_started.stdout).to include(" ie_IE > /target/etc/profile.d/00-language.sh")
         end
         it "ensures profile script is executable" do
             use_fixture '0116-language-country.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("chmod a+x /target/etc/profile.d/language.sh")
+            expect(last_command_started.stdout).to include("chmod a+x /target/etc/profile.d/00-language.sh")
         end
     end
     context "simulating 'keymap' execution" do
