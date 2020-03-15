@@ -16,6 +16,7 @@
 #include <string>
 #ifdef HAS_INSTALL_ENV
 #   include <parted/parted.h>
+#   include <sys/mount.h>
 #endif /* HAS_INSTALL_ENV */
 
 #include "script.hh"
@@ -155,6 +156,30 @@ bool Script::execute() const {
     }
 #ifdef HAS_INSTALL_ENV
     if(opts.test(InstallEnvironment)) ped_device_free_all();
+
+    if(!opts.test(Simulate)) {
+        if(!fs::exists(targetDirectory() + "/dev", ec)) {
+            fs::create_directory(targetDirectory() + "/dev", ec);
+        }
+        if(mount("/dev", "/target/dev", nullptr, MS_BIND, nullptr) != 0) {
+            output_warning("internal", "could not bind-mount /dev; "
+                           "bootloader configuration may fail");
+        }
+
+        if(!fs::exists(targetDirectory() + "/proc", ec)) {
+            fs::create_directory(targetDirectory() + "/proc", ec);
+        }
+        if(mount("none", "/target/proc", "proc", 0, nullptr) != 0) {
+            output_warning("internal", "target procfs could not be mounted");
+        }
+
+        if(!fs::exists(targetDirectory() + "/sys", ec)) {
+            fs::create_directory(targetDirectory() + "/sys", ec);
+        }
+        if(mount("none", "/target/sys", "sysfs", 0, nullptr) != 0) {
+            output_warning("internal", "target sysfs could not be mounted");
+        }
+    }
 #endif /* HAS_INSTALL_ENV */
     output_step_end("disk");
 
