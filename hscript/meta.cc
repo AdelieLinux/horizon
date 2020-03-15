@@ -179,7 +179,7 @@ static std::set<std::string> valid_arches = {
 
 Key *Arch::parseFromData(const std::string &data, int lineno, int *errors,
                          int *warnings, const Script *script) {
-    if(data.find_first_not_of("abcdefghijklmnopqrstuvwyxz1234567890") !=
+    if(data.find_first_not_of("abcdefghijklmnopqrstuvwyxz1234567890_") !=
             std::string::npos) {
         if(errors) *errors += 1;
         output_error("installfile:" + std::to_string(lineno),
