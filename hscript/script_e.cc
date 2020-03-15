@@ -481,10 +481,13 @@ bool Script::execute() const {
             return false;
         }
 
-        std::vector<std::string> params = {"--root", targetDirectory(), "add"};
+        std::vector<std::string> params(this->internal->packages.size() + 3);
+        params[0] = "--root";
+        params[1] = targetDirectory();
+        params[2] = "add";
         std::copy(this->internal->packages.begin(),
                   this->internal->packages.end(),
-                  params.end());
+                  params.begin() + 3);
 
         if(run_command("/sbin/apk", params) != 0) {
             EXECUTE_FAILURE("pkginstall");
