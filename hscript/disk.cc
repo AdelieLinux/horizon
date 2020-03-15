@@ -706,8 +706,6 @@ bool Filesystem::execute() const {
         const std::string dev_node(
                     device().substr(device().find_last_of('/') + 1));
         args.push_back("-q");
-        args.push_back("-z");
-        args.push_back("/tmp/undo-" + dev_node);
     }
 
     args.push_back(_block);
