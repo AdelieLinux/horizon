@@ -402,7 +402,7 @@ bool Script::execute() const {
             for(auto &iface : ifaces) {
                 fs::create_symlink("/etc/init.d/net.lo",
                                    "/etc/init.d/net." + iface, ec);
-                if(ec) {
+                if(ec && ec.value() != EEXIST) {
                     output_error("internal", "could not use networking on "
                                  + iface, ec.message());
                     EXECUTE_FAILURE("network");
@@ -413,10 +413,10 @@ bool Script::execute() const {
             if(!internal->nses.empty()) {
                 if(dhcp) {
                     fs::copy_file(targ_etc + "/resolv.conf.head",
-                                  "/etc/resolv.conf.head", ec);
+                                  "/etc/resolv.conf.head", fs_overwrite, ec);
                 } else {
                     fs::copy_file(targ_etc + "/resolv.conf",
-                                  "/etc/resolv.conf", ec);
+                                  "/etc/resolv.conf", fs_overwrite, ec);
                 }
 
                 if(ec) {
