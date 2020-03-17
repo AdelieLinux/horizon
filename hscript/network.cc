@@ -47,6 +47,39 @@ bool Network::execute() const {
 }
 
 
+Key *NetConfigType::parseFromData(const std::string &data, int lineno,
+                                  int *errors, int *, const Script *script) {
+    std::string type = data;
+    ConfigSystem system;
+
+    std::transform(type.cbegin(), type.cend(), type.begin(), ::tolower);
+
+    if(type == "netifrc") {
+        system = Netifrc;
+    } else if(type == "eni") {
+        system = ENI;
+    } else {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "netconfigtype: invalid or missing config type",
+                     "one of 'netifrc', 'eni' required");
+        return nullptr;
+    }
+
+    return new NetConfigType(script, lineno, system);
+}
+
+bool NetConfigType::validate() const {
+    /* Validation takes place during parsing. */
+    return true;
+}
+
+bool NetConfigType::execute() const {
+    /* This key doesn't perform any action by itself. */
+    return true;
+}
+
+
 Key *NetAddress::parseFromData(const std::string &data, int lineno, int *errors,
                                int *, const Script *script) {
     long elements = std::count(data.cbegin(), data.cend(), ' ') + 1;

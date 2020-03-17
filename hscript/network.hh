@@ -29,6 +29,28 @@ public:
     bool execute() const override;
 };
 
+class NetConfigType : public Key {
+public:
+    enum ConfigSystem {
+        Netifrc,
+        ENI
+    };
+private:
+    ConfigSystem _sys;
+
+    NetConfigType(const Script *_sc, int _line, const ConfigSystem _s) :
+        Key(_sc, _line), _sys(_s) {}
+public:
+    static Key *parseFromData(const std::string &, int, int*, int*,
+                              const Script *);
+
+    /*! Retrieve the desired network configuration system. */
+    ConfigSystem type() const { return this->_sys; }
+
+    bool validate() const override;
+    bool execute() const override;
+};
+
 class NetAddress : public Key {
 public:
     /*! Determines the type of address an interface will obtain. */

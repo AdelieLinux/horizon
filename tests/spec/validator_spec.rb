@@ -221,6 +221,25 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*arch.*expected/)
                 end
             end
+            context "for 'netconfigtype' key" do
+                it "succeeds with netifrc specified" do
+                    use_fixture '0226-netconfigtype-netifrc.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with /etc/network/interfaces specified" do
+                    use_fixture '0227-netconfigtype-eni.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with an invalid value" do
+                    use_fixture '0228-netconfigtype-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*netconfigtype.*valid/)
+                end
+            end
             context "for 'nameserver' key" do
                 it "succeeds with IPv4 and IPv6 addresses" do
                     use_fixture '0183-nameserver-basic.installfile'

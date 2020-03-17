@@ -1,0 +1,20 @@
+hostname horizon-netifrc-test
+rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
+network true
+netconfigtype netifrc
+netaddress eth0 dhcp
+netaddress eth0 slaac
+nameserver 9.9.9.10
+diskid /dev/sda QEMU_HARDDISK
+disklabel /dev/sda gpt
+partition /dev/sda 1 fill
+fs /dev/sda1 ext4
+mount /dev/sda1 /
+repository https://distfiles.adelielinux.org/adelie/current/system
+repository https://distfiles.adelielinux.org/adelie/current/user
+signingkey /etc/apk/keys/packages@adelielinux.org.pub
+pkginstall adelie-base-posix dash-binsh easy-kernel-power8 easy-kernel-power8-modules grub-ieee1275 netifrc openrc s6-linux-init
+keymap us
+language en_GB.UTF-8
+timezone America/Chicago
+firmware false

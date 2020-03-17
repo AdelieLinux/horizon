@@ -49,6 +49,7 @@ const std::map<std::string, key_parse_fn> valid_keys = {
     {"repository", &Repository::parseFromData},
     {"signingkey", &SigningKey::parseFromData},
 
+    {"netconfigtype", &NetConfigType::parseFromData},
     {"netaddress", &NetAddress::parseFromData},
     {"nameserver", &Nameserver::parseFromData},
     {"netssid", &NetSSID::parseFromData},
@@ -78,6 +79,8 @@ bool Script::ScriptPrivate::store_key(const std::string &key_name, Key *obj,
                                       const ScriptOptions &opts) {
     if(key_name == "network") {
         return store_network(obj, lineno, errors, warnings, opts);
+    } else if(key_name == "netconfigtype") {
+        return store_netconfig(obj, lineno, errors, warnings, opts);
     } else if(key_name == "netaddress") {
         std::unique_ptr<NetAddress> addr(dynamic_cast<NetAddress *>(obj));
         this->addresses.push_back(std::move(addr));

@@ -43,6 +43,8 @@ struct Script::ScriptPrivate {
 
     /*! Determines whether or not to enable networking. */
     std::unique_ptr<Network> network;
+    /*! Determines the network configuration system to use. */
+    std::unique_ptr<NetConfigType> netconfig;
     /*! The target system's hostname. */
     std::unique_ptr<Hostname> hostname;
     /*! The packages to install to the target system. */
@@ -123,6 +125,17 @@ struct Script::ScriptPrivate {
         }
         std::unique_ptr<Network> net(dynamic_cast<Network *>(obj));
         network = std::move(net);
+        return true;
+    }
+
+    bool store_netconfig(Key *obj, int line, int *errors, int *, ScriptOptions) {
+        if(netconfig) {
+            DUPLICATE_ERROR(netconfig, "netconfigtype",
+                            netconfig->type());
+            return false;
+        }
+        std::unique_ptr<NetConfigType> nc(dynamic_cast<NetConfigType *>(obj));
+        netconfig = std::move(nc);
         return true;
     }
 
