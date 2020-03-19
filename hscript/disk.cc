@@ -210,7 +210,7 @@ bool DiskLabel::execute() const {
         type_str = "apm";
         break;
     case MBR:
-        type_str = "mbr";
+        type_str = "msdos";
         break;
     case GPT:
         type_str = "gpt";
