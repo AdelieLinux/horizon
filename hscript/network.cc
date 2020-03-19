@@ -294,45 +294,105 @@ bool NetAddress::validate() const {
     return true;  /* LCOV_EXCL_LINE */
 }
 
-bool NetAddress::execute() const {
-    output_info("installfile:" + std::to_string(this->lineno()),
-                "netaddress: adding configuration for " + _iface);
-
-    std::ofstream config("/tmp/horizon/netifrc/config_" + this->iface(),
+bool execute_address_netifrc(const NetAddress *addr) {
+    std::ofstream config("/tmp/horizon/netifrc/config_" + addr->iface(),
                          std::ios_base::app);
     if(!config) {
-        output_error("installfile:" + std::to_string(this->lineno()),
+        output_error("installfile:" + std::to_string(addr->lineno()),
                      "netaddress: couldn't write network configuration for "
-                     + this->iface());
+                     + addr->iface());
         return false;
     }
 
-    switch(this->type()) {
-    case DHCP:
+    switch(addr->type()) {
+    case NetAddress::DHCP:
         config << "dhcp";
         break;
-    case SLAAC:
+    case NetAddress::SLAAC:
         /* automatically handled by netifrc */
         break;
-    case Static:
-        config << this->address() << "/" << std::to_string(this->prefix())
+    case NetAddress::Static:
+        config << addr->address() << "/" << std::to_string(addr->prefix())
                << std::endl;
         break;
     }
 
-    if(!this->gateway().empty()) {
-        std::ofstream route("/tmp/horizon/netifrc/routes_" + this->iface(),
+    if(!addr->gateway().empty()) {
+        std::ofstream route("/tmp/horizon/netifrc/routes_" + addr->iface(),
                             std::ios_base::app);
         if(!route) {
-            output_error("installfile:" + std::to_string(this->lineno()),
+            output_error("installfile:" + std::to_string(addr->lineno()),
                          "netaddress: couldn't write route configuration for "
-                         + this->iface());
+                         + addr->iface());
             return false;
         }
-        route << "default via " << this->gateway() << std::endl;
+        route << "default via " << addr->gateway() << std::endl;
     }
 
     return true;
+}
+
+bool execute_address_eni(const NetAddress *addr) {
+    std::ofstream config("/tmp/horizon/eni/" + addr->iface(),
+                         std::ios_base::app);
+    if(!config) {
+        output_error("installfile:" + std::to_string(addr->lineno()),
+                     "netaddress: couldn't write network configuration for "
+                     + addr->iface());
+        return false;
+    }
+
+    switch(addr->type()) {
+    case NetAddress::DHCP:
+        config << "iface " << addr->iface() << " inet dhcp" << std::endl;
+        break;
+    case NetAddress::SLAAC:
+        config << "iface " << addr->iface() << " inet6 manual" << std::endl
+               << "\tpre-up echo 1 > /proc/sys/net/ipv6/conf/" << addr->iface()
+               << "/accept_ra" << std::endl;
+        break;
+    case NetAddress::Static:
+        config << "iface " << addr->iface() << " ";
+
+        if(addr->address().find(':') != std::string::npos) {
+            /* Disable SLAAC when using static IPv6 addressing. */
+            config << "inet6 static" << std::endl
+                   << "\tpre-up echo 0 > /proc/sys/net/ipv6/conf/"
+                   << addr->iface() << "/accept_ra" << std::endl;;
+        } else {
+            config << "inet static" << std::endl;
+        }
+
+        config << "\taddress " << addr->address() << std::endl
+               << "\tnetmask " << std::to_string(addr->prefix()) << std::endl;
+
+        if(!addr->gateway().empty()) {
+            config << "\tgateway " << addr->gateway() << std::endl;
+        }
+    }
+
+    return true;
+}
+
+bool NetAddress::execute() const {
+    output_info("installfile:" + std::to_string(this->lineno()),
+                "netaddress: adding configuration for " + _iface);
+
+    NetConfigType::ConfigSystem system = NetConfigType::Netifrc;
+
+    const Key *key = script->getOneValue("netconfigtype");
+    if(key != nullptr) {
+        const NetConfigType *nct = static_cast<const NetConfigType *>(key);
+        system = nct->type();
+    }
+
+    switch(system) {
+    case NetConfigType::Netifrc:
+    default:
+        return execute_address_netifrc(this);
+    case NetConfigType::ENI:
+        return execute_address_eni(this);
+    }
 }
 
 

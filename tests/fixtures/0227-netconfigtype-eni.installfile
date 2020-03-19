@@ -1,8 +1,8 @@
-hostname horizon-netifrc-test
+hostname horizon-eni-test
 rootpw $6$gumtLGmHwOVIRpQR$2M9PUO24hy5mofzWWf9a.YLbzOgOlUby1g0hDj.wG67E2wrrvys59fq02PPdxBdbgkLZFtjfEx6MHZwMBamwu/
 network true
 netconfigtype eni
-netaddress eth0 dhcp
+netaddress eth0 static 192.168.1.2 24 192.168.1.1
 netaddress eth0 slaac
 nameserver 9.9.9.10
 diskid /dev/sda QEMU_HARDDISK

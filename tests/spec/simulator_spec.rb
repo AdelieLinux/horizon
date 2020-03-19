@@ -213,6 +213,16 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             run_simulate
             expect(last_command_started.stdout).to include("ln -s /etc/init.d/net.lo /target/etc/init.d/net.eth0")
         end
+	it "configures IPv4 addressing correctly with eni" do
+	    use_fixture '0227-netconfigtype-eni.installfile'
+	    run_simulate
+	    expect(last_command_started.stdout).to include("auto eth0\niface eth0 inet static")
+	end
+	it "configures IPv6 SLAAC addressing correctly with eni" do
+	    use_fixture '0227-netconfigtype-eni.installfile'
+	    run_simulate
+	    expect(last_command_started.stdout).to include("iface eth0 inet6 manual")
+	end
     end
     context "simulating 'nameserver' execution" do
         it "configures nameservers correctly" do

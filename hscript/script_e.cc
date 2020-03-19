@@ -58,6 +58,8 @@ void maybe_create_icon_dir(ScriptOptions opts, const std::string &target) {
 bool Script::execute() const {
     bool success;
     error_code ec;
+    std::string netconf_file;
+    NetConfigType::ConfigSystem netconfsys = NetConfigType::Netifrc;
     std::set<std::string> ifaces;
     const std::string targ_etc(targetDirectory() + "/etc");
 
@@ -220,6 +222,10 @@ bool Script::execute() const {
     /**************** NETWORK ****************/
     output_step_start("net");
 
+    if(internal->netconfig) {
+        netconfsys = internal->netconfig->type();
+    }
+
     if(!this->internal->ssids.empty()) {
         std::ofstream wpao("/tmp/horizon/wpa_supplicant.conf",
                           std::ios_base::trunc);
@@ -274,9 +280,23 @@ bool Script::execute() const {
 
     bool dhcp = false;
     if(!internal->addresses.empty()) {
-        fs::path netifrc_dir("/tmp/horizon/netifrc");
-        if(!fs::exists(netifrc_dir) &&
-           !fs::create_directory(netifrc_dir, ec)) {
+        fs::path conf_dir, targ_netconf_dir, targ_netconf_file;
+        switch(netconfsys) {
+        case NetConfigType::Netifrc:
+            conf_dir = fs::path("/tmp/horizon/netifrc");
+            netconf_file = "/etc/conf.d/net";
+            targ_netconf_dir = fs::path(targ_etc + "/conf.d");
+            break;
+        case NetConfigType::ENI:
+            conf_dir = fs::path("/tmp/horizon/eni");
+            netconf_file = "/etc/network/interfaces";
+            targ_netconf_dir = fs::path(targ_etc + "/network");
+            break;
+        }
+        targ_netconf_file = fs::path(targetDirectory() + netconf_file);
+
+        if(!fs::exists(conf_dir) &&
+           !fs::create_directory(conf_dir, ec)) {
             output_error("internal", "cannot create temporary directory",
                          ec.message());
         }
@@ -292,36 +312,55 @@ bool Script::execute() const {
         }
 
         std::ostringstream conf;
-        for(auto &&var_dent : fs::directory_iterator(netifrc_dir)) {
-            const std::string variable(var_dent.path().filename().string());
-            std::ifstream contents(var_dent.path().string());
+
+        if(netconfsys == NetConfigType::ENI) {
+            conf << "auto lo" << std::endl
+                 << "iface lo inet loopback" << std::endl << std::endl;
+        }
+
+        for(auto &&varfile : fs::directory_iterator(conf_dir)) {
+            std::ifstream contents(varfile.path().string());
             if(!contents) {
-                output_error("internal", "cannot read network configuration");
+                output_error("internal", "cannot read network "
+                             "configuration");
                 EXECUTE_FAILURE("net-internal");
                 continue;
             }
-            conf << variable << "=\"";
-            if(contents.rdbuf()->in_avail()) conf << contents.rdbuf();
-            conf << "\"" << std::endl;
+
+            switch(netconfsys) {
+            case NetConfigType::Netifrc: {
+                const std::string variable(varfile.path().filename().string());
+                conf << variable << "=\"";
+                if(contents.rdbuf()->in_avail()) conf << contents.rdbuf();
+                conf << "\"" << std::endl;
+                break;
+            }
+            case NetConfigType::ENI: {
+                const std::string iface(varfile.path().filename().string());
+                conf << "auto " << iface << std::endl;
+                if(contents.rdbuf()->in_avail()) conf << contents.rdbuf();
+                conf << std::endl;
+                break;
+            }
+            }
         }
 
         if(opts.test(Simulate)) {
-            std::cout << "mkdir -p " << targ_etc << "/conf.d" << std::endl;
-            std::cout << "cat >>/" << targ_etc << "/conf.d/net <<- NETCONF_EOF"
+            std::cout << "mkdir -p " << targ_netconf_dir << std::endl;
+            std::cout << "cat >>" << targ_netconf_file << " <<- NETCONF_EOF"
                       << std::endl << conf.str() << std::endl
                       << "NETCONF_EOF" << std::endl;
         }
 #ifdef HAS_INSTALL_ENV
         else {
-            if(!fs::exists(targ_etc + "/conf.d")) {
-                fs::create_directory(targ_etc + "/conf.d", ec);
+            if(!fs::exists(targ_netconf_dir)) {
+                fs::create_directory(targ_netconf_dir, ec);
                 if(ec) {
-                    output_error("internal", "could not create /etc/conf.d "
-                                 "directory", ec.message());
+                    output_error("internal", "could not create network "
+                                 "configuration directory", ec.message());
                 }
             }
-            std::ofstream conf_file(targ_etc + "/conf.d/net",
-                                    std::ios_base::app);
+            std::ofstream conf_file(targ_netconf_file, std::ios_base::app);
             if(!conf_file) {
                 output_error("internal", "cannot save network configuration "
                              "to target");
@@ -397,8 +436,8 @@ bool Script::execute() const {
                           << "/etc/wpa_supplicant/wpa_supplicant.conf"
                           << std::endl;
             }
-            std::cout << "cp " << targ_etc << "/conf.d/net /etc/conf.d/net"
-                      << std::endl;
+            std::cout << "cp " << targetDirectory() << netconf_file << " "
+                      << netconf_file << std::endl;
             if(!internal->nses.empty()) {
                 std::cout << "cp " << targ_etc << "/resolv.conf* /etc/"
                           << std::endl;
@@ -416,7 +455,7 @@ bool Script::execute() const {
                     EXECUTE_FAILURE("network");
                 }
             }
-            fs::copy_file(targ_etc + "/conf.d/net", "/etc/conf.d/net",
+            fs::copy_file(targetDirectory() + netconf_file, netconf_file,
                           fs_overwrite, ec);
             if(ec) {
                 output_error("internal", "cannot use networking configuration "
@@ -424,17 +463,26 @@ bool Script::execute() const {
                 EXECUTE_FAILURE("network");
                 return false;
             }
-            for(auto &iface : ifaces) {
-                fs::create_symlink("/etc/init.d/net.lo",
-                                   "/etc/init.d/net." + iface, ec);
-                if(ec && ec.value() != EEXIST) {
-                    output_error("internal", "could not use networking on "
-                                 + iface, ec.message());
-                    EXECUTE_FAILURE("network");
-                } else {
-                    run_command("service", {"net." + iface, "start"});
+
+            switch(netconfsys) {
+            case NetConfigType::Netifrc:
+                for(auto &iface : ifaces) {
+                    fs::create_symlink("/etc/init.d/net.lo",
+                                       "/etc/init.d/net." + iface, ec);
+                    if(ec && ec.value() != EEXIST) {
+                        output_error("internal", "could not use networking on "
+                                     + iface, ec.message());
+                        EXECUTE_FAILURE("network");
+                    } else {
+                        run_command("service", {"net." + iface, "start"});
+                    }
                 }
+                break;
+            case NetConfigType::ENI:
+                run_command("/etc/init.d/networking", {"restart"});
+                break;
             }
+
             if(!internal->nses.empty()) {
                 if(dhcp) {
                     fs::copy_file(targ_etc + "/resolv.conf.head",

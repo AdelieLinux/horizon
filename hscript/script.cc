@@ -334,6 +334,8 @@ void Script::setTargetDirectory(const std::string &dir) {
 const Keys::Key *Script::getOneValue(std::string name) const {
     if(name == "network") {
         return this->internal->network.get();
+    } else if(name == "netconfigtype") {
+        return this->internal->netconfig.get();
     } else if(name == "hostname") {
         return this->internal->hostname.get();
     } else if(name == "arch") {
