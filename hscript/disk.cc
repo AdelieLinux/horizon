@@ -539,6 +539,9 @@ bool Partition::execute() const {
         }
         start = before->geom.end + 1;
     }
+    /* Ensure the first MiB is free for various firmware and boot software
+     * that use it. */
+    if(start < 2048) start = 2048;
 
     switch(this->size_type()) {
     case SizeType::Bytes:
