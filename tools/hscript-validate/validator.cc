@@ -2,7 +2,7 @@
  * validator.cc - Implementation of the HorizonScript validation utility
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -88,11 +88,14 @@ int main(int argc, char *argv[]) {
 #ifdef NON_LIBRE_FIRMWARE
     colour_if_pretty(std::cout, "31");
     std::cout << " (supports non-free firmware)";
-#endif
     reset_if_pretty(std::cout);
+#endif
     std::cout << std::endl;
-    std::cout << "Copyright (c) 2019 Adélie Linux and contributors.  AGPL-3.0 license." << std::endl;
-    std::cout << std::endl;
+    std::cout << "Copyright (c) 2019-2020 Adélie Linux and contributors."
+              << std::endl;
+    std::cout << "This software is licensed to you under the terms of the "
+              << std::endl << "AGPL 3.0 license, unless otherwise noted.";
+    std::cout << std::endl << std::endl;
 
     my_script = Horizon::Script::load(installfile, opts);
     if(my_script == nullptr) {
@@ -101,10 +104,10 @@ int main(int argc, char *argv[]) {
     }
 
     if(!my_script->validate()) {
-        output_error("installfile", "Script failed validation step.  Stop.", "");
+        output_error("internal", "Script failed validation.  Stop.", "");
         result_code = EXIT_FAILURE;
     } else {
-        output_info("installfile", "Script passed validation.", "");
+        output_info("internal", "Script passed validation.", "");
     }
 
     delete my_script;
