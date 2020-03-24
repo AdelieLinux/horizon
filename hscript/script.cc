@@ -178,8 +178,7 @@ Script::~Script() {
     delete internal;
 }
 
-const Script *Script::load(const std::string &path,
-                           const ScriptOptions &opts) {
+Script *Script::load(const std::string &path, const ScriptOptions &opts) {
     std::ifstream file(path);
     if(!file) {
         output_error(path, "Cannot open installfile", "");
@@ -190,8 +189,7 @@ const Script *Script::load(const std::string &path,
 }
 
 
-const Script *Script::load(std::istream &sstream,
-                           const ScriptOptions &opts) {
+Script *Script::load(std::istream &sstream, const ScriptOptions &opts) {
 #define PARSER_ERROR(err_str) \
     errors++;\
     output_error("installfile:" + std::to_string(lineno),\
