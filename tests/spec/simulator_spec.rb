@@ -46,7 +46,7 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
         it "creates MBR tables correctly" do
             use_fixture '0123-disklabel-mbr.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("parted -ms /dev/sda mklabel mbr")
+            expect(last_command_started.stdout).to include("parted -ms /dev/sda mklabel msdos")
         end
     end
     context "simulating 'lvm_pv' execution" do
