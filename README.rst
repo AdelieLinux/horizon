@@ -242,6 +242,15 @@ library.  This is the primary library for parsing, validating, and executing
 HorizonScript files, and contains the principal code for Project Horizon.
 
 
+``image``: Image creation tools
+```````````````````````````````
+The ``image`` directory includes the source code for generating images and
+tarballs using HorizonScripts.  This is used for creating live media, pre-
+generated installations for extraction to target computers, and more.  Note
+that some tools may require a tool such as ``qemu-user`` to be installed on
+the host, depending on installation options and desired target configuration.
+
+
 ``owner``: File ownership utility
 `````````````````````````````````
 The ``owner`` directory includes the source code for the ``hscript-printowner``

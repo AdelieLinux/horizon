@@ -76,6 +76,7 @@ IF(INSTALL)
         message(FATAL_ERROR "BCNM is required for the Installation Environment.")
     endif()
     set(BUILD_SHARED_LIBS ON)
+    option(BUILD_IMAGE "Enable building the image creation tools" ON)
 
     add_subdirectory(diskman)
     add_subdirectory(executor)
@@ -94,6 +95,9 @@ IF(BUILD_UI)
 ENDIF(BUILD_UI)
 IF(INSTALL)
     add_subdirectory(fetch)
+    IF(BUILD_IMAGE)
+        add_subdirectory(image)
+    ENDIF(BUILD_IMAGE)
 ENDIF(INSTALL)
 
 

@@ -1,0 +1,9 @@
+find_package(Boost REQUIRED COMPONENTS program_options)
+include_directories(${Boost_INCLUDE_DIR})
+
+set(IMG_SRCS
+        creator.cc
+)
+add_executable(hscript-image ${IMG_SRCS})
+target_link_libraries(hscript-image hscript ${Boost_LIBRARIES})
+install(TARGETS hscript-image DESTINATION bin)
