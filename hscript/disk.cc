@@ -885,7 +885,8 @@ bool Mount::execute() const {
                                ec.message());
             }
         }
-        std::ofstream fstab_f(script->targetDirectory() + "/etc/fstab");
+        std::ofstream fstab_f(script->targetDirectory() + "/etc/fstab",
+                              std::ios::app);
         if(!fstab_f) {
             output_error("installfile:" + std::to_string(this->lineno()),
                          "mount: failure opening /etc/fstab for writing");
