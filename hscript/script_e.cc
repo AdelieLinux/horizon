@@ -512,6 +512,11 @@ bool Script::execute() const {
         EXECUTE_OR_FAIL("signingkey", key)
     }
 
+    /* REQ: Runner.Execute.pkginstall.arch */
+    if(internal->arch) {
+        EXECUTE_OR_FAIL("arch", internal->arch)
+    }
+
     /* REQ: Runner.Execute.pkginstall.APKDB */
     output_info("internal", "initialising APK");
     if(opts.test(Simulate)) {
@@ -527,11 +532,6 @@ bool Script::execute() const {
         }
     }
 #endif  /* HAS_INSTALL_ENV */
-
-    /* REQ: Runner.Execute.pkginstall.arch */
-    if(internal->arch) {
-        EXECUTE_OR_FAIL("arch", internal->arch)
-    }
 
     /* REQ: Runner.Execute.pkginstall */
     output_info("internal", "installing packages to target");
