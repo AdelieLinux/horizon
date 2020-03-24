@@ -96,53 +96,55 @@ bool Script::execute() const {
 
     /**************** DISK SETUP ****************/
     output_step_start("disk");
+    if(!opts.test(Image)) {
 #ifdef HAS_INSTALL_ENV
-    if(opts.test(InstallEnvironment)) ped_device_probe_all();
+        if(opts.test(InstallEnvironment)) ped_device_probe_all();
 #endif /* HAS_INSTALL_ENV */
-    /* REQ: Runner.Execute.diskid */
-    for(auto &diskid : internal->diskids) {
-        EXECUTE_OR_FAIL("diskid", diskid)
-    }
+        /* REQ: Runner.Execute.diskid */
+        for(auto &diskid : internal->diskids) {
+            EXECUTE_OR_FAIL("diskid", diskid)
+        }
 
-    /* REQ: Runner.Execute.disklabel */
-    for(auto &label : internal->disklabels) {
-        EXECUTE_OR_FAIL("disklabel", label)
-    }
+        /* REQ: Runner.Execute.disklabel */
+        for(auto &label : internal->disklabels) {
+            EXECUTE_OR_FAIL("disklabel", label)
+        }
 
-    /* REQ: Runner.Execute.partition */
-    /* Ensure partitions are created in on-disk order. */
-    std::sort(internal->partitions.begin(), internal->partitions.end(),
-              [](std::unique_ptr<Partition> const &e1,
-                 std::unique_ptr<Partition> const &e2) {
-        return (e1->device() + "p" + std::to_string(e1->partno())) <
-               (e2->device() + "p" + std::to_string(e2->partno()));
-    });
-    for(auto &part : internal->partitions) {
-        EXECUTE_OR_FAIL("partition", part)
-    }
+        /* REQ: Runner.Execute.partition */
+        /* Ensure partitions are created in on-disk order. */
+        std::sort(internal->partitions.begin(), internal->partitions.end(),
+                  [](std::unique_ptr<Partition> const &e1,
+                     std::unique_ptr<Partition> const &e2) {
+            return (e1->device() + "p" + std::to_string(e1->partno())) <
+                   (e2->device() + "p" + std::to_string(e2->partno()));
+        });
+        for(auto &part : internal->partitions) {
+            EXECUTE_OR_FAIL("partition", part)
+        }
 
-    /* encrypt PVs */
+        /* encrypt PVs */
 
-    /* REQ: Runner.Execute.lvm_pv */
-    for(auto &pv : internal->lvm_pvs) {
-        EXECUTE_OR_FAIL("lvm_pv", pv)
-    }
+        /* REQ: Runner.Execute.lvm_pv */
+        for(auto &pv : internal->lvm_pvs) {
+            EXECUTE_OR_FAIL("lvm_pv", pv)
+        }
 
-    /* REQ: Runner.Execute.lvm_vg */
-    for(auto &vg : internal->lvm_vgs) {
-        EXECUTE_OR_FAIL("lvm_vg", vg)
-    }
+        /* REQ: Runner.Execute.lvm_vg */
+        for(auto &vg : internal->lvm_vgs) {
+            EXECUTE_OR_FAIL("lvm_vg", vg)
+        }
 
-    /* REQ: Runner.Execute.lvm_lv */
-    for(auto &lv : internal->lvm_lvs) {
-        EXECUTE_OR_FAIL("lvm_lv", lv)
-    }
+        /* REQ: Runner.Execute.lvm_lv */
+        for(auto &lv : internal->lvm_lvs) {
+            EXECUTE_OR_FAIL("lvm_lv", lv)
+        }
 
-    /* encrypt */
+        /* encrypt */
 
-    /* REQ: Runner.Execute.fs */
-    for(auto &fs : internal->fses) {
-        EXECUTE_OR_FAIL("fs", fs)
+        /* REQ: Runner.Execute.fs */
+        for(auto &fs : internal->fses) {
+            EXECUTE_OR_FAIL("fs", fs)
+        }
     }
 
     /* REQ: Runner.Execute.mount */
