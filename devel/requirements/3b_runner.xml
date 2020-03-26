@@ -788,6 +788,10 @@
                     <title>Runner.Execute.pkginstall.arch</title>
                     <para>If a <literal>arch</literal> key is specified in the HorizonScript, the system shall set the architecture of the target computer before installing packages and after initialising the APK database.</para>
                 </formalpara>
+                <formalpara id="Runner.Execute.pkginstall.Keys">
+                    <title>Runner.Execute.pkginstall.Keys</title>
+                    <para>The system shall use the signing keys as specified in any <literal>signingkey</literal> keys for ensuring package integrity during package installation.</para>
+                </formalpara>
                 <formalpara id="Runner.Execute.rootpw">
                     <title>Runner.Execute.rootpw</title>
                     <para>The system shall set the root password in the target namespace to the value specified in the <literal>rootpw</literal> key.</para>
