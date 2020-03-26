@@ -522,13 +522,15 @@ bool Script::execute() const {
     /* REQ: Runner.Execute.pkginstall.APKDB */
     output_info("internal", "initialising APK");
     if(opts.test(Simulate)) {
-        std::cout << "/sbin/apk --root " << targetDirectory() << " --initdb add"
+        std::cout << "/sbin/apk --root " << targetDirectory() << " --initdb "
+                  << "--keys-dir " << targetDirectory() << "/etc/apk/keys add"
                   << std::endl;
     }
 #ifdef HAS_INSTALL_ENV
     else {
         if(run_command("/sbin/apk",
-                       {"--root", targetDirectory(), "--initdb", "add"}) != 0) {
+                       {"--root", targetDirectory(), "--initdb", "--keys-dir",
+                        targetDirectory() + "/etc/apk/keys", "add"}) != 0) {
             EXECUTE_FAILURE("pkginstall");
             return false;
         }
@@ -543,26 +545,31 @@ bool Script::execute() const {
             pkg_list << pkg << " ";
         }
 
-        std::cout << "apk --root " << targetDirectory() << " update"
+        std::cout << "apk --root " << targetDirectory() << " --keys-dir "
+                  << targetDirectory() << "/etc/apk/keys" << " update"
                   << std::endl;
-        std::cout << "apk --root " << targetDirectory() << " add "
+        std::cout << "apk --root " << targetDirectory() << " --keys-dir "
+                  << targetDirectory() << "/etc/apk/keys" << " add "
                   << pkg_list.str() << std::endl;
     }
 #ifdef HAS_INSTALL_ENV
     else {
         if(run_command("/sbin/apk",
-                       {"--root", targetDirectory(), "update"}) != 0) {
+                       {"--root", targetDirectory(), "--keys-dir",
+                        targetDirectory() + "/etc/apk/keys", "update"}) != 0) {
             EXECUTE_FAILURE("pkginstall");
             return false;
         }
 
-        std::vector<std::string> params(this->internal->packages.size() + 3);
+        std::vector<std::string> params(this->internal->packages.size() + 5);
         params[0] = "--root";
         params[1] = targetDirectory();
-        params[2] = "add";
+        params[2] = "--keys-dir";
+        params[3] = targetDirectory() + "/etc/apk/keys";
+        params[4] = "add";
         std::copy(this->internal->packages.begin(),
                   this->internal->packages.end(),
-                  params.begin() + 3);
+                  params.begin() + 5);
 
         if(run_command("/sbin/apk", params) != 0) {
             EXECUTE_FAILURE("pkginstall");
