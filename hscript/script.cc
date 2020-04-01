@@ -299,7 +299,7 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts) {
         if(!the_script->internal->rootpw) {
             MISSING_ERROR("rootpw")
         }
-        if(the_script->internal->mounts.size() == 0 && !opts.test(Image)) {
+        if(the_script->internal->mounts.size() == 0 && !opts.test(ImageOnly)) {
             MISSING_ERROR("mount")
         }
     }

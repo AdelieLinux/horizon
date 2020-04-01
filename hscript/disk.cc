@@ -792,7 +792,7 @@ bool Mount::execute() const {
 #endif
 
     /* We have to get the filesystem for the node. */
-    if(script->options().test(Simulate) || script->options().test(Image)) {
+    if(script->options().test(Simulate) || script->options().test(ImageOnly)) {
         fstype = "auto";
     }
 #ifdef HAS_INSTALL_ENV
@@ -818,7 +818,7 @@ bool Mount::execute() const {
         std::cout << this->device() << " " << actual_mount << std::endl;
     }
 #ifdef HAS_INSTALL_ENV
-    else if(script->options().test(Image)) {
+    else if(script->options().test(ImageOnly)) {
         /* no-op; we don't mount during image creation (but we want fstab) */
     }
     else {

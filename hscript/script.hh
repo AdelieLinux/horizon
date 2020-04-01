@@ -42,7 +42,7 @@ enum ScriptOptionFlags {
     /*! Just print commands that would be run, for testing/debug */
     Simulate,
     /*! Installing to an image; don't mount anything */
-    Image,
+    ImageOnly,
     /*! Count of flags */
     NumFlags
 };

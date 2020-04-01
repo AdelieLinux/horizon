@@ -95,7 +95,7 @@ bool Hostname::execute() const {
         std::cout << "hostname " << actual << std::endl;
     }
 #ifdef HAS_INSTALL_ENV
-    else if(script->options().test(Image)) {
+    else if(script->options().test(ImageOnly)) {
         /* no-op; we don't want to set the image builder's hostname */
     } else {
         if(sethostname(actual.c_str(), actual.size()) == -1) {

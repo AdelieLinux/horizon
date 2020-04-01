@@ -96,7 +96,7 @@ bool Script::execute() const {
 
     /**************** DISK SETUP ****************/
     output_step_start("disk");
-    if(!opts.test(Image)) {
+    if(!opts.test(ImageOnly)) {
 #ifdef HAS_INSTALL_ENV
         if(opts.test(InstallEnvironment)) ped_device_probe_all();
 #endif /* HAS_INSTALL_ENV */
