@@ -41,17 +41,19 @@ Design
 
 Image creation backends shall derive from the Horizon::Image::BasicBackend
 class.  Concrete backends can exist in any namespace.  To be used with the
-Image Creation utility, the backend must be registered in the ``backends.hh``
+Image Creation utility, the backend must be registered in the ``basic.cc``
 file along with a unique Type Code.  This Type Code can then be passed to
 the Image Creation utility with the ``-t`` parameter for use.
 
 The Horizon::Image::BasicBackend is an abstract (pure virtual) class that
 has a single method that you must implement: ``create()``.  This will be
-called on a constructed object of your concrete backend class, with two
-parameters: ``std::string ir_dir``, which is the base directory for the
-installed system (like ``/target`` during a normal installation), and
+called on a constructed object of your concrete backend class, which has two
+instance variables: ``std::string ir_dir``, which is the base directory for
+the installed system (like ``/target`` during a normal installation), and
 ``std::string out_path``, which is the user's desired output path and file
-name.
+name.  You may also implement ``prepare()``, which is called before create,
+and ``finalise()``, which is called after.  Default no-op implementations
+are provided for you in BasicBackend.
 
 
 

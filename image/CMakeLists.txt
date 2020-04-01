@@ -1,8 +1,11 @@
 find_package(Boost REQUIRED COMPONENTS program_options)
 include_directories(${Boost_INCLUDE_DIR})
 
+add_subdirectory(backends)
+
 set(IMG_SRCS
         creator.cc
+        ${BACKEND_SRCS}
 )
 add_executable(hscript-image ${IMG_SRCS})
 target_link_libraries(hscript-image hscript ${Boost_LIBRARIES})
