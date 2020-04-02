@@ -275,19 +275,19 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
         it "initialises the APK database" do
             use_fixture '0001-basic.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("apk --root /target --initdb add")
+            expect(last_command_started.stdout).to include("apk --root /target --initdb --keys-dir /target/etc/apk/keys add")
         end
         # Runner.Execute.pkginstall
         it "updates the local repository cache" do
             use_fixture '0001-basic.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("apk --root /target update")
+            expect(last_command_started.stdout).to include("apk --root /target --keys-dir /target/etc/apk/keys update")
         end
         # Runner.Execute.pkginstall
         it "installs the requested packages" do
             use_fixture '0001-basic.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("apk --root /target add adelie-base")
+            expect(last_command_started.stdout).to include("apk --root /target --keys-dir /target/etc/apk/keys add adelie-base")
         end
     end
     context "simulating 'language' execution" do
