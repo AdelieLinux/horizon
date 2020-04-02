@@ -12,10 +12,20 @@
 
 #pragma once
 
+#include <functional>
 #include <string>
+#include <vector>
 
 namespace Horizon {
 namespace Image {
+
+class BasicBackend;
+
+struct BackendDescriptor {
+    std::string type_code;
+    std::string description;
+    std::function<BasicBackend *(std::string, std::string)> creation_fn;
+};
 
 class BasicBackend {
 public:
@@ -42,6 +52,9 @@ public:
      * @returns 0 if the image is finalised; otherwise, an error code.
      */
     virtual int finalise();
+
+    /*! Returns a list of available backends. */
+    static const std::vector<BackendDescriptor> available_backends();
 
     /*! The intermediate directory which contains the sysroot the image
      *  should contain. */

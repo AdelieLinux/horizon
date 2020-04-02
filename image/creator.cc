@@ -13,7 +13,7 @@
 #include <boost/program_options.hpp>
 #include <cstdlib>              /* EXIT_* */
 #include <string>
-#include "backends/backends.hh"
+#include "backends/basic.hh"
 #include "hscript/script.hh"
 #include "util/output.hh"
 
@@ -28,9 +28,13 @@ bool pretty = true;     /*! Controls ASCII colour output */
 /*! Entry-point for the image creation utility. */
 int main(int argc, char *argv[]) {
     using namespace boost::program_options;
+    using namespace Horizon::Image;
+
     bool needs_help{}, disable_pretty{};
     int exit_code = EXIT_SUCCESS;
-    std::string if_path{"/etc/horizon/installfile"}, ir_dir{"/target"}, type_code{"tar"};
+    std::string if_path{"/etc/horizon/installfile"}, ir_dir{"/target"},
+                output_path{"image.tar"}, type_code{"tar"};
+    BasicBackend *backend = nullptr;
     Horizon::ScriptOptions opts;
     Horizon::Script *my_script;
 
@@ -89,15 +93,36 @@ int main(int argc, char *argv[]) {
     if(type_code == "list") {
         std::cout << "Type codes known by this build of Image Creation:"
                   << std::endl << std::endl;
-        for(auto &backend : Horizon::Image::known_backends) {
-            std::cout << std::setw(10) << std::left << backend.type_code
-                      << backend.description << std::endl;
+        for(const auto &candidate : BasicBackend::available_backends()) {
+            std::cout << std::setw(10) << std::left << candidate.type_code
+                      << candidate.description << std::endl;
         }
         return EXIT_SUCCESS;
     }
 
     if(!vm["installfile"].empty()) {
         if_path = vm["installfile"].as<std::string>();
+    }
+
+    if(!vm["ir-dir"].empty()) {
+        ir_dir = vm["ir-dir"].as<std::string>();
+    }
+
+    if(!vm["output"].empty()) {
+        output_path = vm["output"].as<std::string>();
+    }
+
+    /* Load the proper backend. */
+    for(const auto &candidate : BasicBackend::available_backends()) {
+        if(candidate.type_code == type_code) {
+            backend = candidate.creation_fn(ir_dir, output_path);
+            break;
+        }
+    }
+    if(backend == nullptr) {
+        output_error("command-line", "unsupported backend or internal error",
+                     type_code);
+        return EXIT_FAILURE;
     }
 
     opts.set(Horizon::InstallEnvironment);
@@ -112,15 +137,34 @@ int main(int argc, char *argv[]) {
 
     /* if an error occurred during parsing, bail out now */
     if(!my_script) {
-        return EXIT_FAILURE;
+        exit_code = EXIT_FAILURE;
+        goto early_trouble;
+    } else {
+        int ret;
+
+        if(!my_script->execute()) {
+            exit_code = EXIT_FAILURE;
+            goto trouble;
+        }
+
+#define RUN_PHASE_OR_TROUBLE(_PHASE, _FRIENDLY) \
+    ret = backend->_PHASE();\
+    if(ret != 0) {\
+        output_error("internal", "error during output " _FRIENDLY,\
+                     std::to_string(ret));\
+        exit_code = EXIT_FAILURE;\
+        goto trouble;\
     }
 
-    if(!vm["ir-dir"].empty()) {
-        my_script->setTargetDirectory(vm["ir-dir"].as<std::string>());
+        RUN_PHASE_OR_TROUBLE(prepare, "preparation");
+        RUN_PHASE_OR_TROUBLE(create, "creation");
+        RUN_PHASE_OR_TROUBLE(finalise, "finalisation");
     }
 
-    my_script->execute();
-
+trouble:        /* delete the Script and exit */
     delete my_script;
+early_trouble:  /* no script yet */
+    delete backend;
+
     return exit_code;
 }

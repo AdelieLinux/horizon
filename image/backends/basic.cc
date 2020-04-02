@@ -11,7 +11,6 @@
  */
 
 #include "basic.hh"
-#include "backends.hh"
 
 namespace Horizon {
 namespace Image {
@@ -20,6 +19,10 @@ std::vector<BackendDescriptor> known_backends = {
    {"tar", "Create a tarball (.tar)", [](std::string, std::string){ return nullptr; } },
    {"squashfs", "Create a SquashFS image (.squashfs)", [](std::string, std::string){ return nullptr; } }
 };
+
+const std::vector<BackendDescriptor> BasicBackend::available_backends() {
+    return known_backends;
+}
 
 int BasicBackend::prepare() {
     /* The default implementation returns success immediately;
