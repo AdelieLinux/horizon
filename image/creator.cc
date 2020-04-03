@@ -112,6 +112,14 @@ int main(int argc, char *argv[]) {
         output_path = vm["output"].as<std::string>();
     }
 
+    /* Announce our presence */
+    std::cout << "HorizonScript Image Creation Utility version " << VERSTR
+              << std::endl
+              << "Copyright (c) 2020 Adélie Linux and contributors."
+              << std::endl
+              << "This software is licensed to you under the AGPL 3.0, "
+              << "unless otherwise noted." << std::endl << std::endl;
+
     /* Load the proper backend. */
     for(const auto &candidate : BackendManager::available_backends()) {
         if(candidate.type_code == type_code) {
@@ -141,6 +149,8 @@ int main(int argc, char *argv[]) {
         goto early_trouble;
     } else {
         int ret;
+
+        my_script->setTargetDirectory(ir_dir);
 
         if(!my_script->execute()) {
             exit_code = EXIT_FAILURE;

@@ -47,9 +47,9 @@ public:
 
     /*! The intermediate directory which contains the sysroot the image
      *  should contain. */
-    const std::string &ir_dir;
+    const std::string ir_dir;
     /*! The path at which to write the image. */
-    const std::string &out_path;
+    const std::string out_path;
 };
 
 struct BackendDescriptor {

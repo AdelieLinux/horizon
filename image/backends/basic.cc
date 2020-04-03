@@ -15,10 +15,8 @@
 namespace Horizon {
 namespace Image {
 
-std::vector<BackendDescriptor> known_backends = {
-   {"tar", "Create a tarball (.tar)", [](std::string, std::string){ return nullptr; } },
-   {"squashfs", "Create a SquashFS image (.squashfs)", [](std::string, std::string){ return nullptr; } }
-};
+std::vector<BackendDescriptor> known_backends
+__attribute__ ((init_priority(200)));
 
 const std::vector<BackendDescriptor> BackendManager::available_backends() {
     return known_backends;
