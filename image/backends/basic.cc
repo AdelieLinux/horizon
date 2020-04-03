@@ -20,8 +20,12 @@ std::vector<BackendDescriptor> known_backends = {
    {"squashfs", "Create a SquashFS image (.squashfs)", [](std::string, std::string){ return nullptr; } }
 };
 
-const std::vector<BackendDescriptor> BasicBackend::available_backends() {
+const std::vector<BackendDescriptor> BackendManager::available_backends() {
     return known_backends;
+}
+
+void BackendManager::register_backend(BackendDescriptor desc) {
+    known_backends.push_back(desc);
 }
 
 int BasicBackend::prepare() {

@@ -41,9 +41,10 @@ Design
 
 Image creation backends shall derive from the Horizon::Image::BasicBackend
 class.  Concrete backends can exist in any namespace.  To be used with the
-Image Creation utility, the backend must be registered in the ``basic.cc``
-file along with a unique Type Code.  This Type Code can then be passed to
-the Image Creation utility with the ``-t`` parameter for use.
+Image Creation utility, the backend must be registered using the static
+``BackendManager::register_backend`` function, using a unique Type Code.
+This Type Code can then be passed to the Image Creation utility with the
+``-t`` parameter for use.
 
 The Horizon::Image::BasicBackend is an abstract (pure virtual) class that
 has a single method that you must implement: ``create()``.  This will be

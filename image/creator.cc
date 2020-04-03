@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
     if(type_code == "list") {
         std::cout << "Type codes known by this build of Image Creation:"
                   << std::endl << std::endl;
-        for(const auto &candidate : BasicBackend::available_backends()) {
+        for(const auto &candidate : BackendManager::available_backends()) {
             std::cout << std::setw(10) << std::left << candidate.type_code
                       << candidate.description << std::endl;
         }
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Load the proper backend. */
-    for(const auto &candidate : BasicBackend::available_backends()) {
+    for(const auto &candidate : BackendManager::available_backends()) {
         if(candidate.type_code == type_code) {
             backend = candidate.creation_fn(ir_dir, output_path);
             break;

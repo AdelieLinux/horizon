@@ -19,14 +19,6 @@
 namespace Horizon {
 namespace Image {
 
-class BasicBackend;
-
-struct BackendDescriptor {
-    std::string type_code;
-    std::string description;
-    std::function<BasicBackend *(std::string, std::string)> creation_fn;
-};
-
 class BasicBackend {
 public:
     /*! Create the backend object.
@@ -53,14 +45,26 @@ public:
      */
     virtual int finalise();
 
-    /*! Returns a list of available backends. */
-    static const std::vector<BackendDescriptor> available_backends();
-
     /*! The intermediate directory which contains the sysroot the image
      *  should contain. */
     const std::string &ir_dir;
     /*! The path at which to write the image. */
     const std::string &out_path;
+};
+
+struct BackendDescriptor {
+    std::string type_code;
+    std::string description;
+    std::function<BasicBackend *(std::string, std::string)> creation_fn;
+};
+
+class BackendManager {
+public:
+    /*! Returns a list of available backends. */
+    static const std::vector<BackendDescriptor> available_backends();
+
+    /*! Register a new backend. */
+    static void register_backend(BackendDescriptor desc);
 };
 
 }
