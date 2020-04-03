@@ -362,7 +362,7 @@ bool Script::execute() const {
                                  "configuration directory", ec.message());
                 }
             }
-            std::ofstream conf_file(targ_netconf_file, std::ios_base::app);
+            std::ofstream conf_file(targ_netconf_file);
             if(!conf_file) {
                 output_error("internal", "cannot save network configuration "
                              "to target");
