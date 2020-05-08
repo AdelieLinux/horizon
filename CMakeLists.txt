@@ -18,6 +18,10 @@ else()
                       -Werror)
 endif()
 
+if(POLICY CMP0100)
+  cmake_policy(SET CMP0100 NEW)
+endif()
+
 
 option(BUILD_TOOLS "Enable building of tools (Validator, Simulator, etc)" ON)
 option(BUILD_UI "Enable user interface" ON)
@@ -83,6 +87,16 @@ IF(INSTALL)
 ELSE(INSTALL)
     set(BUILD_SHARED_LIBS OFF)
 ENDIF(INSTALL)
+
+
+if("cxx_std_17" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+    SET(FS_LIBRARY stdc++fs)
+    add_definitions(-DFS_IS_STDCXX)
+ELSE()
+    find_package(Boost REQUIRED COMPONENTS filesystem)
+    SET(FS_LIBRARY ${Boost_FILESYSTEM_LIBRARY})
+    add_definitions(-DFS_IS_BOOST)
+ENDIF()
 
 
 add_subdirectory(hscript)

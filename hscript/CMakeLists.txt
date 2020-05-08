@@ -23,13 +23,7 @@ target_compile_features(hscript PUBLIC cxx_unicode_literals)
 
 if("cxx_std_17" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
     set_property(TARGET hscript PROPERTY CXX_STANDARD 17)
-    SET(FS_LIBRARY stdc++fs)
-    add_definitions(-DFS_IS_STDCXX)
-ELSE()
-    find_package(Boost REQUIRED COMPONENTS filesystem)
-    SET(FS_LIBRARY ${Boost_FILESYSTEM_LIBRARY})
-    add_definitions(-DFS_IS_BOOST)
-ENDIF()
+endif()
 
 target_link_libraries(hscript ${BLKID_LIBRARIES} ${FS_LIBRARY} ${LIBUDEV_LIBRARIES} ${PARTED_LIBRARIES})
 

@@ -14,3 +14,7 @@ endif()
 add_library(hi-backends ${BACKEND_SRCS})
 target_link_libraries(hi-backends ${BACKEND_LIBS})
 install(TARGETS hi-backends DESTINATION lib)
+
+if("cxx_std_17" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+    set_property(TARGET hi-backends PROPERTY CXX_STANDARD 17)
+endif()

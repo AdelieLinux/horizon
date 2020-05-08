@@ -11,7 +11,15 @@
  */
 
 #include <archive.h>
+#include <archive_entry.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
 #include "basic.hh"
+#include "util/filesystem.hh"
 #include "util/output.hh"
 
 namespace Horizon {
@@ -54,7 +62,7 @@ public:
             break;
         }
 
-        res = archive_write_open_filename(a, this->out_path.c_str()) < ARCHIVE_OK;
+        res = archive_write_open_filename(a, this->out_path.c_str());
         if(res < ARCHIVE_OK) {
             if(res < ARCHIVE_WARN) {
                 output_error("tar backend", archive_error_string(a));
@@ -68,7 +76,62 @@ public:
     }
 
     int create() override {
-        return 0;
+        struct archive_entry *entry = archive_entry_new();
+        error_code ec;
+        int fd, r, code = 0;
+        struct stat s;
+        void *buff;
+
+        for(const auto& dent : fs::recursive_directory_iterator(this->ir_dir,
+                                                                ec)) {
+            fs::path relpath = dent.path().lexically_relative(this->ir_dir);
+#define OUTPUT_FAILURE(x) \
+    output_error("tar backend", "failed to " x " '" + std::string(dent.path()) + "'",\
+                 strerror(errno));
+            r = lstat(dent.path().c_str(), &s);
+            if(r == -1) {
+                OUTPUT_FAILURE("stat")
+                code = -1;
+                goto ret;
+            }
+            archive_entry_copy_stat(entry, &s);
+            if(dent.is_symlink()) {
+                archive_entry_set_filetype(entry, AE_IFLNK);
+                fs::path resolved = fs::read_symlink(dent.path(), ec);
+                const fs::path::value_type *c_rpath = resolved.c_str();
+                archive_entry_set_symlink(entry, c_rpath);
+            }
+            archive_entry_set_pathname(entry, relpath.c_str());
+            if(archive_write_header(this->a, entry) != ARCHIVE_OK) {
+                output_error("tar backend", archive_error_string(a));
+                code = -1;
+                goto ret;
+            }
+            if(dent.is_regular_file() && dent.file_size() > 0) {
+                fd = open(dent.path().c_str(), O_RDONLY);
+                if(fd == -1) {
+                    OUTPUT_FAILURE("open")
+                    code = -1;
+                    goto ret;
+                }
+                buff = mmap(NULL, dent.file_size(), PROT_READ, MAP_SHARED,
+                            fd, 0);
+                if(buff == MAP_FAILED) {
+                    OUTPUT_FAILURE("map")
+                    close(fd);
+                    code = -1;
+                    goto ret;
+                }
+                archive_write_data(this->a, buff, dent.file_size());
+                close(fd);
+            }
+            archive_write_finish_entry(this->a);
+            archive_entry_clear(entry);
+        }
+
+ret:
+        archive_entry_free(entry);
+        return code;
     }
 
     int finalise() override {
