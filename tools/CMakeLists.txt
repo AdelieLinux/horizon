@@ -3,3 +3,4 @@ include_directories(${Boost_INCLUDE_DIR})
 
 add_subdirectory(hscript-validate)
 add_subdirectory(hscript-simulate)
+add_subdirectory(hscript-fromjson)

@@ -1,0 +1,18 @@
+{"images":
+ [
+  {"name": "Test Image",
+   "hostname": "horizon-json-testmachine.adelielinux.org",
+   "packages": ["adelie-base-posix", "easy-kernel", "easy-kernel-modules", "netifrc", "openrc", "s6-linux-init"],
+   "arch": "ppc64",
+   "language": "en_GB.UTF-8",
+   "keymap": "us",
+   "firmware": false,
+   "netconfig": "netifrc",
+   "netaddresses": [{"id":"eth0", "interface":"eth0", "addr-type": "dhcp"}],
+   "nameservers": ["9.9.9.9"],
+   "timezone": "America/Chicago",
+   "repositories": ["https://distfiles.adelielinux.org/adelie/1.0/system", "https://distfiles.adelielinux.org/adelie/1.0/user"],
+   "signingkeys": ["/etc/apk/keys/powerpc-1@packages.adelielinux.org.pub", "/etc/apk/keys/powerpc-2@packages.adelielinux.org.pub"]
+  }
+ ]
+}
