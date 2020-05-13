@@ -1,0 +1,356 @@
+module horizon-image {
+  yang-version 1.1;
+  namespace 'https://horizon.adelielinux.org/ns/image';
+  prefix hzimg;
+
+  organization "Adélie Linux";
+  contact
+    "Horizon: https://horizon.adelielinux.org/
+     Mailing list: https://lists.adelielinux.org/postorius/lists/horizon.lists.adelielinux.org/";
+
+  description
+    "Adélie Linux defines this model to provide an interface for
+     describing and maintaining a list of computer images for the
+     deployment of APK-based Linux distributions.
+
+     Copyright (c) 2020 Adélie Linux and contributors.  All rights
+     reserved.  Distribution is subject to the AGPL 3.0 license,
+     unless otherwise explicitly granted.";
+
+  revision 2020-03-11 {
+    description "Initial revision."
+  }
+  revision 2020-05-12 {
+    description "Flatten packages node.  Remove image-type leaf and generate action."
+  }
+
+  typedef architecture {
+    type enumeration {
+      enum aarch64;
+      enum aarch64_be;
+      enum alpha;
+      enum arm;
+      enum armel;
+      enum armhf;
+      enum armv7;
+      enum m68k;
+      enum mips;
+      enum mips32;
+      enum mips64;
+      enum mipsel;
+      enum mips32el;
+      enum mips64el;
+      enum pmmx;
+      enum ppc;
+      enum ppc64;
+      enum riscv;
+      enum riscv64;
+      enum s390x;
+      enum x86;
+      enum x86_64;
+    }
+    description "The CPU architecture of the target system.";
+  }
+
+  typedef ckb-keymap {
+    type enumeration {
+       enum us;
+       enum ad;
+       enum af;
+       enum ara;
+       enum al;
+       enum am;
+       enum at;
+       enum az;
+       enum by;
+       enum be;
+       enum bd;
+       enum in;
+       enum ba;
+       enum br;
+       enum bg;
+       enum ma;
+       enum mm;
+       enum ca;
+       enum cd;
+       enum cn;
+       enum hr;
+       enum cz;
+       enum dk;
+       enum nl;
+       enum bt;
+       enum ee;
+       enum ir;
+       enum iq;
+       enum fo;
+       enum fi;
+       enum fr;
+       enum gh;
+       enum gn;
+       enum ge;
+       enum de;
+       enum gr;
+       enum hu;
+       enum is;
+       enum il;
+       enum it;
+       enum jp;
+       enum kg;
+       enum kh;
+       enum kz;
+       enum la;
+       enum latam;
+       enum lt;
+       enum lv;
+       enum mao;
+       enum me;
+       enum mk;
+       enum mt;
+       enum mn;
+       enum no;
+       enum pl;
+       enum pt;
+       enum ro;
+       enum ru;
+       enum rs;
+       enum si;
+       enum sk;
+       enum es;
+       enum se;
+       enum ch;
+       enum sy;
+       enum tj;
+       enum lk;
+       enum th;
+       enum tr;
+       enum ua;
+       enum gb;
+       enum uz;
+       enum vn;
+       enum kr;
+       enum ie;
+       enum pk;
+       enum mv;
+       enum za;
+       enum epo;
+       enum np;
+       enum ng;
+       enum et;
+       enum sn;
+       enum brai;
+       enum tm;
+       enum ml;
+       enum tz;
+       enum ke;
+       enum bw;
+       enum ph;
+    }
+    description "Keymaps defined by CKB.";
+  }
+
+  typedef netconfigtype {
+    type enumeration {
+      enum netifrc {
+        description "The netifrc system, as used by Adélie";
+      }
+      enum eni {
+        description "/etc/network/interfaces file, as used by Alpine";
+      }
+    }
+    description
+      "The network configuration system to use on the target.";
+  }
+
+  typedef address-type {
+    type enumeration {
+      enum none {
+        description "No address set - just activate the interface.
+        Commonly used for bridged interfaces.";
+      }
+      enum static {
+        description "Static addressing.";
+      }
+      enum dhcp {
+        description "Dynamic addressing using DHCP.";
+      }
+      enum slaac {
+        description "Dynamic IPv6 addressing using SLAAC.";
+        reference "RFC 4862: https://tools.ietf.org/html/rfc4862";
+      }
+    }
+    description "The address type.";
+  }
+
+  typedef ssidsecurity {
+    type enumeration {
+      enum none;
+      enum wep;
+      enum wpa;
+    }
+    description
+      "The type of wireless security to use for a given SSID.";
+  }
+
+  container images {
+    list image {
+      key name;
+      
+      leaf name {
+        type string;
+        description "Free-form name of this image.
+        This name will not appear anywhere in the resultant image.
+        It is used solely for operator identification.";
+      }
+      leaf hostname {
+        type string;
+        mandatory true;
+        description "The hostname to set as the default.";
+      }
+      container packages {
+        list package {
+            type string;
+        }
+        description "The packages to install in the image.";
+      }
+      leaf rootpw {
+        type string;
+        mandatory true;
+        description "The encrypted root passphrase.";
+      }
+      leaf arch {
+        type architecture;
+        mandatory true;
+        description "The CPU architecture of the image.";
+      }
+      leaf language {
+        type string;
+        description "The default locale for the image.";
+      }
+      leaf keymap {
+        type ckb-keymap;
+        default us;
+        description "The keymap to use for the image.";
+      }
+      leaf firmware {
+        type boolean;
+        default false;
+      }
+      leaf netconfig {
+        type netconfigtype;
+        description
+          "The network configuration system to use in the image.";
+      }
+      container netaddresses {
+        list netaddress {
+          key "id";
+
+          leaf id {
+            type string;
+            description "Identifier for this connection.
+            For operator reference only - not used in the image.";
+          }
+          leaf interface {
+            type string;
+            description "The interface used for this address.";
+          }
+          leaf addr-type {
+            type address-type;
+            description "The address type.";
+          }
+          container address {
+            when "../addr-type[.=static]";
+            mandatory true;
+
+            leaf ip-address {
+              type string;
+              mandatory true;
+              description "The IP address.";
+            }
+            leaf net-prefix {
+              type uint8;
+              mandatory true;
+              range 1..64;
+              description "The network prefix length.";
+            }
+            leaf gateway {
+              type string;
+              description "The default gateway for this address.";
+            }
+            description
+              "Addressing information for static configuration.";
+          }
+        }
+      }
+      container nameservers {
+        list nameserver {
+          type string;
+          description "The IP address of a DNS server.";
+        }
+      }
+      container access-points {
+        list netssid {
+          key "interface ssid";
+          
+          leaf interface {
+            type string;
+            description "The wireless interface to use for this SSID.";
+          }
+          leaf ssid {
+            type string;
+            description "The SSID with which to associate.";
+          }
+          leaf security {
+            type ssidsecurity;
+            description "The security type of the specified SSID.";
+          }
+          leaf passphrase {
+            when 'not(../security[.=none])';
+            type string;
+            description "The shared secret for the specified SSID.";
+          }
+        }
+      }
+      leaf timezone {
+        type string;
+        default "UTC";
+        description "The local time zone in the image.";
+      }
+      container repositories {
+        list repository {
+          type string;
+          description "A repository URL.";
+        }
+      }
+      container signingkeys {
+        list signingkey {
+          type string;
+          description "A path or URL to an APK signing key.";
+        }
+      }
+      container users {
+        list account {
+          key username;
+
+          leaf username {
+            type string;
+            description "The login name of this account.";
+          }
+          leaf alias {
+            type string;
+            description "The friendly alias/GECOS of this account.";
+          }
+          leaf passphrase {
+            type string;
+            description
+              "The encrypted password this account uses to log in.";
+          }
+          leaf groups {
+            type string;
+            description
+              "Comma-separated list of this account's member groups.";
+          }
+        }
+      }
+    }
+  }
+}
