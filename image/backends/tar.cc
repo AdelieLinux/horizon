@@ -98,10 +98,10 @@ public:
             if(dent.is_symlink()) {
                 archive_entry_set_filetype(entry, AE_IFLNK);
                 fs::path resolved = fs::read_symlink(dent.path(), ec);
-                const fs::path::value_type *c_rpath = resolved.c_str();
-                archive_entry_set_symlink(entry, c_rpath);
+                const fs::path::value_type *c_rpath = resolved.u8string().c_str();
+                archive_entry_update_symlink_utf8(entry, c_rpath);
             }
-            archive_entry_set_pathname(entry, relpath.c_str());
+            archive_entry_update_pathname_utf8(entry, relpath.u8string().c_str());
             if(archive_write_header(this->a, entry) != ARCHIVE_OK) {
                 output_error("tar backend", archive_error_string(a));
                 code = -1;
