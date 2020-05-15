@@ -19,6 +19,47 @@ has been run before
 as this utility places the desired HorizonScript in the location where
 .Nm
 expects it to be.
+.Ss Steps
+Horizon divides an installation into
+.Qq steps ,
+which are a grouping of related installation processes.  The steps defined
+in this version of Horizon are:
+.Bl -tag -width Ds
+.It validate
+The
+.Cm validate
+step performs validation of the HorizonScript, ensuring that it can be
+executed on the current system.
+.It disk
+The
+.Cm disk
+step performs disk initialisation and preparation, including any labeling,
+partitioning, file system creation, and mounting.
+.It pre-metadata
+The
+.Cm pre-metadata
+step performs configuration of early system metadata that must be complete
+before networking is set up.  This includes setting the hostname, setting up
+APK repositories, and (in some cases) setting up initial firmware loads.
+.It net
+The
+.Cm net
+step performs all networking configuration.  This includes setting up the
+network in the target system, and (if the
+.Cm network
+key in the HorizonScript is set to true) configuring the network on the
+current host.
+.It pkgdb
+The
+.Cm pkgdb
+step performs initial APK configuration and then installs the desired packages
+to the target environment.
+.It post-metadata
+The
+.Cm post-metadata
+step performs configuration of system metadata.  This includes setting the root
+passphrase, the keymap, any user accounts requested, and the system timezone.
+.El
 .Sh FILES
 .Bl -ohang -width "/etc/horizon/installfile" -offset indent -compact
 .It Pa /etc/horizon/installfile
@@ -26,6 +67,34 @@ expects it to be.
 reads
 .Pa /etc/horizon/installfile
 as the HorizonScript to use for configuring the target system.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+.Nm
+.Sh DIAGNOSTICS
+.Bl -diag
+.It "%dateT%time log %location: %status: %message[: %extra]"
+A message of type
+.Cm %status
+was logged while processing
+.Cm %location .
+The log message
+.Cm %message
+may be followed by additional information or hints in
+.Cm %extra .
+.It "%dateT%time step-start %step"
+Denotes that the installation step
+.Cm %step
+is starting.  Steps are described in the
+.Sy Steps
+section.
+.It "%dateT%time step-end %step"
+Denotes that the installation step
+.Cm %step
+has finished successfully.  Steps are described in the
+.Sy Steps
+section.
 .El
 .Sh SEE ALSO
 .Xr hscript 5 ,
