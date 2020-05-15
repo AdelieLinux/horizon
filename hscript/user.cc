@@ -225,7 +225,9 @@ bool Username::execute() const {
     }
 
 #ifdef HAS_INSTALL_ENV
-    if(run_command("useradd", {"-c", "Adélie User", "-m", "-U", _value}) != 0)
+    if(run_command("useradd", {"-c", "Adélie User", "-m",
+                               "-R", script->targetDirectory(),
+                               "-U", _value}) != 0)
     {
         output_error("installfile:" + std::to_string(line),
                      "username: failed to create user account");
@@ -267,7 +269,8 @@ bool UserAlias::execute() const {
     }
 
 #ifdef HAS_INSTALL_ENV
-    if(run_command("usermod", {"-c", _alias, _username}) != 0) {
+    if(run_command("usermod", {"-c", _alias, "-R", script->targetDirectory(),
+                               _username}) != 0) {
         output_error("installfile:" + std::to_string(line),
                      "useralias: failed to change GECOS of user " + _username);
         return false;
@@ -315,7 +318,9 @@ bool UserPassphrase::execute() const {
     }
 
 #ifdef HAS_INSTALL_ENV
-    if(run_command("usermod", {"-p", _passphrase, _username}) != 0) {
+    if(run_command("usermod", {"-p", _passphrase,
+                               "-R", script->targetDirectory(),
+                               _username}) != 0) {
         output_error("installfile:" + std::to_string(line),
                      "userpw: failed to set passphrase for " + _username);
         return false;
@@ -473,7 +478,9 @@ bool UserGroups::execute() const {
     }
 
 #ifdef HAS_INSTALL_ENV
-    if(run_command("usermod", {"-a", "-G", groups, _username}) != 0) {
+    if(run_command("usermod", {"-a", "-G", groups,
+                               "-R", script->targetDirectory(),
+                               _username}) != 0) {
         output_error("installfile:" + std::to_string(line),
                      "usergroups: failed to add groups to " + _username);
         return false;
