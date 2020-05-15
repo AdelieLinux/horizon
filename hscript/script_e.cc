@@ -446,7 +446,10 @@ bool Script::execute() const {
             }
         }
 #ifdef HAS_INSTALL_ENV
-        else {
+        else if(opts.test(ImageOnly)) {
+            /* Don't do anything with the network configuration if we are
+             * only creating an image. */
+        } else {
             if(do_wpa) {
                 fs::copy_file(targ_etc + "/wpa_supplicant/wpa_supplicant.conf",
                           "/etc/wpa_supplicant/wpa_supplicant.conf",
