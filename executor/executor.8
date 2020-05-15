@@ -1,0 +1,41 @@
+.Dd May 15, 2020
+.Dt HSCRIPT-EXECUTOR 8
+.Os "Adélie Linux"
+.Sh NAME
+.Nm hscript-executor
+.Nd install a Linux system based on a HorizonScript
+.Sh SYNOPSIS
+.Nm
+.Sh DESCRIPTION
+The
+.Nm
+utility installs a Linux system to /target on the current system, configured
+as described in a given HorizonScript.
+.Pp
+It is assumed that
+.Xr hscript-fetch 8
+has been run before
+.Nm ,
+as this utility places the desired HorizonScript in the location where
+.Nm
+expects it to be.
+.Sh FILES
+.Bl -ohang -width "/etc/horizon/installfile" -offset indent -compact
+.It Pa /etc/horizon/installfile
+.Nm
+reads
+.Pa /etc/horizon/installfile
+as the HorizonScript to use for configuring the target system.
+.El
+.Sh SEE ALSO
+.Xr hscript 5 ,
+.Xr hscript-fetch 8 ,
+.Xr hscript-simulate 1 ,
+.Xr hscript-validate 1 .
+.Sh HISTORY
+The
+.Nm
+command first appeared in Horizon 0.1.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org
