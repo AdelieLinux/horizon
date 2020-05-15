@@ -11,6 +11,7 @@ IF(CURL_FOUND)
 ENDIF(CURL_FOUND)
 
 install(TARGETS hscript-fetch DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/fetch.1 DESTINATION share/man/man1 RENAME hscript-fetch.1)
 
 #IF(RSPEC_EXECUTABLE)
 #add_test(NAME "RSpecFetch"

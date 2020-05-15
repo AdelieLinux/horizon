@@ -1,0 +1,67 @@
+.Dd May 15, 2020
+.Dt HSCRIPT-FETCH 1
+.Os "Adélie Linux"
+.Sh NAME
+.Nm hscript-fetch
+.Nd fetch a HorizonScript for further processing
+.Sh SYNOPSIS
+.Nm
+.Ar FILE-OR-URL
+.Sh DESCRIPTION
+The
+.Nm
+utility retrieves the HorizonScript from the location specified by
+.Ar FILE-OR-URL ,
+and writes it to the path expected by the
+.Xr hscript-executor 8
+utility; presently,
+.Pa /etc/horizon/installfile .
+.Pp
+The single argument,
+.Ar FILE-OR-URL ,
+should specify either an absolute path (one that begins with a /), or a URL.
+.Ss Remote script retrieval
+If a remote URL is specified, the
+.Nm
+utility will attempt to download the HorizonScript from it.  Supported URL
+protocols include HTTP, HTTPS, and TFTP.
+.Sh FILES
+.Bl -ohang -width "/etc/horizon/installfile" -offset indent -compact
+.It Pa /etc/horizon/installfile
+.Nm
+writes the HorizonScript specified to
+.Pa /etc/horizon/installfile .
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+hscript-fetch /media/live/desktop.installfile
+.Pp
+hscript-fetch https://deploy.company.int/workstation16.installfile
+.Sh DIAGNOSTICS
+.Bl -diag
+.It "%dateT%time log %location: %status: %message[: %extra]"
+A message of type
+.Cm %status
+was logged while processing
+.Cm %location .
+The log message
+.Cm %message
+may be followed by additional information or hints in
+.Cm %extra .
+.El
+.Sh SEE ALSO
+.Xr hscript 5 .
+.Sh HISTORY
+The
+.Nm
+command first appeared in Horizon 0.1.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org
+.Sh SECURITY CONSIDERATIONS
+The
+.Nm
+utility supports unencrypted HTTP download.  Extreme caution should be
+exercised when using unencrypted HTTP downloads, as your system's root
+password could be manipulated by a malicious attacker.  Please use HTTPS
+whenever possible.
