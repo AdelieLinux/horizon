@@ -1,0 +1,48 @@
+.Dd May 15, 2020
+.Dt <TOOL-NAME> 8
+.Os "Adélie Linux"
+.Sh NAME
+.Nm <tool-name>
+.Nd <short description of the tool's purpose>
+.Sh SYNOPSIS
+.Nm
+.Op Fl a Ar ARGUMENT
+.Op Fl f
+.Sh DESCRIPTION
+.Nm
+does something.
+.Bl -tag -width "-v VERSION" -offset indent -compact
+.It Fl a Ar ARGUMENT
+Specifies an argument to the tool.
+.It Fl f
+Sets a flag in the tool.
+.Ss Sub-section
+The
+.Nm
+utility does other things.
+.Sh ENVIRONMENT
+.Bl -tag -width "LONG_ENV_VAR" -offset indent -compact
+.It Ev Sy ENV_VAR
+Controls a behaviour of the tool.
+.It Ev Sy LONG_ENV_VAR
+Controls another behaviour.
+.Sh FILES
+.Bl -ohang -width "/etc/foo" -offset indent -compact
+.It Pa /etc/foo
+.Nm
+reads the /etc/foo file for foos.
+.Sh EXAMPLES
+tool-name -f
+.Pp
+LONG_ENV_VAR=bar tool-name
+.Sh SEE ALSO
+.Xr mksquashfs 1 ,
+.Xr apk 8 ,
+.Xr mkisofs 8 .
+.Sh HISTORY
+The
+.Nm
+command first appeared in Horizon 1.0.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org
