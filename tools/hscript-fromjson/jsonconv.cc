@@ -50,7 +50,7 @@ bool parse_one_desc(json desc, std::ostream &out) {
     out << "mount " << desc["root"].get<std::string>() << " /" << std::endl;
 
     if(desc.find("netaddresses") != desc.end()) {
-        out << "network false" << std::endl;
+        out << "network true" << std::endl;
         for(const auto &addr : desc["netaddresses"]) {
             ENSURE_KEY(addr, "interface");
             ENSURE_KEY(addr, "addr-type");
