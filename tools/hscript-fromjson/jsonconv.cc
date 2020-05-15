@@ -113,6 +113,31 @@ bool parse_one_desc(json desc, std::ostream &out) {
 
 #undef SIMPLE_PLURAL_KEY
 
+    if(desc.find("users") != desc.end()) {
+        for(const auto &user : desc["users"]) {
+            if(user.find("username") == user.end()) {
+                output_error("input json",
+                             "user account specified without username");
+                continue;
+            }
+
+            const auto &name = user["username"].get<std::string>();
+
+            out << "username " << name << std::endl;
+
+#define USER_KEY(key_name, hscript_name) \
+            if(user.find(key_name) != user.end()) {\
+                out << hscript_name << " " << name << " " \
+                    << user[key_name].get<std::string>() << std::endl;\
+            }
+
+            USER_KEY("alias", "useralias");
+            USER_KEY("passphrase", "userpw");
+            USER_KEY("groups", "usergroups");
+            /* Future expansion: user icons */
+        }
+    }
+
     return true;
 }
 
