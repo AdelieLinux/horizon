@@ -219,7 +219,8 @@ bool Username::execute() const {
                 "username: creating account " + _value);
 
     if(script->options().test(Simulate)) {
-        std::cout << "useradd -c \"Adélie User\" -m -U " << _value
+        std::cout << "useradd -c \"Adélie User\" -m -R "
+                  << script->targetDirectory() << " -U " << _value
                   << std::endl;
         return true;
     }
@@ -263,7 +264,8 @@ bool UserAlias::execute() const {
                 "useralias: setting GECOS name for " + _username);
 
     if(script->options().test(Simulate)) {
-        std::cout << "usermod -c \"" << _alias << "\" " << _username
+        std::cout << "usermod -c \"" << _alias << "\" "
+                  << "-R " << script->targetDirectory() << " " << _username
                   << std::endl;
         return true;
     }
@@ -312,7 +314,8 @@ bool UserPassphrase::execute() const {
                 "userpw: setting passphrase for " + _username);
 
     if(script->options().test(Simulate)) {
-        std::cout << "usermod -p '" << _passphrase << "' " << _username
+        std::cout << "usermod -p '" << _passphrase << "' "
+                  << "-R " << script->targetDirectory() << " " << _username
                   << std::endl;
         return true;
     }
@@ -473,7 +476,9 @@ bool UserGroups::execute() const {
     groups.pop_back();
 
     if(script->options().test(Simulate)) {
-        std::cout << "usermod -aG " << groups << " " << _username << std::endl;
+        std::cout << "usermod -aG " << groups
+                  << "-R " << script->targetDirectory()
+                  << " " << _username << std::endl;
         return true;
     }
 
