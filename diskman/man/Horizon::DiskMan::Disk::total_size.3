@@ -1,0 +1,78 @@
+.Dd May 15, 2020
+.Dt Horizon::DiskMan::Disk::total_size 3
+.Os "Adélie Linux"
+.Sh NAME
+.Nm Horizon::DiskMan::Disk::total_size ,
+.Nm Horizon::DiskMan::Disk::free_space ,
+.Nm Horizon::DiskMan::Disk::contiguous_block ,
+.Nm Horizon::DiskMan::Disk::sector_size
+.Nd retrieve sizing information for a disk
+.Sh SYNOPSIS
+.In diskman/disk.hh
+.Cm using Horizon::DiskMan::Disk;
+.Ft uint32_t
+.Fo Disk::total_size
+.Fc
+.Ft uint32_t
+.Fo Disk::free_space
+.Fc
+.Ft uint32_t
+.Fo Disk::contiguous_block
+.Fc
+.Ft uint32_t
+.Fo Disk::sector_size
+.Fc
+.Sh DESCRIPTION
+The
+.Fn Disk::total_size
+function provides the size of the specified disk.
+.Pp
+The
+.Fn Disk::free_space
+and
+.Fn Disk::contiguous_block
+functions provide the amount of total free space, and the largest contiguous
+block of free space, respectively.
+.Pp
+The
+.Fn Disk::sector_size
+function provides the disk's sector size.
+.Sh RETURN VALUES
+The
+.Fn Disk::total_size ,
+.Fn Disk::free_space ,
+and
+.Fn Disk::contiguous_block
+functions return the requested information in mebibytes (MiB).
+.Pp
+The
+.Fn Disk::sector_size
+function returns the sector size in bytes.
+.Sh EXAMPLES
+The following is a simple utility that prints the name, total size, and free
+space for each disk attached to the system:
+.Bd -literal -offset indent
+#include <diskman/diskman.hh>
+#include <iostream>
+
+int main(void) {
+    Horizon::DiskMan::DiskMan dm;
+    auto disks = dm.find_disks(false, false, false);
+    for(auto &disk : disks) {
+        std::cout << "Disk: " << disk.name() << ":" << std::endl;
+        std::cout << std::to_string(disk.total_size()) << " MiB total";
+        std::cout << " (" << std::to_string(disk.free_space()) << " MiB free; ";
+        std::cout << std::to_string(disk.contiguous_block()) << " MiB largest contiguous block)" << std::endl;
+    }
+    return 0;
+}
+.Ed
+.Sh SEE ALSO
+.Xr Horizon::DiskMan::Disk 3 ,
+.Xr Horizon::DiskMan::DiskMan 3 ,
+.Xr Horizon::DiskMan::Partition 3 .
+.Sh HISTORY
+The DiskMan library first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org

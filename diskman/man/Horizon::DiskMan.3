@@ -1,0 +1,33 @@
+.Dd May 15, 2020
+.Dt Horizon::DiskMan 3
+.Os "Adélie Linux"
+.Sh NAME
+.Nm Horizon::DiskMan
+.Nd namespace for the Horizon Disk Manager
+.Sh SYNOPSIS
+.In diskman/diskman.hh
+.Sh DESCRIPTION
+The
+.Nm
+namespace contains three classes for inspecting the fixed disks present on a
+computer:
+.Cm Horizon::DiskMan::DiskMan ,
+.Cm Horizon::DiskMan::Disk ,
+and
+.Cm Horizon::DiskMan::Partition .
+.Pp
+You should only create instances of
+.Cm Horizon::DiskMan::DiskMan ;
+the DiskMan class will provide you with the relevant instances of Disk and
+Parition.
+.Sh EXAMPLES
+See the class manual pages for in-depth examples.
+.Sh SEE ALSO
+.Xr Horizon::DiskMan::DiskMan 3 ,
+.Xr Horizon::DiskMan::Disk 3 ,
+.Xr Horizon::DiskMan::Partition 3 .
+.Sh HISTORY
+The DiskMan library first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org

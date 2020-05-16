@@ -20,3 +20,4 @@ target_link_libraries(diskman ${FDISK_LIBRARIES} ${LIBUDEV_LIBRARIES})
 
 install(TARGETS diskman DESTINATION lib)
 install(FILES ${DISKMAN_INCLUDE} DESTINATION include/diskman)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/man/ DESTINATION share/man/man3)

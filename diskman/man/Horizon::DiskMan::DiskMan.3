@@ -1,0 +1,74 @@
+.Dd May 15, 2020
+.Dt Horizon::DiskMan::DiskMan 3
+.Os "Adélie Linux"
+.Sh NAME
+.Nm Horizon::DiskMan::DiskMan
+.Nd main class of the Horizon Disk Manager
+.Sh SYNOPSIS
+.In diskman/diskman.hh
+.Cm using Horizon::DiskMan::DiskMan;
+.Ft vector<Disk>
+.Fo DiskMan::find_disks
+.Fa "bool include_part = true" "bool include_vg = true" "bool include_lvm = false"
+.Fc
+.Sh DESCRIPTION
+The
+.Nm
+class provides a facility for inspecting the fixed disk(s) present on a
+computer.
+.Pp
+Calling the
+.Fn DiskMan::find_disks
+function will return a vector of
+.Cm Horizon::DiskMan::Disk
+containing all fixed disks presently attached to the system.  The
+.Fn DiskMan::find_disks
+function allows you to control the data returned with three arguments:
+.Fa include_part ,
+which if true will include partition information when a fixed disk contains
+a readable disk label;
+.Fa include_vg ,
+which if true will include each LVM volume group as a Disk; and
+.Fa include_lvm ,
+which if true will include each LVM logical volume as a Disk.
+.Pp
+You should only create instances of
+.Cm Horizon::DiskMan::DiskMan ;
+the DiskMan class will provide you with the relevant instances of Disk and
+Parition.
+.Sh RETURN VALUES
+The
+.Fn DiskMan::find_disks
+function returns a
+.Cm std::vector
+of
+.Cm Horizon::DiskMan::Disk
+objects describing all fixed disks attached to the system.
+.Sh EXAMPLES
+.Bd -literal -offset indent
+#include <diskman/diskman.hh>
+#include <iostream>
+
+using Horizon::DiskMan::DiskMan;
+
+int main(void) {
+    DiskMan diskMan;
+    auto disks = diskMan.find_disks(false, false, false);
+    std::cout << "Found " << std::to_string(disks.size()) << " disk(s):" << std::endl;
+    for(auto &disk : disks) {
+        std::cout << "==========================================" << std::endl;
+        std::cout << "Disk: " << disk.name() << " (" << disk.model() << ")";
+        std::cout << " at " << disk.dev_path() << std::endl;
+        std::cout << "==========================================" << std::endl;
+    }
+    return 0;
+}
+.Ed
+.Sh SEE ALSO
+.Xr Horizon::DiskMan::Disk 3 ,
+.Xr Horizon::DiskMan::Partition 3 .
+.Sh HISTORY
+The DiskMan library first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org

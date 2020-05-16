@@ -1,0 +1,77 @@
+.Dd May 15, 2020
+.Dt Horizon::DiskMan::Disk::fs_type 3
+.Os "Adélie Linux"
+.Sh NAME
+.Nm Horizon::DiskMan::Disk::has_fs ,
+.Nm Horizon::DiskMan::Disk::fs_type ,
+.Nm Horizon::DiskMan::Disk::fs_label
+.Nd retrieve file system information for a disk
+.Sh SYNOPSIS
+.In diskman/disk.hh
+.Cm using Horizon::DiskMan::Disk;
+.Ft bool
+.Fo Disk::has_fs
+.Fc
+.Ft const std::string
+.Fo Disk::fs_type
+.Fc
+.Ft const std::string
+.Fo Disk::fs_label
+.Fc
+.Sh DESCRIPTION
+The
+.Fn Disk::has_fs
+function returns whether the disk has a file system written directly to it
+(without a disk label or partition).
+.Pp
+The
+.Fn Disk::fs_type
+function provides the type of file system present and the
+.Fn Disk::fs_label
+function provides the file system's label (if set).  Both of these functions
+are only valid to be called if
+.Fn Disk::has_fs
+returns true.
+.Sh RETURN VALUES
+The
+.Fn Disk::has_fs
+function returns true if the disk has a file system written to it without a
+disk label.
+.Pp
+The
+.Fn Disk::fs_type
+and
+.Fn Disk::fs_label
+functions return std::string containing the requested information, if
+.Fn Disk::has_fs
+returns true.
+.Sh EXAMPLES
+The following is a simple utility that will print the label and file system
+type for each disk attached to the system that has one:
+.Bd -literal -offset indent
+#include "diskman/diskman.hh"
+#include <iostream>
+
+int main(void) {
+    Horizon::DiskMan::DiskMan diskMan;
+    auto disks = diskMan.find_disks(false, false, true);
+    for(auto &disk : disks) {
+        std::cout << "Disk: " << disk.name() << std::endl;
+        std::cout << "FS: ";
+        if(disk.has_fs()) {
+            std::cout << "\\"" << disk.fs_label() << "\\" (" << disk.fs_type() << ")";
+        } else std::cout << "No";
+        std::cout << std::endl;
+    }
+    return 0;
+}
+.Ed
+.Sh SEE ALSO
+.Xr Horizon::DiskMan::Disk 3 ,
+.Xr Horizon::DiskMan::DiskMan 3 ,
+.Xr Horizon::DiskMan::Partition 3 .
+.Sh HISTORY
+The DiskMan library first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org

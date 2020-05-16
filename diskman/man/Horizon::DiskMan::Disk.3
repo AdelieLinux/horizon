@@ -1,0 +1,106 @@
+.Dd May 15, 2020
+.Dt Horizon::DiskMan::Disk 3
+.Os "Adélie Linux"
+.Sh NAME
+.Nm Horizon::DiskMan::Disk
+.Nd disk class of the Horizon Disk Manager
+.Sh SYNOPSIS
+.In diskman/disk.hh
+.Cm class Horizon::DiskMan::Disk;
+.Sh DESCRIPTION
+The
+.Nm
+class provides information about a fixed disk attached to the system.
+.Ss Class methods - Identity
+The
+.Nm
+class provides the following accessors for information about the identity of
+the disk:
+.Bl -tag -width Ds
+.It Cm const std::string name() const
+Retrieve the disk's name.  For instance,
+.Qq sda
+or
+.Qq nvme0n1 .
+.It Cm const std::string model() const
+Retrieve the disk's model.  This is specified by the vendor.  Typically, this
+is the model number of the disk.  Some vendors include the vendor name in the
+model field.
+.It Cm const std::string serial() const
+Retrieve the disk's serial number.  This may be equivalent to the model name,
+if the vendor did not specify a serial number.
+.It Cm const std::string node() const
+Retrieve the absolute path of the device node for this disk.  For instance,
+.Qq /dev/sda .
+.El
+.Ss Class methods - Label
+The
+.Nm
+class provides the following accessors for information about the label
+present on the disk, if any:
+.Bl -tag -width Ds
+.It Cm bool has_label() const
+Returns true if this disk has a disk label attached.
+.It Cm enum Label label() const
+Retrieve the type of disk label in use on this disk.  Calling this function
+is only valid if has_label() is true.
+.El
+.Ss Class methods - File system
+The
+.Nm
+class provides the following accessors for information about the file system
+present on the disk, if any:
+.Bl -tag -width Ds
+.It Cm bool has_fs() const
+Returns true if this disk has a file system written to it.  Note that this
+means that the file system is directly written to the disk; it is not
+contained within a partition.
+.It Cm const std::string fs_type() const
+Retrieve the type of file system written on this disk.  Calling this function
+is only valid if has_fs() is true.
+.It Cm const std::string fs_label() const
+Retrieve the label of the file system written on this disk.  Calling this
+function is only valid if has_fs() is true.
+.El
+.Ss Class methods - Sizing
+The
+.Nm
+class provides the following accessors for information about the size of the
+disk:
+.Bl -tag -width Ds
+.It Cm uint32_t total_size() const
+Retrieve the total size of the disk in mebibytes (MiB).
+.It Cm uint32_t free_space() const
+Retrieve the amount of free space available on the disk in mebibytes (MiB).
+.It Cm uint32_t contiguous_block() const
+Retrieve the size of the largest contiguous block of free space on the disk
+in mebibytes (MiB).
+.It Cm uint32_t sector_size() const
+Retrieve the sector size of the disk in bytes.
+.El
+.Ss Class methods - Partitions
+The
+.Nm
+class provides the following accessors for retrieving partitions associated
+with the disk's label, if present:
+.Bl -tag -width Ds
+.It Cm const std::vector<Horizon::DiskMan::Partition> partitions() const
+Retrieve the partitions contained in the label, if any.  Calling this
+function is only valid is has_label() is true.
+.It Cm bool reload_partitions()
+Attempt to (re)load the partition table from the disk.  Returns true if the
+partition table was loaded successfully; otherwise, returns false.
+.El
+.Sh SEE ALSO
+.Xr Horizon::DiskMan::Disk::name 3 ,
+.Xr Horizon::DiskMan::Disk::label 3 ,
+.Xr Horizon::DiskMan::Disk::fs_type 3 ,
+.Xr Horizon::DiskMan::Disk::total_size 3 ,
+.Xr Horizon::DiskMan::Disk::partitions 3 ,
+.Xr Horizon::DiskMan::DiskMan 3 ,
+.Xr Horizon::DiskMan::Partition 3 .
+.Sh HISTORY
+The DiskMan library first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org

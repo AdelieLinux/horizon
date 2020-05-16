@@ -1,0 +1,91 @@
+.Dd May 15, 2020
+.Dt Horizon::DiskMan::Disk::name 3
+.Os "Adélie Linux"
+.Sh NAME
+.Nm Horizon::DiskMan::Disk::name ,
+.Nm Horizon::DiskMan::Disk::model ,
+.Nm Horizon::DiskMan::Disk::serial ,
+.Nm Horizon::DiskMan::Disk::node ,
+.Nm Horizon::DiskMan::Disk::dev_path
+.Nd retrieve properties of a disk
+.Sh SYNOPSIS
+.In diskman/disk.hh
+.Cm using Horizon::DiskMan::Disk;
+.Ft const std::string
+.Fo Disk::name
+.Fc
+.Ft const std::string
+.Fo Disk::model
+.Fc
+.Ft const std::string
+.Fo Disk::serial
+.Fc
+.Ft const std::string
+.Fo Disk::node
+.Fc
+.Ft const std::string
+.Fo Disk::dev_path
+.Fc
+.Sh DESCRIPTION
+The
+.Fn Disk::name
+function provides the name of the fixed disk.  This is equivalent to calling
+.Xr basename 3
+on
+.Fn Disk::node .
+.Pp
+The
+.Fn Disk::model
+function provides the vendor's given model number for the fixed disk.  This
+is a free-form identification string provided by the disk's vendor and could
+be blank or meaningless depending on the vendor.  Some external disk
+enclosures do not support retrieval of disk model numbers.
+.Pp
+The
+.Fn Disk::serial
+function provides the vendor's given serial number for the fixed disk.  Like
+.Fn Disk::model ,
+this is a free-form string provided by the disk's vendor.  You should not
+rely on this string being unique in a given system; some vendors simply copy
+the model number as the serial number.  When the given serial number is non-
+blank and unequal to the model number, it may be unique.
+.Pp
+The
+.Fn Disk::node
+function provides the absolute path of the device node for this disk.
+.Pp
+The
+.Fn Disk::dev_path
+function provides the absolute path to the sysfs node for this disk.
+.Sh RETURN VALUES
+These routines return the requested information as a C++ std::string.  Values
+are not converted from their native representation.  Virtually all disks the
+authors have seen use US-ASCII or UTF-8, but there may be a disk in the wild
+that uses a legacy codepage.
+.Sh EXAMPLES
+The following is a simple utility that returns the model and device node of
+all disks present in a system:
+.Bd -literal -offset indent
+#include <diskman/diskman.hh>
+#include <iostream>
+
+using Horizon::DiskMan::DiskMan;
+
+int main(void) {
+    DiskMan dm;
+    auto disks = dm.find_disks(false, false, false);
+    for(auto &disk : disks) {
+        std::cout << "Disk " << disk.model() << " found at: " << disk.node() << std::endl;
+    }
+    return 0;
+}
+.Ed
+.Sh SEE ALSO
+.Xr Horizon::DiskMan::Disk 3 ,
+.Xr Horizon::DiskMan::DiskMan 3 ,
+.Xr Horizon::DiskMan::Partition 3 .
+.Sh HISTORY
+The DiskMan library first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org

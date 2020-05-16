@@ -1,0 +1,55 @@
+.Dd May 15, 2020
+.Dt Horizon::DiskMan::Disk::partitions 3
+.Os "Adélie Linux"
+.Sh NAME
+.Nm Horizon::DiskMan::Disk::partitions ,
+.Nm Horizon::DiskMan::Disk::reload_partitions
+.Nd retrieve partitioning information for a disk
+.Sh SYNOPSIS
+.In diskman/disk.hh
+.Cm using Horizon::DiskMan::Disk;
+.Cm using Horizon::DiskMan::Partition;
+.Ft const std::vector<Partition>
+.Fo Disk::partitions
+.Fc
+.Ft bool
+.Fo Disk::reload_partitions
+.Fc
+.Sh DESCRIPTION
+The
+.Fn Disk::partitions
+function returns a vector containing the partitions present in the disk's
+label.  Calling this function is only valid if
+.Xr Horizon::DiskMan::Disk::has_label 3
+returns true.
+.Pp
+The
+.Fn Disk::reload_partitions
+function will re-read the disk's label, returning true if the label was read
+successfully.
+.Sh RETURN VALUES
+The
+.Fn Disk::partitions
+function returns a
+.Xr std::vector 3
+containing
+.Xr Horizon::DiskMan::Partition 3
+objects corresponding to the partitions in the disk's label.  If the disk's
+label is empty, the vector will be empty.
+.Pp
+The
+.Fn Disk::reload_partitions
+function returns true if the disk label was successfully read and parsed.  If
+the disk label could not be read or parsed,
+.Fn Disk::reload_partitions
+will return false and the current partition list (if any) is retained.
+.Sh SEE ALSO
+.Xr Horizon::DiskMan::Disk::has_label 3 ,
+.Xr Horizon::DiskMan::Disk 3 ,
+.Xr Horizon::DiskMan::DiskMan 3 ,
+.Xr Horizon::DiskMan::Partition 3 .
+.Sh HISTORY
+The DiskMan library first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org

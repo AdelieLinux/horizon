@@ -1,0 +1,51 @@
+.Dd May 15, 2020
+.Dt Horizon::DiskMan::Partition 3
+.Os "Adélie Linux"
+.Sh NAME
+.Nm Horizon::DiskMan::Partition
+.Nd partition class of the Horizon Disk Manager
+.Sh SYNOPSIS
+.In diskman/partition.hh
+.Cm class Horizon::DiskMan::Partition;
+.Ft uint64_t
+.Fo Partition::size
+.Fc
+.Ft const std::string
+.Fo Partition::fs_type
+.Fc
+.Ft const std::string
+.Fo Partition::fs_label
+.Fc
+.Sh DESCRIPTION
+The
+.Nm Horizon::DiskMan::Partition
+class provides information about a partition of a disk attached to the system.
+.Pp
+The
+.Fn Partition::size
+function provides the size of the partition.
+.Pp
+The
+.Fn Partition::fs_type
+and
+.Fn Partition::fs_label
+functions provide information about the file system present on the partition
+if it is present and readable by DiskMan.
+.Sh RETURN VALUES
+The
+.Fn Partition::size
+function returns the size of the partition in bytes.
+.Pp
+The
+.Fn Partition::fs_type
+and
+.Fn Partition::fs_label
+functions return the requested information as std::string.
+.Sh SEE ALSO
+.Xr Horizon::DiskMan::Disk 3 ,
+.Xr Horizon::DiskMan::DiskMan 3 .
+.Sh HISTORY
+The DiskMan library first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org

@@ -1,0 +1,94 @@
+.Dd May 15, 2020
+.Dt Horizon::DiskMan::Disk::label 3
+.Os "Adélie Linux"
+.Sh NAME
+.Nm Horizon::DiskMan::Disk::has_label ,
+.Nm Horizon::DiskMan::Disk::label
+.Nd retrieve labeling information for a disk
+.Sh SYNOPSIS
+.In diskman/disk.hh
+.Cm using Horizon::DiskMan::Disk;
+.Ft bool
+.Fo Disk::has_label
+.Fc
+.Ft enum Label
+.Fo Disk::label
+.Fc
+.Sh DESCRIPTION
+The
+.Fn Disk::has_label
+function returns whether a given disk has a label written to it.  Note that
+even if
+.Fn Disk::has_label
+returns false, the disk may still have a label.  The DiskMan library is not
+able to detect and read every type of disk label in the wild.  For maximal
+safety, you may wish to read the first few sectors of the disk (and use the
+.Xr Horizon::DiskMan::Disk::has_fs 3
+function to determine if a file system is present without a label) before
+considering the disk empty.
+.Pp
+The
+.Fn Disk::label
+function returns the type of label present on the disk.  Calling this
+function is only valid if
+.Fn Disk::has_label
+returns true.
+.Sh RETURN VALUES
+The
+.Fn Disk::has_label
+function returns a boolean which determines whether a given disk has a
+recognised disk label written to it.
+.Pp
+The
+.Fn Disk::label
+functions returns a value of type enum Disk::Label, which contains at least
+the following values:
+.Bl -tag -width Ds
+.It GPT
+GUID Partition Table.
+.It MBR
+Master Boot Record.
+.It APM
+Apple Partition Map.
+.It Unknown
+Unknown disk label type.
+.El
+.Sh EXAMPLES
+The following is a simple utility that prints the label type of every
+labelled disk present on the system:
+.Bd -literal -offset ident
+#include <diskman/diskman.hh>
+#include <iostream>
+
+using Horizon::DiskMan::Disk;
+using Horizon::DiskMan::DiskMan;
+
+const std::string label_name(Disk::Label label) {
+    switch(label) {
+        case Disk::APM: return "APM";
+        case Disk::MBR: return "MBR";
+        case Disk::GPT: return "GPT";
+    }
+    return "Unknown";
+}
+
+int main(void) {
+    DiskMan dm;
+    auto disks = dm.find_disks(false, false, false);
+    for(auto &disk : disks) {
+        std::cout << "Disk: " << disk.name() << std::endl;
+        std::cout << "Label: " << (disk.has_label() ? label_name(disk.label()) : "No") << std::endl;
+        std::cout << std::endl;
+    }
+    return 0;
+}
+.Ed
+.Sh SEE ALSO
+.Xr Horizon::DiskMan::Disk 3 ,
+.Xr Horizon::DiskMan::DiskMan 3 ,
+.Xr Horizon::DiskMan::Partition 3 .
+.Sh HISTORY
+The DiskMan library first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org
