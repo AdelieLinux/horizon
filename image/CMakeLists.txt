@@ -9,3 +9,4 @@ set(IMG_SRCS
 add_executable(hscript-image ${IMG_SRCS})
 target_link_libraries(hscript-image hscript hi-backends ${Boost_LIBRARIES})
 install(TARGETS hscript-image DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/creator.1 DESTINATION share/man/man1 RENAME hscript-image.1)

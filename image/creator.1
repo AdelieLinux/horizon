@@ -1,0 +1,146 @@
+.Dd May 16, 2020
+.Dt HSCRIPT-IMAGE 1
+.Os "Adélie Linux"
+.Sh NAME
+.Nm hscript-image
+.Nd create an image based on a HorizonScript for later deployment
+.Sh SYNOPSIS
+.Nm
+.Op Fl h
+.Op Fl i Ar DIRECTORY
+.Op Fl n
+.Op Fl o Ar OUTPUT-FILE
+.Op Fl t Ar TYPE
+.Op Ar INSTALLFILE
+.Sh DESCRIPTION
+The
+.Nm
+utility creates an image of an operating environment.  The environment is
+configured per a provided HorizonScript file.
+.Ss Image Creation
+The
+.Nm
+utility first executes the HorizonScript in a temporary directory, called
+the
+.Em intermediate directory .
+From there, the
+.Nm
+utility then creates the image using the files present in the intermediate
+directory.  The intermediate directory is not removed after image creation,
+allowing inspection of the files used to create the image.
+.Ss Image Formats
+The
+.Nm
+utility can be extended with new image formats by writing a new backend.
+The backends included with the default distribution include:
+.Bl -tag -width Ds
+.It tar
+Creates a pax-extended ustar archive.  See
+.Xr 1p pax
+for a description of the on-disk format.  This archive may be extracted to
+the desired system at a later time.
+.It tgz, tbz, txz
+Creates a pax-extended ustar archive, like tar, but additionally compresses
+the archive with
+.Xr 1 gzip
+(tgz),
+.Xr 1 bzip2
+(tbz), or
+.Xr 1 xz
+(txz).
+.El
+.Sh OPTIONS
+The
+.Nm
+utility supports the following options:
+.Bl -tag -width Ds
+.It Fl h
+Prints a short help message to the current terminal and exits.
+.It Fl i Ar DIRECTORY
+Sets the intermediate directory to
+.Ar DIRECTORY .
+.It Fl n
+Disables colour output and ANSI escapes when writing log output.  This is
+the default mode when not running on a terminal.
+.It Fl o Ar OUTPUT-FILE
+Writes the image to
+.Ar OUTPUT-FILE
+instead of the backend default (typically
+.Qq image.tar
+or similar).
+.It Fl t Ar TYPE
+Sets the image type to
+.Ar TYPE .
+A list of image types supported by your copy of the
+.Nm
+utility can be obtained by specifying
+.Cm list
+as the argument to
+.Fl t .
+.It Ar INSTALLFILE
+Specifies the location of the HorizonScript to use for configuring the image.
+You may specify
+.Qq -
+to read from standard input.
+.El
+.Sh FILES
+.Bl -tag -width Ds
+.It Pa /etc/horizon/installfile
+This is the default location for the HorizonScript to be read, if it is not
+specified on the command line.
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+The following invocation creates a XZ-compressed pax archive named
+.Qq myimage.tar.xz
+using the configuration contained in the HorizonScript at
+.Pa /srv/scripts/myimage.installfile .
+.Dl $ hscript-image -t txz -o myimage.tar.xz /srv/scripts/myimage.installfile
+.Pp
+The following invocation creates a pax archive named
+.Qq myimage.tar
+using the configuration contained in the HorizonScript at
+.Pa /srv/scripts/myimage.installfile ,
+using
+.Pa /tmp/image-ir
+as the intermediate directory:
+.Dl $ hscript-image -o myimage.tar -i /tmp/image-ir /srv/scripts/myimage.installfile
+.Sh DIAGNOSTICS
+.Bl -diag
+.It "%dateT%time log %location: %status: %message[: %extra]"
+A message of type
+.Cm %status
+was logged while processing
+.Cm %location .
+The log message
+.Cm %message
+may be followed by additional information or hints in
+.Cm %extra .
+.It "%dateT%time step-start %step"
+Denotes that the installation step
+.Cm %step
+is starting.  Steps are described in the
+.Sy Steps
+section of the
+.Xr hscript-executor 8
+manual.
+.It "%dateT%time step-end %step"
+Denotes that the installation step
+.Cm %step
+has finished successfully.  Steps are described in the
+.Sy Steps
+section of the
+.Xr hscript-executor 8
+manual.
+.El
+.Sh SEE ALSO
+.Xr hscript-validate 1 ,
+.Xr hscript 5 ,
+.Xr hscript-executor 8 .
+.Sh HISTORY
+The
+.Nm
+command first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org
