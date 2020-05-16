@@ -5,7 +5,7 @@ include(CheckIncludeFiles)
 
 project(Horizon
         LANGUAGES C CXX
-        VERSION 0.2.0)
+        VERSION 0.9.0)
 
 
 add_definitions(-DVERSTR="${PROJECT_VERSION}")
@@ -127,3 +127,5 @@ IF(COVERAGE)
         add_custom_target(lcov_html DEPENDS cov_html)
     ENDIF(LCOV_EXECUTABLE)
 ENDIF(COVERAGE)
+
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/devel/image.yang DESTINATION share/doc/horizon)

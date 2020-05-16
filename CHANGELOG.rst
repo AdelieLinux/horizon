@@ -5,7 +5,133 @@
   * **A. Wilcox**, documentation writer
   * **Contributors**, code
 :Copyright:
-  © 2019 Adélie Linux and contributors.
+  © 2019-2020 Adélie Linux and contributors.
+
+
+0.9.0 (2020-05-xx)
+==================
+
+Build
+-----
+
+* The BCNM check is now functional.
+
+Disk
+----
+
+* HFS+ has been added a required supported file system.
+
+* disklabel: MBR support has been fixed.
+
+* partition: Add 'bios' and 'prep' flags.
+
+* partition: Type codes are now handled properly.
+
+* partition: Ensure the first partition isn't too close to the first sectors.
+
+* fs: Undo files for e2fs are no longer created.
+
+* mount: Each mount key no longer overwrites /etc/fstab in the target.
+
+DiskMan
+-------
+
+* A new library for probing disk information, DiskMan, has been written.
+
+Documentation
+-------------
+
+* All tools and libraries, except libhscript, have been documented with
+  manual pages.
+
+HorizonScript Library
+---------------------
+
+* Introspection support has been added to the Script class.
+
+* Refactored Keys to be owned by a Script, so Keys can access the values of
+  other keys.
+
+* The target directory is now configurable.
+
+* /dev, /proc, and /sys are now mounted in the target.
+
+Image Creation
+--------------
+
+* A new system for creating images using the Horizon system has been written.
+
+Metadata
+--------
+
+* arch: New key added, including specification and implementation.
+
+* repository: Fixed defaults when 'firmware' is set to true.
+
+* timezone: Fixed issue when target already contained /etc/localtime.
+
+Network
+-------
+
+* Configure network interfaces inside the Install Environment when
+  'network' is set to true.
+
+* netconfigtype: New key added, including specification and implementation.
+
+* Existing network configuration on the Installation Environment system is
+  now properly handled.
+
+Package
+-------
+
+* APK Tools are now invoked more efficiently.
+
+* --keys-dir is now passed to APK Tools during base installation.
+
+Project
+-------
+
+* A Code of Conduct has been added.
+
+* A YANG model, describing a JSON schema for representing a HorizonScript,
+  has been written.
+
+Tests
+-----
+
+* A test has been added for IPv4 subnet -> CIDR conversion.
+
+Tools
+-----
+
+* Use Boost's program_options instead of vendoring clipp.  Thanks to
+  Calvin Buckley.
+
+* Messages have been unified between the CLI tools, to ensure consistency.
+
+* A new tool, hscript-fromjson, has been added to convert JSON representations
+  of HorizonScripts to HorizonScript.
+
+UI
+--
+
+* The Qt 5 UI has been added.  It is not yet fully implemented, but basic
+  installations should work.
+
+User
+----
+
+* userpassphrase: Ensnure simulated runs don't actually set passwords.
+
+* All user keys now run shadow commands in the target, instead of the
+  Installation Environment system.
+
+Util
+----
+
+* Factor subnet -> CIDR conversion to util function.
+
+
 
 
 0.2.0 (2019-11-07)
