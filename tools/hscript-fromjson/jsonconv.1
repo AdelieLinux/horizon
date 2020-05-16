@@ -1,0 +1,78 @@
+.Dd May 16, 2020
+.Dt HSCRIPT-FROMJSON 1
+.Os "Adélie Linux"
+.Sh NAME
+.Nm hscript-fromjson
+.Nd convert a JSON object to a HorizonScript
+.Sh SYNOPSIS
+.Nm
+.Op Fl fn
+.Op Fl h
+.Op Ar INSTALLFILE
+.Op Ar JSONFILE
+.Sh DESCRIPTION
+The
+.Nm
+utility converts a valid JSON object to a HorizonScript.  The JSON schema
+used for representing HorizonScript can be found in the Horizon YANG model.
+In most installations, this file is available in
+.Pa /usr/share/doc/horizon .
+.Pp
+.Nm
+will, by default, read JSON from stdin, and write the HorizonScript
+representation to
+.Pa /etc/horizon/installfile .
+If you want to read the JSON from a file, you must supply the path to write
+the HorizonScript first.
+.Sh OPTIONS
+The
+.Nm
+utility supports the following options:
+.Bl -tag -width Ds
+.It Fl f
+Force writing the HorizonScript to the specified path, even if it already
+exists.  By default,
+.Nm
+will display an error and quit without writing if a HorizonScript already
+exists at the specified path.
+.It Fl h
+Display a help message, and then quit.
+.It Fl n
+Disables colour output and ANSI escape sequences in any log messages.  This
+is the default when not running from a terminal.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+The following invocation will read JSON from stdin and output the resultant
+HorizonScript to
+.Pa /etc/horizon/installfile:
+.Dl $ hscript-fromjson
+.Pp
+The following invocation will read JSON from
+.Pa myimage.json
+and output the resultant HorizonScript to stdout:
+.Dl $ hscript-fromjson - myimage.json
+.Sh DIAGNOSTICS
+.Bl -diag
+.It "%dateT%time log %location: %status: %message[: %extra]"
+A message of type
+.Cm %status
+was logged while processing
+.Cm %location .
+The log message
+.Cm %message
+may be followed by additional information or hints in
+.Cm %extra .
+.El
+.Sh SEE ALSO
+.Xr hscript-validate 1 ,
+.Xr hscript 5 ,
+.Xr hscript-executor 8 .
+.Sh HISTORY
+The
+.Nm
+command first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org

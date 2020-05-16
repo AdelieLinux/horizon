@@ -5,6 +5,7 @@ add_executable(hscript-fromjson ${JSONCONV_SRCS})
 target_link_libraries(hscript-fromjson hscript ${FS_LIBRARY} ${Boost_LIBRARIES})
 
 install(TARGETS hscript-fromjson DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/jsonconv.1 DESTINATION share/man/man1 RENAME hscript-fromjson.1)
 
 if("cxx_std_17" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
     set_property(TARGET hscript-fromjson PROPERTY CXX_STANDARD 17)
