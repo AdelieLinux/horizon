@@ -1,0 +1,32 @@
+.Dd May 16, 2020
+.Dt HSCRIPT-PRINTOWNER 1
+.Os "Adélie Linux"
+.Sh NAME
+.Nm hscript-printowner
+.Nd print the owner of a file to stdout
+.Sh SYNOPSIS
+.Nm
+.Ar FILE
+.Sh DESCRIPTION
+The
+.Nm
+utility prints the owning user ID of
+.Ar FILE
+to stdout.
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+The following invocation will print the owner of the root directory:
+.Dl $ hscript-printowner /
+.Sh DIAGNOSTICS
+If an error occurs while trying to access the specified file, the error will
+be printed to stderr.
+.Sh SEE ALSO
+.Xr stat 1 .
+.Sh HISTORY
+The
+.Nm
+utility first appeared in Horizon 0.2.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org

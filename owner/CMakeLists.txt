@@ -4,6 +4,7 @@ set(OWNER_SRCS
 add_executable(hscript-printowner ${OWNER_SRCS})
 
 install(TARGETS hscript-printowner DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/owner.1 DESTINATION share/man/man1 RENAME hscript-printowner.1)
 
 IF(RSPEC_EXECUTABLE)
 add_test(NAME "RSpecOwner"
