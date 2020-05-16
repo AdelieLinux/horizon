@@ -1,0 +1,85 @@
+.Dd May 16, 2020
+.Dt HSCRIPT-SIMULATE 1
+.Os "Adélie Linux"
+.Sh NAME
+.Nm hscript-simulate
+.Nd simulate execution of a HorizonScript, or create shell script
+.Sh SYNOPSIS
+.Nm
+.Op Fl ns
+.Ar INSTALLFILE
+.Sh DESCRIPTION
+The
+.Nm
+utility simulates the execution of a HorizonScript without actually executing
+any commands on the host system.
+.Pp
+If the
+.Nm
+utility is run with stdout redirected to a file, it creates a shell script
+representation of the HorizonScript, which can then be run on the target
+computer if it is unable to run the full Horizon execution system.
+.Sh OPTIONS
+The
+.Nm
+utility supports the following options:
+.Bl -tag -width Ds
+.It Fl n
+Disables colour output and ANSI escape sequences in any log messages.  This
+is the default when not running from a terminal.
+.It Fl s
+Enables Strict mode, which causes more potential issues to be errors instead
+of warnings.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+The following invocation will simulate execution of the HorizonScript at
+.Pa example.installfile :
+.Dl $ hscript-simulate example.installfile
+.Pp
+The following invocation will create a shell script representation of the
+HorizonScript at
+.Pa example.installfile
+and write it to
+.Pa example.sh :
+.Dl $ hscript-simulate example.installfile >example.sh
+.Sh DIAGNOSTICS
+.Bl -diag
+.It "%dateT%time log %location: %status: %message[: %extra]"
+A message of type
+.Cm %status
+was logged while processing
+.Cm %location .
+The log message
+.Cm %message
+may be followed by additional information or hints in
+.Cm %extra .
+.It "%dateT%time step-start %step"
+Denotes that the installation step
+.Cm %step
+is starting.  Steps are described in the
+.Sy Steps
+section of the
+.Xr hscript-executor 8
+manual.
+.It "%dateT%time step-end %step"
+Denotes that the installation step
+.Cm %step
+has finished successfully.  Steps are described in the
+.Sy Steps
+section of the
+.Xr hscript-executor 8
+manual.
+.El
+.Sh SEE ALSO
+.Xr hscript-validate 1 ,
+.Xr hscript 5 ,
+.Xr hscript-executor 8 .
+.Sh HISTORY
+The
+.Nm
+command first appeared in Horizon 0.1.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org
