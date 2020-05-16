@@ -1,0 +1,62 @@
+.Dd May 16, 2020
+.Dt HSCRIPT-VALIDATE 1
+.Os "Adélie Linux"
+.Sh NAME
+.Nm hscript-validate
+.Nd ensure the validity of a HorizonScript
+.Sh SYNOPSIS
+.Nm
+.Op Fl ikns
+.Ar INSTALLFILE
+.Sh DESCRIPTION
+The
+.Nm
+utility validates a HorizonScript, ensuring that it is free from syntax
+errors and that all required values are present and meet any requirements.
+.Sh OPTIONS
+The
+.Nm
+utility supports the following options:
+.Bl -tag -width Ds
+.It Fl i
+Set the Installation Environment flag.  This is VERY DANGEROUS, as it will
+treat your host system as the target for purposes of validation.  Unless you
+are very sure of what you are doing, do not use this flag!
+.It Fl k
+Keep going after parsing errors.  This allows you to see all errors at once,
+instead of having each error be immediately fatal.
+.It Fl n
+Disables colour output and ANSI escape sequences in any log messages.  This
+is the default when not running from a terminal.
+.It Fl s
+Enables Strict mode, which causes more potential issues to be errors instead
+of warnings.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+The following invocation will validate the HorizonScript at
+.Pa example.installfile :
+.Dl $ hscript-validate example.installfile
+.Sh DIAGNOSTICS
+.Bl -diag
+.It "%dateT%time log %location: %status: %message[: %extra]"
+A message of type
+.Cm %status
+was logged while processing
+.Cm %location .
+The log message
+.Cm %message
+may be followed by additional information or hints in
+.Cm %extra .
+.El
+.Sh SEE ALSO
+.Xr hscript-simulate 1 ,
+.Xr hscript 5 .
+.Sh HISTORY
+The
+.Nm
+command first appeared in Horizon 0.1.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org

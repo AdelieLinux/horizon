@@ -5,6 +5,7 @@ add_executable(hscript-validate ${VALIDATE_SRCS})
 target_link_libraries(hscript-validate hscript ${Boost_LIBRARIES})
 
 install(TARGETS hscript-validate DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/validator.1 DESTINATION share/man/man1 RENAME hscript-validate.1)
 
 IF(RSPEC_EXECUTABLE)
 add_test(NAME "RSpecValidator"
