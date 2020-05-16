@@ -1,0 +1,42 @@
+.Dd May 16, 2020
+.Dt HORIZON-RUN-QT5 8
+.Os "Adélie Linux"
+.Sh NAME
+.Nm horizon-run-qt5
+.Nd execute a HorizonScript with visual progress indication
+.Sh SYNOPSIS
+.Nm
+.Op Fl hv
+.Op Fl -automatic
+.Sh DESCRIPTION
+The
+.Nm
+utility executes the HorizonScript located at
+.Pa /etc/horizon/installfile ,
+and displays a graphical indication of execution progress.  This tool is
+used internally by the Horizon Qt 5 UI system.  It is additionally used
+for unattended installations when graphical progress is requested by the
+system administrator.
+.Pp
+If the
+.Fl -automatic
+flag is passed to the
+.Nm
+utility, the system will be automatically rebooted after installation
+completes.
+.Sh FILES
+.Bl -tag -width Ds
+.It Pa /etc/horizon/installfile
+The
+.Nm
+utility executes the HorizonScript at
+.Pa /etc/horizon/installfile .
+.Sh SEE ALSO
+.Xr hscript-executor 8 .
+.Sh HISTORY
+The
+.Nm
+utility first appeared in Horizon 0.9.
+.Sh AUTHORS
+.An A. Wilcox
+.Aq awilfox@adelielinux.org
