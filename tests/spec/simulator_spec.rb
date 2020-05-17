@@ -8,10 +8,14 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
     context "argument passing" do
         it "requires an installfile to be specified" do
             run_command 'hscript-simulate'
-            expect(last_command_started).to have_output(/Allowed options/)
+            expect(last_command_started).to have_output(/must specify an installfile/)
         end
         it "supports Strict Mode" do
             run_command 'hscript-simulate foo -s'
+            expect(last_command_started).to_not have_output(/Allowed options/)
+        end
+        it "supports version output" do
+            run_command 'hscript-simulate --version'
             expect(last_command_started).to_not have_output(/Allowed options/)
         end
         it "doesn't output ANSI colours when instructed not to" do
@@ -213,16 +217,16 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             run_simulate
             expect(last_command_started.stdout).to include("ln -s /etc/init.d/net.lo /target/etc/init.d/net.eth0")
         end
-	it "configures IPv4 addressing correctly with eni" do
-	    use_fixture '0227-netconfigtype-eni.installfile'
-	    run_simulate
-	    expect(last_command_started.stdout).to include("auto eth0\niface eth0 inet static")
-	end
-	it "configures IPv6 SLAAC addressing correctly with eni" do
-	    use_fixture '0227-netconfigtype-eni.installfile'
-	    run_simulate
-	    expect(last_command_started.stdout).to include("iface eth0 inet6 manual")
-	end
+        it "configures IPv4 addressing correctly with eni" do
+            use_fixture '0227-netconfigtype-eni.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("auto eth0\niface eth0 inet static")
+        end
+        it "configures IPv6 SLAAC addressing correctly with eni" do
+            use_fixture '0227-netconfigtype-eni.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("iface eth0 inet6 manual")
+        end
     end
     context "simulating 'nameserver' execution" do
         it "configures nameservers correctly" do
