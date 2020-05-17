@@ -32,6 +32,7 @@ NetDHCPPage::NetDHCPPage(QWidget *parent) : HorizonWizardPage(parent) {
 
     logButton = new QPushButton(tr("Review DHCP Log"));
     logButton->setHidden(true);
+    logButton->setWhatsThis(tr("Opens the DHCP client's log file in a log viewer."));
     connect(logButton, &QPushButton::clicked, [=]() {
         QFile logfile("/var/log/horizon/dhcpcd.log");
         logfile.open(QFile::ReadOnly);

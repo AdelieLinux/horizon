@@ -36,6 +36,7 @@ PkgSimplePage::PkgSimplePage(QWidget *parent) : HorizonWizardPage(parent) {
     standardLabel = new QLabel(tr("Includes a full KDE desktop environment, including Web browser, email client, media player, and office suite."));
     standardLabel->setBuddy(standardButton);
     standardLabel->setWordWrap(true);
+    standardButton->setWhatsThis(standardLabel->text());
 
     mobileButton = new QRadioButton(tr("&Mobile"));
     mobileButton->setIcon(QIcon::fromTheme("battery"));
@@ -43,6 +44,7 @@ PkgSimplePage::PkgSimplePage(QWidget *parent) : HorizonWizardPage(parent) {
     mobileLabel = new QLabel(tr("Includes the Standard software and additional utilities for notebook and tablet computers."));
     mobileLabel->setBuddy(mobileButton);
     mobileLabel->setWordWrap(true);
+    mobileButton->setWhatsThis(mobileLabel->text());
 
     compactButton = new QRadioButton(tr("&Compact"));
     compactButton->setIcon(QIcon::fromTheme("preferences-ubuntu-panel"));
@@ -50,6 +52,7 @@ PkgSimplePage::PkgSimplePage(QWidget *parent) : HorizonWizardPage(parent) {
     compactLabel = new QLabel(tr("Includes a lightweight LXQt desktop environment and a text editor."));
     compactLabel->setBuddy(compactButton);
     compactLabel->setWordWrap(true);
+    compactButton->setWhatsThis(compactLabel->text());
 
     textButton = new QRadioButton(tr("&Text-Only"));
     textButton->setIcon(QIcon::fromTheme("utilities-terminal"));
@@ -57,6 +60,7 @@ PkgSimplePage::PkgSimplePage(QWidget *parent) : HorizonWizardPage(parent) {
     textLabel = new QLabel(tr("Includes support for text-mode only.  Select this option on servers, or computers with very limited resources."));
     textLabel->setBuddy(textButton);
     textLabel->setWordWrap(true);
+    textButton->setWhatsThis(textLabel->text());
 
     customButton = new QRadioButton(tr("C&ustom"));
     customButton->setIcon(QIcon::fromTheme("preferences-activities"));
@@ -64,6 +68,7 @@ PkgSimplePage::PkgSimplePage(QWidget *parent) : HorizonWizardPage(parent) {
     customLabel = new QLabel(tr("Customise the packages installed on your computer."));
     customLabel->setBuddy(customButton);
     customLabel->setWordWrap(true);
+    customButton->setWhatsThis(customLabel->text());
 
     QButtonGroup *group = new QButtonGroup(this);
     group->addButton(standardButton, HorizonWizard::Standard);

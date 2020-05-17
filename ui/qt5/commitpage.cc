@@ -32,6 +32,8 @@ CommitPage::CommitPage(QWidget *parent) : HorizonWizardPage(parent) {
     choices = new QLabel;
     choices->setFrameStyle(QFrame::Panel | QFrame::Sunken);
     choices->setTextFormat(Qt::RichText);
+    choices->setWhatsThis(tr("These are the options you have selected for installation.  "
+                             "Review them, and then choose Install to begin the installation process on your computer."));
     choices->setWordWrap(true);
 
     QVBoxLayout *layout = new QVBoxLayout;
