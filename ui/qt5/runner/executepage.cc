@@ -3,7 +3,7 @@
  * horizon-run-qt5, the Qt 5 executor user interface for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -54,8 +54,7 @@ ExecutePage::ExecutePage(QWidget *parent) : HorizonWizardPage(parent) {
     markRunning(this->current);
 
     executor = new QProcess(this);
-    executor->setProgram("../../tools/hscript-simulate/hscript-simulate");
-    executor->setArguments({"/etc/horizon/installfile"});
+    executor->setProgram("hscript-executor");
     connect(executor, &QProcess::readyReadStandardError,
             this, &ExecutePage::executorReady);
     connect(executor, &QProcess::readyReadStandardOutput,
