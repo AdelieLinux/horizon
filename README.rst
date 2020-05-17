@@ -309,10 +309,10 @@ the qt-collapsible-section_ project, used by the Qt 5 UI for slide-out sections.
 Contributing
 ============
 
-See the CONTIRIBUTING.rst_ file in the same directory as this README for
+See the CONTRIBUTING.rst_ file in the same directory as this README for
 more details on how to contribute to Project Horizon.
 
-.. _CONTRIBUTING.rst: https://code.foxkit.us/adelie/horizon/blob/master/CONTRIBUTING.rst
+.. _CONTRIBUTING.rst: ./CONTRIBUTING.rst
 
 
 

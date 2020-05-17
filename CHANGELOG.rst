@@ -19,7 +19,7 @@ Build
 Disk
 ----
 
-* HFS+ has been added a required supported file system.
+* HFS+ has been added as a supported file system.
 
 * disklabel: MBR support has been fixed.
 
@@ -121,7 +121,7 @@ UI
 User
 ----
 
-* userpassphrase: Ensnure simulated runs don't actually set passwords.
+* userpassphrase: Ensure simulated runs don't actually set passwords.
 
 * All user keys now run shadow commands in the target, instead of the
   Installation Environment system.
