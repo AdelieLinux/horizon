@@ -11,6 +11,7 @@
  */
 
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QDialog>
 #include <QIcon>
 #include <QLabel>
@@ -44,6 +45,9 @@ void WaitDialog::reject() { return; }
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    app.setOrganizationName("Adélie Linux");
+    app.setApplicationName("Horizon Qt UI");
+    app.setApplicationVersion(VERSTR);
 
     QString translatorFileName = QLatin1String("qt_");
     translatorFileName += QLocale::system().name();
@@ -61,6 +65,26 @@ int main(int argc, char *argv[]) {
     app.processEvents(QEventLoop::AllEvents, 1000);
 
     app.setWindowIcon(QIcon(":/horizon-256.png"));
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription(app.tr("Guides the user through creation of a HorizonScript."));
+    QCommandLineOption help = parser.addHelpOption();
+    QCommandLineOption version = parser.addVersionOption();
+
+    if(!parser.parse(app.arguments())) {
+        parser.showHelp(1);
+        return 1;
+    }
+
+    if(parser.isSet(help)) {
+        parser.showHelp();
+        return 0;
+    }
+
+    if(parser.isSet(version)) {
+        parser.showVersion();
+        return 0;
+    }
 
     HorizonWizard wizard;
     d.hide();

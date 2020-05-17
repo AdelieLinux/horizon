@@ -8,6 +8,7 @@
 .Nm
 .Op Fl fn
 .Op Fl h
+.Op Fl v
 .Op Ar INSTALLFILE
 .Op Ar JSONFILE
 .Sh DESCRIPTION
@@ -36,10 +37,12 @@ exists.  By default,
 will display an error and quit without writing if a HorizonScript already
 exists at the specified path.
 .It Fl h
-Display a help message, and then quit.
+Displays a help message, and then exits.
 .It Fl n
 Disables colour output and ANSI escape sequences in any log messages.  This
 is the default when not running from a terminal.
+.It Fl v
+Displays the version information for this utility, and then exits.
 .El
 .Sh EXIT STATUS
 .Ex -std

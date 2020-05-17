@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     using namespace boost::program_options;
     using namespace Horizon::Image;
 
-    bool needs_help{}, disable_pretty{};
+    bool needs_help{}, disable_pretty{}, version_only{};
     int exit_code = EXIT_SUCCESS;
     std::string if_path{"/etc/horizon/installfile"}, ir_dir{"/target"},
                 output_path{"image.tar"}, type_code{"tar"};
@@ -42,7 +42,8 @@ int main(int argc, char *argv[]) {
     options_description general{"General options"};
     general.add_options()
             ("help,h", bool_switch(&needs_help), "Display this message.")
-            ("no-colour,n", bool_switch(&disable_pretty), "Do not 'prettify' output")
+            ("no-colour,n", bool_switch(&disable_pretty), "Do not 'prettify' output.")
+            ("version,v", bool_switch(&version_only), "Show program version information.")
             ;
     options_description target{"Target control options"};
     target.add_options()
@@ -113,12 +114,19 @@ int main(int argc, char *argv[]) {
     }
 
     /* Announce our presence */
+    bold_if_pretty(std::cout);
     std::cout << "HorizonScript Image Creation Utility version " << VERSTR
+              << std::endl;
+    reset_if_pretty(std::cout);
+    std::cout << "Copyright (c) 2020 Adélie Linux and contributors."
               << std::endl
-              << "Copyright (c) 2020 Adélie Linux and contributors."
-              << std::endl
-              << "This software is licensed to you under the AGPL 3.0, "
-              << "unless otherwise noted." << std::endl << std::endl;
+              << "This software is licensed to you under the terms of the "
+              << std::endl << "AGPL 3.0 license, unless otherwise noted."
+              << std::endl << std::endl;
+
+    if(version_only) {
+        return EXIT_SUCCESS;
+    }
 
     /* Load the proper backend. */
     for(const auto &candidate : BackendManager::available_backends()) {

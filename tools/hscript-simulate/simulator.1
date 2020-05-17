@@ -6,7 +6,7 @@
 .Nd simulate execution of a HorizonScript, or create shell script
 .Sh SYNOPSIS
 .Nm
-.Op Fl ns
+.Op Fl hnsv
 .Ar INSTALLFILE
 .Sh DESCRIPTION
 The
@@ -24,12 +24,16 @@ The
 .Nm
 utility supports the following options:
 .Bl -tag -width Ds
+.It Fl h
+Displays a help message, and then exits.
 .It Fl n
 Disables colour output and ANSI escape sequences in any log messages.  This
 is the default when not running from a terminal.
 .It Fl s
 Enables Strict mode, which causes more potential issues to be errors instead
 of warnings.
+.It Fl v
+Displays the version information for this utility, and then exits.
 .El
 .Sh EXIT STATUS
 .Ex -std

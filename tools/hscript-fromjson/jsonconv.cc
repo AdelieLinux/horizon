@@ -146,7 +146,7 @@ bool parse_one_desc(json desc, std::ostream &out) {
 int main(int argc, char *argv[]) {
     using namespace boost::program_options;
 
-    bool needs_help{}, disable_pretty{}, force{};
+    bool needs_help{}, disable_pretty{}, force{}, version_only{};
     std::string if_path{"/etc/horizon/installfile"}, json_path;
     int exit_code = EXIT_SUCCESS;
 
@@ -155,6 +155,7 @@ int main(int argc, char *argv[]) {
     options_description general{"General options"};
     general.add_options()
             ("help,h", bool_switch(&needs_help), "Display this message.")
+            ("version,v", bool_switch(&version_only), "Show program version information")
             ("no-colour,n", bool_switch(&disable_pretty), "Do not 'prettify' output")
             ("force,f", bool_switch(&force), "Force writing, even if HorizonScript already exists")
             ;
@@ -203,6 +204,19 @@ int main(int argc, char *argv[]) {
         json_path = vm["jsonfile"].as<std::string>();
     } else {
         json_path = "-";
+    }
+
+    if(version_only) {
+        bold_if_pretty(std::cout);
+        std::cout << "HorizonScript JSON Conversion Utility version " << VERSTR
+                  << std::endl;
+        reset_if_pretty(std::cout);
+        std::cout << "Copyright (c) 2020 Adélie Linux and contributors."
+                  << std::endl
+                  << "This software is licensed to you under the terms of the "
+                  << std::endl << "AGPL 3.0 license, unless otherwise noted."
+                  << std::endl << std::endl;
+        return EXIT_SUCCESS;
     }
 
     if(!force && fs::exists(if_path)) {

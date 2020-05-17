@@ -6,7 +6,7 @@
 .Nd ensure the validity of a HorizonScript
 .Sh SYNOPSIS
 .Nm
-.Op Fl ikns
+.Op Fl hiknsv
 .Ar INSTALLFILE
 .Sh DESCRIPTION
 The
@@ -18,6 +18,8 @@ The
 .Nm
 utility supports the following options:
 .Bl -tag -width Ds
+.It Fl h
+Displays a help message, and then exits.
 .It Fl i
 Set the Installation Environment flag.  This is VERY DANGEROUS, as it will
 treat your host system as the target for purposes of validation.  Unless you
@@ -31,6 +33,8 @@ is the default when not running from a terminal.
 .It Fl s
 Enables Strict mode, which causes more potential issues to be errors instead
 of warnings.
+.It Fl v
+Displays the version information for this utility, and then exits.
 .El
 .Sh EXIT STATUS
 .Ex -std

@@ -173,9 +173,12 @@ int main(int argc, char *argv[]) {
     bold_if_pretty(std::cout);
     std::cout << "HorizonScript Locator version " << VERSTR;
     reset_if_pretty(std::cout);
-    std::cout << std::endl;
-    std::cout << "Copyright (c) 2019 Adélie Linux and contributors.  AGPL-3.0 license." << std::endl;
-    std::cout << std::endl;
+    std::cout << std::endl
+              << "Copyright (c) 2019-2020 Adélie Linux and contributors."
+              << std::endl
+              << "This software is licensed to you under the terms of the "
+              << std::endl << "AGPL 3.0 license, unless otherwise noted."
+              << std::endl << std::endl;
 
     if(argc == 1) {
         if(access(IFILE_PATH, F_OK) == 0) {
@@ -195,6 +198,10 @@ int main(int argc, char *argv[]) {
     }
 
     std::string path(argv[1]);
+    if(path == "--version") {
+        /* Banner printed above is our version statement. */
+        return EXIT_SUCCESS;
+    }
 
     if(path[0] == '/') {
         return process_local(path);
