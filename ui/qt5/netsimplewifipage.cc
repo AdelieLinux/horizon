@@ -33,7 +33,7 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     , control(WPACTRL_ZERO), associated(false)
 #endif  /* HAS_INSTALL_ENV */
     {
-    QVBoxLayout *layout;
+    QVBoxLayout *layout = new QVBoxLayout;
 
     loadWatermark("network");
     setTitle(tr("Select Your Network"));
@@ -41,14 +41,16 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     statusLabel = new QLabel(tr("Scanning for networks..."));
     statusLabel->setWordWrap(true);
 
-    rescanButton = new QPushButton(tr("&Rescan Networks"));
-    connect(rescanButton, &QPushButton::clicked, [=](void) { doScan(); });
+    addNetButton = new QPushButton;
 
     ssidListView = new QListWidget;
     connect(ssidListView, &QListWidget::currentItemChanged,
             this, &NetworkSimpleWirelessPage::networkChosen);
 
 #ifdef HAS_INSTALL_ENV
+    rescanButton = new QPushButton(tr("&Rescan Networks"));
+    connect(rescanButton, &QPushButton::clicked, [=](void) { doScan(); });
+
     exchange_item.filter = "CTRL-EVENT-SCAN-RESULTS";
     exchange_item.cb = &scanResults;
     notify = nullptr;
@@ -63,7 +65,6 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     passphrase->setMinimumWidth(255);
     passphrase->hide();
 
-    layout = new QVBoxLayout;
     layout->addWidget(statusLabel, 0, Qt::AlignCenter);
     layout->addSpacing(10);
     layout->addWidget(ssidListView, 0, Qt::AlignCenter);
@@ -79,10 +80,12 @@ NetworkSimpleWirelessPage::~NetworkSimpleWirelessPage() {
 #endif  /* HAS_INSTALL_ENV */
 }
 
+#ifdef HAS_INSTALL_ENV
 void NetworkSimpleWirelessPage::scanDone(QString message) {
     rescanButton->setEnabled(true);
     statusLabel->setText(message);
 }
+#endif  /* HAS_INSTALL_ENV */
 
 void NetworkSimpleWirelessPage::networkChosen(QListWidgetItem *current,
                                               QListWidgetItem *) {
@@ -127,8 +130,8 @@ done:
     return;
 }
 
-void NetworkSimpleWirelessPage::doScan() {
 #ifdef HAS_INSTALL_ENV
+void NetworkSimpleWirelessPage::doScan() {
     ssidListView->clear();
     rescanButton->setEnabled(false);
     statusLabel->setText(tr("Scanning for networks..."));
@@ -201,11 +204,13 @@ void NetworkSimpleWirelessPage::doScan() {
         return;
     });
     notify->setEnabled(true);
-#endif  /* HAS_INSTALL_ENV */
 }
+#endif  /* HAS_INSTALL_ENV */
 
 void NetworkSimpleWirelessPage::initializePage() {
+#ifdef HAS_INSTALL_ENV
     doScan();
+#endif  /* HAS_INSTALL_ENV */
 }
 
 bool NetworkSimpleWirelessPage::isComplete() const {

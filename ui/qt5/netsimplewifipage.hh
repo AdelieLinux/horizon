@@ -38,25 +38,26 @@ public:
     bool validatePage();
 private:
     QLabel *statusLabel;
-    QPushButton *rescanButton;
+    QPushButton *addNetButton;
 
     QListWidget *ssidListView;
     QLineEdit *passphrase;
 
-    void doScan();
     void networkChosen(QListWidgetItem*, QListWidgetItem*);
-    void scanDone(QString message);
 
 #ifdef HAS_INSTALL_ENV
     wpactrl_t control;
     wpactrl_xchg_t exchange;
     wpactrl_xchgitem_t exchange_item;
+    QPushButton *rescanButton;
     QSocketNotifier *notify, *connNotify;
     QProgressDialog *dialog;
     bool associated;
 
     void associate();
+    void doScan();
     void processAssociateMessage(int);
+    void scanDone(QString message);
     int processScan(wpactrl_t *, const char *, size_t);
     friend int scanResults(wpactrl_t *, char const *, size_t, void *, tain_t *);
 #endif  /* HAS_INSTALL_ENV */
