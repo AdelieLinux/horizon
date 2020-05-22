@@ -11,9 +11,87 @@
  */
 
 #include "partitionmountpage.hh"
+#include "mountdialog.hh"
+
+#include <functional>
+#include <QDebug>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 PartitionMountPage::PartitionMountPage(QWidget *parent)
     : HorizonWizardPage(parent) {
     loadWatermark("disk");
     setTitle(tr("Set Mount Points"));
+
+    mountList = new QListWidget;
+
+    QVBoxLayout *buttonLayout = new QVBoxLayout;
+    addMountButton = new QPushButton(tr("&Add Mount..."));
+    addMountButton->setIcon(QIcon::fromTheme("list-add"));
+    connect(addMountButton, &QPushButton::clicked, [=] {
+        QStringList parts, paths;
+        for(const auto &mount : mountList->findItems("", Qt::MatchContains)) {
+            parts << mount->data(Qt::UserRole + 1).toString();
+            paths << mount->data(Qt::UserRole + 2).toString();
+        }
+        MountDialog md(parts, paths, horizonWizard());
+        if(md.exec() == QDialog::Accepted) {
+            QListWidgetItem *mount = new QListWidgetItem;
+            QString part = md.partition();
+            QString path = md.mountPoint();
+            mount->setText(tr("%1 on %2").arg(part).arg(path));
+            mount->setIcon(QIcon::fromTheme("drive-harddisk"));
+            mount->setData(Qt::UserRole + 1, part);
+            mount->setData(Qt::UserRole + 2, path);
+
+            mountList->addItem(mount);
+        }
+    });
+    buttonLayout->addWidget(addMountButton);
+
+    delMountButton = new QPushButton(tr("&Remove Mount"));
+    delMountButton->setEnabled(false);
+    delMountButton->setIcon(QIcon::fromTheme("list-remove"));
+    connect(delMountButton, &QPushButton::clicked, [=] {
+        delete mountList->takeItem(mountList->currentRow());
+    });
+    buttonLayout->addWidget(delMountButton);
+
+    /*rescanButton = new QPushButton(tr("Re&scan Devices"));
+    rescanButton->setIcon(QIcon::fromTheme("view-refresh"));
+    connect(rescanButton, &QPushButton::clicked, [=] {
+
+    });
+    buttonLayout->addWidget(rescanButton);*/
+
+    connect(mountList, &QListWidget::currentItemChanged, [=] {
+        delMountButton->setEnabled(mountList->currentItem() != nullptr);
+    });
+
+    std::function<void()> listRowsChanged { [=] {
+        emit completeChanged();
+    } };
+    connect(mountList->model(), &QAbstractItemModel::rowsInserted, listRowsChanged);
+    connect(mountList->model(), &QAbstractItemModel::rowsRemoved, listRowsChanged);
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addStretch();
+    layout->addWidget(mountList);
+    layout->addLayout(buttonLayout);
+    layout->addStretch();
+
+    setLayout(layout);
+}
+
+bool PartitionMountPage::isComplete() const {
+    return !mountList->findItems(" on /", Qt::MatchEndsWith).isEmpty();
+}
+
+QStringList PartitionMountPage::mountLines() const {
+    QStringList lines;
+    for(const auto &mount : mountList->findItems("", Qt::MatchContains)) {
+       lines << QString("mount %1 %2").arg(mount->data(Qt::UserRole + 1).toString())
+                                      .arg(mount->data(Qt::UserRole + 2).toString());
+    }
+    return lines;
 }

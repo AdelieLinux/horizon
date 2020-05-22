@@ -9,6 +9,7 @@ set(UI_SOURCES
     ${CMAKE_SOURCE_DIR}/3rdparty/Section.cpp
     stepprogresswidget.cc
     subnetbox.cc
+    mountdialog.cc
     useraccountwidget.cc
     avatardialog.cc
     crypt_sha512.c
@@ -51,7 +52,8 @@ IF(INSTALL)
     LIST(APPEND UI_SOURCES
         commitpage.cc
         partitionprobe.cc
-        partitionpage.cc)
+        partitionpage.cc
+        partitionmountpage.cc)
 ELSE(INSTALL)
     LIST(APPEND UI_SOURCES writeoutpage.cc)
 ENDIF(INSTALL)

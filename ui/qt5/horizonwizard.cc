@@ -47,6 +47,7 @@ extern "C" {
 #include "partitiondiskpage.hh"
 #include "partitionchoicepage.hh"
 #include "partitionmanualpage.hh"
+#include "partitionmountpage.hh"
 #include "networkingpage.hh"
 #include "networkifacepage.hh"
 #include "netsimplewifipage.hh"
@@ -251,6 +252,9 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     setPage(Page_PartitionDisk, new PartitionDiskPage);
     setPage(Page_PartitionChoose, new PartitionChoicePage);
     setPage(Page_PartitionManual, new PartitionManualPage);
+#ifdef HAS_INSTALL_ENV
+    setPage(Page_PartitionMount, new PartitionMountPage);
+#endif  /* HAS_INSTALL_ENV */
     setPage(Page_Network, new NetworkingPage);
     setPage(Page_Network_Iface, new NetworkIfacePage);
     setPage(Page_Network_Wireless, new NetworkSimpleWirelessPage);
@@ -537,6 +541,8 @@ QString HorizonWizard::toHScript() {
         /* no arch line.  hopefully it's run on the target. */
         break;
     }
+
+    part_lines << (dynamic_cast<PartitionMountPage *>(page(Page_PartitionMount)))->mountLines();
 
     if(chosen_disk.empty()) {
         lines << part_lines;
