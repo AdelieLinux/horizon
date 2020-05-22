@@ -49,10 +49,10 @@ IntroPage::IntroPage(QWidget *parent) : HorizonWizardPage(parent) {
         QProcess p;
         p.execute("partitionmanager");
     });
-    /*connect(toolMenu->addAction("&Web Browser"), &QAction::triggered, [=](void){
+    connect(toolMenu->addAction("&Web Browser"), &QAction::triggered, [=](void){
         QProcess p;
-        p.execute("otter-browser");
-    });*/
+        p.execute("netsurf-gtk");
+    });
     toolButton->setMenu(toolMenu);
 
     descLabel = new QLabel(

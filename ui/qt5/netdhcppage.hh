@@ -30,7 +30,7 @@ public:
 private:
     StepProgressWidget *progress;
     QLabel *information;
-    QPushButton *logButton;
+    QPushButton *logButton, *authButton;
 
     QNetworkAccessManager qnam;
     QNetworkReply *inetReply;

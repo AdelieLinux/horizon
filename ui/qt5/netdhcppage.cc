@@ -40,11 +40,20 @@ NetDHCPPage::NetDHCPPage(QWidget *parent) : HorizonWizardPage(parent) {
         logview.exec();
     });
 
+    authButton = new QPushButton(tr("Authenticate"));
+    authButton->setHidden(true);
+    authButton->setWhatsThis(tr("Opens a browser window where you can authenticate to this network."));
+    connect(authButton, &QPushButton::clicked, [=] {
+        QProcess p;
+        p.execute("netsurf-gtk", {"http://distfiles.adelielinux.org/horizon.txt"});
+    });
+
     QVBoxLayout *overallLayout = new QVBoxLayout(this);
     overallLayout->addWidget(progress);
     overallLayout->addSpacing(40);
     overallLayout->addWidget(information);
     overallLayout->addWidget(logButton, 0, Qt::AlignCenter);
+    overallLayout->addWidget(authButton, 0, Qt::AlignCenter);
 }
 
 void NetDHCPPage::startDHCP() {
@@ -89,6 +98,9 @@ void NetDHCPPage::checkInet() {
 }
 
 void NetDHCPPage::inetFinished() {
+    QVariant redirUrl;
+    QByteArray result;
+
     assert(inetReply);
 
     if(inetReply->error()) {
@@ -96,25 +108,22 @@ void NetDHCPPage::inetFinished() {
         information->setText(tr("Couldn't connect to %1: %2")
                              .arg(QString::fromStdString(horizonWizard()->mirror_domain))
                              .arg(inetReply->errorString()));
-        inetReply->deleteLater();
-        inetReply = nullptr;
-        return;
+        goto cleanReply;
     }
 
-    const QVariant redirUrl = inetReply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    redirUrl = inetReply->attribute(QNetworkRequest::RedirectionTargetAttribute);
     if(!redirUrl.isNull()) {
-        progress->setStepStatus(1, StepProgressWidget::Failed);
-        /* XXX TODO BAD UNIMPLEMENTED !!!! LOOK AT ME DO NOT RELEASE YET !!!! */
-        information->setText(tr("Received redirect to %2 while connecting to %1."
-                                "God help us if we don't ship Otter Browser and have to handle captive portals with QtWebKitWidgets.")
+        progress->stepPassed(1);
+        information->setText(tr("Received redirect to %2 while connecting to %1.  "
+                                "You may need to authenticate to this network before continuing.  "
+                                "Choose 'Authenticate' and close the browser window when you have successfully connected.")
                              .arg(QString::fromStdString(horizonWizard()->mirror_domain))
                              .arg(redirUrl.toUrl().toString()));
-        inetReply->deleteLater();
-        inetReply = nullptr;
-        return;
+        authButton->setHidden(false);
+        goto goOnline;
     }
 
-    QByteArray result = inetReply->readAll();
+    result = inetReply->readAll();
     if(result.size() != 3 || result[0] != 'O' || result[1] != 'K' ||
             result[2] != '\n') {
         QString res_str(result.left(512));
@@ -123,17 +132,21 @@ void NetDHCPPage::inetFinished() {
         information->setText(tr("Received unexpected %3 byte reply from %1: %2")
                              .arg(QString::fromStdString(horizonWizard()->mirror_domain))
                              .arg(res_str).arg(result.size()));
-        inetReply->deleteLater();
-        inetReply = nullptr;
-        return;
+        goto goOnline;
     }
 
     progress->stepPassed(1);
 
     information->setText(tr("Your computer has successfully connected to the network.  You may now proceed."));
 
+goOnline:
     online = true;
     emit completeChanged();
+
+cleanReply:
+    inetReply->deleteLater();
+    inetReply = nullptr;
+    return;
 }
 
 void NetDHCPPage::initializePage() {
