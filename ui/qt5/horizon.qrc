@@ -36,6 +36,11 @@
         <file>resources/packages-simple-help.txt</file>
         <file>resources/startup-help.txt</file>
         <file>resources/rootpw-help.txt</file>
+        <file>resources/accounts-help.txt</file>
+        <file>resources/commit-help.txt</file>
+        <file>resources/network-manual-help.txt</file>
+        <file>resources/packages-custom-default-help.txt</file>
+        <file>resources/packages-custom-help.txt</file>
     </qresource>
     <qresource prefix="/">
         <file alias="horizon-256.png">../../assets/horizon-256.png</file>

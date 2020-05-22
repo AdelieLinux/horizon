@@ -1,0 +1,12 @@
+<h2>User Accounts</h2>
+
+<p>This page allows you to personalise your system by providing the names of
+the people who will use it.  When the system starts up, you will be able to
+choose who is using the computer.  Each user's documents and configuration are
+stored in separate places on the system.</p>
+
+<p>If you are the only person who will use the computer, enter your own name
+and passphrase.</p>
+
+<p>It is important that all user passphrases are different from the root user's
+passphrase.</p>

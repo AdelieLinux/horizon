@@ -1,0 +1,9 @@
+<h2>Begin Installation</h2>
+
+<p>You're almost there!  This page allows you to review all of the options you
+have selected before installation begins.  Ensure that the information is
+correct, and then choose Install to begin the installation process.</p>
+
+<p>Note that if you have selected to erase a hard disk drive, choosing Install
+will immediately erase it.  You cannot cancel the installation once you have
+chosen Install.</p>

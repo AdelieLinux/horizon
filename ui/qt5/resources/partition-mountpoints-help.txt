@@ -1,0 +1,5 @@
+<h2>Set Mount Points</h2>
+
+<p>This page allows you to specify the mount points for the partitions present
+on the system.  You are not required to specify mount points for every
+partition.  You must specify a root partition, which will be mounted at /.</p>

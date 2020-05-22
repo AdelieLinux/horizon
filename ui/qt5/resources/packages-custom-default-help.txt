@@ -1,0 +1,66 @@
+<h2>Software Choices</h2>
+
+<p>This page allows you to select the software you wish to use in certain
+roles on your system.  The defaults used by standard installations of Adelie
+Linux are always on the left side.</p>
+
+<p>Most users do not need to change these options.</p>
+
+
+<hr>
+
+
+<h3>Shell to use for /bin/sh</h3>
+
+<p>This section allows you to choose which shell will be used for shell scripts
+that use <code>/bin/sh</code>.</p>
+
+<ul>
+<li><strong>Dash</strong>: The lightweight Dash shell is an Almquist-style
+shell.  This is the default shell used by Adelie for /bin/sh, and is used for
+/bin/sh on Debian-derived distributions.  This option provides faster boot
+times and full POSIX compatibility.</li>
+<li>Bash: This shell is popular on GNU systems.  This option provides
+compatibility with non-portable scripts.  <em>Note that by choosing this
+option, your system will no longer be able to conform to the POSIX standard.
+</li>
+</ul>
+
+
+<hr>
+
+
+<h3>Init system (/sbin/init)</h3>
+
+<p>This section allows you to choose which init system will be used to start up
+your computer.</p>
+
+<ul>
+<li><strong>s6-linux-init</strong>: The lightweight, customisable s6-linux-init
+init system has been designed from the ground up to be lightweight and
+efficient.  Using this system provides full LSB compatibility with init control
+and shutdown commands.</li>
+<li>SysV Init: The traditional Linux init system was at one time widely
+deployed, but has fallen out of favour recently due to issues with supervision
+and power usage.</li>
+</ul>
+
+
+<hr>
+
+
+<h3>uevent management daemon</h3>
+
+<p>This section allows you to choose which daemon will be used to manage kernel
+uevents.  <strong>Modifying this option may cause improper system operation or
+failure to boot.  Only modify this option if you know what you are doing.
+</strong></p>
+
+<ul>
+<li><strong>eudev</strong>: The traditional eudev system provides a standard
+UDev-compatible interface.  It is highly recommended that you use eudev unless
+you know it is inappropriate for your use case.</li>
+<li>mdevd: The minimalist, lightweight mdevd system is the skarnet fork of
+the mdev system from BusyBox.  Choosing this option on a desktop system will
+require manual intervention.</li>
+</ul>

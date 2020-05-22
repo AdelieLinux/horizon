@@ -1,0 +1,10 @@
+<h2>Set Root Passphrase</h2>
+
+<p>This page allows you to set the passphrase for the root user.  The
+<em>root user</em> is known in some other systems as the "Administrator" user.
+This passphrase is used when performing certain administrative tasks on the
+system, and for system recovery.</p>
+
+<p>It is important that you set a unique passphrase for the root user, as
+anyone with the root user's passphrase can access any data on your computer.
+You should write it down and keep it in a safe place.</p>

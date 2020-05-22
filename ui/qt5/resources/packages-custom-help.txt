@@ -1,0 +1,8 @@
+<h2>Software Selection</h2>
+
+<p>This page allows you to select the software you wish to install.  You can
+read a description of the available packages by selecting them; the
+description will appear below the list.</p>
+
+<p>It is highly recommended that you install a Desktop Environment unless you
+are already familiar with using a Unix-based system.</p>

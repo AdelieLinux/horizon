@@ -1,0 +1,6 @@
+<h2>Launch Manual Partitioner</h2>
+
+<p>This page allows you to start up a utility for partitioning your hard disk
+drive(s).  Choose Launch Partitioner when you are ready to start the utility.
+For help using the utility, consult the utility's built-in help using the Help
+menu from within the utility.</p>
