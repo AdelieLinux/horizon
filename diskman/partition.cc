@@ -33,6 +33,7 @@ Partition::Partition(Disk &d, void *creation, int type) {
         }
         char *name = fdisk_partname(d.node().c_str(),
                                     fdisk_partition_get_partno(part) + 1);
+        this->_node = std::string(name);
         char *value;
         value = blkid_get_tag_value(nullptr, "TYPE", name);
         if(value != nullptr) {
@@ -56,6 +57,8 @@ Partition::Partition(Disk &d, void *creation, int type) {
         if(value != nullptr) this->_label = std::string(value);
         value = udev_device_get_property_value(dev, "ID_PART_ENTRY_SIZE");
         if(value != nullptr) this->_size = strtoull(value, nullptr, 10) * 512;
+        value = udev_device_get_property_value(dev, "DEVNAME");
+        if(value != nullptr) this->_node = std::string(value);
         break;
     }
     default:

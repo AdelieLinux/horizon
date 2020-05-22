@@ -29,6 +29,8 @@ public:
     const std::string fstype() const { return this->_fs_type; }
     /*! Retrieve the label of the file system on this partition. */
     const std::string label() const { return this->_label; }
+    /*! Retrieve the device node of this partition (for example, /dev/sda1). */
+    const std::string node() const { return this->_node; }
 private:
     /*! The size of the partition, in bytes. */
     uint64_t _size;
@@ -36,6 +38,8 @@ private:
     std::string _fs_type;
     /*! The label of the file system on this partition (if any) */
     std::string _label;
+    /*! The device node of this partition. */
+    std::string _node;
     Partition(Disk &d, void *creation, int type);
     friend class Disk;
 };

@@ -11,6 +11,9 @@
 .Fo Partition::size
 .Fc
 .Ft const std::string
+.Fo Partition::node
+.Fc
+.Ft const std::string
 .Fo Partition::fs_type
 .Fc
 .Ft const std::string
@@ -26,6 +29,10 @@ The
 function provides the size of the partition.
 .Pp
 The
+.Fn Partition::node
+function provides the device node of the partition.
+.Pp
+The
 .Fn Partition::fs_type
 and
 .Fn Partition::fs_label
@@ -37,7 +44,8 @@ The
 function returns the size of the partition in bytes.
 .Pp
 The
-.Fn Partition::fs_type
+.Fn Partition::node ,
+.Fn Partition::fs_type ,
 and
 .Fn Partition::fs_label
 functions return the requested information as std::string.
