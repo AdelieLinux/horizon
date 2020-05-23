@@ -12,7 +12,6 @@
 
 #include "inputpage.hh"
 
-#include <QDebug>
 #include <QLabel>
 #include <QVBoxLayout>
 

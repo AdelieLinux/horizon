@@ -14,7 +14,6 @@
 #include "mountdialog.hh"
 
 #include <functional>
-#include <QDebug>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
