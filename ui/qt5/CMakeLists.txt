@@ -9,6 +9,7 @@ set(UI_SOURCES
     ${CMAKE_SOURCE_DIR}/3rdparty/Section.cpp
     stepprogresswidget.cc
     subnetbox.cc
+    customwifidialog.cc
     mountdialog.cc
     useraccountwidget.cc
     avatardialog.cc

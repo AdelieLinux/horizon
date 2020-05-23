@@ -3,7 +3,7 @@
  * horizon-qt5, the Qt 5 user interface for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -11,10 +11,12 @@
  */
 
 #include "netsimplewifipage.hh"
+#include "customwifidialog.hh"
 #include "netdhcppage.hh"
 
 #include <assert.h>
 #include <sstream>
+#include <QHBoxLayout>
 #include <QVBoxLayout>
 
 #ifdef HAS_INSTALL_ENV
@@ -34,6 +36,7 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
 #endif  /* HAS_INSTALL_ENV */
     {
     QVBoxLayout *layout = new QVBoxLayout;
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
 
     loadWatermark("network");
     setTitle(tr("Select Your Network"));
@@ -41,7 +44,24 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     statusLabel = new QLabel(tr("Scanning for networks..."));
     statusLabel->setWordWrap(true);
 
-    addNetButton = new QPushButton;
+    addNetButton = new QPushButton(tr("&Add Network..."));
+    addNetButton->setIcon(QIcon::fromTheme("list-add"));
+    connect(addNetButton, &QPushButton::clicked, [=] {
+        CustomWiFiDialog d;
+        if(d.exec() == QDialog::Accepted) {
+            QListWidgetItem *netitem = new QListWidgetItem;
+            netitem->setText(d.networkName());
+            netitem->setIcon(QIcon::fromTheme("network-wireless-signal-none"));
+            netitem->setToolTip(tr("Frequency: Unknown"));
+            netitem->setData(Qt::UserRole, d.flags());
+            netitem->setData(Qt::UserRole + 1, 2);
+
+            ssidListView->insertItem(0, netitem);
+        }
+    });
+
+    buttonLayout->addSpacing(10);
+    buttonLayout->addWidget(addNetButton, 0, Qt::AlignCenter);
 
     ssidListView = new QListWidget;
     connect(ssidListView, &QListWidget::currentItemChanged,
@@ -51,6 +71,8 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     rescanButton = new QPushButton(tr("&Rescan Networks"));
     connect(rescanButton, &QPushButton::clicked, [=](void) { doScan(); });
 
+    buttonLayout->addWidget(rescanButton, 0, Qt::AlignCenter);
+
     exchange_item.filter = "CTRL-EVENT-SCAN-RESULTS";
     exchange_item.cb = &scanResults;
     notify = nullptr;
@@ -58,6 +80,7 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     dialog = nullptr;
 #endif  /* HAS_INSTALL_ENV */
 
+    buttonLayout->addSpacing(10);
     passphrase = new QLineEdit(this);
     connect(passphrase, &QLineEdit::textChanged,
             this, &NetworkSimpleWirelessPage::completeChanged);
@@ -68,7 +91,7 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     layout->addWidget(statusLabel, 0, Qt::AlignCenter);
     layout->addSpacing(10);
     layout->addWidget(ssidListView, 0, Qt::AlignCenter);
-    layout->addWidget(rescanButton, 0, Qt::AlignCenter);
+    layout->addLayout(buttonLayout);
     layout->addSpacing(10);
     layout->addWidget(passphrase, 0, Qt::AlignCenter);
     setLayout(layout);
