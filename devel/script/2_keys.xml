@@ -548,6 +548,42 @@ repository https://mirrors.servercentral.com/adelie/1.0/user
                 </para>
             </formalpara>
         </section>
+        <section id="svcenable">
+            <title><literal>svcenable</literal></title>
+            <formalpara id="svcenable.name">
+                <title>Name</title>
+                <para><literal>svcenable</literal></para>
+            </formalpara>
+            <formalpara id="svcenable.purpose">
+                <title>Purpose</title>
+                <para>The <literal>svcenable</literal> key specifies a service to start up on system boot.</para>
+            </formalpara>
+            <formalpara id="svcenable.format">
+                <title>Format</title>
+                <para>The <literal>svcenable</literal> key is a string value which contains the name of a OpenRC service.  The service file must be installed as part of a <literal>pkginstall</literal> key.  <literal>svcenable</literal> may appear any number of times in a HorizonScript.</para>
+            </formalpara>
+            <formalpara id="svcenable.examples">
+                <title>Examples</title>
+                <para>
+                    <example>
+                        <title>The <literal>svcenable</literal> Key &mdash; Enable SSH on Boot</title>
+                        <programlisting>
+svcenable sshd
+                        </programlisting>
+                        <para>This configures the target computer to start the SSH daemon during system boot.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>svcenable</literal> Key &mdash; Typical Desktop</title>
+                        <programlisting>
+svcenable dbus
+svcenable consolekit
+svcenable sddm
+                        </programlisting>
+                        <para>This configures the target computer to start up a display manager and its required daemons during system boot, enabling graphical logins.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
         <section id="signingkey">
             <title><literal>signingkey</literal></title>
             <formalpara id="signingkey.name">
