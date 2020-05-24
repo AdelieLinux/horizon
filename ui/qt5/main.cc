@@ -45,6 +45,7 @@ void WaitDialog::reject() { return; }
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    app.setAttribute(Qt::AA_EnableHighDpiScaling);
     app.setOrganizationName("Adélie Linux");
     app.setApplicationName("Horizon Qt UI");
     app.setApplicationVersion(VERSTR);
