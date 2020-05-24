@@ -542,7 +542,9 @@ QString HorizonWizard::toHScript() {
         break;
     }
 
+#ifdef HAS_INSTALL_ENV
     part_lines << (dynamic_cast<PartitionMountPage *>(page(Page_PartitionMount)))->mountLines();
+#endif  /* HAS_INSTALL_ENV */
 
     if(chosen_disk.empty()) {
         lines << part_lines;

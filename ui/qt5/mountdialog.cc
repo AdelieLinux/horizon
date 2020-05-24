@@ -16,6 +16,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QSet>
 #include <QVBoxLayout>
 
 MountDialog::MountDialog(QStringList skipParts, QStringList skipMounts,
@@ -75,7 +76,11 @@ MountDialog::MountDialog(QStringList skipParts, QStringList skipMounts,
 
     QVBoxLayout *controlLayout = new QVBoxLayout;
     controlLayout->addWidget(new QLabel(tr("Partition")));
+#ifdef HAS_INSTALL_ENV
     controlLayout->addWidget(partList);
+#else  /* !HAS_INSTALL_ENV */
+    controlLayout->addWidget(partInput);
+#endif  /* HAS_INSTALL_ENV */
     controlLayout->addWidget(new QLabel(tr("will be mounted on")));
     controlLayout->addWidget(pathInput);
 
@@ -87,14 +92,22 @@ MountDialog::MountDialog(QStringList skipParts, QStringList skipMounts,
 }
 
 QString MountDialog::partition() const {
+#ifdef HAS_INSTALL_ENV
     assert(partList->currentItem() != nullptr);
     return partList->currentItem()->text();
+#else  /* !HAS_INSTALL_ENV */
+    return partInput->text();
+#endif  /* HAS_INSTALL_ENV */
 }
 
 void MountDialog::setPartition(const QString &part) {
+#ifdef HAS_INSTALL_ENV
     QList<QListWidgetItem *> candidate = partList->findItems(part, Qt::MatchExactly);
     if(candidate.empty()) return;
     partList->setCurrentItem(candidate.at(0));
+#else  /* !HAS_INSTALL_ENV */
+    partInput->setText(part);
+#endif  /* HAS_INSTALL_ENV */
 }
 
 QString MountDialog::mountPoint() const {
