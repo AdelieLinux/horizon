@@ -158,13 +158,6 @@ int main(int argc, char *argv[]) {
     } else {
         int ret;
 
-        my_script->setTargetDirectory(ir_dir);
-
-        if(!my_script->execute()) {
-            exit_code = EXIT_FAILURE;
-            goto trouble;
-        }
-
 #define RUN_PHASE_OR_TROUBLE(_PHASE, _FRIENDLY) \
     ret = backend->_PHASE();\
     if(ret != 0) {\
@@ -175,6 +168,14 @@ int main(int argc, char *argv[]) {
     }
 
         RUN_PHASE_OR_TROUBLE(prepare, "preparation");
+
+        my_script->setTargetDirectory(ir_dir);
+
+        if(!my_script->execute()) {
+            exit_code = EXIT_FAILURE;
+            goto trouble;
+        }
+
         RUN_PHASE_OR_TROUBLE(create, "creation");
         RUN_PHASE_OR_TROUBLE(finalise, "finalisation");
     }
