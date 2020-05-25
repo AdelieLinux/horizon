@@ -139,6 +139,6 @@ bool PartitionDiskPage::isComplete() const {
 #ifdef HAS_INSTALL_ENV
     return diskChooser->currentIndex().row() != -1;
 #else  /* !HAS_INSTALL_ENV */
-    return !diskChooser->text().isEmpty();
+    return diskChooser->text().startsWith("/dev/");
 #endif  /* HAS_INSTALL_ENV */
 }

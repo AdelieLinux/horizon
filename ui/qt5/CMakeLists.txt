@@ -20,6 +20,7 @@ set(UI_SOURCES
     partitiondiskpage.cc
     partitionchoicepage.cc
     partitionmanualpage.cc
+    partitionmountpage.cc
     networkingpage.cc
     networkifacepage.cc
     netsimplewifipage.cc
@@ -53,8 +54,7 @@ IF(INSTALL)
     LIST(APPEND UI_SOURCES
         commitpage.cc
         partitionprobe.cc
-        partitionpage.cc
-        partitionmountpage.cc)
+        partitionpage.cc)
 ELSE(INSTALL)
     LIST(APPEND UI_SOURCES writeoutpage.cc)
 ENDIF(INSTALL)

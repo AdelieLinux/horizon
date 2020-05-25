@@ -61,6 +61,9 @@ MountDialog::MountDialog(QStringList skipParts, QStringList skipMounts,
 #else
     partInput = new QLineEdit;
     partInput->setWhatsThis(tr("Input the name of a partition, such as /dev/sda1, here."));
+    connect(partInput, &QLineEdit::textChanged, [=] {
+        ok->setEnabled(partInput->text().startsWith("/dev/"));
+    });
 #endif
 
     QStringList pathCandidates = {"/", "/home", "/opt", "/srv", "/usr",
