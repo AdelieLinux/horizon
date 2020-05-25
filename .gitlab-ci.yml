@@ -21,7 +21,7 @@ test:
   stage: test
   script:
   - cd tests
-  - PATH=../build/tools/hscript-validate:../build/tools/hscript-simulate:../build/owner:$PATH rspec --format RspecJunitFormatter --out rspec.xml
+  - PATH=$(pwd)/../build/tools/hscript-validate:$(pwd)/../build/tools/hscript-simulate:$PATH rspec --format RspecJunitFormatter --out rspec.xml
   artifacts:
     paths:
     - build

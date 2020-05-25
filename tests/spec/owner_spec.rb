@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe 'HorizonScript Owner Print Utility', :type => :aruba do
+    before { if !system("command -v hscript-printowner") then skip("Utility not built") end }
     context "argument passing" do
         it "requires an path to be specified" do
             run_command 'hscript-printowner'
