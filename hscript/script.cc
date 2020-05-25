@@ -48,6 +48,7 @@ const std::map<std::string, key_parse_fn> valid_keys = {
     {"timezone", &Timezone::parseFromData},
     {"repository", &Repository::parseFromData},
     {"signingkey", &SigningKey::parseFromData},
+    {"svcenable", &SvcEnable::parseFromData},
 
     {"netconfigtype", &NetConfigType::parseFromData},
     {"netaddress", &NetAddress::parseFromData},
@@ -117,6 +118,8 @@ bool Script::ScriptPrivate::store_key(const std::string &key_name, Key *obj,
         std::unique_ptr<SigningKey> key(dynamic_cast<SigningKey *>(obj));
         this->repo_keys.push_back(std::move(key));
         return true;
+    } else if(key_name == "svcenable") {
+        return store_svcenable(obj, lineno, errors, warnings, opts);
     } else if(key_name == "username") {
         return store_username(obj, lineno, errors, warnings, opts);
     } else if(key_name == "useralias") {

@@ -669,6 +669,24 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/warning: .*pkginstall.*already/)
                 end
             end
+            context "for 'svcenable' key" do
+                it "succeeds with a basic service" do
+                    use_fixture '0229-svcenable-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "warns when a service is specified twice" do
+                    use_fixture '0230-svcenable-duplicate.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/warning: .*svcenable.*already/)
+                end
+                it "fails when an invalid service name is specified" do
+                    use_fixture '0231-svcenable-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*svcenable.*invalid/)
+                end
+            end
             context "for 'diskid' key" do
                 it "succeeds with basic disk identification" do
                     use_fixture '0076-diskid-basic.installfile'

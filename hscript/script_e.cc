@@ -653,6 +653,10 @@ bool Script::execute() const {
 
     EXECUTE_OR_FAIL("timezone", internal->tzone)
 
+    for(const auto &svc : internal->svcs_enable) {
+        EXECUTE_OR_FAIL("svcenable", svc)
+    }
+
     output_step_end("post-metadata");
     return true;
 }

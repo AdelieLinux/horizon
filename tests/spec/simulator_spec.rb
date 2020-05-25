@@ -274,6 +274,13 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             expect(last_command_started.stdout).to include("cp /etc/apk/keys/packages@adelielinux.org.pub /target/etc/apk/keys/packages@adelielinux.org.pub")
         end
     end
+    context "simulating 'svcenable' execution" do
+        it "enables the service correctly" do
+            use_fixture '0229-svcenable-basic.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("ln -s /etc/init.d/sshd /target/etc/runlevels/default/sshd")
+        end
+    end
     context "simulating 'pkginstall' execution" do
         # Runner.Execute.pkginstall.APKDB
         it "initialises the APK database" do

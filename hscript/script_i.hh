@@ -72,6 +72,9 @@ struct Script::ScriptPrivate {
     /*! APK repository keys */
     std::vector< std::unique_ptr<SigningKey> > repo_keys;
 
+    /*! Services to enable */
+    std::vector< std::unique_ptr<SvcEnable> > svcs_enable;
+
     /*! User account information */
     std::map< std::string, std::unique_ptr<UserDetail> > accounts;
 
@@ -229,6 +232,22 @@ struct Script::ScriptPrivate {
         }
         std::unique_ptr<Timezone> t(dynamic_cast<Timezone *>(obj));
         tzone = std::move(t);
+        return true;
+    }
+
+    bool store_svcenable(Key *obj, int line, int *, int *warn, ScriptOptions) {
+        std::unique_ptr<SvcEnable> svc(dynamic_cast<SvcEnable *>(obj));
+        for(const auto &s : svcs_enable) {
+            if(s->value() == svc->value()) {
+                if(warn) *warn += 1;
+                output_warning("installfile:" + std::to_string(line),
+                               "svcenable: service already enabled",
+                               s->value());
+                return true;
+            }
+        }
+
+        svcs_enable.push_back(std::move(svc));
         return true;
     }
 

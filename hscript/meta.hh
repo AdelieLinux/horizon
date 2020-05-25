@@ -118,6 +118,16 @@ public:
     bool execute() const override;
 };
 
+class SvcEnable : public StringKey {
+private:
+    SvcEnable(const Script *_s, int _line, const std::string &_svc) :
+        StringKey(_s, _line, _svc) {}
+public:
+    static Key *parseFromData(const std::string &, int, int *, int *,
+                              const Script *);
+    bool execute() const override;
+};
+
 }
 }
 

@@ -656,3 +656,47 @@ bool SigningKey::execute() const {
 #endif /* HAS_INSTALL_ENV */
     return true;  /* LCOV_EXCL_LINE */
 }
+
+Key *SvcEnable::parseFromData(const std::string &data, int lineno, int *errors,
+                              int *, const Script *script) {
+    const static std::string valid_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.-_";
+
+    if(data.find_first_not_of(valid_chars) != std::string::npos) {
+        if(errors) *errors += 1;
+        output_error("installfile:" + std::to_string(lineno),
+                     "svcenable: invalid service name", data);
+        return nullptr;
+    }
+
+    return new SvcEnable(script, lineno, data);
+}
+
+bool SvcEnable::execute() const {
+    const std::string target = script->targetDirectory() +
+                               "/etc/runlevels/default/" + _value;
+    const std::string initd = "/etc/init.d/" + _value;
+    output_info("installfile:" + std::to_string(line),
+                "svcenable: enabling service " + _value);
+
+    if(script->options().test(Simulate)) {
+        std::cout << "ln -s " << initd << " " << target << std::endl;
+        return true;
+    }
+
+#ifdef HAS_INSTALL_ENV
+    error_code ec;
+    if(!fs::exists(script->targetDirectory() + initd, ec)) {
+        output_warning("installfile:" + std::to_string(line),
+                       "svcenable: service '" + _value + "' may be missing");
+    }
+
+    fs::create_symlink(initd, target, ec);
+    if(ec) {
+        output_error("installfile:" + std::to_string(line),
+                     "svcenable: could not enable service " + _value,
+                     ec.message());
+        return false;
+    }
+#endif  /* HAS_INSTALL_ENV */
+    return true;  /* LCOV_EXCL_LINE */
+}
