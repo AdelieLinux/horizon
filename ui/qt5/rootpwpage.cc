@@ -91,6 +91,6 @@ RootPassphrasePage::RootPassphrasePage(QWidget *parent)
 }
 
 bool RootPassphrasePage::isComplete() const {
-    return (rootPW->text().size() > 8 &&
+    return (rootPW->text().size() >= 8 &&
             rootPW->text() == confirmPW->text());
 }
