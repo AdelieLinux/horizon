@@ -599,7 +599,7 @@ QString HorizonWizard::toHScript() {
         break;
     case Custom:
         lines << "pkginstall adelie-base-posix";
-        lines << ("pkginstall " + packages.join(" "));
+        if(!packages.empty()) lines << ("pkginstall " + packages.join(" "));
         break;
     }
 
