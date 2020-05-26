@@ -116,6 +116,7 @@ struct Script::ScriptPrivate {
                    const ScriptOptions &opts);
 
 #define DUPLICATE_ERROR(OBJ, KEY, OLD_VAL) \
+    if(pos.inherited) return true;\
     std::string err_str("previous value was ");\
     err_str += OLD_VAL;\
     err_str += " at " + OBJ->where().name;\

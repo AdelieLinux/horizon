@@ -1,0 +1,2 @@
+arch ppc64
+inherit ../fixtures/0222-complete.installfile

@@ -216,15 +216,19 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts,
     char nextline[SCRIPT_LINE_MAX];
     const std::string delim(" \t");
     int errors = 0, warnings = 0;
+    std::string curr_name = fs::canonical(fs::path(name));
+    std::set<std::string> seen = {curr_name};
+    bool inherit = false;
+    std::istream *my_stream = &sstream;
 
-    while(sstream.getline(nextline, sizeof(nextline))) {
+    while(my_stream->getline(nextline, sizeof(nextline))) {
         lineno++;
         if(nextline[0] == '#') {
             /* This is a comment line; ignore it. */
             continue;
         }
 
-        const ScriptLocation pos(name, lineno, false);
+        const ScriptLocation pos(curr_name, lineno, inherit);
         const std::string line(nextline);
         std::string key;
         std::string::size_type start, key_end, value_begin;
@@ -245,6 +249,33 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts,
 
         /* Normalise key to lower-case */
         std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+
+        if(key == "inherit") {
+            std::string next_name{line.substr(value_begin)};
+            if(fs::path(next_name).is_relative()) {
+                fs::path better_path = fs::absolute(curr_name);
+                better_path.remove_filename();
+                better_path /= next_name;
+                next_name = fs::absolute(better_path);
+            }
+
+            if(seen.find(next_name) != seen.end()) {
+                PARSER_ERROR("attempt to inherit from already inherited file")
+                break;
+            }
+            seen.insert(next_name);
+
+            if(!fs::exists(next_name)) {
+                PARSER_ERROR("attempt to inherit from non-existent file")
+                break;
+            } else {
+                if(my_stream != &sstream) delete my_stream;
+                curr_name = next_name;
+                inherit = true;
+                my_stream = new std::ifstream(curr_name);
+            }
+            continue;
+        }
 
         if(valid_keys.find(key) == valid_keys.end()) {
             /* Invalid key */
@@ -270,7 +301,7 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts,
         }
     }
 
-    if(sstream.fail() && !sstream.eof()) {
+    if(my_stream->fail() && !my_stream->eof()) {
         output_error("installfile:" + std::to_string(lineno + 1),
                      "line exceeds maximum length",
                      "Maximum line length is " +
@@ -278,7 +309,7 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts,
         errors++;
     }
 
-    if(sstream.bad() && !sstream.eof()) {
+    if(my_stream->bad() && !my_stream->eof()) {
         output_error("installfile:" + std::to_string(lineno),
                      "I/O error while reading installfile", "");
         errors++;
@@ -286,8 +317,7 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts,
 
     /* Ensure all required keys are present. */
 #define MISSING_ERROR(key) \
-    output_error("installfile:" + std::to_string(lineno),\
-                 "expected value for key '" + std::string(key) + "'",\
+    output_error(name, "expected value for key '" + std::string(key) + "'",\
                  "this key is required");\
     errors++;
 
@@ -310,9 +340,11 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts,
     }
 #undef MISSING_ERROR
 
-    output_log("parser", "0", "installfile",
+    output_log("parser", "0", name,
                std::to_string(errors) + " error(s), " +
                std::to_string(warnings) + " warning(s).", "");
+
+    if(my_stream != &sstream) delete my_stream;
 
     if(errors > 0) {
         delete the_script;

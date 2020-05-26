@@ -1,0 +1,4 @@
+arch ppc64
+pkginstall kde x11
+# Purposefully misspelled.
+inherit 0222-compleat.installfile

@@ -1,0 +1,3 @@
+arch ppc64
+pkginstall kde x11
+inherit 0235-inherit-loop2.installfile

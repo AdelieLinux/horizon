@@ -1,0 +1,2 @@
+arch ppc64
+inherit 0006-no-network.installfile

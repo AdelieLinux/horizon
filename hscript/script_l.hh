@@ -23,11 +23,11 @@ struct ScriptLocation {
     std::string name;
     /*! The line number of the current location. */
     int line;
-    /*! Whether this script is nested or the original script. */
-    bool nested;
+    /*! Whether this script is inherited or the original script. */
+    bool inherited;
 
-    ScriptLocation(std::string _n, int _l, bool _nest = false) :
-        name{_n}, line{_l}, nested{_nest} {};
+    ScriptLocation(std::string _n, int _l, bool _inherit = false) :
+        name{_n}, line{_l}, inherited{_inherit} {};
 };
 
 }

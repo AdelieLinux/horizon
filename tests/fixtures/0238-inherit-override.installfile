@@ -1,0 +1,3 @@
+arch ppc64
+hostname overriden.hostname.local
+inherit 0222-complete.installfile

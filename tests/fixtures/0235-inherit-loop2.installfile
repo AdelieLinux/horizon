@@ -1,0 +1,3 @@
+hostname loopy
+network false
+inherit 0234-inherit-loop1.installfile
