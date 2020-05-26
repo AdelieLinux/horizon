@@ -107,11 +107,16 @@ int validate_one_account(const std::string &name, UserDetail *detail) {
  */
 bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
                        const Script *s, bool firmware = false) {
+    std::string base_url = "https://distfiles.adelielinux.org/adelie/";
+    const ScriptLocation p{"internal", 0};
+    const Key *ver = s->getOneValue("version");
+    if(ver != nullptr) {
+        base_url += dynamic_cast<const StringKey *>(ver)->value() + "/";
+    } else {
+        base_url += "stable/";
+    }
     Repository *sys_key = dynamic_cast<Repository *>(
-        Repository::parseFromData(
-            "https://distfiles.adelielinux.org/adelie/stable/system", {"", 0},
-            nullptr, nullptr, s
-        )
+        Repository::parseFromData(base_url + "system", p, nullptr, nullptr, s)
     );
     if(!sys_key) {
         output_error("internal", "failed to create default system repository");
@@ -120,10 +125,7 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
     std::unique_ptr<Repository> sys_repo(sys_key);
     repos.push_back(std::move(sys_repo));
     Repository *user_key = dynamic_cast<Repository *>(
-        Repository::parseFromData(
-            "https://distfiles.adelielinux.org/adelie/stable/user", {"", 0},
-            nullptr, nullptr, s
-        )
+        Repository::parseFromData(base_url + "user", p, nullptr, nullptr, s)
     );
     if(!user_key) {
         output_error("internal", "failed to create default user repository");
@@ -138,7 +140,7 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
         Repository *fw_key = dynamic_cast<Repository *>(
             Repository::parseFromData(
                 "https://distfiles.apkfission.net/adelie-stable/nonfree",
-                0, nullptr, nullptr, s
+                {"internal", 0}, nullptr, nullptr, s
             )
         );
         if(!fw_key) {
@@ -163,8 +165,8 @@ bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys,
                            const Script *s, bool firmware = false) {
     SigningKey *key = dynamic_cast<SigningKey *>(
         SigningKey::parseFromData(
-            "/etc/apk/keys/packages@adelielinux.org.pub", {"", 0},
-            nullptr, nullptr, s)
+            "/etc/apk/keys/packages@adelielinux.org.pub",
+            {"internal", 0}, nullptr, nullptr, s)
     );
     if(!key) {
         output_error("internal", "failed to create default repository signing key");
@@ -178,7 +180,7 @@ bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys,
     if(firmware) {
         SigningKey *fkey = dynamic_cast<SigningKey *>(SigningKey::parseFromData(
             "/etc/apk/keys/packages@pleroma.apkfission.net-5ac0b300.rsa.pub",
-                                                  {"", 0}, nullptr, nullptr, s)
+            {"internal", 0}, nullptr, nullptr, s)
         );
         if(!fkey) {
             output_error("internal", "failed to create firmware signing key");

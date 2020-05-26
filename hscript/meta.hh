@@ -128,6 +128,16 @@ public:
     bool execute() const override;
 };
 
+class Version : public StringKey {
+private:
+    Version(const Script *_s, const ScriptLocation &_p, const std::string &_v) :
+        StringKey(_s, _p, _v) {}
+public:
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int *, int *, const Script *);
+    bool execute() const override;
+};
+
 }
 }
 

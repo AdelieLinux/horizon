@@ -3,7 +3,7 @@
  * libhscript, the HorizonScript library for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -61,6 +61,8 @@ struct Script::ScriptPrivate {
     std::unique_ptr<Keymap> keymap;
     /*! The system timezone. */
     std::unique_ptr<Timezone> tzone;
+    /*! The version of Adélie to install. */
+    std::unique_ptr<Version> version;
 
     /*! Network addressing configuration */
     std::vector< std::unique_ptr<NetAddress> > addresses;
@@ -261,6 +263,17 @@ struct Script::ScriptPrivate {
         }
 
         svcs_enable.push_back(std::move(svc));
+        return true;
+    }
+
+    bool store_version(Key *obj, const ScriptLocation &pos, int *errors, int *,
+                       const ScriptOptions &) {
+        if(version) {
+            DUPLICATE_ERROR(version, "version", version->value())
+            return false;
+        }
+        std::unique_ptr<Version> v(dynamic_cast<Version *>(obj));
+        version = std::move(v);
         return true;
     }
 

@@ -51,6 +51,7 @@ const std::map<std::string, key_parse_fn> valid_keys = {
     {"repository", &Repository::parseFromData},
     {"signingkey", &SigningKey::parseFromData},
     {"svcenable", &SvcEnable::parseFromData},
+    {"version", &Version::parseFromData},
 
     {"netconfigtype", &NetConfigType::parseFromData},
     {"netaddress", &NetAddress::parseFromData},
@@ -122,6 +123,8 @@ bool Script::ScriptPrivate::store_key(const std::string &key_name, Key *obj,
         return true;
     } else if(key_name == "svcenable") {
         return store_svcenable(obj, pos, errors, warnings, opts);
+    } else if(key_name == "version") {
+        return store_version(obj, pos, errors, warnings, opts);
     } else if(key_name == "username") {
         return store_username(obj, pos, errors, warnings, opts);
     } else if(key_name == "useralias") {
@@ -381,6 +384,8 @@ const Keys::Key *Script::getOneValue(std::string name) const {
         return this->internal->lang.get();
     } else if(name == "keymap") {
         return this->internal->keymap.get();
+    } else if(name == "version") {
+        return this->internal->version.get();
     } else if(name == "firmware") {
 #ifdef NON_LIBRE_FIRMWARE
         return this->internal->firmware.get();
@@ -410,6 +415,8 @@ const std::vector<Keys::Key *> Script::getValues(std::string name) const {
         for(auto &repo : this->internal->repos) values.push_back(repo.get());
     } else if(name == "signing_key") {
         for(auto &key : this->internal->repo_keys) values.push_back(key.get());
+    } else if(name == "svcenable") {
+        for(auto &svc : this->internal->svcs_enable) values.push_back(svc.get());
     } else if(name == "username" || name == "useralias" || name == "userpw" ||
               name == "usericon" || name == "usergroups") {
         /* XXX */

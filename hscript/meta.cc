@@ -655,3 +655,21 @@ bool SvcEnable::execute() const {
 #endif  /* HAS_INSTALL_ENV */
     return true;  /* LCOV_EXCL_LINE */
 }
+
+Key *Version::parseFromData(const std::string &data,
+                            const ScriptLocation &pos, int *errors, int *,
+                            const Script *script) {
+    const static std::string valid_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.-_";
+
+    if(data.find_first_not_of(valid_chars) != std::string::npos) {
+        if(errors) *errors += 1;
+        output_error(pos, "version: invalid version", data);
+        return nullptr;
+    }
+
+    return new Version(script, pos, data);
+}
+
+bool Version::execute() const {
+    return true;
+}
