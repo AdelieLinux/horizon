@@ -106,14 +106,14 @@ static bool is_valid_name (const char *name)
 /*! Determine if a string is a valid crypt passphrase
  * @param pw        The string to test for validity.
  * @param key       The name of key being validated ('rootpw', 'userpw', ...)
- * @param lineno    The line number where the key occurs.
+ * @param pos       The location where the key occurs.
  * @returns true if +pw+ is a valid crypt passphrase; false otherwise.
  */
 static bool string_is_crypt(const std::string &pw, const std::string &key,
-                            int lineno) {
+                            const Horizon::ScriptLocation &pos) {
     if(pw.size() < 5 || pw[0] != '$' || (pw[1] != '2' && pw[1] != '6')
             || pw[2] != '$') {
-        output_error("installfile:" + std::to_string(lineno),
+        output_error(pos,
                      key + ": value is not a crypt-style encrypted passphrase");
         return false;
     }
@@ -121,13 +121,14 @@ static bool string_is_crypt(const std::string &pw, const std::string &key,
 }
 
 
-Key *RootPassphrase::parseFromData(const std::string &data, int lineno,
+Key *RootPassphrase::parseFromData(const std::string &data,
+                                   const ScriptLocation &pos,
                                    int *errors, int *, const Script *script) {
-    if(!string_is_crypt(data, "rootpw", lineno)) {
+    if(!string_is_crypt(data, "rootpw", pos)) {
         if(errors) *errors += 1;
         return nullptr;
     }
-    return new RootPassphrase(script, lineno, data);
+    return new RootPassphrase(script, pos, data);
 }
 
 bool RootPassphrase::validate() const {
@@ -138,8 +139,7 @@ bool RootPassphrase::execute() const {
     const std::string root_line = "root:" + this->_value + ":" +
             std::to_string(time(nullptr) / 86400) + ":0:::::";
 
-    output_info("installfile:" + std::to_string(this->lineno()),
-                "rootpw: setting root passphrase");
+    output_info(pos, "rootpw: setting root passphrase");
 
     if(script->options().test(Simulate)) {
         std::cout << "(printf '" << root_line << "\\" << "n'; "
@@ -159,8 +159,7 @@ bool RootPassphrase::execute() const {
     /* This was tested on gwyn during development. */
     std::ifstream old_shadow(script->targetDirectory() + "/etc/shadow");
     if(!old_shadow) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "rootpw: cannot open existing shadow file");
+        output_error(pos, "rootpw: cannot open existing shadow file");
         return false;
     }
 
@@ -182,8 +181,7 @@ bool RootPassphrase::execute() const {
     std::ofstream new_shadow(script->targetDirectory() + "/etc/shadow",
                              std::ios_base::trunc);
     if(!new_shadow) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "rootpw: cannot replace target shadow file");
+        output_error(pos, "rootpw: cannot replace target shadow file");
         return false;
     }
     new_shadow << shadow_stream.str();
@@ -194,29 +192,26 @@ bool RootPassphrase::execute() const {
 }
 
 
-Key *Username::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *, const Script *script) {
+Key *Username::parseFromData(const std::string &data, const ScriptLocation &pos,
+                             int *errors, int *, const Script *script) {
     if(!is_valid_name(data.c_str())) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "username: invalid username specified");
+        output_error(pos, "username: invalid username specified");
         return nullptr;
     }
 
     /* REQ: Runner.Validate.username.System */
     if(system_names.find(data) != system_names.end()) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "username: " + data + " is a reserved system username");
+        output_error(pos, "username: reserved system username", data);
         return nullptr;
     }
 
-    return new Username(script, lineno, data);
+    return new Username(script, pos, data);
 }
 
 bool Username::execute() const {
-    output_info("installfile:" + std::to_string(line),
-                "username: creating account " + _value);
+    output_info(pos, "username: creating account " + _value);
 
     if(script->options().test(Simulate)) {
         std::cout << "useradd -c \"Adélie User\" -m -R "
@@ -230,8 +225,7 @@ bool Username::execute() const {
                                "-R", script->targetDirectory(),
                                "-U", _value}) != 0)
     {
-        output_error("installfile:" + std::to_string(line),
-                     "username: failed to create user account");
+        output_error(pos, "username: failed to create user account", _value);
         return false;
     }
 #endif  /* HAS_INSTALL_ENV */
@@ -239,19 +233,19 @@ bool Username::execute() const {
 }
 
 
-Key *UserAlias::parseFromData(const std::string &data, int lineno, int *errors,
-                              int *, const Script *script) {
+Key *UserAlias::parseFromData(const std::string &data,
+                              const ScriptLocation &pos, int *errors, int *,
+                              const Script *script) {
     /* REQ: Runner.Validate.useralias.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "useralias: alias is required",
+        output_error(pos, "useralias: alias is required",
                      "expected format is: useralias [username] [alias...]");
         return nullptr;
     }
 
-    return new UserAlias(script, lineno, data.substr(0, sep),
+    return new UserAlias(script, pos, data.substr(0, sep),
                          data.substr(sep + 1));
 }
 
@@ -260,8 +254,7 @@ bool UserAlias::validate() const {
 }
 
 bool UserAlias::execute() const {
-    output_info("installfile:" + std::to_string(line),
-                "useralias: setting GECOS name for " + _username);
+    output_info(pos, "useralias: setting GECOS name for " + _username);
 
     if(script->options().test(Simulate)) {
         std::cout << "usermod -c \"" << _alias << "\" "
@@ -273,8 +266,7 @@ bool UserAlias::execute() const {
 #ifdef HAS_INSTALL_ENV
     if(run_command("usermod", {"-c", _alias, "-R", script->targetDirectory(),
                                _username}) != 0) {
-        output_error("installfile:" + std::to_string(line),
-                     "useralias: failed to change GECOS of user " + _username);
+        output_error(pos, "useralias: failed to change GECOS for " + _username);
         return false;
     }
 #endif  /* HAS_INSTALL_ENV */
@@ -282,25 +274,25 @@ bool UserAlias::execute() const {
 }
 
 
-Key *UserPassphrase::parseFromData(const std::string &data, int lineno,
+Key *UserPassphrase::parseFromData(const std::string &data,
+                                   const ScriptLocation &pos,
                                    int *errors, int *, const Script *script) {
     /* REQ: Runner.Validate.userpw.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "userpw: passphrase is required",
+        output_error(pos, "userpw: passphrase is required",
                      "expected format is: userpw [username] [crypt...]");
         return nullptr;
     }
 
     std::string passphrase = data.substr(sep + 1);
-    if(!string_is_crypt(passphrase, "userpw", lineno)) {
+    if(!string_is_crypt(passphrase, "userpw", pos)) {
         if(errors) *errors += 1;
         return nullptr;
     }
 
-    return new UserPassphrase(script, lineno, data.substr(0, sep),
+    return new UserPassphrase(script, pos, data.substr(0, sep),
                               data.substr(sep + 1));
 }
 
@@ -310,8 +302,7 @@ bool UserPassphrase::validate() const {
 }
 
 bool UserPassphrase::execute() const {
-    output_info("installfile:" + std::to_string(line),
-                "userpw: setting passphrase for " + _username);
+    output_info(pos, "userpw: setting passphrase for " + _username);
 
     if(script->options().test(Simulate)) {
         std::cout << "usermod -p '" << _passphrase << "' "
@@ -324,8 +315,7 @@ bool UserPassphrase::execute() const {
     if(run_command("usermod", {"-p", _passphrase,
                                "-R", script->targetDirectory(),
                                _username}) != 0) {
-        output_error("installfile:" + std::to_string(line),
-                     "userpw: failed to set passphrase for " + _username);
+        output_error(pos, "userpw: failed to set passphrase for " + _username);
         return false;
     }
 #endif  /* HAS_INSTALL_ENV */
@@ -333,14 +323,13 @@ bool UserPassphrase::execute() const {
 }
 
 
-Key *UserIcon::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *, const Script *script) {
+Key *UserIcon::parseFromData(const std::string &data, const ScriptLocation &pos,
+                             int *errors, int *, const Script *script) {
     /* REQ: Runner.Validate.usericon.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "usericon: icon is required",
+        output_error(pos, "usericon: icon is required",
                      "expected format is: usericon [username] [path|url]");
         return nullptr;
     }
@@ -348,12 +337,11 @@ Key *UserIcon::parseFromData(const std::string &data, int lineno, int *errors,
     std::string icon_path = data.substr(sep + 1);
     if(icon_path[0] != '/' && !is_valid_url(icon_path)) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "usericon: path must be absolute path or valid URL");
+        output_error(pos, "usericon: path must be absolute path or valid URL");
         return nullptr;
     }
 
-    return new UserIcon(script, lineno, data.substr(0, sep), icon_path);
+    return new UserIcon(script, pos, data.substr(0, sep), icon_path);
 }
 
 bool UserIcon::validate() const {
@@ -367,8 +355,7 @@ bool UserIcon::execute() const {
     const std::string face_path(script->targetDirectory() + "/home/" +
                                 _username + "/.face");
 
-    output_info("installfile:" + std::to_string(line),
-                "usericon: setting avatar for " + _username);
+    output_info(pos, "usericon: setting avatar for " + _username);
 
     if(script->options().test(Simulate)) {
         if(_icon_path[0] == '/') {
@@ -391,43 +378,39 @@ bool UserIcon::execute() const {
     if(_icon_path[0] == '/') {
         fs::copy_file(_icon_path, as_path, ec);
         if(ec) {
-            output_error("installfile:" + std::to_string(line),
-                         "usericon: failed to copy icon", ec.message());
+            output_error(pos, "usericon: failed to copy icon", ec.message());
             return false;
         }
     } else {
         if(!download_file(_icon_path, as_path)) {
-            output_error("installfile:" + std::to_string(line),
-                         "usericon: failed to download icon");
+            output_error(pos, "usericon: failed to download icon");
             return false;
         }
     }
 
     fs::copy_file(as_path, face_path + ".icon", ec);
     if(ec) {
-        output_error("installfile:" + std::to_string(line),
-                     "usericon: failed to copy icon to home", ec.message());
+        output_error(pos, "usericon: failed to copy icon home", ec.message());
         return false;
     }
 
     fs::create_symlink(".face.icon", face_path, ec);
     if(ec) {
-        output_warning("installfile:" + std::to_string(line),
-                       "usericon: failed to create legacy symlink");
+        output_warning(pos, "usericon: failed to create legacy symlink");
     }
 #endif  /* HAS_INSTALL_ENV */
     return true;  /* LCOV_EXCL_LINE */
 }
 
 
-Key *UserGroups::parseFromData(const std::string &data, int lineno,
+Key *UserGroups::parseFromData(const std::string &data,
+                               const ScriptLocation &pos,
                                int *errors, int *, const Script *script) {
     /* REQ: Runner.Validate.usergroups.Validity */
     const std::string::size_type sep = data.find_first_of(' ');
     if(sep == std::string::npos || data.length() == sep + 1) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "usergroups: at least one group is required",
+        output_error(pos, "usergroups: at least one group is required",
                      "expected format is: usergroups [user] [group(,...)]");
         return nullptr;
     }
@@ -440,8 +423,7 @@ Key *UserGroups::parseFromData(const std::string &data, int lineno,
         /* REQ: Runner.Validate.usergroups.Group */
         if(system_groups.find(group) == system_groups.end()) {
             if(errors) *errors += 1;
-            output_error("installfile:" + std::to_string(lineno),
-                         "usergroups: group name '" + group + "' is invalid",
+            output_error(pos, "usergroups: invalid group name '" + group + "'",
                          "group is not a recognised system group");
             return nullptr;
         }
@@ -450,13 +432,12 @@ Key *UserGroups::parseFromData(const std::string &data, int lineno,
     /* REQ: Runner.Validate.usergroups.Group */
     if(stream.fail() && !stream.eof()) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "usergroups: group name exceeds maximum length",
+        output_error(pos, "usergroups: group name exceeds maximum length",
                      "groups may only be 16 characters or less");
         return nullptr;
     }
 
-    return new UserGroups(script, lineno, data.substr(0, sep), group_set);
+    return new UserGroups(script, pos, data.substr(0, sep), group_set);
 }
 
 bool UserGroups::validate() const {
@@ -465,8 +446,7 @@ bool UserGroups::validate() const {
 }
 
 bool UserGroups::execute() const {
-    output_info("installfile:" + std::to_string(line),
-                "usergroups: setting group membership for " + _username);
+    output_info(pos, "usergroups: setting group membership for " + _username);
 
     std::string groups;
     for(auto &grp : _groups) {
@@ -486,8 +466,7 @@ bool UserGroups::execute() const {
     if(run_command("usermod", {"-a", "-G", groups,
                                "-R", script->targetDirectory(),
                                _username}) != 0) {
-        output_error("installfile:" + std::to_string(line),
-                     "usergroups: failed to add groups to " + _username);
+        output_error(pos, "usergroups: failed to add groups to " + _username);
         return false;
     }
 #endif  /* HAS_INSTALL_ENV */

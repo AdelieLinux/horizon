@@ -3,7 +3,7 @@
  * util, the utility library for
  * Project Horizon
  *
- * Copyright (c) 2019 Adélie Linux and contributors.  All rights reserved.
+ * Copyright (c) 2019-2020 Adélie Linux and contributors.  All rights reserved.
  * This code is licensed under the AGPL 3.0 license, as noted in the
  * LICENSE-code file in the root directory of this repository.
  *
@@ -20,6 +20,8 @@ extern bool pretty;
 #include <chrono>
 #include <iomanip>
 
+#include <hscript/script_l.hh>
+
 /*! Bolds output on +stream+ if pretty output is desired.
  * @param stream    The stream to turn bold.
  */
@@ -31,7 +33,7 @@ inline void bold_if_pretty(std::ostream &stream) {
  * @param stream    The stream on which to colourise output.
  * @param what      The colour code.
  */
-inline void colour_if_pretty(std::ostream &stream, std::string what) {
+inline void colour_if_pretty(std::ostream &stream, const std::string &what) {
     if(pretty) stream << "\033[" + what + ";1m";
 }
 
@@ -56,14 +58,14 @@ inline void output_time() {
 }
 
 /*! Outputs that +step+ is beginning execution. */
-inline void output_step_start(std::string step) {
+inline void output_step_start(const std::string &step) {
     output_time();
     std::cerr << "\tstep-start\t";
     std::cerr << step << std::endl;
 }
 
 /*! Outputs that +step+ is finishing execution. */
-inline void output_step_end(std::string step) {
+inline void output_step_end(const std::string &step) {
     output_time();
     std::cerr << "\tstep-end\t";
     std::cerr << step << std::endl;
@@ -76,8 +78,9 @@ inline void output_step_end(std::string step) {
  * @param message   The message.
  * @param detail    Additional detail for the message, if available.
  */
-inline void output_log(std::string type, std::string colour, std::string where,
-                       std::string message, std::string detail = "") {
+inline void output_log(const std::string &type, const std::string &colour,
+                       const std::string &where, const std::string &message,
+                       const std::string &detail = "") {
     output_time();
     std::cerr << "\tlog\t";
     std::cerr << where << ": ";
@@ -97,9 +100,21 @@ inline void output_log(std::string type, std::string colour, std::string where,
  * @param message   The error that occurred.
  * @param detail    Additional detail for the error, if available.
  */
-inline void output_error(std::string where, std::string message,
-                         std::string detail = "") {
+inline void output_error(const std::string &where, const std::string &message,
+                         const std::string &detail = "") {
     output_log("error", "31", where, message, detail);
+}
+
+/*! Outputs an error message.
+ * @param where     The location where the error occurred.
+ * @param message   The error that occurred.
+ * @param detail    Additional detail for the error, if available.
+ */
+inline void output_error(const Horizon::ScriptLocation &where,
+                         const std::string &message,
+                         const std::string &detail = "") {
+    output_error(where.name + ":" + std::to_string(where.line), message,
+                 detail);
 }
 
 /*! Outputs a warning message.
@@ -107,9 +122,21 @@ inline void output_error(std::string where, std::string message,
  * @param message   The warning to display.
  * @param detail    Additional detail for the warning, if available.
  */
-inline void output_warning(std::string where, std::string message,
-                           std::string detail = "") {
+inline void output_warning(const std::string &where, const std::string &message,
+                           const std::string &detail = "") {
     output_log("warning", "33", where, message, detail);
+}
+
+/*! Outputs a warning message.
+ * @param where     The location where the warning occurred.
+ * @param message   The warning to display.
+ * @param detail    Additional detail for the warning, if available.
+ */
+inline void output_warning(const Horizon::ScriptLocation &where,
+                           const std::string &message,
+                           const std::string &detail = "") {
+    output_warning(where.name + ":" + std::to_string(where.line), message,
+                   detail);
 }
 
 /*! Outputs an informational message.
@@ -117,9 +144,20 @@ inline void output_warning(std::string where, std::string message,
  * @param message   The information to display.
  * @param detail    Additional detail for the information, if available.
  */
-inline void output_info(std::string where, std::string message,
-                        std::string detail = "") {
+inline void output_info(const std::string &where, const std::string &message,
+                        const std::string &detail = "") {
     output_log("info", "36", where, message, detail);
+}
+
+/*! Outputs an informational message.
+ * @param where     The location relevant to the information.
+ * @param message   The information to display.
+ * @param detail    Additional detail for the information, if available.
+ */
+inline void output_info(const Horizon::ScriptLocation &where,
+                        const std::string &message,
+                        const std::string &detail = "") {
+    output_info(where.name + ":" + std::to_string(where.line), message, detail);
 }
 
 #endif /* !__HORIZON_OUTPUT_HH_ */

@@ -22,22 +22,22 @@ namespace Keys {
 
 class RootPassphrase : public StringKey {
 private:
-    RootPassphrase(const Script *_s, int _line, const std::string &my_pw) :
-        StringKey(_s, _line, my_pw) {}
+    RootPassphrase(const Script *_s, const ScriptLocation &_p,
+                   const std::string &my_pw) : StringKey(_s, _p, my_pw) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
     bool validate() const override;
     bool execute() const override;
 };
 
 class Username : public StringKey {
 private:
-    Username(const Script *_s, int _line, const std::string &name) :
-        StringKey(_s, _line, name) {}
+    Username(const Script *_s, const ScriptLocation &_p,
+             const std::string &name) : StringKey(_s, _p, name) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
     bool execute() const override;
 };
 
@@ -46,12 +46,11 @@ private:
     const std::string _username;
     const std::string _alias;
 
-    UserAlias(const Script *_s, int _line, const std::string &_n,
-              const std::string &_a) :
-        Key(_s, _line), _username(_n), _alias(_a) {}
+    UserAlias(const Script *_s, const ScriptLocation &_p, const std::string &_n,
+              const std::string &_a) : Key(_s, _p), _username(_n), _alias(_a) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
 
     /*! Retrieve the username for this alias. */
     const std::string &username() const { return this->_username; }
@@ -67,12 +66,12 @@ private:
     const std::string _username;
     const std::string _passphrase;
 
-    UserPassphrase(const Script *_s, int _line, const std::string &_n,
-                   const std::string &_p) :
-        Key(_s, _line), _username(_n), _passphrase(_p) {}
+    UserPassphrase(const Script *_s, const ScriptLocation &_pos,
+                   const std::string &_n, const std::string &_p) :
+        Key(_s, _pos), _username(_n), _passphrase(_p) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
 
     /*! Retrieve the username for this passphrase. */
     const std::string &username() const { return this->_username; }
@@ -88,12 +87,12 @@ private:
     const std::string _username;
     const std::string _icon_path;
 
-    UserIcon(const Script *_s, int _line, const std::string &_n,
+    UserIcon(const Script *_s, const ScriptLocation &_p, const std::string &_n,
              const std::string &_i) :
-        Key(_s, _line), _username(_n), _icon_path(_i) {}
+        Key(_s, _p), _username(_n), _icon_path(_i) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
 
     /*! Retrieve the username for this icon. */
     const std::string &username() const { return this->_username; }
@@ -109,12 +108,12 @@ private:
     const std::string _username;
     const std::set<std::string> _groups;
 
-    UserGroups(const Script *_s, int _line, const std::string &_n,
-               const std::set<std::string> &_g) :
-        Key(_s, _line), _username(_n), _groups(_g) {}
+    UserGroups(const Script *_s, const ScriptLocation &_pos,
+               const std::string &_n, const std::set<std::string> &_g) :
+        Key(_s, _pos), _username(_n), _groups(_g) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
 
     /*! Retrieve the username for this group set. */
     const std::string &username() const { return this->_username; }

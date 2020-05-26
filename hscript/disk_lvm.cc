@@ -25,21 +25,20 @@ using namespace Horizon::Keys;
 
 bool parse_size_string(const std::string &, uint64_t *, SizeType *);
 
-Key *LVMPhysical::parseFromData(const std::string &data, int lineno,
-                                int *errors, int *, const Script *script) {
+Key *LVMPhysical::parseFromData(const std::string &data,
+                                const ScriptLocation &pos, int *errors, int *,
+                                const Script *script) {
     if(data.size() < 6 || data.substr(0, 5) != "/dev/") {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "lvm_pv: expected an absolute path to a block device");
+        output_error(pos, "lvm_pv: expected an absolute path to a device");
         return nullptr;
     }
 
-    return new LVMPhysical(script, lineno, data);
+    return new LVMPhysical(script, pos, data);
 }
 
 bool LVMPhysical::execute() const {
-    output_info("installfile:" + std::to_string(line),
-                "lvm_pv: creating physical volume on " + _value);
+    output_info(pos, "lvm_pv: creating physical volume on " + _value);
 
     if(script->options().test(Simulate)) {
         std::cout << "pvcreate --force " << _value << std::endl;
@@ -54,8 +53,7 @@ bool LVMPhysical::execute() const {
     }
 
     if(run_command("pvcreate", {"--force", _value}) != 0) {
-        output_error("installfile:" + std::to_string(line),
-                     "lvm_pv: failed to create physical volume on " + _value);
+        output_error(pos, "lvm_pv: failed to create physical volume", _value);
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
@@ -116,13 +114,12 @@ bool is_valid_lvm_lv_name(const std::string &name) {
 }
 
 
-Key *LVMGroup::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *, const Script *script) {
+Key *LVMGroup::parseFromData(const std::string &data, const ScriptLocation &pos,
+                             int *errors, int *, const Script *script) {
     std::string::size_type space = data.find_first_of(' ');
     if(space == std::string::npos || data.size() == space + 1) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "lvm_vg: expected exactly two elements",
+        output_error(pos, "lvm_vg: expected exactly two elements",
                      "syntax is lvm_vg [pv_block] [name-of-vg]");
         return nullptr;
     }
@@ -132,19 +129,17 @@ Key *LVMGroup::parseFromData(const std::string &data, int lineno, int *errors,
 
     if(pv.length() < 6 || pv.substr(0, 5) != "/dev/") {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "lvm_vg: expected absolute path to block device");
+        output_error(pos, "lvm_vg: expected absolute path to block device");
         return nullptr;
     }
 
     if(!is_valid_lvm_name(name)) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "lvm_vg: invalid volume group name");
+        output_error(pos, "lvm_vg: invalid volume group name");
         return nullptr;
     }
 
-    return new LVMGroup(script, lineno, pv, name);
+    return new LVMGroup(script, pos, pv, name);
 }
 
 bool LVMGroup::validate() const {
@@ -173,20 +168,19 @@ bool LVMGroup::test_pv() const {
 /*! Determine if a named Volume Group currently exists on a LVM PV.
  * @param vg        The name of the Volume Group.
  * @param pv        The path to the LVM physical volume.
- * @param line      The installfile line number.
+ * @param pos       The location of the line.
  * @param msgs      Whether or not to print messages.
  * @returns true if +vg+ appears on +pv+; false otherwise.
  */
 bool does_vg_exist_on_pv(const std::string &vg, const std::string &pv,
-                         long line, bool msgs) {
+                         const Horizon::ScriptLocation &pos, bool msgs) {
     bool success = false;
     const std::string pv_command("pvs --noheadings -o vg_name " + pv +
                                  " 2>/dev/null");
 
     FILE *pvs = popen(pv_command.c_str(), "r");
     if(pvs == nullptr) {
-        if(msgs) output_error("installfile:" + std::to_string(line),
-                              "lvm_vg: can't determine if vg is duplicate");
+        if(msgs) output_error(pos, "lvm_vg: can't determine if vg is duplicate");
         return false;
     }
 
@@ -201,9 +195,8 @@ bool does_vg_exist_on_pv(const std::string &vg, const std::string &pv,
      * also, use vg.size() to avoid comparing the terminating \n */
     if(static_cast<unsigned long>(read_bytes) != vg.size() + 3 ||
        strncmp(buf + 2, vg.c_str(), vg.size())) {
-        if(msgs) output_error("installfile:" + std::to_string(line),
-                              "lvm_vg: volume group already exists and is "
-                              "not using the specified physical volume");
+        if(msgs) output_error(pos, "lvm_vg: volume group already exists and "
+                              "is not using the specified physical volume");
     } else {
         /* the VG already exists and uses the specified PV - we're good */
         success = true;
@@ -215,8 +208,7 @@ bool does_vg_exist_on_pv(const std::string &vg, const std::string &pv,
 #endif /* HAS_INSTALL_ENV */
 
 bool LVMGroup::execute() const {
-    output_info("installfile:" + std::to_string(line),
-                "lvm_vg: creating volume group " + _vgname + " on " + _pv);
+    output_info(pos, "lvm_vg: creating volume group " + _vgname + " on " + _pv);
 
     if(script->options().test(Simulate)) {
         std::cout << "vgcreate " << _vgname << " " << _pv << std::endl;
@@ -226,16 +218,15 @@ bool LVMGroup::execute() const {
 #ifdef HAS_INSTALL_ENV
     /* REQ: Runner.Execute.lvm_vg.Duplicate */
     if(fs::exists("/dev/" + _vgname)) {
-        return does_vg_exist_on_pv(_vgname, _pv, line, true);
+        return does_vg_exist_on_pv(_vgname, _pv, pos, true);
     }
 
     if(run_command("vgcreate", {_vgname, _pv}) != 0) {
-        if(does_vg_exist_on_pv(_vgname, _pv, line, true)) {
+        if(does_vg_exist_on_pv(_vgname, _pv, pos, true)) {
             return true;
         }
 
-        output_error("installfile:" + std::to_string(line),
-                     "lvm_vg: failed to create volume group " + _vgname);
+        output_error(pos, "lvm_vg: failed to create volume group " + _vgname);
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
@@ -243,8 +234,9 @@ bool LVMGroup::execute() const {
 }
 
 
-Key *LVMVolume::parseFromData(const std::string &data, int lineno, int *errors,
-                              int *, const Script *script) {
+Key *LVMVolume::parseFromData(const std::string &data,
+                              const ScriptLocation &pos, int *errors, int *,
+                              const Script *script) {
     std::string vg, name, size_str;
     std::string::size_type name_start, size_start;
     SizeType size_type;
@@ -253,8 +245,7 @@ Key *LVMVolume::parseFromData(const std::string &data, int lineno, int *errors,
     long spaces = std::count(data.cbegin(), data.cend(), ' ');
     if(spaces != 2) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "lvm_lv: expected 3 elements, got: " +
+        output_error(pos, "lvm_lv: expected 3 elements, got: " +
                      std::to_string(spaces),
                      "syntax is: lvm_lv [vg] [name] [size]");
         return nullptr;
@@ -268,26 +259,23 @@ Key *LVMVolume::parseFromData(const std::string &data, int lineno, int *errors,
 
     if(!is_valid_lvm_name(vg)) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "lvm_lv: invalid volume group name");
+        output_error(pos, "lvm_lv: invalid volume group name");
         return nullptr;
     }
 
     if(!is_valid_lvm_lv_name(name)) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "lvm_lv: invalid volume name");
+        output_error(pos, "lvm_lv: invalid volume name");
         return nullptr;
     }
 
     if(!parse_size_string(size_str, &size, &size_type)) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "lvm_lv: invalid size", size_str);
+        output_error(pos, "lvm_lv: invalid size", size_str);
         return nullptr;
     }
 
-    return new LVMVolume(script, lineno, vg, name, size_type, size);
+    return new LVMVolume(script, pos, vg, name, size_type, size);
 }
 
 bool LVMVolume::validate() const {
@@ -295,8 +283,7 @@ bool LVMVolume::validate() const {
 }
 
 bool LVMVolume::execute() const {
-    output_info("installfile:" + std::to_string(line),
-                "lvm_lv: creating volume " + _lvname + " on " + _vg);
+    output_info(pos, "lvm_lv: creating volume " + _lvname + " on " + _vg);
     std::string param, size;
 
     switch(_size_type) {
@@ -322,8 +309,7 @@ bool LVMVolume::execute() const {
 
 #ifdef HAS_INSTALL_ENV
     if(run_command("lvcreate", {param, size, "-n", _lvname, _vg}) != 0) {
-        output_error("installfile:" + std::to_string(line),
-                     "lvm_lv: failed to create logical volume " + _lvname);
+        output_error(pos, "lvm_lv: failed to create logical volume " + _lvname);
         return false;
     }
 #endif /* HAS_INSTALL_ENV */

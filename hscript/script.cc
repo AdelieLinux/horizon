@@ -20,6 +20,7 @@
 
 #include "script.hh"
 #include "script_i.hh"
+#include "script_l.hh"
 #include "disk.hh"
 #include "meta.hh"
 #include "network.hh"
@@ -30,8 +31,9 @@
 #define SCRIPT_LINE_MAX 512
 
 
-typedef Horizon::Keys::Key *(*key_parse_fn)(const std::string &, int, int*,
-                                            int*, const Horizon::Script *);
+typedef Horizon::Keys::Key *(*key_parse_fn)(const std::string &,
+                                            const Horizon::ScriptLocation &,
+                                            int*, int*, const Horizon::Script*);
 
 using namespace Horizon::Keys;
 
@@ -76,12 +78,12 @@ const std::map<std::string, key_parse_fn> valid_keys = {
 namespace Horizon {
 
 bool Script::ScriptPrivate::store_key(const std::string &key_name, Key *obj,
-                                      int lineno, int *errors, int *warnings,
-                                      const ScriptOptions &opts) {
+                                      const ScriptLocation &pos, int *errors,
+                                      int *warnings, const ScriptOptions &opts) {
     if(key_name == "network") {
-        return store_network(obj, lineno, errors, warnings, opts);
+        return store_network(obj, pos, errors, warnings, opts);
     } else if(key_name == "netconfigtype") {
-        return store_netconfig(obj, lineno, errors, warnings, opts);
+        return store_netconfig(obj, pos, errors, warnings, opts);
     } else if(key_name == "netaddress") {
         std::unique_ptr<NetAddress> addr(dynamic_cast<NetAddress *>(obj));
         this->addresses.push_back(std::move(addr));
@@ -95,21 +97,21 @@ bool Script::ScriptPrivate::store_key(const std::string &key_name, Key *obj,
         this->ssids.push_back(std::move(ssid));
         return true;
     } else if(key_name == "hostname") {
-        return store_hostname(obj, lineno, errors, warnings, opts);
+        return store_hostname(obj, pos, errors, warnings, opts);
     } else if(key_name == "pkginstall") {
-        return store_pkginstall(obj, lineno, errors, warnings, opts);
+        return store_pkginstall(obj, pos, errors, warnings, opts);
     } else if(key_name == "arch") {
-        return store_arch(obj, lineno, errors, warnings, opts);
+        return store_arch(obj, pos, errors, warnings, opts);
     } else if(key_name == "rootpw") {
-        return store_rootpw(obj, lineno, errors, warnings, opts);
+        return store_rootpw(obj, pos, errors, warnings, opts);
     } else if(key_name == "language") {
-        return store_lang(obj, lineno, errors, warnings, opts);
+        return store_lang(obj, pos, errors, warnings, opts);
     } else if(key_name == "keymap") {
-        return store_keymap(obj, lineno, errors, warnings, opts);
+        return store_keymap(obj, pos, errors, warnings, opts);
     } else if(key_name == "firmware") {
-        return store_firmware(obj, lineno, errors, warnings, opts);
+        return store_firmware(obj, pos, errors, warnings, opts);
     } else if(key_name == "timezone") {
-        return store_timezone(obj, lineno, errors, warnings, opts);
+        return store_timezone(obj, pos, errors, warnings, opts);
     } else if(key_name == "repository") {
         std::unique_ptr<Repository> repo(dynamic_cast<Repository *>(obj));
         this->repos.push_back(std::move(repo));
@@ -119,17 +121,17 @@ bool Script::ScriptPrivate::store_key(const std::string &key_name, Key *obj,
         this->repo_keys.push_back(std::move(key));
         return true;
     } else if(key_name == "svcenable") {
-        return store_svcenable(obj, lineno, errors, warnings, opts);
+        return store_svcenable(obj, pos, errors, warnings, opts);
     } else if(key_name == "username") {
-        return store_username(obj, lineno, errors, warnings, opts);
+        return store_username(obj, pos, errors, warnings, opts);
     } else if(key_name == "useralias") {
-        return store_useralias(obj, lineno, errors, warnings, opts);
+        return store_useralias(obj, pos, errors, warnings, opts);
     } else if(key_name == "userpw") {
-        return store_userpw(obj, lineno, errors, warnings, opts);
+        return store_userpw(obj, pos, errors, warnings, opts);
     } else if(key_name == "usericon") {
-        return store_usericon(obj, lineno, errors, warnings, opts);
+        return store_usericon(obj, pos, errors, warnings, opts);
     } else if(key_name == "usergroups") {
-        return store_usergroups(obj, lineno, errors, warnings, opts);
+        return store_usergroups(obj, pos, errors, warnings, opts);
     } else if(key_name == "diskid") {
         std::unique_ptr<DiskId> diskid(dynamic_cast<DiskId *>(obj));
         this->diskids.push_back(std::move(diskid));
@@ -188,23 +190,22 @@ Script *Script::load(const std::string &path, const ScriptOptions &opts) {
         return nullptr;
     }
 
-    return Script::load(file, opts);
+    return Script::load(file, opts, path);
 }
 
 
-Script *Script::load(std::istream &sstream, const ScriptOptions &opts) {
+Script *Script::load(std::istream &sstream, const ScriptOptions &opts,
+                     const std::string &name) {
 #define PARSER_ERROR(err_str) \
     errors++;\
-    output_error("installfile:" + std::to_string(lineno),\
-                 err_str, "");\
+    output_error(pos, err_str, "");\
     if(!opts.test(ScriptOptionFlags::KeepGoing)) {\
         break;\
     }
 
 #define PARSER_WARNING(warn_str) \
     warnings++;\
-    output_warning("installfile:" + std::to_string(lineno),\
-                   warn_str, "");
+    output_warning(pos, warn_str, "");
 
     using namespace Horizon::Keys;
 
@@ -223,6 +224,7 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts) {
             continue;
         }
 
+        const ScriptLocation pos(name, lineno, false);
         const std::string line(nextline);
         std::string key;
         std::string::size_type start, key_end, value_begin;
@@ -254,14 +256,14 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts) {
             continue;
         }
 
-        Key *key_obj = valid_keys.at(key)(line.substr(value_begin), lineno,
+        Key *key_obj = valid_keys.at(key)(line.substr(value_begin), pos,
                                           &errors, &warnings, the_script);
         if(!key_obj) {
             PARSER_ERROR("value for key '" + key + "' was invalid")
             continue;
         }
 
-        if(!the_script->internal->store_key(key, key_obj, lineno, &errors,
+        if(!the_script->internal->store_key(key, key_obj, pos, &errors,
                                             &warnings, opts)) {
             PARSER_ERROR("stopping due to prior errors")
             continue;

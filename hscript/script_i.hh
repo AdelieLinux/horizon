@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+#include "script_l.hh"
+
 #include "disk.hh"
 #include "meta.hh"
 #include "network.hh"
@@ -104,23 +106,26 @@ struct Script::ScriptPrivate {
     /*! Store +key_obj+ representing the key +key_name+.
      * @param key_name      The name of the key that is being stored.
      * @param obj           The Key object associated with the key.
+     * @param pos           The on-disk script position of the key.
      * @param errors        Output parameter: if given, incremented on error.
      * @param warnings      Output parameter: if given, incremented on warning.
      * @param opts          Script parsing options.
      */
-    bool store_key(const std::string &key_name, Key *obj, int lineno,
-                   int *errors, int *warnings, const ScriptOptions &opts);
+    bool store_key(const std::string &key_name, Key *obj,
+                   const ScriptLocation &pos, int *errors, int *warnings,
+                   const ScriptOptions &opts);
 
 #define DUPLICATE_ERROR(OBJ, KEY, OLD_VAL) \
     std::string err_str("previous value was ");\
     err_str += OLD_VAL;\
-    err_str += " at installfile:" + std::to_string(OBJ->lineno());\
+    err_str += " at " + OBJ->where().name;\
+    err_str += ":" + std::to_string(OBJ->where().line);\
     if(errors) *errors += 1;\
-    output_error("installfile:" + std::to_string(line),\
-                 "duplicate value for key '" + std::string(KEY) + "'",\
+    output_error(pos, "duplicate value for key '" + std::string(KEY) + "'",\
                  err_str);
 
-    bool store_network(Key* obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_network(Key* obj, const ScriptLocation &pos, int *errors, int *,
+                       const ScriptOptions &) {
         if(network) {
             DUPLICATE_ERROR(network, "network",
                             network->test() ? "true" : "false")
@@ -131,7 +136,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_netconfig(Key *obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_netconfig(Key *obj, const ScriptLocation &pos, int *errors,
+                         int *, const ScriptOptions &) {
         if(netconfig) {
             DUPLICATE_ERROR(netconfig, "netconfigtype",
                             netconfig->type());
@@ -142,7 +148,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_hostname(Key* obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_hostname(Key* obj, const ScriptLocation &pos, int *errors,
+                        int *, const ScriptOptions &) {
         if(hostname) {
             DUPLICATE_ERROR(hostname, "hostname", hostname->value())
             return false;
@@ -152,14 +159,13 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_pkginstall(Key* obj, int line, int *, int *warnings,
-                          ScriptOptions opts) {
+    bool store_pkginstall(Key* obj, const ScriptLocation &pos, int *,
+                          int *warnings, const ScriptOptions &opts) {
         PkgInstall *install = dynamic_cast<PkgInstall *>(obj);
         for(auto &pkg : install->packages()) {
             if(opts.test(StrictMode) && packages.find(pkg) != packages.end()) {
                 if(warnings) *warnings += 1;
-                output_warning("installfile:" + std::to_string(line),
-                               "pkginstall: package '" + pkg +
+                output_warning(pos, "pkginstall: package '" + pkg +
                                "' has already been specified");
                 continue;
             }
@@ -169,7 +175,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_arch(Key* obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_arch(Key* obj, const ScriptLocation &pos, int *errors, int *,
+                    const ScriptOptions &) {
         if(arch) {
             DUPLICATE_ERROR(arch, "arch", arch->value())
             return false;
@@ -179,7 +186,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_rootpw(Key* obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_rootpw(Key* obj, const ScriptLocation &pos, int *errors, int *,
+                      const ScriptOptions &) {
         if(rootpw) {
             DUPLICATE_ERROR(rootpw, "rootpw", "an encrypted passphrase")
             return false;
@@ -189,7 +197,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_firmware(Key *obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_firmware(Key *obj, const ScriptLocation &pos, int *errors, int *,
+                        const ScriptOptions &) {
         std::unique_ptr<Firmware> f(dynamic_cast<Firmware *>(obj));
 #ifdef NON_LIBRE_FIRMWARE
         if(firmware) {
@@ -205,7 +214,8 @@ struct Script::ScriptPrivate {
 #endif
     }
 
-    bool store_lang(Key *obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_lang(Key *obj, const ScriptLocation &pos, int *errors, int *,
+                    const ScriptOptions &) {
         if(lang) {
             DUPLICATE_ERROR(lang, "language", lang->value())
             return false;
@@ -215,7 +225,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_keymap(Key *obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_keymap(Key *obj, const ScriptLocation &pos, int *errors, int *,
+                      const ScriptOptions &) {
         if(keymap) {
             DUPLICATE_ERROR(keymap, "keymap", keymap->value())
             return false;
@@ -225,7 +236,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_timezone(Key *obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_timezone(Key *obj, const ScriptLocation &pos, int *errors, int *,
+                        const ScriptOptions &) {
         if(tzone) {
             DUPLICATE_ERROR(tzone, "timezone", tzone->value())
             return false;
@@ -235,13 +247,13 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_svcenable(Key *obj, int line, int *, int *warn, ScriptOptions) {
+    bool store_svcenable(Key *obj, const ScriptLocation &pos, int *, int *warn,
+                         const ScriptOptions &) {
         std::unique_ptr<SvcEnable> svc(dynamic_cast<SvcEnable *>(obj));
         for(const auto &s : svcs_enable) {
             if(s->value() == svc->value()) {
                 if(warn) *warn += 1;
-                output_warning("installfile:" + std::to_string(line),
-                               "svcenable: service already enabled",
+                output_warning(pos, "svcenable: service already enabled",
                                s->value());
                 return true;
             }
@@ -251,11 +263,11 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_username(Key *obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_username(Key *obj, const ScriptLocation &pos, int *errors, int *,
+                        const ScriptOptions &) {
         if(accounts.size() >= 255) {
             if(errors) *errors += 1;
-            output_error("installfile:" + std::to_string(line),
-                         "username: too many users",
+            output_error(pos, "username: too many users",
                          "you may only specify 255 users");
             return false;
         }
@@ -275,14 +287,14 @@ struct Script::ScriptPrivate {
 #define GET_USER_DETAIL(OBJ, KEY) \
     if(accounts.find(OBJ->username()) == accounts.end()) {\
         if(errors) *errors += 1;\
-        output_error("installfile:" + std::to_string(line),\
-                     std::string(KEY) + ": account name " + OBJ->username() +\
-                     " is unknown");\
+        output_error(pos, std::string(KEY) + ": account name " +\
+                     OBJ->username() + " is unknown");\
         return false;\
     }\
     UserDetail *detail = (*accounts.find(OBJ->username())).second.get();
 
-    bool store_useralias(Key* obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_useralias(Key* obj, const ScriptLocation &pos, int *errors,
+                         int *, const ScriptOptions &) {
         std::unique_ptr<UserAlias> alias(dynamic_cast<UserAlias *>(obj));
         GET_USER_DETAIL(alias, "useralias")
         /* REQ: Runner.Validate.useralias.Unique */
@@ -294,7 +306,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_userpw(Key *obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_userpw(Key *obj, const ScriptLocation &pos, int *errors, int *,
+                      const ScriptOptions &) {
         std::unique_ptr<UserPassphrase> pw(dynamic_cast<UserPassphrase *>(obj));
         GET_USER_DETAIL(pw, "userpw")
         /* REQ: Runner.Validate.userpw.Unique */
@@ -307,7 +320,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_usericon(Key *obj, int line, int *errors, int *, ScriptOptions) {
+    bool store_usericon(Key *obj, const ScriptLocation &pos, int *errors, int *,
+                        const ScriptOptions &) {
         std::unique_ptr<UserIcon> icon(dynamic_cast<UserIcon *>(obj));
         GET_USER_DETAIL(icon, "usericon")
         /* REQ: Runner.Validate.usericon.Unique */
@@ -319,8 +333,8 @@ struct Script::ScriptPrivate {
         return true;
     }
 
-    bool store_usergroups(Key* obj, int line, int *errors, int *,
-                          ScriptOptions) {
+    bool store_usergroups(Key* obj, const ScriptLocation &pos, int *errors,
+                          int *, const ScriptOptions &) {
         std::unique_ptr<UserGroups> grp(dynamic_cast<UserGroups *>(obj));
         GET_USER_DETAIL(grp, "usergroups")
         detail->groups.push_back(std::move(grp));

@@ -36,24 +36,22 @@ using namespace Horizon::Keys;
 #ifdef HAS_INSTALL_ENV
 /*! Determine if _block is a valid block device.
  * @param key       The key associated with this test.
- * @param line      The line number where the key exists.
+ * @param pos       The location where the key exists.
  * @param _block    The path to test.
  * @returns true if _block is valid, false otherwise.
  * @note Will output_error if an error occurs.
  */
-bool is_block_device(const std::string &key, long line,
+bool is_block_device(const std::string &key, const Horizon::ScriptLocation &pos,
                      const std::string &_block) {
     struct stat blk_stat;
     const char *block_c = _block.c_str();
     if(access(block_c, F_OK) != 0 || stat(block_c, &blk_stat) != 0) {
-        output_error("installfile:" + std::to_string(line),
-                     key + ": error opening device " + _block,
+        output_error(pos, key + ": error opening device " + _block,
                      strerror(errno));
         return false;
     }
     if(!S_ISBLK(blk_stat.st_mode)) {
-        output_error("installfile:" + std::to_string(line),
-                     key + ": " + _block + " is not a valid block device");
+        output_error(pos, key + ": " + _block + " is not a valid block device");
         return false;
     }
     return true;
@@ -61,21 +59,20 @@ bool is_block_device(const std::string &key, long line,
 #endif /* HAS_INSTALL_ENV */
 
 
-Key *DiskId::parseFromData(const std::string &data, int lineno, int *errors,
-                           int *, const Script *script) {
+Key *DiskId::parseFromData(const std::string &data, const ScriptLocation &pos,
+                           int *errors, int *, const Script *script) {
     std::string block, ident;
     std::string::size_type block_end = data.find_first_of(' ');
     if(block_end == std::string::npos) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "diskid: expected an identification string",
+        output_error(pos, "diskid: expected an identification string",
                      "valid format for diskid is: [block] [id-string]");
         return nullptr;
     }
 
     block = data.substr(0, block_end);
     ident = data.substr(block_end + 1);
-    return new DiskId(script, lineno, block, ident);
+    return new DiskId(script, pos, block, ident);
 }
 
 bool DiskId::validate() const {
@@ -84,7 +81,7 @@ bool DiskId::validate() const {
     if(script->options().test(InstallEnvironment)) {
         /* Unlike 'mount', 'diskid' *does* require that the block device exist
          * before installation begins.  This test is always valid. */
-        return is_block_device("diskid", this->lineno(), _block);
+        return is_block_device("diskid", where(), _block);
     }
 #endif /* HAS_INSTALL_ENV */
 
@@ -94,9 +91,8 @@ bool DiskId::validate() const {
 bool DiskId::execute() const {
     bool match = false;
 
-    output_info("installfile:" + std::to_string(line),
-                "diskid: Checking " + _block + " for identification string " +
-                _ident);
+    output_info(pos, "diskid: Checking " + _block +
+                " for identification string " + _ident);
 
     if(!script->options().test(InstallEnvironment)) return true;
 
@@ -107,8 +103,7 @@ bool DiskId::execute() const {
     struct stat blk_stat;
     const char *block_c = _block.c_str();
     if(stat(block_c, &blk_stat) != 0) {
-        output_error("installfile:" + std::to_string(line),
-                     "diskid: error opening device " + _block,
+        output_error(pos, "diskid: error opening device " + _block,
                      strerror(errno));
         return false;
     }
@@ -116,16 +111,14 @@ bool DiskId::execute() const {
 
     udev = udev_new();
     if(!udev) {
-        output_error("installfile:" + std::to_string(line),
-                     "diskid: failed to communicate with udevd",
+        output_error(pos, "diskid: failed to communicate with udevd",
                      "cannot read disk information");
         return false;
     }
     device = udev_device_new_from_devnum(udev, 'b', blk_stat.st_rdev);
     if(!device) {
         udev_unref(udev);
-        output_error("installfile:" + std::to_string(line),
-                     "diskid: failed to retrieve disk from udevd",
+        output_error(pos, "diskid: failed to retrieve disk from udevd",
                      "cannot read disk information");
         return false;
     }
@@ -136,15 +129,13 @@ bool DiskId::execute() const {
         std::string full_str(serial);
         match = (full_str.find(_ident) != std::string::npos);
     } else {
-        output_error("installfile:" + std::to_string(line),
-                     "diskid: failed to retrieve disk identification",
+        output_error(pos, "diskid: failed to retrieve disk identification",
                      "cannot read disk information");
     }
 
     if(!match) {
-        output_error("installfile:" + std::to_string(line),
-                     "diskid: device does not match expected identification "
-                     "string");
+        output_error(pos, "diskid: device does not match expected "
+                     "identification string");
     }
 
     udev_device_unref(device);
@@ -155,8 +146,9 @@ bool DiskId::execute() const {
 }
 
 
-Key *DiskLabel::parseFromData(const std::string &data, int lineno, int *errors,
-                              int *, const Script *script) {
+Key *DiskLabel::parseFromData(const std::string &data,
+                              const ScriptLocation &pos, int *errors, int *,
+                              const Script *script) {
     std::string block, label;
     std::string::size_type sep = data.find_first_of(' ');
     LabelType type;
@@ -164,8 +156,7 @@ Key *DiskLabel::parseFromData(const std::string &data, int lineno, int *errors,
     /* REQ: Runner.Validate.disklabel.Validity */
     if(sep == std::string::npos || data.length() == sep + 1) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "disklabel: expected a label type",
+        output_error(pos, "disklabel: expected a label type",
                      "valid format for disklabel is: [disk] [type]");
         return nullptr;
     }
@@ -182,13 +173,12 @@ Key *DiskLabel::parseFromData(const std::string &data, int lineno, int *errors,
         type = GPT;
     } else {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "disklabel: '" + label + "' is not a valid label type",
+        output_error(pos, "disklabel: invalid label type '" + label + "'",
                      "valid label types are: apm, mbr, gpt");
         return nullptr;
     }
 
-    return new DiskLabel(script, lineno, block, type);
+    return new DiskLabel(script, pos, block, type);
 }
 
 bool DiskLabel::validate() const {
@@ -196,7 +186,7 @@ bool DiskLabel::validate() const {
     /* REQ: Runner.Validate.disklabel.Block */
     if(script->options().test(InstallEnvironment)) {
         /* disklabels are created before any others, so we can check now */
-        return is_block_device("disklabel", this->lineno(), _block);
+        return is_block_device("disklabel", where(), _block);
     }
 #endif /* HAS_INSTALL_ENV */
 
@@ -217,8 +207,7 @@ bool DiskLabel::execute() const {
         break;
     }
 
-    output_info("installfile:" + std::to_string(this->lineno()),
-                "disklabel: creating new " + type_str + " disklabel on " +
+    output_info(pos, "disklabel: creating new " + type_str + " disklabel on " +
                 device());
 
     if(script->options().test(Simulate)) {
@@ -233,8 +222,7 @@ bool DiskLabel::execute() const {
     int res;
 
     if(label == nullptr) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "disklabel: Parted does not support label type " +
+        output_error(pos, "disklabel: Parted does not support label type " +
                      type_str + "!");
         return false;
     }
@@ -243,16 +231,14 @@ bool DiskLabel::execute() const {
     ped_disk_clobber(pdevice);
     PedDisk *disk = ped_disk_new_fresh(pdevice, label);
     if(disk == nullptr) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "disklabel: internal error creating new " +
+        output_error(pos, "disklabel: internal error creating new " +
                      type_str + " disklabel on " + _block);
         return false;
     }
 
     res = ped_disk_commit(disk);
     if(res != 1) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "disklabel: error creating disklabel on " + _block);
+        output_error(pos, "disklabel: error creating disklabel on " + _block);
     }
     return (res == 1);
 #else
@@ -261,8 +247,8 @@ bool DiskLabel::execute() const {
 }
 
 
-Key *Encrypt::parseFromData(const std::string &data, int lineno, int *errors,
-                            int *, const Script *script) {
+Key *Encrypt::parseFromData(const std::string &data, const ScriptLocation &pos,
+                            int *errors, int *, const Script *script) {
     std::string::size_type sep = data.find(' ');
     std::string dev, pass;
 
@@ -275,12 +261,11 @@ Key *Encrypt::parseFromData(const std::string &data, int lineno, int *errors,
 
     if(dev.size() < 6 || dev.compare(0, 5, "/dev/")) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "encrypt: expected path to block device");
+        output_error(pos, "encrypt: expected path to block device");
         return nullptr;
     }
 
-    return new Encrypt(script, lineno, dev, pass);
+    return new Encrypt(script, pos, dev, pass);
 }
 
 bool Encrypt::validate() const {
@@ -396,8 +381,9 @@ bool parse_size_string(const std::string &in_size, uint64_t *out_size,
 }
 
 
-Key *Partition::parseFromData(const std::string &data, int lineno, int *errors,
-                              int *, const Script *script) {
+Key *Partition::parseFromData(const std::string &data,
+                              const ScriptLocation &pos, int *errors, int *,
+                              const Script *script) {
     std::string block, pno, size_str, typecode;
     std::string::size_type next_pos, last_pos;
     int part_no;
@@ -408,8 +394,7 @@ Key *Partition::parseFromData(const std::string &data, int lineno, int *errors,
     long spaces = std::count(data.cbegin(), data.cend(), ' ');
     if(spaces < 2 || spaces > 3) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "partition: expected either 3 or 4 elements, got: " +
+        output_error(pos, "partition: expected either 3 or 4 elements, got: " +
                      std::to_string(spaces),
                      "syntax is: partition [block] [#] [size] ([type])");
         return nullptr;
@@ -420,8 +405,7 @@ Key *Partition::parseFromData(const std::string &data, int lineno, int *errors,
 
     if(block.compare(0, 4, "/dev")) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "partition: expected path to block device",
+        output_error(pos, "partition: expected path to block device",
                      "'" + block + "' is not a valid block device path");
         return nullptr;
     }
@@ -432,8 +416,7 @@ Key *Partition::parseFromData(const std::string &data, int lineno, int *errors,
         part_no = std::stoi(pno);
     } catch(const std::exception &) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "partition: expected partition number, got", pno);
+        output_error(pos, "partition: expected partition number, got", pno);
         return nullptr;
     }
     last_pos = next_pos;
@@ -446,8 +429,7 @@ Key *Partition::parseFromData(const std::string &data, int lineno, int *errors,
     }
     if(!parse_size_string(size_str, &size, &size_type)) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "partition: invalid size", size_str);
+        output_error(pos, "partition: invalid size", size_str);
         return nullptr;
     }
 
@@ -464,49 +446,44 @@ Key *Partition::parseFromData(const std::string &data, int lineno, int *errors,
             type = PReP;
         } else {
             if(errors) *errors += 1;
-            output_error("installfile:" + std::to_string(lineno),
-                         "partition: expected type code, got: " + typecode,
+            output_error(pos, "partition: expected type code, got: " + typecode,
                          "valid type codes are: boot esp bios prep");
             return nullptr;
         }
     }
 
-    return new Partition(script, lineno, block, part_no, size_type, size, type);
+    return new Partition(script, pos, block, part_no, size_type, size, type);
 }
 
 bool Partition::validate() const {
 #ifdef HAS_INSTALL_ENV
     if(script->options().test(InstallEnvironment)) {
         /* REQ: Runner.Validate.partition.Block */
-        return is_block_device("partition", this->lineno(), this->device());
+        return is_block_device("partition", where(), this->device());
     }
 #endif /* HAS_INSTALL_ENV */
     return true;
 }
 
 bool Partition::execute() const {
-    output_info("installfile:" + std::to_string(this->lineno()),
-                "partition: creating partition #" + std::to_string(_partno) +
-                " on " + _block);
+    output_info(pos, "partition: creating partition #" +
+                std::to_string(_partno) + " on " + _block);
 
     if(script->options().test(Simulate)) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "partition: Not supported in Simulation mode");
+        output_error(pos, "partition: Not supported in Simulation mode");
         return true;
     }
 
 #ifdef HAS_INSTALL_ENV
     PedDevice *dev = ped_device_get(this->device().c_str());
     if(dev == nullptr) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "partition: error opening device " + this->device());
+        output_error(pos, "partition: error opening device " + this->device());
         return false;
     }
 
     PedDisk *disk = ped_disk_new(dev);
     if(disk == nullptr) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "partition: error reading device " + this->device());
+        output_error(pos, "partition: error reading device " + this->device());
         return false;
     }
 
@@ -516,8 +493,7 @@ bool Partition::execute() const {
     if(last == -1) last = 0;
 
     if(last != (this->partno() - 1)) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "partition: consistency error on " + this->device(),
+        output_error(pos, "partition: consistency error on " + this->device(),
                      "Partition #" + std::to_string(this->partno()) +
                      " has been requested, but the disk has " +
                      std::to_string(last) + " partitions");
@@ -531,8 +507,7 @@ bool Partition::execute() const {
     if(last > 0) {
         before = ped_disk_get_partition(disk, last);
         if(before == nullptr) {
-            output_error("installfile:" + std::to_string(this->lineno()),
-                         "partition: error reading partition table on " +
+            output_error(pos, "partition: error reading partition table on " +
                          this->device());
             ped_disk_destroy(disk);
             return false;
@@ -558,8 +533,7 @@ bool Partition::execute() const {
     me = ped_partition_new(disk, PED_PARTITION_NORMAL, nullptr,
                            start, start + size);
     if(me == nullptr) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "partition: error creating partition on " +
+        output_error(pos, "partition: error creating partition on " +
                      this->device());
         ped_disk_destroy(disk);
         return false;
@@ -585,8 +559,7 @@ bool Partition::execute() const {
 
     int res = ped_disk_add_partition(disk, me, ped_constraint_any(dev));
     if(res == 0) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "partition: error adding partition to " +
+        output_error(pos, "partition: error adding partition to " +
                      this->device());
         ped_disk_destroy(disk);
         return false;
@@ -594,8 +567,7 @@ bool Partition::execute() const {
 
     res = ped_disk_commit(disk);
     if(res != 1) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "partition: error flushing changes to " +
+        output_error(pos, "partition: error flushing changes to " +
                      this->device());
         ped_disk_destroy(disk);
         return false;
@@ -612,12 +584,12 @@ const static std::set<std::string> valid_fses = {
 };
 
 
-Key *Filesystem::parseFromData(const std::string &data, int lineno,
-                               int *errors, int *, const Script *script) {
+Key *Filesystem::parseFromData(const std::string &data,
+                               const ScriptLocation &pos, int *errors, int *,
+                               const Script *script) {
     if(std::count(data.begin(), data.end(), ' ') != 1) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "fs: expected exactly two elements",
+        output_error(pos, "fs: expected exactly two elements",
                      "syntax is: fs [device] [fstype]");
         return nullptr;
     }
@@ -629,8 +601,7 @@ Key *Filesystem::parseFromData(const std::string &data, int lineno,
 
     if(device.size() < 6 || device.compare(0, 5, "/dev/")) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "fs: element 1: expected device node",
+        output_error(pos, "fs: element 1: expected device node",
                      "'" + device + "' is not a valid device node");
         return nullptr;
     }
@@ -640,8 +611,7 @@ Key *Filesystem::parseFromData(const std::string &data, int lineno,
         for(auto &&fs : valid_fses) fses += fs + " ";
 
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "fs: element 2: expected filesystem type",
+        output_error(pos, "fs: element 2: expected filesystem type",
                      "valid filesystems are: " + fses);
         return nullptr;
     }
@@ -662,7 +632,7 @@ Key *Filesystem::parseFromData(const std::string &data, int lineno,
         type = XFS;
     }
 
-    return new Filesystem(script, lineno, device, type);
+    return new Filesystem(script, pos, device, type);
 }
 
 bool Filesystem::validate() const {
@@ -674,8 +644,7 @@ bool Filesystem::execute() const {
     std::string cmd;
     std::vector<std::string> args;
 
-    output_info("installfile:" + std::to_string(line),
-                "fs: creating new filesystem on " + _block);
+    output_info(pos, "fs: creating new filesystem on " + _block);
 
     switch(_type) {
     case Ext2:
@@ -724,8 +693,7 @@ bool Filesystem::execute() const {
 
 #ifdef HAS_INSTALL_ENV
     if(run_command(cmd, args) != 0) {
-        output_error("installfile:" + std::to_string(line),
-                     "fs: failed to create filesystem");
+        output_error(pos, "fs: failed to create filesystem");
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
@@ -733,8 +701,8 @@ bool Filesystem::execute() const {
 }
 
 
-Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
-                          int *, const Script *script) {
+Key *Mount::parseFromData(const std::string &data, const ScriptLocation &pos,
+                          int *errors, int *, const Script *script) {
     std::string dev, where, opt;
     std::string::size_type where_pos, opt_pos;
     bool any_failure = false;
@@ -743,8 +711,7 @@ Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
     if(spaces < 1 || spaces > 2) {
         if(errors) *errors += 1;
         /* Don't bother with any_failure, because this is immediately fatal. */
-        output_error("installfile:" + std::to_string(lineno),
-                     "mount: expected either 2 or 3 elements, got: " +
+        output_error(pos, "mount: expected either 2 or 3 elements, got: " +
                      std::to_string(spaces), "");
         return nullptr;
     }
@@ -761,22 +728,20 @@ Key *Mount::parseFromData(const std::string &data, int lineno, int *errors,
     if(dev.compare(0, 4, "/dev")) {
         if(errors) *errors += 1;
         any_failure = true;
-        output_error("installfile:" + std::to_string(lineno),
-                     "mount: element 1: expected device node",
+        output_error(pos, "mount: element 1: expected device node",
                      "'" + dev + "' is not a valid device node");
     }
 
     if(where[0] != '/') {
         if(errors) *errors += 1;
         any_failure = true;
-        output_error("installfile:" + std::to_string(lineno),
-                     "mount: element 2: expected absolute path",
+        output_error(pos, "mount: element 2: expected absolute path",
                      "'" + where + "' is not a valid absolute path");
     }
 
     if(any_failure) return nullptr;
 
-    return new Mount(script, lineno, dev, where, opt);
+    return new Mount(script, pos, dev, where, opt);
 }
 
 bool Mount::validate() const {
@@ -799,7 +764,7 @@ bool Mount::execute() const {
     else {
         fstype = blkid_get_tag_value(nullptr, "TYPE", this->device().c_str());
         if(fstype == nullptr) {
-            output_error("installfile:" + std::to_string(this->lineno()),
+            output_error(pos,
                          "mount: cannot determine filesystem type for device",
                          this->device());
             return false;
@@ -807,8 +772,7 @@ bool Mount::execute() const {
     }
 #endif /* HAS_INSTALL_ENV */
 
-    output_info("installfile:" + std::to_string(this->lineno()),
-                "mount: mounting " + this->device() + " on " +
+    output_info(pos, "mount: mounting " + this->device() + " on " +
                 this->mountpoint());
     if(script->options().test(Simulate)) {
         std::cout << "mount ";
@@ -826,22 +790,20 @@ bool Mount::execute() const {
         if(!fs::exists(actual_mount, ec)) {
             fs::create_directory(actual_mount, ec);
             if(ec) {
-                output_error("installfile:" + std::to_string(this->lineno()),
-                             "mount: failed to create target directory for "
-                             + this->mountpoint(), ec.message());
+                output_error(pos, "mount: failed to create target directory "
+                             "for " + this->mountpoint(), ec.message());
                 return false;
             }
         }
         if(mount(this->device().c_str(), actual_mount.c_str(), fstype, 0,
                  this->options().c_str()) != 0) {
-            output_warning("installfile:" + std::to_string(this->lineno()),
-                           "mount: error mounting " + this->mountpoint() +
+            output_warning(pos, "mount: error mounting " + this->mountpoint() +
                            "with options; retrying without", strerror(errno));
             if(mount(this->device().c_str(), actual_mount.c_str(), fstype, 0,
                      nullptr) != 0) {
-                output_error("installfile:" + std::to_string(this->lineno()),
-                             "mount: error mounting " + this->mountpoint() +
-                             "without options", strerror(errno));
+                output_error(pos, "mount: error mounting " +
+                             this->mountpoint() + "without options",
+                             strerror(errno));
                 return false;
             }
         }
@@ -851,8 +813,7 @@ bool Mount::execute() const {
     /* Handle fstab.  We're guaranteed to have a /target since mount has
      * already ran and /target is the first mount done.
      */
-    output_info("installfile:" + std::to_string(this->lineno()),
-                "mount: adding " + this->mountpoint() + " to /etc/fstab");
+    output_info(pos, "mount: adding " + this->mountpoint() + " to /etc/fstab");
     char pass = (this->mountpoint() == "/" ? '1' : '0');
     const std::string fstab_opts = (this->options().empty() ?
                                         "defaults" : this->options());
@@ -872,8 +833,7 @@ bool Mount::execute() const {
         if(this->mountpoint() == "/") {
             fs::create_directory(script->targetDirectory() + "/etc", ec);
             if(ec) {
-                output_error("installfile:" + std::to_string(this->lineno()),
-                             "mount: failed to create /etc for target",
+                output_error(pos, "mount: failed to create /etc for target",
                              ec.message());
                 return false;
             }
@@ -883,16 +843,14 @@ bool Mount::execute() const {
                 #endif
                             ec);
             if(ec) {
-                output_warning("installfile:" + std::to_string(this->lineno()),
-                               "mount: failed to set permissions for target /etc",
-                               ec.message());
+                output_warning(pos, "mount: failed to set permissions for "
+                               "target /etc", ec.message());
             }
         }
         std::ofstream fstab_f(script->targetDirectory() + "/etc/fstab",
                               std::ios::app);
         if(!fstab_f) {
-            output_error("installfile:" + std::to_string(this->lineno()),
-                         "mount: failure opening /etc/fstab for writing");
+            output_error(pos, "mount: failure opening /etc/fstab for writing");
             return false;
         }
         fstab_f << this->device() << "\t" << this->mountpoint() << "\t"

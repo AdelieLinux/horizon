@@ -25,17 +25,16 @@
 
 using namespace Horizon::Keys;
 
-Key *Hostname::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *, const Script *script) {
+Key *Hostname::parseFromData(const std::string &data, const ScriptLocation &pos,
+                             int *errors, int *, const Script *script) {
     std::string valid_chars("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.");
     if(data.find_first_not_of(valid_chars) != std::string::npos) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "hostname: expected machine or DNS name",
+        output_error(pos, "hostname: expected machine or DNS name",
                      "'" + data + "' is not a valid hostname");
         return nullptr;
     }
-    return new Hostname(script, lineno, data);
+    return new Hostname(script, pos, data);
 }
 
 bool Hostname::validate() const {
@@ -45,14 +44,12 @@ bool Hostname::validate() const {
 
     if(!isalpha(this->_value[0])) {
         any_failure = true;
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "hostname: must start with alphabetical character");
+        output_error(pos, "hostname: must start with alphabetical character");
     }
 
     if(this->_value.size() > 320) {
         any_failure = true;
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "hostname: value too long",
+        output_error(pos, "hostname: value too long",
                      "valid host names must be less than 320 characters");
     }
 
@@ -63,8 +60,7 @@ bool Hostname::validate() const {
         }
         if(next_dot - last_dot > 64) {
             any_failure = true;
-            output_error("installfile:" + std::to_string(this->lineno()),
-                         "hostname: component too long",
+            output_error(pos, "hostname: component too long",
                          "each component must be less than 64 characters");
         }
         last_dot = next_dot;
@@ -89,8 +85,7 @@ bool Hostname::execute() const {
     }
 
     /* Runner.Execute.hostname. */
-    output_info("installfile:" + std::to_string(this->lineno()),
-                "hostname: set hostname to '" + actual + "'");
+    output_info(pos, "hostname: set hostname to '" + actual + "'");
     if(script->options().test(Simulate)) {
         std::cout << "hostname " << actual << std::endl;
     }
@@ -99,17 +94,15 @@ bool Hostname::execute() const {
         /* no-op; we don't want to set the image builder's hostname */
     } else {
         if(sethostname(actual.c_str(), actual.size()) == -1) {
-            output_error("installfile:" + std::to_string(this->lineno()),
-                         "hostname: failed to set host name",
-                         std::string(strerror(errno)));
+            output_error(pos, "hostname: failed to set host name",
+                         ::strerror(errno));
             return false;
         }
     }
 #endif /* HAS_INSTALL_ENV */
 
     /* Runner.Execute.hostname.Write. */
-    output_info("installfile:" + std::to_string(this->lineno()),
-                "hostname: write '" + actual + "' to /etc/hostname");
+    output_info(pos, "hostname: write '" + actual + "' to /etc/hostname");
     if(script->options().test(Simulate)) {
         std::cout << "printf '%s' " << actual << " > "
                   << script->targetDirectory() << "/etc/hostname" << std::endl;
@@ -119,8 +112,7 @@ bool Hostname::execute() const {
         std::ofstream hostname_f(script->targetDirectory() + "/etc/hostname",
                                  std::ios_base::trunc);
         if(!hostname_f) {
-            output_error("installfile:" + std::to_string(this->lineno()),
-                         "hostname: could not open /etc/hostname for writing");
+            output_error(pos, "hostname: could not open /etc/hostname");
             return false;
         }
         hostname_f << actual;
@@ -131,8 +123,7 @@ bool Hostname::execute() const {
      * terminates the nodename. */
     if(dot != std::string::npos && this->_value.length() > dot + 1) {
         const std::string domain(this->_value.substr(dot + 1));
-        output_info("installfile:" + std::to_string(this->lineno()),
-                    "hostname: set domain name '" + domain + "'");
+        output_info(pos, "hostname: set domain name '" + domain + "'");
         if(script->options().test(Simulate)) {
             std::cout << "mkdir -p " << script->targetDirectory()
                       << "/etc/conf.d" << std::endl;
@@ -147,17 +138,15 @@ bool Hostname::execute() const {
                 fs::create_directory(script->targetDirectory() +
                                      "/etc/conf.d", ec);
                 if(ec) {
-                    output_error("installfile:" + std::to_string(line),
-                                 "hostname: could not create /etc/conf.d "
+                    output_error(pos, "hostname: could not create /etc/conf.d "
                                  "directory", ec.message());
                 }
             }
             std::ofstream net_conf_f(script->targetDirectory() +
                                      "/etc/conf.d/net", std::ios_base::app);
             if(!net_conf_f) {
-                output_error("installfile:" + std::to_string(this->lineno()),
-                             "hostname: could not open /etc/conf.d/net for "
-                             "writing");
+                output_error(pos, "hostname: could not open /etc/conf.d/net "
+                             "for writing");
                 return false;
             }
             net_conf_f << "dns_domain_lo=\"" << domain << "\"" << std::endl;
@@ -179,29 +168,26 @@ static std::set<std::string> valid_arches = {
 };
 
 
-Key *Arch::parseFromData(const std::string &data, int lineno, int *errors,
-                         int *warnings, const Script *script) {
+Key *Arch::parseFromData(const std::string &data, const ScriptLocation &pos,
+                         int *errors, int *warnings, const Script *script) {
     if(data.find_first_not_of("abcdefghijklmnopqrstuvwyxz1234567890_") !=
             std::string::npos) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "arch: expected CPU architecture name",
+        output_error(pos, "arch: expected CPU architecture name",
                      "'" + data + "' is not a valid CPU architecture name");
         return nullptr;
     }
 
     if(valid_arches.find(data) == valid_arches.end()) {
         if(warnings) *warnings += 1;
-        output_warning("installfile:" + std::to_string(lineno),
-                       "arch: unknown CPU architecture '" + data + "'");
+        output_warning(pos, "arch: unknown CPU architecture '" + data + "'");
     }
 
-    return new Arch(script, lineno, data);
+    return new Arch(script, pos, data);
 }
 
 bool Arch::execute() const {
-    output_info("installfile:" + std::to_string(line),
-                "arch: setting system CPU architecture to " + value());
+    output_info(pos, "arch: setting system CPU architecture to " + value());
 
     if(script->options().test(Simulate)) {
         std::cout << "printf '" << this->value() << "\\" << "n'"
@@ -214,8 +200,7 @@ bool Arch::execute() const {
     std::ofstream arch_f(script->targetDirectory() + "/etc/apk/arch",
                          std::ios_base::trunc);
     if(!arch_f) {
-        output_error("installfile:" + std::to_string(line),
-                     "arch: cannot write target CPU architecture information");
+        output_error(pos, "arch: could not write target CPU architecture");
         return false;
     }
 
@@ -228,9 +213,9 @@ bool Arch::execute() const {
 static std::regex valid_pkg("[0-9A-Za-z+_.-]*((>?<|[<>]?=|[~>])[0-9A-Za-z-_.]+)?");
 
 
-Key *PkgInstall::parseFromData(const std::string &data, int lineno,
-                               int *errors, int *warnings,
-                               const Script *script) {
+Key *PkgInstall::parseFromData(const std::string &data,
+                               const ScriptLocation &pos, int *errors,
+                               int *warnings, const Script *script) {
     std::string next_pkg;
     std::istringstream stream(data);
     std::set<std::string> all_pkgs;
@@ -238,21 +223,19 @@ Key *PkgInstall::parseFromData(const std::string &data, int lineno,
     while(stream >> next_pkg) {
         if(!std::regex_match(next_pkg, valid_pkg)) {
             if(errors) *errors += 1;
-            output_error("installfile:" + std::to_string(lineno),
-                         "pkginstall: expected package name",
+            output_error(pos, "pkginstall: expected package name",
                          "'" + next_pkg + "' is not a valid package or atom");
             return nullptr;
         }
         if(all_pkgs.find(next_pkg) != all_pkgs.end()) {
             if(warnings) *warnings += 1;
-            output_warning("installfile:" + std::to_string(lineno),
-                           "pkginstall: package '" + next_pkg +
+            output_warning(pos, "pkginstall: package '" + next_pkg +
                            "' is already in the target package set");
             continue;
         }
         all_pkgs.insert(next_pkg);
     }
-    return new PkgInstall(script, lineno, all_pkgs);
+    return new PkgInstall(script, pos, all_pkgs);
 }
 
 
@@ -298,13 +281,12 @@ const std::set<std::string> valid_langs = {
 };
 
 
-Key *Language::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *, const Script *script) {
+Key *Language::parseFromData(const std::string &data, const ScriptLocation &pos,
+                             int *errors, int *, const Script *script) {
     if(data.length() < 2 ||
        valid_langs.find(data.substr(0, 2)) == valid_langs.end()) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "language: invalid language specified",
+        output_error(pos, "language: invalid language specified",
                      "language must be a valid ISO 639-1 language code");
         return nullptr;
     }
@@ -314,8 +296,7 @@ Key *Language::parseFromData(const std::string &data, int lineno, int *errors,
         /* data[1] is . if language is C.UTF-8 */
         if(data[2] != '_' && data[1] != '.') {
             if(errors) *errors += 1;
-            output_error("installfile:" + std::to_string(lineno),
-                         "language: invalid language specified",
+            output_error(pos, "language: invalid language specified",
                          "language must be a valid ISO 639-1 language code, "
                          "optionally followed by '_' and a country code");
             return nullptr;
@@ -325,20 +306,17 @@ Key *Language::parseFromData(const std::string &data, int lineno, int *errors,
         std::string::size_type dot = data.find_first_of('.');
         if(dot != std::string::npos && data.substr(dot+1, 5) != "UTF-8") {
             if(errors) *errors += 1;
-            output_error("installfile:" + std::to_string(lineno),
-                         "language: invalid language specified",
+            output_error(pos, "language: invalid language specified",
                          "you cannot specify a non-UTF-8 codeset");
             return nullptr;
         }
     }
 
-    return new Language(script, lineno, data);
+    return new Language(script, pos, data);
 }
 
 bool Language::execute() const {
-    output_info("installfile:" + std::to_string(this->lineno()),
-                "language: setting default system language to " +
-                this->value());
+    output_info(pos, "language: setting default system language to " + _value);
 
     if(script->options().test(Simulate)) {
         std::cout << "printf '#!/bin/sh\\" << "nexport LANG=\"%s\"\\" << "n' "
@@ -355,9 +333,7 @@ bool Language::execute() const {
     std::ofstream lang_f(lang_path, std::ios_base::trunc);
     error_code ec;
     if(!lang_f) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "language: could not open /etc/profile.d/00-language.sh "
-                     "for writing");
+        output_error(pos, "language: could not open profile for writing");
         return false;
     }
     lang_f << "#!/bin/sh" << std::endl << "export LANG=\""
@@ -366,9 +342,8 @@ bool Language::execute() const {
 
     fs::permissions(lang_path, rwxr_xr_x, ec);
     if(ec) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "language: could not set /etc/profile.d/00-language.sh "
-                     "as executable", ec.message());
+        output_error(pos, "language: could not set profile script "
+                     "executable", ec.message());
         return false;
     }
 #endif /* HAS_INSTALL_ENV */
@@ -378,16 +353,15 @@ bool Language::execute() const {
 
 #include "util/keymaps.hh"
 
-Key *Keymap::parseFromData(const std::string &data, int lineno, int *errors,
-                           int *, const Script *script) {
+Key *Keymap::parseFromData(const std::string &data, const ScriptLocation &pos,
+                           int *errors, int *, const Script *script) {
     if(valid_keymaps.find(data) == valid_keymaps.end()) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "keymap: invalid keymap specified");
+        output_error(pos, "keymap: invalid keymap specified");
         return nullptr;
     }
 
-    return new Keymap(script, lineno, data);
+    return new Keymap(script, pos, data);
 }
 
 bool Keymap::validate() const {
@@ -407,8 +381,7 @@ XKBOPTIONS=\n\
 BACKSPACE=guess"
                            );
 
-    output_info("installfile:" + std::to_string(line),
-                "keymap: setting system keyboard map to " + _value);
+    output_info(pos, "keymap: setting system keyboard map to " + _value);
 
     if(script->options().test(Simulate)) {
         std::cout << "cat >" << script->targetDirectory()
@@ -422,8 +395,7 @@ BACKSPACE=guess"
     std::ofstream keyconf(script->targetDirectory() + "/etc/default/keyboard",
                           std::ios_base::trunc);
     if(!keyconf) {
-        output_error("installfile:" + std::to_string(line),
-                     "keymap: cannot write target keyboard configuration");
+        output_error(pos, "keymap: cannot write target keyboard configuration");
         return false;
     }
 
@@ -433,32 +405,29 @@ BACKSPACE=guess"
 }
 
 
-Key *Firmware::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *, const Script *script) {
+Key *Firmware::parseFromData(const std::string &data, const ScriptLocation &pos,
+                             int *errors, int *, const Script *script) {
     bool value;
-    if(!BooleanKey::parse(data, "installfile:" + std::to_string(lineno),
-                          "firmware", &value)) {
+    if(!BooleanKey::parse(data, pos, "firmware", &value)) {
         if(errors) *errors += 1;
         return nullptr;
     }
 
     if(value) {
 #ifdef NON_LIBRE_FIRMWARE
-        output_warning("installfile:" + std::to_string(lineno),
-                       "firmware: You have requested non-libre firmware.  "
+        output_warning(pos, "firmware: You have requested non-libre firmware.  "
                        "This may cause security issues, system instability, "
                        "and many other issues.  You should not enable this "
                        "option unless your system absolutely requires it.");
 #else
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "firmware: You have requested non-libre firmware, "
+        output_error(pos, "firmware: You have requested non-libre firmware, "
                      "but this version of Horizon does not support "
                      "non-libre firmware.", "Installation cannot proceed.");
         return nullptr;
 #endif
     }
-    return new Firmware(script, lineno, value);
+    return new Firmware(script, pos, value);
 }
 
 /* LCOV_EXCL_START */
@@ -469,36 +438,32 @@ bool Firmware::execute() const {
 /* LCOV_EXCL_STOP */
 
 
-Key *Timezone::parseFromData(const std::string &data, int lineno, int *errors,
-                             int *warnings, const Script *script) {
+Key *Timezone::parseFromData(const std::string &data, const ScriptLocation &pos,
+                             int *errors, int *warnings, const Script *script) {
     if(data.find_first_of(" .\\") != std::string::npos || data[0] == '/') {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "timezone: invalid timezone name");
+        output_error(pos, "timezone: invalid timezone name");
         return nullptr;
     }
 
     if(access("/usr/share/zoneinfo", X_OK) != 0) {
         if(warnings) *warnings += 1;
-        output_warning("installfile:" + std::to_string(lineno),
-                       "timezone: can't determine validity of timezone",
+        output_warning(pos, "timezone: can't determine validity of timezone",
                        "zoneinfo data is missing or inaccessible");
     } else {
         std::string zi_path = "/usr/share/zoneinfo/" + data;
         if(access(zi_path.c_str(), F_OK) != 0) {
             if(errors) *errors += 1;
-            output_error("installfile:" + std::to_string(lineno),
-                         "timezone: unknown timezone '" + data + "'");
+            output_error(pos, "timezone: unknown timezone '" + data + "'");
             return nullptr;
         }
     }
 
-    return new Timezone(script, lineno, data);
+    return new Timezone(script, pos, data);
 }
 
 bool Timezone::execute() const {
-    output_info("installfile:" + std::to_string(this->lineno()),
-                "timezone: setting system timezone to " + this->value());
+    output_info(pos, "timezone: setting system timezone to " + this->value());
 
     if(script->options().test(Simulate)) {
         /* If the target doesn't have tzdata installed, copy the zoneinfo from
@@ -523,8 +488,7 @@ bool Timezone::execute() const {
 
         fs::create_symlink(zi_path, target_lt, ec);
         if(ec) {
-            output_error("installfile:" + std::to_string(this->lineno()),
-                         "timezone: failed to create symbolic link",
+            output_error(pos, "timezone: failed to create symbolic link",
                          ec.message());
             return false;
         }
@@ -534,8 +498,7 @@ bool Timezone::execute() const {
          * file from the Horizon environment to the target. */
         fs::copy_file(zi_path, target_lt, ec);
         if(ec) {
-            output_error("installfile:" + std::to_string(this->lineno()),
-                         "timezone: failed to prepare target environment",
+            output_error(pos, "timezone: failed to prepare target environment",
                          ec.message());
             return false;
         }
@@ -547,15 +510,15 @@ bool Timezone::execute() const {
 }
 
 
-Key *Repository::parseFromData(const std::string &data, int lineno, int *errors,
-                               int *, const Script *script) {
+Key *Repository::parseFromData(const std::string &data,
+                               const ScriptLocation &pos, int *errors, int *,
+                               const Script *script) {
     if(data.empty() || (data[0] != '/' && data.compare(0, 4, "http"))) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "repository: must be absolute path or HTTP(S) URL");
+        output_error(pos, "repository: must be absolute path or HTTP(S) URL");
         return nullptr;
     }
-    return new Repository(script, lineno, data);
+    return new Repository(script, pos, data);
 }
 
 bool Repository::validate() const {
@@ -565,8 +528,7 @@ bool Repository::validate() const {
 
 bool Repository::execute() const {
     /* Runner.Execute.repository. */
-    output_info("installfile:" + std::to_string(this->lineno()),
-                "repository: write '" + this->value() +
+    output_info(pos, "repository: write '" + this->value() +
                 "' to /etc/apk/repositories");
     if(script->options().test(Simulate)) {
         std::cout << "echo '" << this->value()
@@ -579,8 +541,7 @@ bool Repository::execute() const {
     std::ofstream repo_f(script->targetDirectory() + "/etc/apk/repositories",
                          std::ios_base::app);
     if(!repo_f) {
-        output_error("installfile:" + std::to_string(this->lineno()),
-                     "repository: could not open /etc/apk/repositories "
+        output_error(pos, "repository: could not open /etc/apk/repositories "
                      "for writing");
         return false;
     }
@@ -594,16 +555,16 @@ bool Repository::execute() const {
 }
 
 
-Key *SigningKey::parseFromData(const std::string &data, int lineno,
+Key *SigningKey::parseFromData(const std::string &data,
+                               const ScriptLocation &pos,
                                int *errors, int *, const Script *script) {
     if(data.empty() || (data[0] != '/' && data.compare(0, 8, "https://"))) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "signingkey: must be absolute path or HTTPS URL");
+        output_error(pos, "signingkey: must be absolute path or HTTPS URL");
         return nullptr;
     }
 
-    return new SigningKey(script, lineno, data);
+    return new SigningKey(script, pos, data);
 }
 
 bool SigningKey::validate() const {
@@ -617,8 +578,7 @@ bool SigningKey::execute() const {
     const std::string target_dir(script->targetDirectory() + "/etc/apk/keys/");
     const std::string target(target_dir + name);
 
-    output_info("installfile:" + std::to_string(line),
-                "signingkey: trusting " + name + " for repository signing");
+    output_info(pos, "signingkey: trusting " + name + " for APK signing");
 
     if(script->options().test(Simulate)) {
         std::cout << "mkdir -p " << target_dir << std::endl;
@@ -635,9 +595,8 @@ bool SigningKey::execute() const {
     if(!fs::exists(target_dir)) {
         fs::create_directory(target_dir, ec);
         if(ec) {
-            output_error("installfile:" + std::to_string(line),
-                         "signingkey: could not initialise target repository "
-                         "keys directory", ec.message());
+            output_error(pos, "signingkey: could not initialise target "
+                         "repository keys directory", ec.message());
             return false;
         }
     }
@@ -645,8 +604,7 @@ bool SigningKey::execute() const {
     if(_value[0] == '/') {
         fs::copy_file(_value, target, fs_overwrite, ec);
         if(ec) {
-            output_error("installfile:" + std::to_string(line),
-                         "signingkey: could not copy signing key to target",
+            output_error(pos, "signingkey: could not copy key to target",
                          ec.message());
             return false;
         }
@@ -657,26 +615,25 @@ bool SigningKey::execute() const {
     return true;  /* LCOV_EXCL_LINE */
 }
 
-Key *SvcEnable::parseFromData(const std::string &data, int lineno, int *errors,
-                              int *, const Script *script) {
+Key *SvcEnable::parseFromData(const std::string &data,
+                              const ScriptLocation &pos, int *errors, int *,
+                              const Script *script) {
     const static std::string valid_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.-_";
 
     if(data.find_first_not_of(valid_chars) != std::string::npos) {
         if(errors) *errors += 1;
-        output_error("installfile:" + std::to_string(lineno),
-                     "svcenable: invalid service name", data);
+        output_error(pos, "svcenable: invalid service name", data);
         return nullptr;
     }
 
-    return new SvcEnable(script, lineno, data);
+    return new SvcEnable(script, pos, data);
 }
 
 bool SvcEnable::execute() const {
     const std::string target = script->targetDirectory() +
                                "/etc/runlevels/default/" + _value;
     const std::string initd = "/etc/init.d/" + _value;
-    output_info("installfile:" + std::to_string(line),
-                "svcenable: enabling service " + _value);
+    output_info(pos, "svcenable: enabling service " + _value);
 
     if(script->options().test(Simulate)) {
         std::cout << "ln -s " << initd << " " << target << std::endl;
@@ -686,14 +643,12 @@ bool SvcEnable::execute() const {
 #ifdef HAS_INSTALL_ENV
     error_code ec;
     if(!fs::exists(script->targetDirectory() + initd, ec)) {
-        output_warning("installfile:" + std::to_string(line),
-                       "svcenable: service '" + _value + "' may be missing");
+        output_warning(pos, "svcenable: missing service", _value);
     }
 
     fs::create_symlink(initd, target, ec);
     if(ec) {
-        output_error("installfile:" + std::to_string(line),
-                     "svcenable: could not enable service " + _value,
+        output_error(pos, "svcenable: could not enable service " + _value,
                      ec.message());
         return false;
     }

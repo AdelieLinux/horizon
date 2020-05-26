@@ -59,8 +59,7 @@ int validate_one_account(const std::string &name, UserDetail *detail) {
 
     /* REQ: Runner.Validate.userpw.None */
     if(!detail->passphrase) {
-        long line = detail->name->lineno();
-        output_warning("installfile:" + to_string(line),
+        output_warning(detail->name->where(),
                        "username: " + name + " has no set passphrase",
                        "This account will not be able to log in.");
     }
@@ -81,7 +80,7 @@ int validate_one_account(const std::string &name, UserDetail *detail) {
                     return seen_groups.find(elem) == seen_groups.end();
                 })
             ) {
-                output_error("installfile:" + to_string(group->lineno()),
+                output_error(group->where(),
                              "usergroups: duplicate group name specified");
                 failures++;
             }
@@ -110,7 +109,7 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
                        const Script *s, bool firmware = false) {
     Repository *sys_key = dynamic_cast<Repository *>(
         Repository::parseFromData(
-            "https://distfiles.adelielinux.org/adelie/stable/system", 0,
+            "https://distfiles.adelielinux.org/adelie/stable/system", {"", 0},
             nullptr, nullptr, s
         )
     );
@@ -122,7 +121,7 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
     repos.push_back(std::move(sys_repo));
     Repository *user_key = dynamic_cast<Repository *>(
         Repository::parseFromData(
-            "https://distfiles.adelielinux.org/adelie/stable/user", 0,
+            "https://distfiles.adelielinux.org/adelie/stable/user", {"", 0},
             nullptr, nullptr, s
         )
     );
@@ -164,8 +163,8 @@ bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys,
                            const Script *s, bool firmware = false) {
     SigningKey *key = dynamic_cast<SigningKey *>(
         SigningKey::parseFromData(
-            "/etc/apk/keys/packages@adelielinux.org.pub", 0, nullptr, nullptr,
-            s)
+            "/etc/apk/keys/packages@adelielinux.org.pub", {"", 0},
+            nullptr, nullptr, s)
     );
     if(!key) {
         output_error("internal", "failed to create default repository signing key");
@@ -179,7 +178,7 @@ bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys,
     if(firmware) {
         SigningKey *fkey = dynamic_cast<SigningKey *>(SigningKey::parseFromData(
             "/etc/apk/keys/packages@pleroma.apkfission.net-5ac0b300.rsa.pub",
-                                                       0, nullptr, nullptr, s)
+                                                  {"", 0}, nullptr, nullptr, s)
         );
         if(!fkey) {
             output_error("internal", "failed to create firmware signing key");
@@ -189,7 +188,7 @@ bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys,
         keys.push_back(std::move(fw_key));
         fkey = dynamic_cast<SigningKey *>(SigningKey::parseFromData(
             "/etc/apk/keys/packages@pleroma.apkfission.net-5ac04808.rsa.pub",
-                                              0, nullptr, nullptr, s));
+                                              {"", 0}, nullptr, nullptr, s));
         if(fkey) {
             std::unique_ptr<SigningKey> fw_key2(fkey);
             keys.push_back(std::move(fw_key2));
@@ -230,9 +229,8 @@ bool Horizon::Script::validate() const {
             seen_iface[address->iface()] += 1;
             if(seen_iface[address->iface()] > 255) {
                 failures++;
-                output_error("installfile:" + std::to_string(address->lineno()),
-                             "netaddress: interface '" + address->iface() +
-                             "' has too many addresses assigned");
+                output_error(address->where(), "netaddress: interface '" +
+                             address->iface() + "' has too many addresses");
             }
         }
     }
@@ -242,8 +240,7 @@ bool Horizon::Script::validate() const {
         if(!ns->validate()) failures++;
     }
     if(internal->nses.size() > MAXNS) {
-        output_warning("installfile:" +
-                       to_string(internal->nses[MAXNS]->lineno()),
+        output_warning(internal->nses[MAXNS]->where(),
                        "nameserver: more nameservers are defined than usable",
                        to_string(MAXNS) + " nameservers are allowed");
     }
@@ -276,7 +273,7 @@ bool Horizon::Script::validate() const {
     /* REQ: Runner.Execute.timezone */
     if(!internal->tzone) {
         Timezone *utc = dynamic_cast<Timezone *>
-                (Timezone::parseFromData("UTC", 0, &failures, nullptr, this));
+            (Timezone::parseFromData("UTC", {"", 0}, &failures, nullptr, this));
         if(!utc) {
             output_error("internal", "failed to create default timezone");
             return false;
@@ -305,7 +302,7 @@ bool Horizon::Script::validate() const {
     }
     if(internal->repos.size() > 10) {
         failures++;
-        output_error("installfile:" + to_string(internal->repos[11]->lineno()),
+        output_error(internal->repos[11]->where(),
                      "repository: too many repositories specified",
                      "You may only specify up to 10 repositories.");
     }
@@ -327,8 +324,7 @@ bool Horizon::Script::validate() const {
     }
     if(internal->repo_keys.size() > 10) {
         failures++;
-        output_error("installfile:" +
-                     to_string(internal->repo_keys[11]->lineno()),
+        output_error(internal->repo_keys[11]->where(),
                      "signingkey: too many keys specified",
                      "You may only specify up to 10 repository keys.");
     }
@@ -351,9 +347,8 @@ bool Horizon::Script::validate() const {
         /* REQ: Runner.Validate.diskid.Unique */
         if(seen_diskids.find(diskid->device()) != seen_diskids.end()) {
             failures++;
-            output_error("installfile:" + to_string(diskid->lineno()),
-                         "diskid: device " + diskid->device() +
-                         " has already been identified");
+            output_error(diskid->where(), "diskid: device " +
+                         diskid->device() + " has already been identified");
         }
         seen_diskids.insert(diskid->device());
     }
@@ -365,9 +360,8 @@ bool Horizon::Script::validate() const {
         /* REQ: Runner.Validate.disklabel.Unique */
         if(seen_labels.find(label->device()) != seen_labels.end()) {
             failures++;
-            output_error("installfile:" + to_string(label->lineno()),
-                         "disklabel: device " + label->device() +
-                         " already has a label queued");
+            output_error(label->where(), "disklabel: device " +
+                         label->device() + " already has a label queued");
         } else {
             seen_labels.insert(label->device());
         }
@@ -383,9 +377,9 @@ bool Horizon::Script::validate() const {
         std::string name = dev + maybe_p + to_string(part->partno());
         if(seen_parts.find(name) != seen_parts.end()) {
             failures++;
-            output_error("installfile:" + to_string(part->lineno()),
-                         "partition: partition #" + to_string(part->partno()) +
-                         " already exists on device " + part->device());
+            output_error(part->where(), "partition: partition #" +
+                         to_string(part->partno()) + " already exists on " +
+                         part->device());
         } else {
             seen_parts.insert(name);
         }
@@ -398,9 +392,8 @@ bool Horizon::Script::validate() const {
         /* We don't actually have a requirement, but... */
         if(seen_pvs.find(pv->value()) != seen_pvs.end()) {
             failures++;
-            output_error("installfile:" + to_string(pv->lineno()),
-                         "lvm_pv: a physical volume already exists on device "
-                         + pv->value());
+            output_error(pv->where(), "lvm_pv: a physical volume already "
+                                      "exists on device " + pv->value());
         } else {
             seen_pvs.insert(pv->value());
         }
@@ -411,8 +404,7 @@ bool Horizon::Script::validate() const {
             if(!fs::exists(pv->value(), ec) &&
                seen_parts.find(pv->value()) == seen_parts.end()) {
                 failures++;
-                output_error("installfile:" + to_string(pv->lineno()),
-                             "lvm_pv: device " + pv->value() +
+                output_error(pv->where(), "lvm_pv: device " + pv->value() +
                              " does not exist");
             }
 #endif /* HAS_INSTALL_ENV */
@@ -425,8 +417,7 @@ bool Horizon::Script::validate() const {
 
         if(seen_vg_names.find(vg->name()) != seen_vg_names.end()) {
             failures++;
-            output_error("installfile:" + to_string(vg->lineno()),
-                         "lvm_vg: duplicate volume group name specified",
+            output_error(vg->where(), "lvm_vg: duplicate volume group name",
                          vg->name() + " already given");
         } else {
             seen_vg_names.insert(vg->name());
@@ -434,9 +425,8 @@ bool Horizon::Script::validate() const {
 
         if(seen_vg_pvs.find(vg->pv()) != seen_vg_pvs.end()) {
             failures++;
-            output_error("installfile:" + to_string(vg->lineno()),
-                         "lvm_vg: a volume group already exists on " +
-                         vg->pv());
+            output_error(vg->where(), "lvm_vg: a volume group already exists "
+                         "on " + vg->pv());
         } else {
             seen_vg_pvs.insert(vg->pv());
         }
@@ -449,16 +439,14 @@ bool Horizon::Script::validate() const {
 #ifdef HAS_INSTALL_ENV
                 if(!vg->test_pv()) {
                     failures++;
-                    output_error("installfile:" + to_string(vg->lineno()),
-                                 "lvm_vg: a physical volume does not exist on "
-                                 + vg->pv());
+                    output_error(vg->where(), "lvm_vg: a physical volume does "
+                                              "not exist on " + vg->pv());
                 }
 #endif /* HAS_INSTALL_ENV */
             } else {
                 /* We can't tell if we aren't running on the target. */
-                output_warning("installfile:" + to_string(vg->lineno()),
-                               "lvm_vg: please ensure an LVM physical volume "
-                               "already exists at " + vg->pv());
+                output_warning(vg->where(), "lvm_vg: please ensure an LVM "
+                               "physical volume already exists at " + vg->pv());
             }
         }
     }
@@ -471,9 +459,9 @@ bool Horizon::Script::validate() const {
         /* REQ: Runner.Validate.lvm_lv.Name */
         if(seen_lvs.find(lvpath) != seen_lvs.end()) {
             failures++;
-            output_error("installfile:" + to_string(lv->lineno()),
-                         "lvm_lv: a volume with the name " + lv->name() +
-                         " already exists on the volume group " + lv->vg());
+            output_error(lv->where(), "lvm_lv: a volume with the name " +
+                         lv->name() + " already exists on the volume group " +
+                         lv->vg());
         } else {
             seen_lvs.insert(lvpath);
         }
@@ -485,22 +473,20 @@ bool Horizon::Script::validate() const {
 #ifdef HAS_INSTALL_ENV
                 if(!fs::exists("/dev/" + lv->vg())) {
                     failures++;
-                    output_error("installfile:" + to_string(lv->lineno()),
-                                 "lvm_lv: volume group " + lv->vg() +
-                                 " does not exist");
+                    output_error(lv->where(), "lvm_lv: volume group " +
+                                 lv->vg() + " does not exist");
                 }
 #endif /* HAS_INSTALL_ENV */
             }
         }
     }
 
-#define CHECK_EXIST_PART_LV(device, key, line) \
+#define CHECK_EXIST_PART_LV(device, key, where) \
     if(!fs::exists(device, ec) &&\
        seen_parts.find(device) == seen_parts.end() &&\
        seen_lvs.find(device.substr(5)) == seen_lvs.end()) {\
         failures++;\
-        output_error("installfile:" + to_string(line),\
-                     std::string(key) + ": device " + device +\
+        output_error(where, std::string(key) + ": device " + device +\
                      " does not exist");\
     }
 
@@ -511,8 +497,7 @@ bool Horizon::Script::validate() const {
         /* REQ: Runner.Validate.encrypt.Unique */
         if(seen_luks.find(crypt->device()) != seen_luks.end()) {
             failures++;
-            output_error("installfile:" + to_string(crypt->lineno()),
-                         "encrypt: encryption is already scheduled for " +
+            output_error(crypt->where(), "encrypt: encryption already enabled",
                          crypt->device());
         } else {
             seen_luks.insert(crypt->device());
@@ -521,7 +506,7 @@ bool Horizon::Script::validate() const {
         /* REQ: Runner.Validate.encrypt.Block */
         if(opts.test(InstallEnvironment)) {
 #ifdef HAS_INSTALL_ENV
-            CHECK_EXIST_PART_LV(crypt->device(), "encrypt", crypt->lineno())
+            CHECK_EXIST_PART_LV(crypt->device(), "encrypt", crypt->where())
 #endif /* HAS_INSTALL_ENV */
         }
     }
@@ -533,16 +518,15 @@ bool Horizon::Script::validate() const {
         /* REQ: Runner.Validate.fs.Unique */
         if(seen_fses.find(fs->device()) != seen_fses.end()) {
             failures++;
-            output_error("installfile:" + std::to_string(fs->lineno()),
-                         "fs: a filesystem is already scheduled to be "
-                         "created on " + fs->device());
+            output_error(fs->where(), "fs: a filesystem is already scheduled "
+                         "to be created on " + fs->device());
         }
         seen_fses.insert(fs->device());
 
         /* REQ: Runner.Validate.fs.Block */
         if(opts.test(InstallEnvironment)) {
 #ifdef HAS_INSTALL_ENV
-            CHECK_EXIST_PART_LV(fs->device(), "fs", fs->lineno())
+            CHECK_EXIST_PART_LV(fs->device(), "fs", fs->where())
 #endif /* HAS_INSTALL_ENV */
         }
     }
@@ -554,10 +538,9 @@ bool Horizon::Script::validate() const {
         /* REQ: Runner.Validate.mount.Unique */
         if(seen_mounts.find(mount->mountpoint()) != seen_mounts.end()) {
             failures++;
-            output_error("installfile:" + to_string(mount->lineno()),
-                         "mount: mountpoint " + mount->mountpoint() +
-                         " has already been specified; " + mount->device() +
-                         " is a duplicate");
+            output_error(mount->where(), "mount: mountpoint " +
+                         mount->mountpoint() + " has already been specified; " +
+                         mount->device() + " is a duplicate");
         } else {
             seen_mounts.insert(mount->mountpoint());
         }
@@ -565,7 +548,7 @@ bool Horizon::Script::validate() const {
         /* REQ: Runner.Validate.mount.Block */
         if(opts.test(InstallEnvironment)) {
 #ifdef HAS_INSTALL_ENV
-            CHECK_EXIST_PART_LV(mount->device(), "mount", mount->lineno())
+            CHECK_EXIST_PART_LV(mount->device(), "mount", mount->where())
 #endif /* HAS_INSTALL_ENV */
         }
     }

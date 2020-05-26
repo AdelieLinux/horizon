@@ -18,6 +18,8 @@
 #include <memory>
 #include <bitset>
 
+#include <hscript/script_l.hh>
+
 namespace Horizon {
 
 namespace Keys {
@@ -71,10 +73,12 @@ public:
     /*! Load a HorizonScript from the specified stream.
      * @param stream    The stream to load from.
      * @param options   Options to use for parsing, validation, and execution.
+     * @param name      The name of the stream to use in diagnostic messages.
      * @return true if the Script could be loaded; false otherwise.
      */
     static Script *load(std::istream &stream,
-                        const ScriptOptions &options = 0);
+                        const ScriptOptions &options = 0,
+                        const std::string &name = "installfile");
 
     /*! Determines if the HorizonScript is valid. */
     bool validate() const;

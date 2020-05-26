@@ -23,17 +23,17 @@ private:
     const std::string _block;
     const std::string _ident;
 
-    DiskId(const Script *_s, int _line, const std::string &my_block,
-           const std::string &my_i) :
-        Key(_s, _line), _block(my_block), _ident(my_i) {}
+    DiskId(const Script *_s, const ScriptLocation &_p,
+           const std::string &my_block, const std::string &my_i) :
+        Key(_s, _p), _block(my_block), _ident(my_i) {}
 public:
     /*! Retrieve the block device that this key identifies. */
     const std::string device() const { return this->_block; }
     /*! Retrieve the identification for the block device. */
     const std::string ident() const { return this->_ident; }
 
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
     bool validate() const override;
     bool execute() const override;
 };
@@ -53,17 +53,17 @@ private:
     const std::string _block;
     const LabelType _type;
 
-    DiskLabel(const Script *_s, int _line, const std::string &_b,
+    DiskLabel(const Script *_s, const ScriptLocation &_p, const std::string &_b,
               const LabelType &_t) :
-        Key(_s, _line), _block(_b), _type(_t) {}
+        Key(_s, _p), _block(_b), _type(_t) {}
 public:
     /*! Retrieve the block device that this key identifies. */
     const std::string device() const { return this->_block; }
     /*! Retrieve the type of disklabel for the block device. */
     LabelType type() const { return this->_type; }
 
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
     bool validate() const override;
     bool execute() const override;
 };
@@ -100,9 +100,10 @@ private:
     const uint64_t _size;
     const PartitionType _type;
 
-    Partition(const Script *_sc, int _line, const std::string &_b, const int _p,
-              const SizeType _st, const uint64_t _s, const PartitionType _pt) :
-        Key(_sc, _line), _block(_b), _partno(_p), _size_type(_st), _size(_s),
+    Partition(const Script *_sc, const ScriptLocation &_pos,
+              const std::string &_b, const int _p, const SizeType _st,
+              const uint64_t _s, const PartitionType _pt) :
+        Key(_sc, _pos), _block(_b), _partno(_p), _size_type(_st), _size(_s),
         _type(_pt) {}
 public:
     /*! Retrieve the block device that this key identifies. */
@@ -116,8 +117,8 @@ public:
     /*! Retrieve the Type Code of this partition, if any. */
     PartitionType type() const { return this->_type; }
 
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
     bool validate() const override;
     bool execute() const override;
 };
@@ -127,27 +128,27 @@ private:
     const std::string _block;
     const std::string _pw;
 
-    Encrypt(const Script *_s, int _line, const std::string &_b,
-            const std::string &_p) : Key(_s, _line), _block(_b), _pw(_p) {}
+    Encrypt(const Script *_s, const ScriptLocation &_pos, const std::string &_b,
+            const std::string &_p) : Key(_s, _pos), _block(_b), _pw(_p) {}
 public:
     /*! Retrieve the block device that this key encrypts. */
     const std::string device() const { return this->_block; }
     /*! Retrieve the passphrase used to encrypt the block device. */
     const std::string passphrase() const { return this->_pw; }
 
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
     bool validate() const override;
     bool execute() const override;
 };
 
 class LVMPhysical : public StringKey {
 private:
-    LVMPhysical(const Script *_s, int _line, const std::string &_d) :
-        StringKey(_s, _line, _d) {}
+    LVMPhysical(const Script *_s, const ScriptLocation &_p,
+                const std::string &_d) : StringKey(_s, _p, _d) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
     bool execute() const override;
 };
 
@@ -156,17 +157,17 @@ private:
     const std::string _pv;
     const std::string _vgname;
 
-    LVMGroup(const Script *_s, int _line, const std::string &_p,
-             const std::string &_v) :
-        Key(_s, _line), _pv(_p), _vgname(_v) {}
+    LVMGroup(const Script *_s, const ScriptLocation &_pos,
+             const std::string &_p, const std::string &_v) :
+        Key(_s, _pos), _pv(_p), _vgname(_v) {}
 public:
     /*! Retrieve the physical volume where this volume group will reside. */
     const std::string pv() const { return this->_pv; }
     /*! Retrieve the name of this volume group. */
     const std::string name() const { return this->_vgname; }
 
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
     bool validate() const override;
     /*! Determine if the PV passed is a real one. */
     bool test_pv() const;
@@ -180,9 +181,10 @@ private:
     const SizeType _size_type;
     const uint64_t _size;
 
-    LVMVolume(const Script *_sc, int _line, const std::string &_v,
-              const std::string &_n, SizeType _t, uint64_t _s) :
-        Key(_sc, _line), _vg(_v), _lvname(_n), _size_type(_t), _size(_s) {}
+    LVMVolume(const Script *_sc, const ScriptLocation &_pos,
+              const std::string &_v, const std::string &_n, SizeType _t,
+              uint64_t _s) :
+        Key(_sc, _pos), _vg(_v), _lvname(_n), _size_type(_t), _size(_s) {}
 public:
     /*! Retrieve the volume group to which this volume belongs. */
     const std::string vg() const { return this->_vg; }
@@ -193,8 +195,8 @@ public:
     /*! Retrieve the size of this volume. */
     uint64_t size() const { return this->_size; }
 
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
     bool validate() const override;
     bool execute() const override;
 };
@@ -214,16 +216,17 @@ private:
     const std::string _block;
     FilesystemType _type;
 
-    Filesystem(const Script *_s, int _line, const std::string &_b,
-               FilesystemType _t) : Key(_s, _line), _block(_b), _type(_t) {}
+    Filesystem(const Script *_s, const ScriptLocation &_pos,
+               const std::string &_b, FilesystemType _t) :
+        Key(_s, _pos), _block(_b), _type(_t) {}
 public:
     /*! Retrieve the block device on which to create the filesystem. */
     const std::string device() const { return this->_block; }
     /*! Retreive the type of filesystem to create. */
     FilesystemType fstype() const { return this->_type; }
 
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
     bool validate() const override;
     bool execute() const override;
 };
@@ -234,9 +237,10 @@ private:
     const std::string _mountpoint;
     const std::string _opts;
 
-    Mount(const Script *_s, int _line, const std::string &my_block,
-          const std::string &my_mountpoint, const std::string &my_opts = "") :
-        Key(_s, _line), _block(my_block), _mountpoint(my_mountpoint),
+    Mount(const Script *_s, const ScriptLocation &_pos,
+          const std::string &my_block, const std::string &my_mountpoint,
+          const std::string &my_opts = "") :
+        Key(_s, _pos), _block(my_block), _mountpoint(my_mountpoint),
         _opts(my_opts) {}
 public:
     /*! Retrieve the block device to which this mount pertains. */
@@ -246,8 +250,8 @@ public:
     /*! Retrieve the mount options for this mount, if any. */
     const std::string options() const { return this->_opts; }
 
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
     bool validate() const override;
     bool execute() const override;
 };

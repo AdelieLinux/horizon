@@ -28,14 +28,14 @@ protected:
     /*! The script that owns this Key. */
     const Script *script;
     /*! The line number where this Key appeared. */
-    long line;
-    Key(const Script *_s, long _line) : script(_s), line(_line) {}
+    const ScriptLocation pos;
+    Key(const Script *_s, const ScriptLocation &_p) : script{_s}, pos{_p} {}
 public:
     virtual ~Key();
 
     /*! Create the Key object with the specified data as the entire value.
      * @param data      The value associated with the key.
-     * @param lineno    The line number where the key occurs.
+     * @param pos       The location where the key occurs.
      * @param errors    Output variable: if not nullptr, ++ on each error.
      * @param warnings  Output variable: if not nullptr, ++ on each warning.
      * @returns nullptr if data is unparsable, otherwise a pointer to a Key.
@@ -43,8 +43,9 @@ public:
 #define UNUSED __attribute__((unused))
     /* LCOV_EXCL_START */
     static Key *parseFromData(const std::string &data UNUSED,
-                              int lineno UNUSED, int *errors UNUSED,
-                              int *warnings UNUSED, const Script *s UNUSED) {
+                              const ScriptLocation &pos UNUSED,
+                              int *errors UNUSED, int *warnings UNUSED,
+                              const Script *s UNUSED) {
         return nullptr;
     }
     /* LCOV_EXCL_STOP */
@@ -58,7 +59,7 @@ public:
      */
     virtual bool execute() const = 0;
 
-    long lineno() const { return this->line; }
+    const ScriptLocation where() const { return this->pos; }
 };
 
 
@@ -71,8 +72,8 @@ public:
 class BooleanKey : public Key {
 protected:
     const bool value;
-    BooleanKey(const Script *_s, int _line, bool my_value) : Key(_s, _line),
-                                                             value(my_value) {}
+    BooleanKey(const Script *_s, const ScriptLocation &_p, bool my_value) :
+        Key{_s, _p}, value{my_value} {}
 
     /*! Parse a string into a boolean.
      * @param what      The string to attempt parsing.
@@ -81,7 +82,7 @@ protected:
      * @param out       Output variable: will contain the value.
      * @returns true if value is parsed successfully, false otherwise.
      */
-    static bool parse(const std::string &what, const std::string &where,
+    static bool parse(const std::string &what, const ScriptLocation &where,
                       const std::string &key, bool *out);
 public:
     /*! Determines if the Key is set or not.
@@ -98,8 +99,8 @@ public:
 class StringKey : public Key {
 protected:
     const std::string _value;
-    StringKey(const Script *_s, int _line, const std::string &my_str) :
-        Key(_s, _line), _value(my_str) {}
+    StringKey(const Script *_s, const ScriptLocation &_p,
+              const std::string &my_str) : Key{_s, _p}, _value{my_str} {}
 
 public:
     /*! Retrieve the value of this key. */

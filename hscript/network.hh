@@ -21,11 +21,11 @@ namespace Keys {
 
 class Network : public BooleanKey {
 private:
-    Network(const Script *_s, int _line, bool _value) :
-        BooleanKey(_s, _line, _value) {}
+    Network(const Script *_s, const ScriptLocation &_p, bool _value) :
+        BooleanKey(_s, _p, _value) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &pos,
+                              int*, int*, const Script *);
     bool execute() const override;
 };
 
@@ -38,11 +38,11 @@ public:
 private:
     ConfigSystem _sys;
 
-    NetConfigType(const Script *_sc, int _line, const ConfigSystem _s) :
-        Key(_sc, _line), _sys(_s) {}
+    NetConfigType(const Script *_sc, const ScriptLocation &_p,
+                  const ConfigSystem _s) : Key(_sc, _p), _sys(_s) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
 
     /*! Retrieve the desired network configuration system. */
     ConfigSystem type() const { return this->_sys; }
@@ -69,14 +69,14 @@ private:
     const uint8_t _prefix;
     const std::string _gw;
 
-    NetAddress(const Script *_sc, const int _line, const std::string &_i,
+    NetAddress(const Script *sc, const ScriptLocation &p, const std::string &_i,
                const AddressType &_t, const std::string &_a, const uint8_t _p,
-               const std::string &_g) : Key(_sc, _line), _iface(_i), _type(_t),
+               const std::string &_g) : Key(sc, p), _iface(_i), _type(_t),
         _address(_a), _prefix(_p), _gw(_g)
     {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
 
     /*! Retrieve the interface to which this 'netaddress' key is associated. */
     const std::string iface() const { return this->_iface; }
@@ -95,11 +95,11 @@ public:
 
 class Nameserver : public StringKey {
 private:
-    Nameserver(const Script *_s, int _line, const std::string &ns) :
-        StringKey(_s, _line, ns) {}
+    Nameserver(const Script *_s, const ScriptLocation &_pos,
+               const std::string &ns) : StringKey(_s, _pos, ns) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &_pos,
+                              int*, int*, const Script *);
     bool execute() const override;
 };
 
@@ -117,12 +117,12 @@ private:
     const SecurityType _sec;
     const std::string _pw;
 
-    NetSSID(const Script *_sc, int _line, const std::string &_if,
+    NetSSID(const Script *_sc, const ScriptLocation &p, const std::string &_if,
             const std::string &_s, SecurityType _t, const std::string &_p) :
-        Key(_sc, _line), _iface(_if), _ssid(_s), _sec(_t), _pw(_p) {}
+        Key(_sc, p), _iface(_if), _ssid(_s), _sec(_t), _pw(_p) {}
 public:
-    static Key *parseFromData(const std::string &, int, int*, int*,
-                              const Script *);
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
 
     /*! Retrieve the interface to which this 'netssid' key is associated. */
     const std::string iface() const { return this->_iface; }
