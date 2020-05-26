@@ -556,7 +556,7 @@ bool Horizon::Script::validate() const {
 #undef CHECK_EXIST_PART_LV
 
     /* REQ: Runner.Validate.mount.Root */
-    if(seen_mounts.find("/") == seen_mounts.end()) {
+    if(seen_mounts.find("/") == seen_mounts.end() && !opts.test(ImageOnly)) {
         failures++;
         output_error("installfile:0", "mount: no root mount specified");
     }
