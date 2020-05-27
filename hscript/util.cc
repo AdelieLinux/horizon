@@ -57,6 +57,8 @@ bool download_file(const std::string &url, const std::string &path) {
     } else {
         output_error("curl", "couldn't download file", errbuf);
     }
+
+    fclose(fp);
     curl_easy_cleanup(curl);
     return return_code;
 }
