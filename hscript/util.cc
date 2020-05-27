@@ -52,6 +52,7 @@ bool download_file(const std::string &url, const std::string &path) {
 
     result = curl_easy_perform(curl);
     if(result == CURLE_OK) {
+        fflush(fp);
         return_code = true;
     } else {
         output_error("curl", "couldn't download file", errbuf);
