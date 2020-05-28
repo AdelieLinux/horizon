@@ -81,10 +81,10 @@ public:
         int fd, r, code = 0;
         struct stat s;
         void *buff;
+        std::string target = this->ir_dir + "/target";
 
-        for(const auto& dent : fs::recursive_directory_iterator(this->ir_dir,
-                                                                ec)) {
-            fs::path relpath = dent.path().lexically_relative(this->ir_dir);
+        for(const auto& dent : fs::recursive_directory_iterator(target, ec)) {
+            fs::path relpath = dent.path().lexically_relative(target);
 #define OUTPUT_FAILURE(x) \
     output_error("tar backend", "failed to " x " '" + std::string(dent.path()) + "'",\
                  strerror(errno));

@@ -13,11 +13,22 @@
 #include <boost/program_options.hpp>
 #include <cstdlib>              /* EXIT_* */
 #include <string>
+#include <sys/mount.h>
+
 #include "backends/basic.hh"
+#include "hscript/meta.hh"
 #include "hscript/script.hh"
+#include "util/filesystem.hh"
 #include "util/output.hh"
 
 bool pretty = true;     /*! Controls ASCII colour output */
+
+
+const std::string arch_xlate(const std::string &arch) {
+    if(arch == "pmmx") return "i386";
+    if(arch == "armv7") return "arm";
+    return arch;
+}
 
 
 #define DESCR_TEXT "Usage: hscript-image [OPTION]... [INSTALLFILE]\n"\
@@ -32,7 +43,7 @@ int main(int argc, char *argv[]) {
 
     bool needs_help{}, disable_pretty{}, version_only{};
     int exit_code = EXIT_SUCCESS;
-    std::string if_path{"/etc/horizon/installfile"}, ir_dir{"/target"},
+    std::string if_path{"/etc/horizon/installfile"}, ir_dir{"/tmp/horizon-image"},
                 output_path{"image.tar"}, type_code{"tar"};
     BasicBackend *backend = nullptr;
     Horizon::ScriptOptions opts;
@@ -49,7 +60,7 @@ int main(int argc, char *argv[]) {
     target.add_options()
             ("output,o", value<std::string>()->default_value("image.tar"), "Desired filename for the output file.")
             ("type,t", value<std::string>()->default_value("tar"), "Type of output file to generate.  Use 'list' for a list of supported types.")
-            ("ir-dir,i", value<std::string>()->default_value("/target"), "Where to store intermediate files.")
+            ("ir-dir,i", value<std::string>()->default_value("/tmp/horizon-image"), "Where to store intermediate files.")
             ;
     ui.add(general).add(target);
 
@@ -107,6 +118,10 @@ int main(int argc, char *argv[]) {
 
     if(!vm["ir-dir"].empty()) {
         ir_dir = vm["ir-dir"].as<std::string>();
+    }
+
+    if(fs::path(ir_dir).is_relative()) {
+        ir_dir = fs::absolute(ir_dir).string();
     }
 
     if(!vm["output"].empty()) {
@@ -169,11 +184,35 @@ int main(int argc, char *argv[]) {
 
         RUN_PHASE_OR_TROUBLE(prepare, "preparation");
 
-        my_script->setTargetDirectory(ir_dir);
+        /* Attempt to make images work cross-architecture.
+         * This requires binfmt_misc to be configured properly.
+         * It also requires qemu-user to be installed to /usr/bin on the host.
+         * It may not work all the time, so we ignore errors.
+         * But we try anyway, because it can work and make things easier.
+         */
+        const Horizon::Keys::Key *archkey = my_script->getOneValue("arch");
+        std::string qpath;
+        if(archkey) {
+            const Horizon::Keys::Arch *arch =
+                    dynamic_cast<const Horizon::Keys::Arch *>(archkey);
+            qpath = "/usr/bin/qemu-" + arch_xlate(arch->value());
+            error_code ec;
+            if(fs::exists(qpath, ec)) {
+                fs::create_directories(ir_dir + "/target/usr/bin", ec);
+                if(!ec) fs::copy_file(qpath, ir_dir + "/target/" + qpath, ec);
+            }
+        }
+
+        my_script->setTargetDirectory(ir_dir + "/target");
 
         if(!my_script->execute()) {
             exit_code = EXIT_FAILURE;
             goto trouble;
+        }
+
+        if(!qpath.empty() && fs::exists(ir_dir + "/target" + qpath)) {
+            error_code ec;
+            fs::remove(ir_dir + "/target" + qpath, ec);
         }
 
         RUN_PHASE_OR_TROUBLE(create, "creation");
@@ -181,6 +220,11 @@ int main(int argc, char *argv[]) {
     }
 
 trouble:        /* delete the Script and exit */
+    /* ensure that our target mounts are unmounted */
+    umount((ir_dir + "/target/sys").c_str());
+    umount((ir_dir + "/target/proc").c_str());
+    umount((ir_dir + "/target/dev").c_str());
+
     delete my_script;
 early_trouble:  /* no script yet */
     delete backend;
