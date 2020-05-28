@@ -221,9 +221,9 @@ bool Username::execute() const {
     }
 
 #ifdef HAS_INSTALL_ENV
-    if(run_command("useradd", {"-c", "Adélie User", "-m",
-                               "-R", script->targetDirectory(),
-                               "-U", _value}) != 0)
+    if(run_command("chroot", {script->targetDirectory(), "useradd",
+                              "-c", "Adélie User", "-m",
+                              "-U", _value}) != 0)
     {
         output_error(pos, "username: failed to create user account", _value);
         return false;
@@ -264,8 +264,8 @@ bool UserAlias::execute() const {
     }
 
 #ifdef HAS_INSTALL_ENV
-    if(run_command("usermod", {"-c", _alias, "-R", script->targetDirectory(),
-                               _username}) != 0) {
+    if(run_command("chroot", {script->targetDirectory(), "usermod",
+                              "-c", _alias, _username}) != 0) {
         output_error(pos, "useralias: failed to change GECOS for " + _username);
         return false;
     }
@@ -312,9 +312,8 @@ bool UserPassphrase::execute() const {
     }
 
 #ifdef HAS_INSTALL_ENV
-    if(run_command("usermod", {"-p", _passphrase,
-                               "-R", script->targetDirectory(),
-                               _username}) != 0) {
+    if(run_command("chroot", {script->targetDirectory(), "usermod",
+                              "-p", _passphrase, _username}) != 0) {
         output_error(pos, "userpw: failed to set passphrase for " + _username);
         return false;
     }
@@ -463,9 +462,8 @@ bool UserGroups::execute() const {
     }
 
 #ifdef HAS_INSTALL_ENV
-    if(run_command("usermod", {"-a", "-G", groups,
-                               "-R", script->targetDirectory(),
-                               _username}) != 0) {
+    if(run_command("chroot", {script->targetDirectory(), "usermod",
+                              "-a", "-G", groups, _username}) != 0) {
         output_error(pos, "usergroups: failed to add groups to " + _username);
         return false;
     }
