@@ -491,9 +491,9 @@ bool Timezone::execute() const {
     std::string target_zi = script->targetDirectory() + zi_path;
     std::string target_lt = script->targetDirectory() + "/etc/localtime";
     error_code ec;
-    if(fs::exists(target_zi, ec)) {
-        if(fs::exists(target_lt, ec)) fs::remove(target_lt, ec);
+    if(fs::exists(target_lt, ec)) fs::remove(target_lt, ec);
 
+    if(fs::exists(target_zi, ec)) {
         fs::create_symlink(zi_path, target_lt, ec);
         if(ec) {
             output_error(pos, "timezone: failed to create symbolic link",
