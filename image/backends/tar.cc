@@ -13,6 +13,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <sys/mman.h>
+#include <sys/mount.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -39,8 +40,10 @@ private:
     struct archive *a;
 
 public:
-    TarBackend(std::string ir, std::string out, CompressionType _c = None)
-        : BasicBackend(ir, out), comp(_c) {};
+    TarBackend(const std::string &ir, const std::string &out,
+               const std::map<std::string, std::string> &opts,
+               CompressionType _c = None)
+        : BasicBackend{ir, out, opts}, comp{_c} {};
 
     int prepare() override {
         int res;
@@ -82,6 +85,10 @@ public:
         struct stat s;
         void *buff;
         std::string target = this->ir_dir + "/target";
+
+        umount((ir_dir + "/target/sys").c_str());
+        umount((ir_dir + "/target/proc").c_str());
+        umount((ir_dir + "/target/dev").c_str());
 
         for(const auto& dent : fs::recursive_directory_iterator(target, ec)) {
             fs::path relpath = dent.path().lexically_relative(target);
@@ -146,29 +153,33 @@ __attribute__((constructor(400)))
 void register_tar_backend() {
     BackendManager::register_backend(
     {"tar", "Create a tarball (.tar)",
-        [](std::string ir_dir, std::string out_path) {
-            return new TarBackend(ir_dir, out_path);
+        [](const std::string &ir_dir, const std::string &out_path,
+           const std::map<std::string, std::string> &opts) {
+            return new TarBackend(ir_dir, out_path, opts);
         }
     });
 
     BackendManager::register_backend(
     {"tgz", "Create a tarball with GZ compression (.tar.gz)",
-        [](std::string ir_dir, std::string out_path) {
-            return new TarBackend(ir_dir, out_path, TarBackend::GZip);
+        [](const std::string &ir_dir, const std::string &out_path,
+           const std::map<std::string, std::string> &opts) {
+            return new TarBackend(ir_dir, out_path, opts, TarBackend::GZip);
         }
     });
 
     BackendManager::register_backend(
     {"tbz", "Create a tarball with BZip2 compression (.tar.bz2)",
-        [](std::string ir_dir, std::string out_path) {
-            return new TarBackend(ir_dir, out_path, TarBackend::BZip2);
+        [](const std::string &ir_dir, const std::string &out_path,
+           const std::map<std::string, std::string> &opts) {
+            return new TarBackend(ir_dir, out_path, opts, TarBackend::BZip2);
         }
     });
 
     BackendManager::register_backend(
     {"txz", "Create a tarball with XZ compression (.tar.xz)",
-        [](std::string ir_dir, std::string out_path) {
-            return new TarBackend(ir_dir, out_path, TarBackend::XZ);
+        [](const std::string &ir_dir, const std::string &out_path,
+           const std::map<std::string, std::string> &opts) {
+            return new TarBackend(ir_dir, out_path, opts, TarBackend::XZ);
         }
     });
 }

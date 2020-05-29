@@ -27,8 +27,9 @@ public:
         COMMAND_ERROR
     };
 
-    explicit CDBackend(std::string ir, std::string out)
-        : BasicBackend(ir, out) {};
+    explicit CDBackend(const std::string &ir, const std::string &out,
+                       const std::map<std::string, std::string> &opts)
+        : BasicBackend(ir, out, opts) {};
 
     int prepare() override {
         error_code ec;
@@ -160,8 +161,9 @@ __attribute__((constructor(400)))
 void register_cd_backend() {
     BackendManager::register_backend(
     {"iso", "Create a CD image (.iso)",
-        [](std::string ir_dir, std::string out_path) {
-            return new CDBackend(ir_dir, out_path);
+        [](const std::string &ir_dir, const std::string &out_path,
+           const std::map<std::string, std::string> &opts) {
+            return new CDBackend(ir_dir, out_path, opts);
         }
     });
 }

@@ -10,9 +10,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-#include <boost/program_options.hpp>
 #include <cstdlib>              /* EXIT_* */
+#include <functional>
+#include <map>
 #include <string>
+#include <vector>
+
+#include <boost/program_options.hpp>
 #include <sys/mount.h>
 
 #include "backends/basic.hh"
@@ -46,6 +50,7 @@ int main(int argc, char *argv[]) {
     std::string if_path{"/etc/horizon/installfile"}, ir_dir{"/tmp/horizon-image"},
                 output_path{"image.tar"}, type_code{"tar"};
     BasicBackend *backend = nullptr;
+    std::map<std::string, std::string> backend_opts;
     Horizon::ScriptOptions opts;
     Horizon::Script *my_script;
 
@@ -59,10 +64,14 @@ int main(int argc, char *argv[]) {
     options_description target{"Target control options"};
     target.add_options()
             ("output,o", value<std::string>()->default_value("image.tar"), "Desired filename for the output file.")
-            ("type,t", value<std::string>()->default_value("tar"), "Type of output file to generate.  Use 'list' for a list of supported types.")
             ("ir-dir,i", value<std::string>()->default_value("/tmp/horizon-image"), "Where to store intermediate files.")
             ;
-    ui.add(general).add(target);
+    options_description backconfig{"Backend configuration options"};
+    backconfig.add_options()
+            ("type,t", value<std::string>()->default_value("tar"), "Type of output file to generate.  Use 'list' for a list of supported types.")
+            ("backconfig,b", value<std::vector<std::string>>(), "Set a backend configuration option.  You may specify this multiple times for multiple options.")
+            ;
+    ui.add(general).add(target).add(backconfig);
 
     options_description all;
     all.add(ui).add_options()("installfile", value<std::string>()->default_value(if_path), "The HorizonScript to use for configuring the image.");
@@ -128,6 +137,19 @@ int main(int argc, char *argv[]) {
         output_path = vm["output"].as<std::string>();
     }
 
+    if(!vm["backconfig"].empty()) {
+        for(const auto &confpart :
+                vm["backconfig"].as<std::vector<std::string>>()) {
+            std::string::size_type equals = confpart.find_first_of("=");
+            if(equals != std::string::npos) {
+                backend_opts[confpart.substr(0, equals)] =
+                        confpart.substr(equals + 1);
+            } else {
+                backend_opts[confpart] = "";
+            }
+        }
+    }
+
     /* Announce our presence */
     bold_if_pretty(std::cout);
     std::cout << "HorizonScript Image Creation Utility version " << VERSTR
@@ -146,7 +168,7 @@ int main(int argc, char *argv[]) {
     /* Load the proper backend. */
     for(const auto &candidate : BackendManager::available_backends()) {
         if(candidate.type_code == type_code) {
-            backend = candidate.creation_fn(ir_dir, output_path);
+            backend = candidate.creation_fn(ir_dir, output_path, backend_opts);
             break;
         }
     }
