@@ -104,11 +104,19 @@ bool Hostname::execute() const {
     /* Runner.Execute.hostname.Write. */
     output_info(pos, "hostname: write '" + actual + "' to /etc/hostname");
     if(script->options().test(Simulate)) {
+        std::cout << "mkdir -p " << script->targetDirectory() << "/etc"
+                  << std::endl;
         std::cout << "printf '%s' " << actual << " > "
                   << script->targetDirectory() << "/etc/hostname" << std::endl;
     }
 #ifdef HAS_INSTALL_ENV
     else {
+        error_code ec;
+        fs::create_directory(script->targetDirectory() + "/etc", ec);
+        if(ec && ec.value() != EEXIST) {
+            output_error(pos, "hostname: could not create /etc", ec.message());
+            return false;
+        }
         std::ofstream hostname_f(script->targetDirectory() + "/etc/hostname",
                                  std::ios_base::trunc);
         if(!hostname_f) {
