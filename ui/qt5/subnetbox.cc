@@ -56,7 +56,6 @@ void SubnetBox::subnetEdited(const QString &text) {
 void SubnetBox::cidrEdited(int value) {
     int bytes = value / 8, bits = value % 8, lastfilled = 0;
     QString data;
-    char temp[4];
 
     for(int i = 0; i < bytes; i++) {
         data.append("255.");
@@ -64,8 +63,7 @@ void SubnetBox::cidrEdited(int value) {
     for(int i = bits; i > 0; i--) {
         lastfilled |= (1 << (8 - i));
     }
-    snprintf(temp, 4, "%d", lastfilled);
-    data.append(temp);
+    data.append(QString("%1").arg(lastfilled));
     for(int i = 3; i > bytes; i--) {
         data.append(".0");
     }
