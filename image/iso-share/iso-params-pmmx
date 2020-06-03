@@ -1,0 +1,1 @@
+--grub2-boot-info --grub2-mbr target/usr/lib/grub/i386-pc/boot_hybrid.img -eltorito-boot boot/grubcore.img -no-emul-boot -boot-load-size 4 -boot-info-table --eltorito-catalog boot/grub.cat -isohybrid-gpt-basdat --efi-boot efi.img -efi-boot-part --efi-boot-image -hfsplus -apm-block-size 2048 -hfs-bless-by i /System/Library/CoreServices/boot.efi

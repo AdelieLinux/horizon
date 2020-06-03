@@ -1,0 +1,1 @@
+-hfsplus -isohybrid-apm-hfsplus -hfsplus-file-creator-type chrp tbxi boot/ofboot.b -hfs-bless-by p boot -sysid PPC -chrp-boot-part
