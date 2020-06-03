@@ -144,6 +144,8 @@ bool write_etc_issue_to(fs::path target) {
 
     issue << "Welcome to Adélie Linux!" << std::endl
           << "You may log in as 'root' to install, or 'live' to play around."
+          << std::endl
+          << "The default root password is 'live' (without quotes)."
           << std::endl << std::endl << "Have fun." << std::endl;
 
     if(issue.fail() || issue.bad()) {
