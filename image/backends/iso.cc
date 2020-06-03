@@ -407,7 +407,7 @@ public:
                 if(!params) {
                     output_warning("CD backend", "couldn't read ISO params");
                 } else {
-                    params >> raw_arch;
+                    std::getline(params, raw_arch);
                 }
             }
         }
