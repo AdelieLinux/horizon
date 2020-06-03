@@ -137,6 +137,10 @@ int main(int argc, char *argv[]) {
         output_path = vm["output"].as<std::string>();
     }
 
+    if(fs::path(output_path).is_relative()) {
+        output_path = fs::absolute(output_path).string();
+    }
+
     if(!vm["backconfig"].empty()) {
         for(const auto &confpart :
                 vm["backconfig"].as<std::vector<std::string>>()) {
