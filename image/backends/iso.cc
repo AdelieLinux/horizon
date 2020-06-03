@@ -85,7 +85,7 @@ bool copy_volume_icon_to(fs::path ir_dir) {
 }
 
 bool write_etc_mtab_to(fs::path target) {
-    std::ofstream mtab(target.append("/etc/conf.d/mtab"));
+    std::ofstream mtab(target.append("etc/conf.d/mtab"));
     if(!mtab) {
         output_error("CD backend", "failed to open mtab configuration");
         return false;
@@ -101,7 +101,7 @@ bool write_etc_mtab_to(fs::path target) {
 }
 
 bool write_fstab_to(fs::path target) {
-    std::ofstream fstab{target.append("/etc/fstab")};
+    std::ofstream fstab{target.append("etc/fstab")};
     if(!fstab) {
         output_error("CD backend", "failed to open fstab");
         return false;
@@ -127,7 +127,7 @@ bool write_fstab_to(fs::path target) {
 
 bool write_etc_issue_to(fs::path target) {
     error_code ec;
-    const fs::path dest{target.append("/etc/issue")};
+    const fs::path dest{target.append("etc/issue")};
 
     const fs::path src{find_data_file("issue")};
     if(src.has_filename()) {
@@ -407,7 +407,7 @@ public:
                 if(!params) {
                     output_warning("CD backend", "couldn't read ISO params");
                 } else {
-                    params >> raw_arch;
+                    std::getline(params, raw_arch);
                 }
             }
         }
