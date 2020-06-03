@@ -15,6 +15,8 @@
 #include <fstream>      /* ifstream, ofstream */
 #include <boost/algorithm/string.hpp>
 
+#include <sys/mount.h>
+
 #include "basic.hh"
 #include "hscript/util.hh"
 #include "util/filesystem.hh"
@@ -182,15 +184,22 @@ public:
         }
 
         /* REQ: ISO.1 */
-        /*if(fs::exists(this->ir_dir, ec)) {
+        if(fs::exists(this->ir_dir, ec)) {
             output_info("CD backend", "removing old IR tree", this->ir_dir);
+            /* try to umount first, just in case
+             * We don't care if the call fails.
+             */
+            for(const std::string &mount : {"dev", "proc", "sys"}) {
+                const std::string path = this->ir_dir + "/target/" + mount;
+                ::umount(path.c_str());
+            }
             fs::remove_all(this->ir_dir, ec);
             if(ec) {
                 output_warning("CD backend", "could not remove IR tree",
-                               ec.message());*/
+                               ec.message());
                 /* we can _try_ to proceed anyway... */
-            //}
-        //}
+            }
+        }
 
         output_info("CD backend", "creating directory tree");
 
