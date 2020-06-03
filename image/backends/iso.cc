@@ -291,6 +291,7 @@ public:
         output_info("CD backend", "configuring login services");
         run_command("sed", {"-i", "s/pam_unix.so$/pam_unix.so nullok_secure/",
                             target + "/etc/pam.d/base-auth"});
+        run_command("chroot", {target, "/usr/bin/passwd", "-d", "live"});
 
         /* REQ: ISO.19 */
         output_info("CD backend", "creating live /etc/issue");
