@@ -43,11 +43,11 @@ bool parse_one_desc(json desc, std::ostream &out) {
     ENSURE_KEY(desc, "hostname");
     ENSURE_KEY(desc, "rootpw");
     ENSURE_KEY(desc, "packages");
-    ENSURE_KEY(desc, "root");
+    //ENSURE_KEY(desc, "root");
 
     out << "hostname " << desc["hostname"].get<std::string>() << std::endl;
     out << "rootpw " << desc["rootpw"].get<std::string>() << std::endl;
-    out << "mount " << desc["root"].get<std::string>() << " /" << std::endl;
+    if(desc.find("root") != desc.end()) out << "mount " << desc["root"].get<std::string>() << " /" << std::endl;
 
     if(desc.find("netaddresses") != desc.end()) {
         out << "network true" << std::endl;
