@@ -55,17 +55,19 @@ PLIST
 #echo 'Adélie 64-bit' >cdroot/System/Library/CoreServices/.disk_label.contentDetails
 cp efi64.exe cdroot/System/Library/CoreServices/boot.efi
 
-if ! type mkfs.fat>/dev/null; then
+if ! type mkfs.fat>/dev/null || ! type mtools>/dev/null; then
 	printf "EFI image cannot be created.\n"
 	printf "This CD will boot BIOS systems only.\n"
 else
-	mkdir -p efitemp
+	cat >mtoolsrc <<-MTOOLSRC
+	drive A: file="efi64.img"
+	MTOOLSRC
+	export MTOOLSRC="$PWD/mtoolsrc"
 	dd if=/dev/zero of=efi64.img bs=1024 count=1440
 	mkfs.fat efi64.img
-	mount -t vfat -o loop,rw efi64.img efitemp
-	mkdir -p efitemp/EFI/BOOT
-	mv efi64.exe efitemp/EFI/BOOT/bootx64.efi
-	umount efitemp
-	rmdir efitemp
+	mmd A:/EFI
+	mmd A:/EFI/BOOT
+	mcopy efi64.exe A:/EFI/BOOT/bootx64.efi
+	rm efi64.exe mtoolsrc
 	mv efi64.img cdroot/efi.img
 fi
