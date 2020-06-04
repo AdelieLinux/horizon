@@ -8,6 +8,75 @@
   © 2019-2020 Adélie Linux and contributors.
 
 
+0.9.1 (2020-06-03)
+==================
+
+Build
+-----
+
+* Don't build the printowner utility in the Runtime Environment.
+
+
+HorizonScript Library
+---------------------
+
+* Add new ScriptLocation object to more accurately report warnings and errors.
+
+* Target mounts are no longer hardcoded to be a subdirectory of ``/target``.
+
+* APK ``--keys-dir`` argument is now relative.
+
+* Files downloaded from the network are written properly before execution
+  continues, ensuring partial writes do not corrupt installation state.
+ 
+* Execution of user keys works in cross-architecture script execution contexts.
+
+
+Image Creation
+--------------
+
+* Run ``prepare`` before script execution.
+
+* A root mount is no longer required to generate an image.
+
+* The target is now a subdirectory of the IR dir, instead of the IR dir itself.
+
+* Backends can now accept options via ``-b``.
+
+* An ISO backend has been added, allowing generation of Live CDs.
+
+
+Metadata
+--------
+
+* Add the ``svcenable`` key, allowing configuration of default services.
+
+* Add the ``version`` key, allowing the version of Adélie to be selected.
+
+* ``hostname``: Create ``/etc`` in the target if it does not yet exist.  This
+  is required to properly generate Alpine Linux images.
+
+* ``timezone``: Remove the existing ``/etc/localtime`` in all cases.
+
+
+Qt UI
+-----
+
+* Fix building for Runtime Environment.
+
+* Properly support High DPI screens.
+
+* Properly check length of root passphrase.
+
+* Allow mountpoints to be specified in the Runtime Environment.
+
+* Generate a valid installfile if no packages are selected in Custom mode.
+
+* Use QString helper to avoid GCC warning about snprintf bounds.
+
+
+
+
 0.9.0 (2020-05-23)
 ==================
 
