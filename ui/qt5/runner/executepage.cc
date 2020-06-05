@@ -48,7 +48,7 @@ ExecutePage::ExecutePage(QWidget *parent) : HorizonWizardPage(parent) {
     });
 
     log.setFileName("/var/log/horizon/executor.log");
-    Q_ASSERT(log.open(QFile::Append));
+    log.open(QFile::Append);
 
     this->current = Prepare;
     markRunning(this->current);
