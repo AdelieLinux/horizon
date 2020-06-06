@@ -8,6 +8,29 @@
   © 2019-2020 Adélie Linux and contributors.
 
 
+0.9.2 (2020-06-06)
+==================
+
+Boot to Horizon
+---------------
+
+* Added resources to enable booting to the System Installation Wizard.
+
+
+Metadata
+--------
+
+* Update ``keymap`` to use kbd instead of console-setup.
+
+
+Qt UI
+-----
+
+* Ensure log is opened properly when built in Release modes.
+
+* Fix up signing keys, installed packages, and enabled services.
+
+
 0.9.1 (2020-06-03)
 ==================
 
