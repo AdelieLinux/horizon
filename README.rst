@@ -202,6 +202,12 @@ Project Horizon is laid out into multiple directories for ease of maintenance.
 The ``assets`` directory contains UI and graphic files.
 
 
+``boot``: Boot to Horizon resources
+```````````````````````````````````
+The ``boot`` directory contains resources for enabling Boot to Horizon, which
+is used for the bootable Horizon-based System Installation media.
+
+
 ``build``: Build system artefacts
 `````````````````````````````````
 The ``build`` directory contains build output, including binaries and shared

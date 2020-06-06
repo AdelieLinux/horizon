@@ -1,0 +1,8 @@
+#!/bin/sh
+
+kwin_x11 &
+horizon-qt5
+if [ $? -eq 0 ]; then
+	horizon-run-qt5
+fi
+reboot

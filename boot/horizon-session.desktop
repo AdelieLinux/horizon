@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Horizon
+Comment=Install Adelie to your computer
+Exec=/usr/bin/start-horizon-qt5
+TryExec=/usr/bin/start-horizon-qt5

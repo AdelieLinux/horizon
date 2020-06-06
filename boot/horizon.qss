@@ -1,0 +1,4 @@
+QPushButton {
+  padding: 0.4em;
+  min-width: 5em;
+}
