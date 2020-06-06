@@ -432,20 +432,23 @@ QStringList bootForArch(const std::string &raw_disk, HorizonWizard::Arch arch,
         return {
             QString{"partition %1 %2 256M esp"}.arg(disk).arg(*start),
             QString{"fs %1 fat32"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
-            QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
+            QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++)),
+            QString{"pkginstall grub-efi"}
         };
     case HorizonWizard::x86_64: /* 64-bit Intel: support UEFI and BIOS */
         return {
             QString{"partition %1 %2 1M bios"}.arg(disk).arg((*start)++),
             QString{"partition %1 %2 256M esp"}.arg(disk).arg(*start),
             QString{"fs %1 fat32"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
-            QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
+            QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++)),
+            QString{"pkginstall grub-efi grub-pc"}
         };
     case HorizonWizard::ppc:    /* 32-bit PowerPC: we only support Power Mac */
         return {
             QString{"partition %1 %2 16M boot"}.arg(disk).arg(*start),
             QString{"fs %1 hfs+"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
-            QString{"mount %1 /boot/grub"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
+            QString{"mount %1 /boot/grub"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++)),
+            QString{"pkginstall grub-ieee1275"}
         };
     case HorizonWizard::ppc64:  /* Complicated */
         switch(subarch) {
@@ -453,7 +456,8 @@ QStringList bootForArch(const std::string &raw_disk, HorizonWizard::Arch arch,
             return {
                 QString{"partition %1 %2 16M boot"}.arg(disk).arg(*start),
                 QString{"fs %1 hfs+"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
-                QString{"mount %1 /boot/grub"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
+                QString{"mount %1 /boot/grub"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++)),
+                QString{"pkginstall grub-ieee1275"}
             };
         case HorizonWizard::ppc64_PowerNV:  /* doesn't need a separate /boot */
             return {};
@@ -461,10 +465,17 @@ QStringList bootForArch(const std::string &raw_disk, HorizonWizard::Arch arch,
         default:
             return {
                 QString{"partition %1 %2 10M prep"}.arg(disk).arg((*start)++),
+                QString{"pkginstall grub-ieee1275"}
             };
         }
-    case HorizonWizard::armv7:
     case HorizonWizard::pmmx:   /* 32-bit Intel, bog standard GRUB */
+        return {
+            QString{"partition %1 %2 256M boot"}.arg(disk).arg(*start),
+            QString{"fs %1 ext2"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
+            QString{"mount %1 /boot"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++)),
+            QString{"pkginstall grub-pc"}
+        };
+    case HorizonWizard::armv7:
     case HorizonWizard::UnknownCPU: /* safe enough as a fallback */
     default:
         return {
@@ -481,11 +492,12 @@ QString HorizonWizard::toHScript() {
 
     if(this->network) {
         lines << "network true";
-        lines << "pkginstall iproute2";
+        lines << "pkginstall iproute2 netifrc";
 
         if(this->net_dhcp) {
             lines << QString::fromStdString("netaddress " +
                                             this->chosen_auto_iface + " dhcp");
+            lines << "pkginstall dhcpcd";
         } else {
             Q_ASSERT(this->ipv6.use || this->ipv4.use);
 
@@ -519,21 +531,33 @@ QString HorizonWizard::toHScript() {
     switch(arch) {
     case aarch64:
         lines << "arch aarch64";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/arm-1@packages.adelielinux.org.pub";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/arm-2@packages.adelielinux.org.pub";
         break;
     case armv7:
         lines << "arch armv7";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/arm-1@packages.adelielinux.org.pub";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/arm-2@packages.adelielinux.org.pub";
         break;
     case pmmx:
         lines << "arch pmmx";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/x86-1@packages.adelielinux.org.pub";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/x86-2@packages.adelielinux.org.pub";
         break;
     case ppc:
         lines << "arch ppc";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/powerpc-1@packages.adelielinux.org.pub";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/powerpc-2@packages.adelielinux.org.pub";
         break;
     case ppc64:
         lines << "arch ppc64";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/powerpc-1@packages.adelielinux.org.pub";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/powerpc-2@packages.adelielinux.org.pub";
         break;
     case x86_64:
         lines << "arch x86_64";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/x86-1@packages.adelielinux.org.pub";
+        lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/x86-2@packages.adelielinux.org.pub";
         break;
     case UnknownCPU:
         /* no arch line.  hopefully it's run on the target. */
@@ -588,11 +612,16 @@ QString HorizonWizard::toHScript() {
 #endif
     case Standard:
         lines << "pkginstall adelie-base-posix firefox-esr libreoffice "
-                 "thunderbird vlc kde x11";
+                 "thunderbird vlc kde x11 bluez";
+        lines << "svcenable bluetooth";
+        lines << "svcenable consolekit";
+        lines << "svcenable sddm";
         break;
     case Compact:
         lines << "pkginstall adelie-base netsurf featherpad lxqt-desktop "
                  "abiword gnumeric xorg-apps xorg-drivers xorg-server";
+        lines << "svcenable consolekit";
+        lines << "svcenable sddm";
         break;
     case TextOnly:
         lines << "pkginstall adelie-base links tmux";
@@ -602,6 +631,8 @@ QString HorizonWizard::toHScript() {
         if(!packages.empty()) lines << ("pkginstall " + packages.join(" "));
         break;
     }
+
+    lines << "pkginstall openrc";
 
     if(this->grub) {
         lines << "pkginstall grub";
@@ -632,6 +663,7 @@ QString HorizonWizard::toHScript() {
     }
 
     lines << "pkginstall sysklogd";
+    lines << "svcenable sysklogd";
 
     lines << ("pkginstall " + QString::fromStdString(this->kernel) + " " +
               QString::fromStdString(this->kernel) + "-modules");
