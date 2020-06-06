@@ -377,30 +377,25 @@ bool Keymap::validate() const {
 }
 
 bool Keymap::execute() const {
-    const std::string conf("# KEYBOARD CONFIGURATION FILE\n\
-\n\
-# Consult the keyboard(5) manual page.\n\
-\n\
-XKBMODEL=pc105\n\
-XKBLAYOUT=" + _value + "\n\
-XKBVARIANT=\n\
-XKBOPTIONS=\n\
-\n\
-BACKSPACE=guess"
+    const std::string conf("keymap=\"" + _value + "\"\n\
+windowkeys=\"NO\"\n\
+extended_keymaps=\"\"\n\
+dumpkeys_charset=\"\"\n\
+fix_euro=\"NO\""
                            );
 
     output_info(pos, "keymap: setting system keyboard map to " + _value);
 
     if(script->options().test(Simulate)) {
         std::cout << "cat >" << script->targetDirectory()
-                  << "/etc/default/keyboard <<-KEYCONF" << std::endl;
+                  << "/etc/conf.d/keymaps <<-KEYCONF" << std::endl;
         std::cout << conf << std::endl;
         std::cout << "KEYCONF" << std::endl;
         return true;
     }
 
 #ifdef HAS_INSTALL_ENV
-    std::ofstream keyconf(script->targetDirectory() + "/etc/default/keyboard",
+    std::ofstream keyconf(script->targetDirectory() + "/etc/conf.d/keymaps",
                           std::ios_base::trunc);
     if(!keyconf) {
         output_error(pos, "keymap: cannot write target keyboard configuration");

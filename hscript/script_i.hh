@@ -236,6 +236,7 @@ struct Script::ScriptPrivate {
         }
         std::unique_ptr<Keymap> k(dynamic_cast<Keymap *>(obj));
         keymap = std::move(k);
+        packages.insert("kbd-keymaps");
         return true;
     }
 

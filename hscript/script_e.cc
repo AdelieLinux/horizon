@@ -628,6 +628,8 @@ bool Script::execute() const {
 
     if(internal->keymap) {
         EXECUTE_OR_FAIL("keymap", internal->keymap)
+        fs::create_symlink("/etc/init.d/keymaps",
+                           targ_etc + "/runlevels/default/keymaps", ec);
     }
 
     for(auto &acct : internal->accounts) {
