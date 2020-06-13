@@ -122,7 +122,22 @@ void ExecutePage::processMessages() {
         } else if(msgType == "log") {
             QString severity = msg.section(": ", 1, 1);
             if(severity == "error") {
-                markFailed(this->current);
+                /* Workaround for:
+                 * - this computer uses DHCP networking
+                 * - the UI already configured DHCP networking
+                 * - we can't kill dhcpcd that was spawned by horizon-qt5,
+                 *   because this may be a captive portal that had to be
+                 *   authenticated to
+                 * - when `service net.eth0 start` is run, dhcpcd is already
+                 *   running
+                 * - this makes it appear the installation failed later on
+                 *   when the installation completed successfully, because of
+                 *   the spurious error reported by launching `service`.
+                 */
+                if(!(this->current == Net &&
+                   msg.endsWith("service: error: exited abnormally with status 1"))) {
+                    markFailed(this->current);
+                }
             }
         } else {
             /* !? */
