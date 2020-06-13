@@ -760,8 +760,12 @@ bool Bootloader::execute() const {
         } else if(arch == "aarch64") {
             method = "grub-efi";
         } else if(arch == "x86_64" || arch == "pmmx") {
-            if(fs::exists("/sys/firmware/efi")) method = "grub-efi";
-            else method = "grub-bios";
+#ifdef HAS_INSTALL_ENV
+            if(fs::exists("/sys/firmware/efi")) {
+                method = "grub-efi";
+            } else
+#endif
+                method = "grub-bios";
         } else {
             output_error(pos, "bootloader: no default for architecture", arch);
             return false;
