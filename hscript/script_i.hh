@@ -63,6 +63,8 @@ struct Script::ScriptPrivate {
     std::unique_ptr<Timezone> tzone;
     /*! The version of Adélie to install. */
     std::unique_ptr<Version> version;
+    /*! The desired bootloader configuration. */
+    std::unique_ptr<Bootloader> boot;
 
     /*! Network addressing configuration */
     std::vector< std::unique_ptr<NetAddress> > addresses;
@@ -275,6 +277,17 @@ struct Script::ScriptPrivate {
         }
         std::unique_ptr<Version> v(dynamic_cast<Version *>(obj));
         version = std::move(v);
+        return true;
+    }
+
+    bool store_bootloader(Key *obj, const ScriptLocation &pos, int *errors,
+                          int *, const ScriptOptions &) {
+        if(boot) {
+            DUPLICATE_ERROR(boot, "bootloader", boot->value())
+            return false;
+        }
+        std::unique_ptr<Bootloader> b(dynamic_cast<Bootloader *>(obj));
+        boot = std::move(b);
         return true;
     }
 

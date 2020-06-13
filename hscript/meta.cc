@@ -676,3 +676,99 @@ Key *Version::parseFromData(const std::string &data,
 bool Version::execute() const {
     return true;
 }
+
+
+Key *Bootloader::parseFromData(const std::string &data,
+                               const ScriptLocation &pos, int *errors, int *,
+                               const Script *script) {
+    if(data.find_first_of(" ") != std::string::npos) {
+        if(errors) *errors += 1;
+        output_error(pos, "bootloader: invalid bootloader", data);
+        return nullptr;
+    }
+
+    return new Bootloader(script, pos, data);
+}
+
+const std::string my_arch(const Horizon::Script *script) {
+    const Key *arch_key = script->getOneValue("arch");
+    if(arch_key != nullptr) {
+        const Arch *real_arch = dynamic_cast<const Arch *>(arch_key);
+        return real_arch->value();
+    } else {
+#   if defined(__powerpc64__)
+        return "ppc64";
+#   elif defined(__powerpc__)
+        return "ppc";
+#   elif defined(__aarch64__)
+        return "aarch64";
+#   elif defined(__arm__)
+        return "armv7";
+#   elif defined(__i386__)
+        return "pmmx";
+#   elif defined(__x86_64__)
+        return "x86_64";
+#   else
+#       error Unknown architecture.
+#   endif
+    }
+}
+
+bool Bootloader::validate() const {
+    const std::string arch = my_arch(script);
+
+    /* 'true' and 'false' are always valid. */
+    if(_value == "true" || _value == "false") return true;
+
+    if(arch == "ppc64") {
+        const static std::set<std::string> valid_ppc64 = {"grub-ieee1275"};
+        return valid_ppc64.find(this->value()) != valid_ppc64.end();
+    } else if(arch == "ppc") {
+        const static std::set<std::string> valid_ppc = {"grub-ieee1275",
+                                                        "iquik"};
+        return valid_ppc.find(this->value()) != valid_ppc.end();
+    } else if(arch == "aarch64") {
+        const static std::set<std::string> valid_arm64 = {"grub-efi"};
+        return valid_arm64.find(this->value()) != valid_arm64.end();
+    } else if(arch == "armv7") {
+        const static std::set<std::string> valid_arm = {};
+        return valid_arm.find(this->value()) != valid_arm.end();
+    } else if(arch == "pmmx") {
+        const static std::set<std::string> valid_pmmx = {"grub-bios",
+                                                         "grub-efi"};
+        return valid_pmmx.find(this->value()) != valid_pmmx.end();
+    } else if(arch == "x86_64") {
+        const static std::set<std::string> valid_x86 = {"grub-bios",
+                                                        "grub-efi"};
+        return valid_x86.find(this->value()) != valid_x86.end();
+    } else {
+        output_error(pos, "bootloader: unknown architecture", arch);
+        return false;
+    }
+}
+
+bool Bootloader::execute() const {
+    /* Nothing to do. */
+    if(_value == "false") return true;
+
+    const std::string arch = my_arch(script);
+    std::string method;
+
+    if(_value == "true") {
+        if(arch == "ppc64" || arch == "ppc") {
+            method = "grub-ieee1275";
+        } else if(arch == "aarch64") {
+            method = "grub-efi";
+        } else if(arch == "x86_64" || arch == "pmmx") {
+            if(fs::exists("/sys/firmware/efi")) method = "grub-efi";
+            else method = "grub-bios";
+        } else {
+            output_error(pos, "bootloader: no default for architecture", arch);
+            return false;
+        }
+    } else {
+        method = _value;
+    }
+
+    return false;
+}

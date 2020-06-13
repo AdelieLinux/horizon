@@ -52,6 +52,7 @@ const std::map<std::string, key_parse_fn> valid_keys = {
     {"signingkey", &SigningKey::parseFromData},
     {"svcenable", &SvcEnable::parseFromData},
     {"version", &Version::parseFromData},
+    {"bootloader", &Bootloader::parseFromData},
 
     {"netconfigtype", &NetConfigType::parseFromData},
     {"netaddress", &NetAddress::parseFromData},
@@ -125,6 +126,8 @@ bool Script::ScriptPrivate::store_key(const std::string &key_name, Key *obj,
         return store_svcenable(obj, pos, errors, warnings, opts);
     } else if(key_name == "version") {
         return store_version(obj, pos, errors, warnings, opts);
+    } else if(key_name == "bootloader") {
+        return store_bootloader(obj, pos, errors, warnings, opts);
     } else if(key_name == "username") {
         return store_username(obj, pos, errors, warnings, opts);
     } else if(key_name == "useralias") {
@@ -386,6 +389,8 @@ const Keys::Key *Script::getOneValue(std::string name) const {
         return this->internal->keymap.get();
     } else if(name == "version") {
         return this->internal->version.get();
+    } else if(name == "bootloader") {
+        return this->internal->boot.get();
     } else if(name == "firmware") {
 #ifdef NON_LIBRE_FIRMWARE
         return this->internal->firmware.get();
