@@ -42,6 +42,7 @@ private:
     QProcess *executor;
     QTimer *finishTimer;
     QFile log;
+    QByteArray msgBuffer;
 
     Phase current;
     bool failed;
@@ -50,6 +51,8 @@ private:
     void markRunning(Phase phase);
     void markFinished(Phase phase);
     void markFailed(Phase phase);
+
+    void processMessages();
 
     void executorReady();
     void executorOutReady();

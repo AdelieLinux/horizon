@@ -94,7 +94,21 @@ void ExecutePage::executorReady() {
     QByteArray msgs = executor->readAllStandardError();
     log.write(msgs);
 
-    QStringList msgList = QString::fromUtf8(msgs).split("\n");
+    msgBuffer.append(msgs);
+    processMessages();
+}
+
+void ExecutePage::processMessages() {
+    QByteArray ready;
+
+    /* No message is ready yet. */
+    if(!msgBuffer.contains('\n')) return;
+
+    int len = msgBuffer.lastIndexOf('\n');
+    ready = msgBuffer.left(len);
+    msgBuffer.remove(0, len + 1);
+
+    QStringList msgList = QString::fromUtf8(ready).split("\n");
     for(auto &msg : msgList) {
         QString msgType = msg.section('\t', 1, 1);
         if(msgType == "step-start") {
@@ -125,6 +139,7 @@ void ExecutePage::executorFinished(int code, QProcess::ExitStatus status) {
         markFailed(this->current);
     }
 
+    log.flush();
     wizard()->button(QWizard::CancelButton)->setEnabled(false);
     finishTimer->start();
 }
