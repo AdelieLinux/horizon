@@ -510,6 +510,37 @@ timezone Africa/Nairobi
                 </para>
             </formalpara>
         </section>
+        <section id="version">
+            <title><literal>version</literal></title>
+            <formalpara id="version.name">
+                <title>Name</title>
+                <para><literal>version</literal></para>
+            </formalpara>
+            <formalpara id="version.purpose">
+                <title>Purpose</title>
+                <para>The <literal>version</literal> key specifies the version of Adélie Linux being installed.  The value of this key is used if <literal>repository</literal> is not specified to determine the repositories to use by default.  If <literal>repository</literal> is provided, this key has no effect.</para>
+            </formalpara>
+            <formalpara id="version.format">
+                <title>Format</title>
+                <para>The <literal>version</literal> key is a string value which describes a version of Adélie Linux.</para>
+            </formalpara>
+            <formalpara id="version.default">
+                <title>Default</title>
+                <para>If the <literal>version</literal> key is not specified, the system will proceed as if the key had been specified with the value "stable".</para>
+            </formalpara>
+            <formalpara id="version.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>version</literal> Key</title>
+                        <programlisting>
+version 1.1
+                        </programlisting>
+                        <para>This configures the target computer to install version 1.1 of Adélie Linux.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
         <section id="repository">
             <title><literal>repository</literal></title>
             <formalpara id="repository.name">

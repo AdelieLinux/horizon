@@ -11,15 +11,15 @@
         <authorgroup>
             <author><firstname>A.</firstname><surname>Wilcox</surname><affiliation><orgname>Adélie Linux</orgname></affiliation></author>
         </authorgroup>
-        <edition>Specification for HorizonScript (Horizon release 1.0): Draft</edition>
-        <pubdate>2019</pubdate>
+        <edition>Specification for HorizonScript (Horizon release 1.0)</edition>
+        <pubdate>2020-06-13</pubdate>
         <copyright>
-            <year>2019</year>
+            <year>2019</year><year>2020</year>
             <holder>Adélie Linux</holder>
         </copyright>
         <legalnotice>
-            <para>Development documentation for Project Horizon is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.</para>
-            <para>You should have received a copy of the license along with this work. If not, see <ulink url="https://creativecommons.org/licenses/by-nc-sa/4.0/"><citetitle>the Creative Commons Web site</citetitle></ulink>.</para>
+            <para>Development documentation for Project Horizon is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</para>
+            <para>You should have received a copy of the license along with this work. If not, see <ulink url="https://creativecommons.org/licenses/by-sa/4.0/"><citetitle>the Creative Commons Web site</citetitle></ulink>.</para>
         </legalnotice>
         <abstract><para>This document describes the file format of HorizonScript.  HorizonScript is the input file used for Project Horizon, the installation system for Adélie Linux.</para></abstract>
     </bookinfo>
