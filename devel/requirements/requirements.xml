@@ -20,13 +20,13 @@
             <author><firstname>Lee</firstname><surname>Starnes</surname></author>
             <author><firstname>Max</firstname><surname>Rees</surname></author>
             <author><firstname>Samuel</firstname><surname>Holland</surname></author>
-            <author><firstname>Luis</firstname><surname>Ressel</surname></author>
+            <author><firstname>Mira</firstname><surname>Ressel</surname></author>
             <author><firstname>Alyx</firstname><surname>Wolcott</surname></author>
         </authorgroup>
-        <edition>Requirements for Horizon 1.0: Draft</edition>
-        <pubdate>2019</pubdate>
+        <edition>Requirements for Horizon 1.0</edition>
+        <pubdate>2020-06-13</pubdate>
         <copyright>
-            <year>2019</year>
+            <year>2019</year><year>2020</year>
             <holder>Adélie Linux</holder>
         </copyright>
         <legalnotice>

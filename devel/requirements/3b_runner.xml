@@ -716,6 +716,10 @@
                     <title>Runner.Execute.repository</title>
                     <para>If one or more <literal>repository</literal> keys are specified in the HorizonScript, the system shall write the repository locations to the <literal>/etc/apk/repositories</literal> file in the target namespace; otherwise, the system shall write the default repository locations to the <literal>/etc/apk/repositories</literal> file in the target namespace.</para>
                 </formalpara>
+                <formalpara id="Runner.Execute.repository.DefaultVersion">
+                    <title>Runner.Execute.repository.Default</title>
+                    <para>If a <literal>version</literal> key is specified in the HorizonScript, and no <literal>repository</literal> keys are specified in the HorizonScript, the system shall use the value of the <literal>version</literal> key as the version portion of the default repository location(s) written to the target namespace.</para>
+                </formalpara>
                 <formalpara id="Runner.Execute.firmware">
                     <title>Runner.Execute.firmware</title>
                     <para>If a <literal>firmware</literal> key is specified in the HorizonScript, and the system is compiled with firmware support enabled, and the value of the <literal>firmware</literal> key is <literal>true</literal>, the system shall add <literal>linux-firmware</literal> to the list of packages to install.</para>
@@ -815,6 +819,10 @@
                 <formalpara id="Runner.Execute.timezone.Missing">
                     <title>Runner.Execute.timezone.Missing</title>
                     <para>If the zoneinfo file for the specified timezone in the <literal>timezone</literal> key is missing in the target namespace, but present in the installation environment, the system shall copy the zoneinfo file from the installation environment to the <literal>/etc/localtime</literal> file in the target namespace.</para>
+                </formalpara>
+                <formalpara id="Runner.Execute.bootloader">
+                    <title>Runner.Execute.bootloader</title>
+                    <para>If a <literal>bootloader</literal> key is specified in the HorizonScript, the system shall perform the requested bootloader configuration.</para>
                 </formalpara>
                 <formalpara id="Runner.Execute.Finish">
                     <title>Runner.Execute.Finish</title>
