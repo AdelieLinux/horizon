@@ -184,7 +184,7 @@ public:
         }
 
         /* REQ: ISO.1 */
-        if(fs::exists(this->ir_dir, ec)) {
+        if(fs::exists(this->ir_dir, ec) && opts.find("keep") == opts.end()) {
             output_info("CD backend", "removing old IR tree", this->ir_dir);
             /* try to umount first, just in case
              * We don't care if the call fails.
