@@ -774,5 +774,82 @@ bool Bootloader::execute() const {
         method = _value;
     }
 
+    if(method == "grub-efi") {
+        if(script->options().test(Simulate)) {
+            std::cout << "apk --root " << script->targetDirectory()
+                      << " --keys-dir etc/apk/keys add grub-efi"
+                      << std::endl
+                      << "chroot " << script->targetDirectory()
+                      << " grub-install" << std::endl;
+            return true;
+        }
+#ifdef HAS_INSTALL_ENV
+        if(run_command("/sbin/apk",
+                       {"--root", script->targetDirectory(), "--keys-dir",
+                        "etc/apk/keys", "add", "grub-efi"}) != 0) {
+            output_error(pos, "bootloader: couldn't add package");
+            return false;
+        }
+        if(run_command("chroot", {script->targetDirectory(), "grub-install"})
+                != 0) {
+            output_error(pos, "bootloader: failed to install GRUB");
+            return false;
+        }
+#endif
+        return true;
+    }
+    else if(method == "grub-bios") {
+        if(script->options().test(Simulate)) {
+            std::cout << "apk --root " << script->targetDirectory()
+                      << " --keys-dir etc/apk/keys add grub-bios"
+                      << std::endl
+                      << "chroot " << script->targetDirectory()
+                      << " grub-install" << std::endl;
+            return true;
+        }
+#ifdef HAS_INSTALL_ENV
+        if(run_command("/sbin/apk",
+                       {"--root", script->targetDirectory(), "--keys-dir",
+                        "etc/apk/keys", "add", "grub-bios"}) != 0) {
+            output_error(pos, "bootloader: couldn't add package");
+            return false;
+        }
+        if(run_command("chroot", {script->targetDirectory(), "grub-install"})
+                != 0) {
+            output_error(pos, "bootloader: failed to install GRUB");
+            return false;
+        }
+#endif
+        return true;
+    }
+    else if(method == "iquik") {
+        output_error(pos, "bootloader: iQUIK is not yet supported");
+        return false;
+    }
+    else if(method == "grub-ieee1275") {
+        if(script->options().test(Simulate)) {
+            std::cout << "apk --root " << script->targetDirectory()
+                      << " --keys-dir etc/apk/keys add grub-ieee1275"
+                      << std::endl
+                      << "chroot " << script->targetDirectory()
+                      << " grub-install" << std::endl;
+            return true;
+        }
+#ifdef HAS_INSTALL_ENV
+        if(run_command("/sbin/apk",
+                       {"--root", script->targetDirectory(), "--keys-dir",
+                        "etc/apk/keys", "add", "grub-ieee1275"}) != 0) {
+            output_error(pos, "bootloader: couldn't add package");
+            return false;
+        }
+        if(run_command("chroot", {script->targetDirectory(), "grub-install"})
+                != 0) {
+            output_error(pos, "bootloader: failed to install GRUB");
+            return false;
+        }
+#endif
+        return true;
+    }
+
     return false;
 }
