@@ -432,23 +432,20 @@ QStringList bootForArch(const std::string &raw_disk, HorizonWizard::Arch arch,
         return {
             QString{"partition %1 %2 256M esp"}.arg(disk).arg(*start),
             QString{"fs %1 fat32"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
-            QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++)),
-            QString{"pkginstall grub-efi"}
+            QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
         };
     case HorizonWizard::x86_64: /* 64-bit Intel: support UEFI and BIOS */
         return {
             QString{"partition %1 %2 1M bios"}.arg(disk).arg((*start)++),
             QString{"partition %1 %2 256M esp"}.arg(disk).arg(*start),
             QString{"fs %1 fat32"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
-            QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++)),
-            QString{"pkginstall grub-efi grub-pc"}
+            QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
         };
     case HorizonWizard::ppc:    /* 32-bit PowerPC: we only support Power Mac */
         return {
             QString{"partition %1 %2 16M boot"}.arg(disk).arg(*start),
             QString{"fs %1 hfs+"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
-            QString{"mount %1 /boot/grub"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++)),
-            QString{"pkginstall grub-ieee1275"}
+            QString{"mount %1 /boot/grub"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
         };
     case HorizonWizard::ppc64:  /* Complicated */
         switch(subarch) {
@@ -456,24 +453,19 @@ QStringList bootForArch(const std::string &raw_disk, HorizonWizard::Arch arch,
             return {
                 QString{"partition %1 %2 16M boot"}.arg(disk).arg(*start),
                 QString{"fs %1 hfs+"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
-                QString{"mount %1 /boot/grub"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++)),
-                QString{"pkginstall grub-ieee1275"}
+                QString{"mount %1 /boot/grub"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
             };
         case HorizonWizard::ppc64_PowerNV:  /* doesn't need a separate /boot */
             return {};
         case HorizonWizard::ppc64_pSeries:  /* PReP boot partition */
         default:
-            return {
-                QString{"partition %1 %2 10M prep"}.arg(disk).arg((*start)++),
-                QString{"pkginstall grub-ieee1275"}
-            };
+            return {QString{"partition %1 %2 10M prep"}.arg(disk).arg((*start)++)};
         }
     case HorizonWizard::pmmx:   /* 32-bit Intel, bog standard GRUB */
         return {
             QString{"partition %1 %2 256M boot"}.arg(disk).arg(*start),
             QString{"fs %1 ext2"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
-            QString{"mount %1 /boot"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++)),
-            QString{"pkginstall grub-pc"}
+            QString{"mount %1 /boot"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
         };
     case HorizonWizard::armv7:
     case HorizonWizard::UnknownCPU: /* safe enough as a fallback */
@@ -604,6 +596,8 @@ QString HorizonWizard::toHScript() {
         lines << QString{"mount %1 /"}.arg(root_part);
     }
 
+    lines << QString::fromStdString("version " + version);
+
     switch(this->pkgtype) {
     case Mobile:
         lines << "pkginstall pm-utils pm-quirks powerdevil upower";
@@ -612,14 +606,14 @@ QString HorizonWizard::toHScript() {
 #endif
     case Standard:
         lines << "pkginstall adelie-base-posix firefox-esr libreoffice "
-                 "thunderbird vlc kde x11 bluez";
+                 "thunderbird vlc kde x11 bluez sddm";
         lines << "svcenable bluetooth";
         lines << "svcenable consolekit";
         lines << "svcenable sddm";
         break;
     case Compact:
         lines << "pkginstall adelie-base netsurf featherpad lxqt-desktop "
-                 "abiword gnumeric xorg-apps xorg-drivers xorg-server";
+                 "abiword gnumeric sddm xorg-apps xorg-drivers xorg-server";
         lines << "svcenable consolekit";
         lines << "svcenable sddm";
         break;
@@ -635,7 +629,7 @@ QString HorizonWizard::toHScript() {
     lines << "pkginstall openrc";
 
     if(this->grub) {
-        lines << "pkginstall grub";
+        lines << "bootloader true";
     }
 
     switch(this->binsh) {
