@@ -336,6 +336,8 @@ bool Horizon::Script::validate() const {
         failures += validate_one_account(acct.first, detail);
     }
 
+    if(internal->boot && !internal->boot->validate()) failures++;
+
 #define VALIDATE_OR_SKIP(obj) \
     if(!obj->validate()) {\
         failures++;\

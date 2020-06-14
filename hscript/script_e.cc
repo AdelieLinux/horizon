@@ -659,6 +659,10 @@ bool Script::execute() const {
         EXECUTE_OR_FAIL("svcenable", svc)
     }
 
+    if(internal->boot) {
+        EXECUTE_OR_FAIL("bootloader", internal->boot)
+    }
+
     output_step_end("post-metadata");
     return true;
 }
