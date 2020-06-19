@@ -3,7 +3,7 @@ Desktop Environments		X11-based desktop environments.	preferences-theme
  LXQt	lxqt-desktop	Lightweight desktop environment using the Openbox window manager and Qt widgets.	qt
  MATE	mate-complete	The MATE desktop environment, featuring a classic desktop experience with Gtk+ 2.	mate-logo
  XFCE	xfce-desktop	The XFCE desktop environment.	xfce4-logo
-Documentation	doc	Install documentation for the software you select.	application-x-fictionbook
+Documentation	docs	Install documentation for the software you select.	application-x-fictionbook
 Games		Video games for your Adélie Linux computer.	applications-games
  Mednafen	mednaffe	An emulator for playing games from many types of 8-bit and 16-bit home consoles.
  OpenTTD	openttd	Transportation simulation game.
@@ -13,7 +13,6 @@ Games		Video games for your Adélie Linux computer.	applications-games
 Internet Software		Software to explore the Internet.	applications-internet
  Firefox Web browser	firefox-esr	Popular, powerful Web browser.  Includes JavaScript and multimedia (audio/video) playback support.
  Netsurf Web browser	netsurf	Lightweight Web browser.  Does not include JavaScript support.
- Otter Browser	otter-browser	WebKit-based Web browser with JavaScript support.
  Thunderbird Email	thunderbird	Read and compose email, and participate in newsgroups.
 KDE Applications	kde	A variety of cohesive applications including a word processor, media player, and many games.	kde-logo
  Default Theme	adelie-kde-theme	The Adélie KDE theme, including wallpapers and colour themes.	kcontrol
@@ -38,7 +37,7 @@ Programming Environments		Interpreters, language tools, and development environm
  Ada	gcc-gnat	The Ada programming language.	applications-interfacedesign
  COBOL	gnucobol	The COBOL programming language.	applications-interfacedesign
  Go	gcc-go	The Go programming language.	text-x-go
- Java	openjdk8-jdk	The Java 8 programming environment.	java
+ Java	openjdk8	The Java 8 programming environment.	java
  Node.js	node	The Node JavaScript programming environment.	javascript
  Perl	perl	The Perl programming language.	text-x-perl
  PHP 7	php7	The PHP 7 programming language.	application-x-php
