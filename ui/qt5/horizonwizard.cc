@@ -431,14 +431,14 @@ QStringList bootForArch(const std::string &raw_disk, HorizonWizard::Arch arch,
     case HorizonWizard::aarch64:/* 64-bit ARM: assume UEFI */
         return {
             QString{"partition %1 %2 256M esp"}.arg(disk).arg(*start),
-            QString{"fs %1 fat32"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
+            QString{"fs %1 vfat"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
             QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
         };
     case HorizonWizard::x86_64: /* 64-bit Intel: support UEFI and BIOS */
         return {
             QString{"partition %1 %2 1M bios"}.arg(disk).arg((*start)++),
             QString{"partition %1 %2 256M esp"}.arg(disk).arg(*start),
-            QString{"fs %1 fat32"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
+            QString{"fs %1 vfat"}.arg(nameForPartitionOnDisk(raw_disk, *start)),
             QString{"mount %1 /boot/efi"}.arg(nameForPartitionOnDisk(raw_disk, (*start)++))
         };
     case HorizonWizard::ppc:    /* 32-bit PowerPC: we only support Power Mac */
