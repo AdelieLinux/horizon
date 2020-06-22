@@ -788,7 +788,7 @@ bool Mount::execute() const {
     else {
         /* mount */
         if(!fs::exists(actual_mount, ec)) {
-            fs::create_directory(actual_mount, ec);
+            fs::create_directories(actual_mount, ec);
             if(ec) {
                 output_error(pos, "mount: failed to create target directory "
                              "for " + this->mountpoint(), ec.message());
