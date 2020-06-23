@@ -23,6 +23,9 @@ module horizon-image {
   revision 2020-05-12 {
     description "Flatten packages node.  Remove image-type leaf and generate action."
   }
+  revision 2020-06-22 {
+    description "Add PPPoE configuration support."
+  }
 
   typedef architecture {
     type enumeration {
@@ -278,6 +281,37 @@ module horizon-image {
             }
             description
               "Addressing information for static configuration.";
+          }
+        }
+      }
+      container pppoe_links {
+        list pppoe {
+          key "interface";
+
+          leaf interface {
+            type string;
+            description "The interface used for this link.";
+          }
+          leaf mtu {
+            type uint16;
+            description "The MTU to negotiate for this link.";
+          }
+          leaf username {
+            type string;
+            description "The username for authenticating this link.";
+          }
+          leaf password {
+            type string;
+            description "The password/secret for authenticating this link.";
+          }
+          leaf lcp-echo-interval {
+            type uint8;
+            description "The number of seconds between LCP echo requests.";
+          }
+          leaf lcp-echo-failure {
+            type uint8;
+            description
+              "The number of echo request failures before this link is failed.";
           }
         }
       }
