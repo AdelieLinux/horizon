@@ -16,6 +16,7 @@
 #include <set>
 #include <sstream>
 #ifdef HAS_INSTALL_ENV
+#   include <sys/mount.h>
 #   include "util/filesystem.hh"
 #endif /* HAS_INSTALL_ENV */
 #include <unistd.h>         /* access - used by tz code even in RT env */
@@ -790,11 +791,22 @@ bool Bootloader::execute() const {
             output_error(pos, "bootloader: couldn't add package");
             return false;
         }
+
+        /* remount EFI vars r/w */
+        mount(nullptr, "/sys/firmware/efi/efivars", nullptr,
+              MS_REMOUNT | MS_NOEXEC | MS_NODEV | MS_NOSUID | MS_RELATIME,
+              nullptr);
+
         if(run_command("chroot", {script->targetDirectory(), "grub-install"})
                 != 0) {
             output_error(pos, "bootloader: failed to install GRUB");
             return false;
         }
+
+        /* done, back to r/o */
+        mount(nullptr, "/sys/firmware/efi/efivars", nullptr,
+              MS_REMOUNT | MS_RDONLY | MS_NOEXEC | MS_NODEV | MS_NOSUID |
+              MS_RELATIME, nullptr);
 #endif
         return true;
     }
