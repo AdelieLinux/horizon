@@ -70,6 +70,7 @@ const char *initrd = "#!/bin/sh -e\n\
         \n\
         if [ -n ${CDINIT_DIR} ]; then\n\
                 cp ${CDINIT_DIR}/cdinit-$ARCH ${INITRD_DIR}/init\n\
+                chmod 755 ${INITRD_DIR}/init\n\
         else\n\
                 log error 'No cdinit binary found, and compilation is not yet supported'\n\
                 exit 2\n\
