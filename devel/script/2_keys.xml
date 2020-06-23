@@ -416,6 +416,7 @@ netaddress eth0 198.51.100.37 24 198.51.100.1
                         <listitem><para><literal>lcp-echo-interval</literal> &mdash; The number of seconds between echo-requests to ensure the connection is still functioning.</para></listitem>
                         <listitem><para><literal>lcp-echo-failure</literal> &mdash; The number of failed echo-requests before the connection is determined to have a fault.</para></listitem>
                     </orderedlist>
+                    There shall be zero or one <literal>pppoe</literal> keys specified per interface.  If an interface additionally has a <literal>netaddress</literal> specified for it, the <literal>netaddress</literal> configuration shall be ignored.
                 </para>
             </formalpara>
             <formalpara id="pppoe.default">
