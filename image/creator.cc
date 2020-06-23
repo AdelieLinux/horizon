@@ -22,6 +22,7 @@
 #include "backends/basic.hh"
 #include "hscript/meta.hh"
 #include "hscript/script.hh"
+#include "hscript/util.hh"
 #include "util/filesystem.hh"
 #include "util/output.hh"
 
@@ -247,9 +248,9 @@ int main(int argc, char *argv[]) {
 
 trouble:        /* delete the Script and exit */
     /* ensure that our target mounts are unmounted */
-    umount((ir_dir + "/target/sys").c_str());
+    run_command("umount", {"-R", (ir_dir + "/target/sys")});
     umount((ir_dir + "/target/proc").c_str());
-    umount((ir_dir + "/target/dev").c_str());
+    run_command("umount", {"-R", (ir_dir + "/target/dev")});
 
     delete my_script;
 early_trouble:  /* no script yet */

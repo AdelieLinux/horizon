@@ -169,7 +169,8 @@ bool Script::execute() const {
         if(!fs::exists(devpath, ec)) {
             fs::create_directory(devpath, ec);
         }
-        if(mount("/dev", devpath.c_str(), nullptr, MS_BIND, nullptr) != 0) {
+        if(mount("/dev", devpath.c_str(), nullptr, MS_BIND | MS_REC,
+                 nullptr) != 0) {
             output_warning("internal", "could not bind-mount /dev; "
                            "bootloader configuration may fail");
         }
@@ -184,7 +185,8 @@ bool Script::execute() const {
         if(!fs::exists(syspath, ec)) {
             fs::create_directory(syspath, ec);
         }
-        if(mount("none", syspath.c_str(), "sysfs", 0, nullptr) != 0) {
+        if(mount("/sys", syspath.c_str(), nullptr, MS_BIND | MS_REC,
+                 nullptr) != 0) {
             output_warning("internal", "target sysfs could not be mounted");
         }
     }
