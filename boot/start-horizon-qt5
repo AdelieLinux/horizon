@@ -1,5 +1,6 @@
 #!/bin/sh
 
+xsetroot -bg "Steel Blue"
 kwin_x11 &
 horizon-qt5
 if [ $? -eq 0 ]; then

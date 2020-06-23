@@ -55,6 +55,10 @@ Directory Layout
     SDDM configuration file to automatically start the Horizon wizard.
     Installed as ``/etc/sddm.conf.d/horizon.conf``.
 
+``kwinrc``
+    KWin configuration file.
+    Installed as ``/etc/xdg/kwinrc``.
+
 ``qt5ct.conf``
     Qt 5 theme.
     Installed as ``/usr/share/qt5ct/qt5ct.conf``.
