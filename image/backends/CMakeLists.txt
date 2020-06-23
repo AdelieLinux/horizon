@@ -1,6 +1,5 @@
 set(BACKEND_SRCS
         basic.cc
-        iso.cc
 )
 
 set(BACKEND_LIBS "")
@@ -11,6 +10,10 @@ if(LibArchive_FOUND)
     list(APPEND BACKEND_SRCS tar.cc)
     list(APPEND BACKEND_LIBS ${LibArchive_LIBRARIES})
 endif()
+
+if(BUILD_ISO)
+    list(APPEND BACKEND_SRCS iso.cc)
+endif(BUILD_ISO)
 
 add_library(hi-backends ${BACKEND_SRCS})
 target_link_libraries(hi-backends ${BACKEND_LIBS})
