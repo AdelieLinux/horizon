@@ -396,6 +396,45 @@ netaddress eth0 198.51.100.37 24 198.51.100.1
                 </para>
             </formalpara>
         </section>
+        <section id="pppoe">
+            <title><literal>pppoe</literal></title>
+            <formalpara id="pppoe.name">
+                <title>Name</title>
+                <para><literal>pppoe</literal></para>
+            </formalpara>
+            <formalpara id="pppoe.purpose">
+                <title>Purpose</title>
+                <para>The <literal>pppoe</literal> key configures a PPPoE link on a specified interface.</para>
+            </formalpara>
+            <formalpara id="pppoe.format">
+                <title>Format</title>
+                <para>The <literal>pppoe</literal> key is a space-separated list of configuration information.  The first item shall be the name of the Ethernet interface used to establish the link.  Each additional item must be in the form <literal><userinput>key</userinput>=<userinput>value</userinput></literal>, where <userinput>key</userinput> is one of the following:
+                    <orderedlist id="pppoe.format.keys">
+                        <listitem><para><literal>mtu</literal> &mdash; The desired MTU of the interface.</para></listitem>
+                        <listitem><para><literal>username</literal> &mdash; The username to use for authentication.</para></listitem>
+                        <listitem><para><literal>password</literal> &mdash; The password/secret to use for authentication.</para></listitem>
+                        <listitem><para><literal>lcp-echo-interval</literal> &mdash; The number of seconds between echo-requests to ensure the connection is still functioning.</para></listitem>
+                        <listitem><para><literal>lcp-echo-failure</literal> &mdash; The number of failed echo-requests before the connection is determined to have a fault.</para></listitem>
+                    </orderedlist>
+                </para>
+            </formalpara>
+            <formalpara id="pppoe.default">
+                <title>Default</title>
+                <para>If the <literal>pppoe</literal> key is not specified, no PPPoE link will be established.</para>
+            </formalpara>
+            <formalpara id="pppoe.example">
+                <title>Example</title>
+                <para>
+                    <example>
+                        <title>The <literal>pppoe</literal> Key</title>
+                        <programlisting>
+pppoe eth0 mtu=9120 username=awilfox password=fuzzball lcp-echo-interval=15 lcp-echo-failure=3
+                        </programlisting>
+                        <para>This configures a PPPoE link on the interface <literal>eth0</literal>, with an MTU of 9120 and authentiation and LCP configuration as specified.</para>
+                    </example>
+                </para>
+            </formalpara>
+        </section>
         <section id="nameserver">
             <title><literal>nameserver</literal></title>
             <formalpara id="nameserver.name">
