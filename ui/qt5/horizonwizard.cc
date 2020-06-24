@@ -652,8 +652,11 @@ QString HorizonWizard::toHScript() {
 
     if(this->eudev) {
         lines << "pkginstall eudev";
+        lines << "svcenable udev boot";
+        lines << "svcenable udev-trigger boot";
     } else {
         lines << "pkginstall mdevd";
+        lines << "svcenable mdevd boot";
     }
 
     lines << "pkginstall sysklogd";
