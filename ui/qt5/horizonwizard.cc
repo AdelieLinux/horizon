@@ -680,6 +680,8 @@ QString HorizonWizard::toHScript() {
 #ifdef NON_LIBRE_FIRMWARE
     if(this->firmware) {
         lines << "firmware true";
+        lines << "signingkey /etc/apk/keys/packages@pleroma.apkfission.net-5ac0b300.rsa.pub";
+        lines << "signingkey /etc/apk/keys/packages@pleroma.apkfission.net-5ac04808.rsa.pub";
     } else {
         lines << "firmware false";
     }

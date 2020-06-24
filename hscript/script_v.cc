@@ -139,7 +139,7 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
     if(firmware) {
         Repository *fw_key = dynamic_cast<Repository *>(
             Repository::parseFromData(
-                "https://distfiles.apkfission.net/adelie-stable/nonfree",
+                "https://distfiles.apkfission.net/adelie/1.0/nonfree",
                 {"internal", 0}, nullptr, nullptr, s
             )
         );
