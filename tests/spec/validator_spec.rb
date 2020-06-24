@@ -136,7 +136,8 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                 it "with non-alphabetical first character" do
                     use_fixture '0024-numeric-hostname.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(/error: .*hostname.*/)
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
                 end
                 # Runner.Validate.hostname.Length
                 it "with >320 characters" do

@@ -196,7 +196,7 @@
                 </formalpara>
                 <formalpara id="Runner.Validate.hostname.Begin">
                     <title>Runner.Validate.hostname.Begin</title>
-                    <para>The system shall verify that the value for the <literal>hostname</literal> key begins with an alphabetical character.</para>
+                    <para>The system shall verify that the value for the <literal>hostname</literal> key begins with an alphanumeric character.</para>
                 </formalpara>
                 <formalpara id="Runner.Validate.hostname.Length">
                     <title>Runner.Validate.hostname.Length</title>

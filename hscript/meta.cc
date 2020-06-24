@@ -43,9 +43,9 @@ bool Hostname::validate() const {
     bool any_failure = false;
     std::string::size_type last_dot = 0, next_dot = 0;
 
-    if(!isalpha(this->_value[0])) {
+    if(!isalnum(this->_value[0])) {
         any_failure = true;
-        output_error(pos, "hostname: must start with alphabetical character");
+        output_error(pos, "hostname: must start with alphanumeric character");
     }
 
     if(this->_value.size() > 320) {
