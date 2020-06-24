@@ -188,7 +188,7 @@ int main(int argc, char *argv[]) {
 
     if(if_path == "-") {
         /* Unix-style stdin specification */
-        my_script = Horizon::Script::load(std::cin, opts);
+        my_script = Horizon::Script::load(std::cin, opts, "/dev/stdin");
     } else {
         my_script = Horizon::Script::load(if_path, opts);
     }
