@@ -631,7 +631,7 @@ repository https://mirrors.servercentral.com/adelie/1.0/user
             </formalpara>
             <formalpara id="svcenable.format">
                 <title>Format</title>
-                <para>The <literal>svcenable</literal> key is a string value which contains the name of a OpenRC service.  The service file must be installed as part of a <literal>pkginstall</literal> key.  <literal>svcenable</literal> may appear any number of times in a HorizonScript.</para>
+                <para>The <literal>svcenable</literal> key is a space-separate list which contains the name of a OpenRC service and an optional runlevel specification.  The service file must be installed as part of a <literal>pkginstall</literal> key.  <literal>svcenable</literal> may appear any number of times in a HorizonScript.  If the runlevel is not specified, the <literal>default</literal> runlevel will be used.</para>
             </formalpara>
             <formalpara id="svcenable.examples">
                 <title>Examples</title>
@@ -642,6 +642,14 @@ repository https://mirrors.servercentral.com/adelie/1.0/user
 svcenable sshd
                         </programlisting>
                         <para>This configures the target computer to start the SSH daemon during system boot.</para>
+                    </example>
+                    <example>
+                        <title>The <literal>svcenable</literal> Key &mdash; Start udev on Boot</title>
+                        <programlisting>
+svcenable udev boot
+svcenable udev-trigger boot
+                        </programlisting>
+                        <para>This configures the target computer to start the <literal>udev</literal> and <literal>udev-trigger</literal> services during early boot, in the <literal>boot</literal> runlevel.</para>
                     </example>
                     <example>
                         <title>The <literal>svcenable</literal> Key &mdash; Typical Desktop</title>
