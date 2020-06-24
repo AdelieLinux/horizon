@@ -508,7 +508,7 @@ bool Horizon::Script::validate() const {
         }
 
         /* REQ: Runner.Validate.encrypt.Block */
-        if(opts.test(InstallEnvironment)) {
+        if(opts.test(InstallEnvironment) && !opts.test(ImageOnly)) {
 #ifdef HAS_INSTALL_ENV
             CHECK_EXIST_PART_LV(crypt->device(), "encrypt", crypt->where())
 #endif /* HAS_INSTALL_ENV */
@@ -528,7 +528,7 @@ bool Horizon::Script::validate() const {
         seen_fses.insert(fs->device());
 
         /* REQ: Runner.Validate.fs.Block */
-        if(opts.test(InstallEnvironment)) {
+        if(opts.test(InstallEnvironment) && !opts.test(ImageOnly)) {
 #ifdef HAS_INSTALL_ENV
             CHECK_EXIST_PART_LV(fs->device(), "fs", fs->where())
 #endif /* HAS_INSTALL_ENV */
@@ -550,7 +550,7 @@ bool Horizon::Script::validate() const {
         }
 
         /* REQ: Runner.Validate.mount.Block */
-        if(opts.test(InstallEnvironment)) {
+        if(opts.test(InstallEnvironment) && !opts.test(ImageOnly)) {
 #ifdef HAS_INSTALL_ENV
             CHECK_EXIST_PART_LV(mount->device(), "mount", mount->where())
 #endif /* HAS_INSTALL_ENV */
