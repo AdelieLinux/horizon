@@ -26,6 +26,9 @@ module horizon-image {
   revision 2020-06-22 {
     description "Add PPPoE configuration support."
   }
+  revision 2020-06-23 {
+    description "Add service enablement."
+  }
 
   typedef architecture {
     type enumeration {
@@ -237,6 +240,20 @@ module horizon-image {
       leaf firmware {
         type boolean;
         default false;
+      }
+      container services {
+        list service {
+          key "service";
+
+          leaf service {
+            type string;
+            description "The name of the service to enable.";
+          }
+          leaf runlevel {
+            type string;
+            description "The runlevel to enable the service.";
+          }
+        }
       }
       leaf netconfig {
         type netconfigtype;

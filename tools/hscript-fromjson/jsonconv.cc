@@ -113,6 +113,18 @@ bool parse_one_desc(json desc, std::ostream &out) {
 
 #undef SIMPLE_PLURAL_KEY
 
+    if(desc.find("services") != desc.end()) {
+        for(const auto &svc : desc["services"]) {
+            ENSURE_KEY(svc, "service");
+            std::string service = svc["service"].get<std::string>();
+            out << "svcenable " << svc;
+            if(svc.find("runlevel") != svc.end()) {
+                out << " " << svc["runlevel"].get<std::string>();
+            }
+            out << std::endl;
+        }
+    }
+
     if(desc.find("users") != desc.end()) {
         for(const auto &user : desc["users"]) {
             if(user.find("username") == user.end()) {
