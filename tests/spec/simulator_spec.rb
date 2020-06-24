@@ -32,7 +32,7 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
         end
     end
     it "handles validation failures correctly" do
-        use_fixture '0024-numeric-hostname.installfile'
+        use_fixture '0240-bootloader-invalid.installfile'
         run_simulate
         expect(last_command_started.stderr).to include("Script failed.  Stop.")
     end
@@ -280,6 +280,11 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             run_simulate
             expect(last_command_started.stdout).to include("ln -s /etc/init.d/sshd /target/etc/runlevels/default/sshd")
         end
+	it "handles runlevels correctly" do
+	    use_fixture '0239-svcenable-runlevel.installfile'
+	    run_simulate
+	    expect(last_command_started.stdout).to include("ln -s /etc/init.d/udev /target/etc/runlevels/boot/udev")
+	end
     end
     context "simulating 'pkginstall' execution" do
         # Runner.Execute.pkginstall.APKDB

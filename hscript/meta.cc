@@ -623,21 +623,34 @@ Key *SvcEnable::parseFromData(const std::string &data,
                               const ScriptLocation &pos, int *errors, int *,
                               const Script *script) {
     const static std::string valid_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.-_";
+    std::string::size_type space = data.find_first_of(' ');;
+    std::string svc, runlevel{"default"};
 
-    if(data.find_first_not_of(valid_chars) != std::string::npos) {
+    if(space != std::string::npos) {
+        svc = data.substr(0, space);
+        runlevel = data.substr(space + 1);
+    } else {
+        svc = data;
+    }
+
+    if(svc.find_first_not_of(valid_chars) != std::string::npos) {
         if(errors) *errors += 1;
         output_error(pos, "svcenable: invalid service name", data);
         return nullptr;
     }
 
-    return new SvcEnable(script, pos, data);
+    return new SvcEnable(script, pos, svc, runlevel);
+}
+
+bool SvcEnable::validate() const {
+    return true;  /* validation occurs during parsing */
 }
 
 bool SvcEnable::execute() const {
     const std::string target = script->targetDirectory() +
-                               "/etc/runlevels/default/" + _value;
-    const std::string initd = "/etc/init.d/" + _value;
-    output_info(pos, "svcenable: enabling service " + _value);
+                               "/etc/runlevels/" + _runlevel + "/" + _svc;
+    const std::string initd = "/etc/init.d/" + _svc;
+    output_info(pos, "svcenable: enabling service " + _svc);
 
     if(script->options().test(Simulate)) {
         std::cout << "ln -s " << initd << " " << target << std::endl;
@@ -647,12 +660,12 @@ bool SvcEnable::execute() const {
 #ifdef HAS_INSTALL_ENV
     error_code ec;
     if(!fs::exists(script->targetDirectory() + initd, ec)) {
-        output_warning(pos, "svcenable: missing service", _value);
+        output_warning(pos, "svcenable: missing service", _svc);
     }
 
     fs::create_symlink(initd, target, ec);
     if(ec) {
-        output_error(pos, "svcenable: could not enable service " + _value,
+        output_error(pos, "svcenable: could not enable service " + _svc,
                      ec.message());
         return false;
     }

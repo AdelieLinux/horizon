@@ -687,6 +687,12 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*svcenable.*invalid/)
                 end
+		it "succeeds with a runlevel specified" do
+                    use_fixture '0239-svcenable-runlevel.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+		end
             end
             context "for 'diskid' key" do
                 it "succeeds with basic disk identification" do

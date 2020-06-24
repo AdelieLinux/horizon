@@ -257,10 +257,10 @@ struct Script::ScriptPrivate {
                          const ScriptOptions &) {
         std::unique_ptr<SvcEnable> svc(dynamic_cast<SvcEnable *>(obj));
         for(const auto &s : svcs_enable) {
-            if(s->value() == svc->value()) {
+            if(s->service() == svc->service()) {
                 if(warn) *warn += 1;
                 output_warning(pos, "svcenable: service already enabled",
-                               s->value());
+                               s->service());
                 return true;
             }
         }
