@@ -485,11 +485,16 @@ bool Script::execute() const {
                                      + iface, ec.message());
                         EXECUTE_FAILURE("network");
                     } else {
-                        std::ifstream statefs("/sys/class/net/" + iface + "/operstate");
-                        char state;
-                        statefs.read(&state, 1);
-                        if(state != 'u')
+                        std::string ifpath{"/sys/class/net/" + iface + "/operstate"};
+                        if(fs::exists(ifpath)) {
+                            std::ifstream statefs(ifpath);
+                            char state;
+                            statefs.read(&state, 1);
+                            if(state != 'u')
+                                run_command("service", {"net." + iface, "start"});
+                        } else {
                             run_command("service", {"net." + iface, "start"});
+                        }
                     }
                 }
                 break;
