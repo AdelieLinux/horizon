@@ -20,6 +20,7 @@
 #   include <string.h>             /* strerror */
 #   include <sys/ioctl.h>          /* ioctl, ioctl numbers */
 #   include <unistd.h>             /* close */
+#   include "util/filesystem.hh"   /* fs for pppoe eni */
 #else
 /*! The size of Linux interface names. */
 #   define IFNAMSIZ 16
@@ -509,8 +510,72 @@ bool execute_pppoe_netifrc(const PPPoE &link) {
     return true;
 }
 
-bool execute_pppoe_eni(const PPPoE &link) {
+bool execute_pppoe_eni(const PPPoE &link, const Horizon::Script *script) {
+#ifndef HAS_INSTALL_ENV
+    output_error(link.where(), "pppoe: ENI cannot be simulated");
     return false;
+#else
+    const auto &params = link.params();
+    const std::string &pppdir{script->targetDirectory() + "/etc/ppp"};
+    const std::string &linkiface{"ppp" + std::to_string(ppp_link_count)};
+    error_code ec;
+
+    fs::create_directories(pppdir + "/peers", ec);
+    if(ec && ec.value() != EEXIST) {
+        output_error(link.where(), "pppoe: cannot create PPP directory",
+                     ec.message());
+        return false;
+    }
+
+    std::ofstream config("/tmp/horizon/eni/" + link.iface(),
+                         std::ios_base::trunc);
+    if(!config) {
+        output_error(link.where(), "pppoe: couldn't write network "
+                     "configuration for " + link.iface());
+        return false;
+    }
+    config << "iface " << linkiface << " inet ppp" << std::endl
+           << "pre-up /sbin/ifconfig " << link.iface() << " up" << std::endl
+           << "provider " << linkiface;
+
+    std::ofstream pppconf(pppdir + "/peers/" + linkiface);
+    if(!pppconf) {
+        output_error(link.where(), "pppoe: couldn't write peer information");
+        return false;
+    }
+
+    pppconf << "plugin rp-pppoe.so" << std::endl
+            << link.iface() << std::endl
+            << "defaultroute" << std::endl
+            << "noauth" << std::endl
+            << "+ipv6" << std::endl;
+
+    for(const auto &cpair : params) {
+        if(cpair.first == "password") continue;
+
+        std::string key{cpair.first};
+        /* rewrite our keys -> pppd keys */
+        if(key == "username") key = "user";
+
+        pppconf << key;
+        if(cpair.second.size() > 0) pppconf << " " << cpair.second;
+        pppconf << std::endl;
+    }
+
+    if(params.find("password") != params.end()) {
+        if(params.find("username") == params.end()) {
+            output_error(link.where(), "pppoe: password without username "
+                         "not supported in ENI mode");
+            return false;
+        }
+        std::ofstream secrets(pppdir + "/chap-secrets");
+        secrets << params.at("username") << "\t*\t" << params.at("password")
+                << std::endl;
+    }
+
+    ppp_link_count++;
+    return true;
+#endif
 }
 
 bool PPPoE::execute() const {
@@ -521,7 +586,7 @@ bool PPPoE::execute() const {
     default:
         return execute_pppoe_netifrc(*this);
     case NetConfigType::ENI:
-        return execute_pppoe_eni(*this);
+        return execute_pppoe_eni(*this, script);
     }
 }
 
