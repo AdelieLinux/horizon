@@ -14,6 +14,7 @@
 #include <arpa/inet.h>          /* inet_pton */
 #include <cstring>              /* memcpy */
 #include <fstream>              /* ofstream for Net write */
+#include <set>                  /* for PPPoE valid param keys */
 #ifdef HAS_INSTALL_ENV
 #   include <linux/wireless.h>     /* struct iwreq */
 #   include <string.h>             /* strerror */
@@ -352,9 +353,7 @@ bool execute_address_eni(const NetAddress *addr) {
     return true;
 }
 
-bool NetAddress::execute() const {
-    output_info(pos, "netaddress: adding configuration for " + _iface);
-
+NetConfigType::ConfigSystem current_system(const Horizon::Script *script) {
     NetConfigType::ConfigSystem system = NetConfigType::Netifrc;
 
     const Key *key = script->getOneValue("netconfigtype");
@@ -363,12 +362,119 @@ bool NetAddress::execute() const {
         system = nct->type();
     }
 
-    switch(system) {
+    return system;
+}
+
+bool NetAddress::execute() const {
+    output_info(pos, "netaddress: adding configuration for " + _iface);
+
+    switch(current_system(script)) {
     case NetConfigType::Netifrc:
     default:
         return execute_address_netifrc(this);
     case NetConfigType::ENI:
         return execute_address_eni(this);
+    }
+}
+
+
+Key *PPPoE::parseFromData(const std::string &data, const ScriptLocation &pos,
+                          int *errors, int *, const Script *script) {
+    std::string::size_type spos, next;
+    std::map<std::string, std::string> params;
+    std::string iface;
+
+    spos = data.find_first_of(' ');
+    iface = data.substr(0, spos);
+    if(iface.length() > IFNAMSIZ) {
+        if(errors) *errors += 1;
+        output_error(pos, "pppoe: invalid interface name '" + iface + "'",
+                     "interface names must be 16 characters or less");
+        return nullptr;
+    }
+
+    while(spos != std::string::npos) {
+        std::string key, val;
+        std::string::size_type equals;
+
+        spos++;
+
+        next = data.find_first_of(' ', spos);
+        equals = data.find_first_of('=', spos);
+        if(equals != std::string::npos && equals < next) {
+            key = data.substr(spos, equals - spos);
+            if(next == std::string::npos) {
+                val = data.substr(equals + 1);
+            } else {
+                val = data.substr(equals + 1, next - equals);
+            }
+        } else {
+            if(next == std::string::npos) {
+                key = data.substr(spos);
+            } else {
+                key = data.substr(spos, next - spos);
+            }
+        }
+
+        params[key] = val;
+
+        spos = next;
+    }
+
+    return new PPPoE(script, pos, iface, params);
+}
+
+bool PPPoE::validate() const {
+    bool valid = true;
+    const std::set<std::string> valid_keys = {"mtu", "username", "password",
+                                              "lcp-echo-interval",
+                                              "lcp-echo-failure"};
+
+    for(const auto &elem : this->params()) {
+        if(valid_keys.find(elem.first) == valid_keys.end()) {
+            output_error(this->pos, "pppoe: invalid parameter", elem.first);
+            valid = false;
+        }
+    }
+
+    return valid;
+}
+
+static int ppp_link_count = 0;
+
+bool execute_pppoe_netifrc(const PPPoE *link) {
+    std::ofstream ethconfig("/tmp/horizon/netifrc/config_" + link->iface(),
+                            std::ios_base::trunc);
+    if(!ethconfig) {
+        output_error(link->where(), "pppoe: couldn't write network "
+                     "configuration for " + link->iface());
+        return false;
+    }
+
+    ethconfig << "null";
+
+    std::string linkiface{"ppp" + std::to_string(ppp_link_count)};
+
+    std::ofstream config("/tmp/horizon/netifrc/config_" + linkiface);
+    if(!config) {
+        output_error(link->where(), "pppoe: couldn't write network "
+                     "configuration for " + linkiface);
+        return false;
+    }
+    config << "ppp";
+    return true;
+}
+
+bool PPPoE::execute() const {
+    output_info(pos, "pppoe: adding configuration for " + _iface);
+
+    switch(current_system(script)) {
+    case NetConfigType::Netifrc:
+    default:
+        return execute_pppoe_netifrc(this);
+    case NetConfigType::ENI:
+        /* eni */
+        return false;
     }
 }
 

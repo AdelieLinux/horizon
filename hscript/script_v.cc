@@ -252,6 +252,10 @@ bool Horizon::Script::validate() const {
         if(!ssid->validate()) failures++;
     }
 
+    for(auto &pppoe : internal->pppoes) {
+        if(!pppoe->validate()) failures++;
+    }
+
     /* REQ: Runner.Validate.hostname */
     if(!internal->hostname->validate()) failures++;
 

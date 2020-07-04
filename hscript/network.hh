@@ -13,6 +13,8 @@
 #ifndef __HSCRIPT_NETWORK_HH_
 #define __HSCRIPT_NETWORK_HH_
 
+#include <map>
+
 #include "key.hh"
 #include "util/output.hh"
 
@@ -88,6 +90,29 @@ public:
     uint8_t prefix() const { return this->_prefix; }
     /*! Retrieve the gateway, if any. */
     const std::string gateway() const { return this->_gw; }
+
+    bool validate() const override;
+    bool execute() const override;
+};
+
+class PPPoE : public Key {
+private:
+    const std::string _iface;
+    const std::map<std::string, std::string> _params;
+
+    PPPoE(const Script *_sc, const ScriptLocation &_pos, const std::string &_i,
+          const std::map<std::string, std::string> &_p) : Key(_sc, _pos),
+        _iface(_i), _params(_p) {}
+public:
+    static Key *parseFromData(const std::string &, const ScriptLocation &,
+                              int*, int*, const Script *);
+
+    /*! Retrieve the interface to which this PPPoE link is associated. */
+    const std::string iface() const { return this->_iface; }
+    /*! Retrieve the parameters for this PPPoE link. */
+    const std::map<std::string, std::string> params() const {
+        return this->_params;
+    }
 
     bool validate() const override;
     bool execute() const override;

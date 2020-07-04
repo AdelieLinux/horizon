@@ -58,6 +58,7 @@ const std::map<std::string, key_parse_fn> valid_keys = {
     {"netaddress", &NetAddress::parseFromData},
     {"nameserver", &Nameserver::parseFromData},
     {"netssid", &NetSSID::parseFromData},
+    {"pppoe", &PPPoE::parseFromData},
 
     {"username", &Username::parseFromData},
     {"useralias", &UserAlias::parseFromData},
@@ -98,6 +99,8 @@ bool Script::ScriptPrivate::store_key(const std::string &key_name, Key *obj,
         std::unique_ptr<NetSSID> ssid(dynamic_cast<NetSSID *>(obj));
         this->ssids.push_back(std::move(ssid));
         return true;
+    } else if(key_name == "pppoe") {
+        return store_pppoe(obj, pos, errors, warnings, opts);
     } else if(key_name == "hostname") {
         return store_hostname(obj, pos, errors, warnings, opts);
     } else if(key_name == "pkginstall") {

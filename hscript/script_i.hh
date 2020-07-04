@@ -72,6 +72,8 @@ struct Script::ScriptPrivate {
     std::vector< std::unique_ptr<Nameserver> > nses;
     /*! Wireless networking configuration */
     std::vector< std::unique_ptr<NetSSID> > ssids;
+    /*! PPPoE configuration */
+    std::vector< std::unique_ptr<PPPoE> > pppoes;
 
     /*! APK repositories */
     std::vector< std::unique_ptr<Repository> > repos;
@@ -150,6 +152,21 @@ struct Script::ScriptPrivate {
         }
         std::unique_ptr<NetConfigType> nc(dynamic_cast<NetConfigType *>(obj));
         netconfig = std::move(nc);
+        return true;
+    }
+
+    bool store_pppoe(Key *obj, const ScriptLocation &pos, int *errors,
+                     int *, const ScriptOptions &) {
+        PPPoE *ppp = dynamic_cast<PPPoE *>(obj);
+        for(const auto &ppplink : pppoes) {
+            if(ppplink->iface() == ppp->iface()) {
+                DUPLICATE_ERROR(ppplink, "pppoe", ppplink->iface());
+                return false;
+            }
+        }
+
+        std::unique_ptr<PPPoE> uppp(ppp);
+        pppoes.push_back(std::move(uppp));
         return true;
     }
 

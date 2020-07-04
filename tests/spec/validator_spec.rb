@@ -278,6 +278,37 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*nameserver.*valid IPv6/)
                 end
             end
+            context "for 'pppoe' key" do
+                it "succeeds with only an interface" do
+                    use_fixture '0241-pppoe-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with autnentication credentials" do
+                    use_fixture '0242-pppoe-auth.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "succeeds with all valid keys" do
+                    use_fixture '0243-pppoe-allkeys.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with an invalid key" do
+                    use_fixture '0244-pppoe-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*pppoe.*invalid/)
+                end
+                it "succeeds with a value-less key" do
+                    use_fixture '0245-pppoe-valueless.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+            end
             context "for 'firmware' key" do
                 it "always supports 'false' value" do
                     use_fixture '0112-firmware-false.installfile'
@@ -687,12 +718,12 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*svcenable.*invalid/)
                 end
-		it "succeeds with a runlevel specified" do
+                it "succeeds with a runlevel specified" do
                     use_fixture '0239-svcenable-runlevel.installfile'
                     run_validate
                     expect(last_command_started).to have_output(PARSER_SUCCESS)
                     expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
-		end
+                end
             end
             context "for 'diskid' key" do
                 it "succeeds with basic disk identification" do

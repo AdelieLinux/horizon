@@ -287,7 +287,7 @@ bool Script::execute() const {
     }
 
     bool dhcp = false;
-    if(!internal->addresses.empty()) {
+    if(!internal->addresses.empty() || !internal->pppoes.empty()) {
         fs::path conf_dir, targ_netconf_dir, targ_netconf_file;
         switch(netconfsys) {
         case NetConfigType::Netifrc:
@@ -317,6 +317,13 @@ bool Script::execute() const {
                 ifaces.insert(addr->iface());
             }
             if(addr->type() == NetAddress::DHCP) dhcp = true;
+        }
+
+        int pppcnt = 0;
+        for(auto &ppp_link : internal->pppoes) {
+            EXECUTE_OR_FAIL("pppoe", ppp_link);
+            ifaces.insert(ppp_link->iface());
+            ifaces.insert("ppp" + std::to_string(pppcnt++));
         }
 
         std::ostringstream conf;
