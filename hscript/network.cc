@@ -442,27 +442,75 @@ bool PPPoE::validate() const {
 
 static int ppp_link_count = 0;
 
-bool execute_pppoe_netifrc(const PPPoE *link) {
-    std::ofstream ethconfig("/tmp/horizon/netifrc/config_" + link->iface(),
-                            std::ios_base::trunc);
-    if(!ethconfig) {
-        output_error(link->where(), "pppoe: couldn't write network "
-                     "configuration for " + link->iface());
-        return false;
+bool execute_pppoe_netifrc(const PPPoE &link) {
+    const auto &params = link.params();
+    const std::string &linkiface{"ppp" + std::to_string(ppp_link_count)};
+
+#define ENSURE_FILE(file) \
+    if(!file) {\
+        output_error(link.where(), "pppoe: couldn't write network "\
+                     "configuration for " + linkiface);\
+        return false;\
     }
 
+    std::ofstream ethconfig("/tmp/horizon/netifrc/config_" + link.iface(),
+                            std::ios_base::trunc);
+    ENSURE_FILE(ethconfig);
     ethconfig << "null";
 
-    std::string linkiface{"ppp" + std::to_string(ppp_link_count)};
+    std::ofstream rcconfig("/tmp/horizon/netifrc/rc_net_" + linkiface + "_need");
+    ENSURE_FILE(rcconfig);
+    rcconfig << link.iface();
 
     std::ofstream config("/tmp/horizon/netifrc/config_" + linkiface);
-    if(!config) {
-        output_error(link->where(), "pppoe: couldn't write network "
-                     "configuration for " + linkiface);
-        return false;
-    }
+    ENSURE_FILE(config);
     config << "ppp";
+
+    std::ofstream linkconfig("/tmp/horizon/netifrc/link_" + linkiface);
+    ENSURE_FILE(linkconfig);
+    linkconfig << link.iface();
+
+    std::ofstream plugconfig("/tmp/horizon/netifrc/plugins_" + linkiface);
+    ENSURE_FILE(plugconfig);
+    plugconfig << "pppoe";
+
+    if(params.find("username") != params.end()) {
+        std::ofstream userconfig("/tmp/horizon/netifrc/username_" + linkiface);
+        ENSURE_FILE(userconfig);
+        userconfig << params.at("username");
+    }
+
+    if(params.find("password") != params.end()) {
+        std::ofstream pwconfig("/tmp/horizon/netifrc/password_" + linkiface);
+        ENSURE_FILE(pwconfig);
+        pwconfig << params.at("password");
+    }
+
+    std::ofstream pppconfig("/tmp/horizon/netifrc/pppd_" + linkiface);
+    ENSURE_FILE(pppconfig);
+    pppconfig << "noauth" << std::endl
+              << "defaultroute" << std::endl;
+
+    if(params.find("lcp-echo-interval") != params.end()) {
+        pppconfig << "lcp-echo-interval " << params.at("lcp-echo-interval")
+                  << std::endl;
+    }
+
+    if(params.find("lcp-echo-failure") != params.end()) {
+        pppconfig << "lcp-echo-failure " << params.at("lcp-echo-failure")
+                  << std::endl;
+    }
+
+    if(params.find("mtu") != params.end()) {
+        pppconfig << "mtu " << params.at("mtu") << std::endl;
+    }
+
+    ppp_link_count++;
     return true;
+}
+
+bool execute_pppoe_eni(const PPPoE &link) {
+    return false;
 }
 
 bool PPPoE::execute() const {
@@ -471,10 +519,9 @@ bool PPPoE::execute() const {
     switch(current_system(script)) {
     case NetConfigType::Netifrc:
     default:
-        return execute_pppoe_netifrc(this);
+        return execute_pppoe_netifrc(*this);
     case NetConfigType::ENI:
-        /* eni */
-        return false;
+        return execute_pppoe_eni(*this);
     }
 }
 
