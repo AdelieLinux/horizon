@@ -806,7 +806,9 @@ bool Bootloader::execute() const {
         }
 
         /* remount EFI vars r/w */
-        mount(nullptr, "/sys/firmware/efi/efivars", nullptr,
+        const auto efipath{script->targetDirectory() +
+                           "/sys/firmware/efi/efivars"};
+        mount(nullptr, efipath.c_str(), nullptr,
               MS_REMOUNT | MS_NOEXEC | MS_NODEV | MS_NOSUID | MS_RELATIME,
               nullptr);
 
@@ -817,7 +819,7 @@ bool Bootloader::execute() const {
         }
 
         /* done, back to r/o */
-        mount(nullptr, "/sys/firmware/efi/efivars", nullptr,
+        mount(nullptr, efipath.c_str(), nullptr,
               MS_REMOUNT | MS_RDONLY | MS_NOEXEC | MS_NODEV | MS_NOSUID |
               MS_RELATIME, nullptr);
 #endif
