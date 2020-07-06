@@ -8,6 +8,93 @@
   © 2019-2020 Adélie Linux and contributors.
 
 
+0.9.3 (2020-07-06)
+==================
+
+Boot to Horizon
+---------------
+
+* Set X11 root window colour to calming blue.
+
+* Disable compositing in KWin, which can cause issues in Qemu.
+
+
+Build system
+------------
+
+* Only search for the BCNM library when building the Qt UI for Installation.
+
+* Add ``BUILD_ISO`` toggle for building the ISO backend for Image Creation.
+
+
+HorizonScript Library
+---------------------
+
+* Ensure mount directory tree exists before attempting to create the actual
+  directory.
+
+* Recursively bind-mount ``/dev`` and ``/sys`` in the target.
+
+* When using the ImageOnly flag, don't ensure mountpoint devices are available.
+
+* Fix issue where installation on live media failed due to network state.
+
+
+Image Creation
+--------------
+
+* Add 'keep' option for ISO backend to preserve target dir between runs.
+
+* Ensure ``init`` binary is executable in ISO initramfs.
+
+* Correctly read scripts from stdin.
+
+
+JSON
+----
+
+* Add ``service`` node support, which corresponds to the ``svcenable`` key.
+
+
+Metadata
+--------
+
+* Add new ``bootloader`` key, to control installation of bootloaders.
+
+* Fixes for EFI installations.
+
+* Add optional runlevel parameter to ``svcenable`` key.
+
+
+Network
+-------
+
+* Allow hostnames to start with numeric characters.  This represents a
+  *potentially breaking change* to systems that require RFC 952 compliance.
+
+* Add new ``pppoe`` key for configuring PPPoE links.
+
+
+Qt UI
+-----
+
+* Properly flush log file to disk.
+
+* Add workaround for network issue.
+
+* Install SDDM for graphical installation types.
+
+* Use bootloader key when a bootloader is requested.
+
+* Fix various minor issues in custom package selection screen.
+
+* Use ``vfat`` instead of ``fat32`` for ESP filesystem type.
+
+* Correctly enable udev when udev is selected.
+
+
+
+
 0.9.2 (2020-06-06)
 ==================
 
@@ -29,6 +116,8 @@ Qt UI
 * Ensure log is opened properly when built in Release modes.
 
 * Fix up signing keys, installed packages, and enabled services.
+
+
 
 
 0.9.1 (2020-06-03)
