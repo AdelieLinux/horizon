@@ -225,7 +225,12 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts,
     char nextline[SCRIPT_LINE_MAX];
     const std::string delim(" \t");
     int errors = 0, warnings = 0;
-    std::string curr_name = fs::canonical(fs::path(name));
+    std::string curr_name;
+    if(name == "/dev/stdin") {
+        curr_name = "<stdin>";
+    } else {
+        curr_name = fs::canonical(fs::path(name));
+    }
     std::set<std::string> seen = {curr_name};
     bool inherit = false;
     std::istream *my_stream = &sstream;
@@ -311,7 +316,7 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts,
     }
 
     if(my_stream->fail() && !my_stream->eof()) {
-        output_error("installfile:" + std::to_string(lineno + 1),
+        output_error(curr_name + ":" + std::to_string(lineno + 1),
                      "line exceeds maximum length",
                      "Maximum line length is " +
                      std::to_string(SCRIPT_LINE_MAX));
@@ -319,14 +324,14 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts,
     }
 
     if(my_stream->bad() && !my_stream->eof()) {
-        output_error("installfile:" + std::to_string(lineno),
+        output_error(curr_name + ":" + std::to_string(lineno),
                      "I/O error while reading installfile", "");
         errors++;
     }
 
     /* Ensure all required keys are present. */
 #define MISSING_ERROR(key) \
-    output_error(name, "expected value for key '" + std::string(key) + "'",\
+    output_error(curr_name, "expected value for key '" + std::string(key) + "'",\
                  "this key is required");\
     errors++;
 
@@ -349,7 +354,7 @@ Script *Script::load(std::istream &sstream, const ScriptOptions &opts,
     }
 #undef MISSING_ERROR
 
-    output_log("parser", "0", name,
+    output_log("parser", "0", curr_name,
                std::to_string(errors) + " error(s), " +
                std::to_string(warnings) + " warning(s).", "");
 
