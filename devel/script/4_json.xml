@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter label="4" id="json">
+    <title>JSON Schema</title>
+    <para>The Horizon system supports converting JSON files to HorizonScript.  This chapter describes the JSON schema supported by the Horizon JSON tooling.</para>
+    <para>It is important to note that not all features of Horizon are available from JSON.  For more advanced use cases, consider writing HorizonScript files directly.  However, it is felt that supporting JSON interchange is important for interoperability with external systems.</para>
+    <section id="js_doc_structure">
+        <title>Overall document structure</title>
+        <para>There are two document formats supported by the Horizon JSON tooling.  The most common is a simple structure where a single root object contains the Horizon JSON keys.  The second, and less common, describes multiple configurations called "images" in a single JSON file.  The root object contains a single key/value pair, <literal>images</literal>, which is an array of objects containing Horizon JSON keys.  See <xref linkend="js_examples" /> for more information.</para>
+    </section>
+    <section id="js_keys">
+        <title>Supported keys</title>
+        <para/>
+        <section id="js_hostname">
+            <title><literal>hostname</literal></title>
+            <formalpara id="js_hostname.format">
+                <title>Format</title>
+                <para>String</para>
+            </formalpara>
+            <formalpara id="js_hostname.desc">
+                <title>Short Description</title>
+                <para>The device's host name.</para>
+            </formalpara>
+            <formalpara id="js_hostname.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="hostname"><literal>hostname</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_packages">
+            <title><literal>packages</literal></title>
+            <formalpara id="js_packages.format">
+                <title>Format</title>
+                <para>Array of String</para>
+            </formalpara>
+            <formalpara id="js_packages.desc">
+                <title>Short Description</title>
+                <para>A list of packages to install to the device.</para>
+            </formalpara>
+            <formalpara id="js_packages.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="pkginstall"><literal>pkginstall</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_rootpw">
+            <title><literal>rootpw</literal></title>
+            <formalpara id="js_rootpw.format">
+                <title>Format</title>
+                <para>String</para>
+            </formalpara>
+            <formalpara id="js_rootpw.desc">
+                <title>Short Description</title>
+                <para>The encrypted root password for the device.</para>
+            </formalpara>
+            <formalpara id="js_rootpw.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="rootpw"><literal>rootpw</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_arch">
+            <title><literal>arch</literal></title>
+            <formalpara id="js_arch.format">
+                <title>Format</title>
+                <para>String</para>
+            </formalpara>
+            <formalpara id="js_arch.desc">
+                <title>Short Description</title>
+                <para>The device's CPU architecture.</para>
+            </formalpara>
+            <formalpara id="js_arch.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="arch"><literal>arch</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_language">
+            <title><literal>language</literal></title>
+            <formalpara id="js_language.format">
+                <title>Format</title>
+                <para>String</para>
+            </formalpara>
+            <formalpara id="js_language.desc">
+                <title>Short Description</title>
+                <para>The language to use for the device's interface.</para>
+            </formalpara>
+            <formalpara id="js_language.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="language"><literal>language</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_keymap">
+            <title><literal>keymap</literal></title>
+            <formalpara id="js_keymap.format">
+                <title>Format</title>
+                <para>String</para>
+            </formalpara>
+            <formalpara id="js_keymap.desc">
+                <title>Short Description</title>
+                <para>The keyboard map to use for the device's hardware inputs.</para>
+            </formalpara>
+            <formalpara id="js_keymap.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="keymap"><literal>keymap</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_firmware">
+            <title><literal>firmware</literal></title>
+            <formalpara id="js_firmware.format">
+                <title>Format</title>
+                <para>String or Boolean</para>
+            </formalpara>
+            <formalpara id="js_firmware.desc">
+                <title>Short Description</title>
+                <para>Determines whether or not the device will have non-free firmware installed.</para>
+            </formalpara>
+            <formalpara id="js_firmware.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="firmware"><literal>firmware</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_services">
+            <title><literal>services</literal></title>
+            <formalpara id="js_services.format">
+                <title>Format</title>
+                <para>Array of Object</para>
+            </formalpara>
+            <formalpara id="js_services.desc">
+                <title>Short Description</title>
+                <para>Specifies additional services to start on device boot.</para>
+            </formalpara>
+            <formalpara id="js_services.struct">
+                <title>Object Structure</title>
+                <para>
+                    <variablelist>
+                        <varlistentry>
+                            <term><literal>service</literal></term>
+                            <listitem><para>(String) The name of the service to start.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>runlevel</literal></term>
+                            <listitem><para>(String) The runlevel that the service should start under.  If no <literal>runlevel</literal> is specified, <literal>default</literal> is used.</para></listitem>
+                        </varlistentry>
+                    </variablelist>
+                </para>
+            </formalpara>
+            <formalpara id="js_services.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="svcenable"><literal>svcenable</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_netconfig">
+            <title><literal>netconfig</literal></title>
+            <formalpara id="js_netconfig.format">
+                <title>Format</title>
+                <para>String</para>
+            </formalpara>
+            <formalpara id="js_netconfig.desc">
+                <title>Short Description</title>
+                <para>Determines the network configuration system used on the device.</para>
+            </formalpara>
+            <formalpara id="js_netconfig.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="netconfigtype"><literal>netconfigtype</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_netaddresses">
+            <title><literal>netaddresses</literal></title>
+            <formalpara id="js_netaddresses.format">
+                <title>Format</title>
+                <para>Array of Object</para>
+            </formalpara>
+            <formalpara id="js_netaddresses.desc">
+                <title>Short Description</title>
+                <para>Specifies the device's network addressing configuration.</para>
+            </formalpara>
+            <formalpara id="js_netaddresses.struct">
+                <title>Object Structure</title>
+                <para>
+                    <variablelist>
+                        <varlistentry>
+                            <term><literal>id</literal></term>
+                            <listitem><para>(String) This connection's identifier.  This field is for operator reference only - it will not appear in the HorizonScript or in the device's configuration.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>interface</literal></term>
+                            <listitem><para>(String) The network interface to use for this address.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>addr-type</literal></term>
+                            <listitem><para>(String) The type of this address: <literal>none</literal> to bring up the interface without an address (common for bridging), <literal>dhcp</literal> for DHCP, or <literal>static</literal> for static addressing.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>address</literal></term>
+                            <listitem><para>(Object) The network address.  Only valid if <literal>addr-type</literal> is <literal>static</literal>.</para></listitem>
+                        </varlistentry>
+                    </variablelist>
+                    If static addressing is desired, the <literal>address</literal> object is described below.
+                    <variablelist>
+                        <varlistentry>
+                            <term><literal>ip-address</literal></term>
+                            <listitem><para>(String) The IPv4 or IPv6 address for this connection.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>net-prefix</literal></term>
+                            <listitem><para>(Number) The network prefix for this connection.  Valid values are 1-32 for IPv4, and 1-128 for IPv6.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>gateway</literal></term>
+                            <listitem><para>(String) The IPv4 or IPv6 address for the gateway for this connection.</para></listitem>
+                        </varlistentry>
+                    </variablelist>
+                </para>
+            </formalpara>
+            <formalpara id="js_netaddresses.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="netaddress"><literal>netaddress</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_pppoe_links">
+            <title><literal>pppoe_links</literal></title>
+            <formalpara id="js_pppoe_links.format">
+                <title>Format</title>
+                <para>Array of Object</para>
+            </formalpara>
+            <formalpara id="js_pppoe_links.desc">
+                <title>Short Description</title>
+                <para>Specifies the device's PPPoE configuration.</para>
+            </formalpara>
+            <formalpara id="js_pppoe_links.struct">
+                <title>Object Structure</title>
+                <para>
+                    <variablelist>
+                        <varlistentry>
+                            <term><literal>interface</literal></term>
+                            <listitem><para>(String) The network interface to use for this PPPoE link.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>mtu</literal></term>
+                            <listitem><para>(Number) The MTU for this PPPoE link.  Default is 1472.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>username</literal></term>
+                            <listitem><para>(String) The username to use for authenticating this PPPoE link.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>password</literal></term>
+                            <listitem><para>(String) The passphrase/secret to use for authenticating this PPPoE link.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>lcp-echo-interval</literal></term>
+                            <listitem><para>(Number) The number of seconds between LCP echo requests.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>lcp-echo-failure</literal></term>
+                            <listitem><para>(Number) The number of echo request failures before this link is failed.</para></listitem>
+                        </varlistentry>
+                    </variablelist>
+                </para>
+            </formalpara>
+            <formalpara id="js_pppoe_links.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="pppoe"><literal>pppoe</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_nameservers">
+            <title><literal>nameservers</literal></title>
+            <formalpara id="js_nameservers.format">
+                <title>Format</title>
+                <para>Array of String</para>
+            </formalpara>
+            <formalpara id="js_nameservers.desc">
+                <title>Short Description</title>
+                <para>IP addresses used for Domain Name System (DNS) resolution.</para>
+            </formalpara>
+            <formalpara id="js_nameservers.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="nameserver"><literal>nameserver</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_access-points">
+            <title><literal>access-points</literal></title>
+            <formalpara id="js_access-points.format">
+                <title>Format</title>
+                <para>Array of Object</para>
+            </formalpara>
+            <formalpara id="js_access-points.desc">
+                <title>Short Description</title>
+                <para>Specifies the device's wireless networking configuration.</para>
+            </formalpara>
+            <formalpara id="js_access-points.struct">
+                <title>Object Structure</title>
+                <para>
+                    <variablelist>
+                        <varlistentry>
+                            <term><literal>interface</literal></term>
+                            <listitem><para>(String) The wireless network interface to use for this access point.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>ssid</literal></term>
+                            <listitem><para>(String) The SSID for this access point.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>security</literal></term>
+                            <listitem><para>(String) The security type to use for this access point: <literal>none</literal>, <literal>wep</literal>, or <literal>wpa</literal>.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>password</literal></term>
+                            <listitem><para>(String) The shared secret to use for authenticating this wireless link.</para></listitem>
+                        </varlistentry>
+                    </variablelist>
+                </para>
+            </formalpara>
+            <formalpara id="js_access-points.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="netssid"><literal>netssid</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_timezone">
+            <title><literal>timezone</literal></title>
+            <formalpara id="js_timezone.format">
+                <title>Format</title>
+                <para>String</para>
+            </formalpara>
+            <formalpara id="js_timezone.desc">
+                <title>Short Description</title>
+                <para>The time zone to use on the device.</para>
+            </formalpara>
+            <formalpara id="js_timezone.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="timezone"><literal>timezone</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_repositories">
+            <title><literal>repositories</literal></title>
+            <formalpara id="js_repositories.format">
+                <title>Format</title>
+                <para>Array of String</para>
+            </formalpara>
+            <formalpara id="js_repositories.desc">
+                <title>Short Description</title>
+                <para>The APK repositories to use for package installation on the device.</para>
+            </formalpara>
+            <formalpara id="js_repositories.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="repository"><literal>repository</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_signingkeys">
+            <title><literal>signingkeys</literal></title>
+            <formalpara id="js_signingkeys.format">
+                <title>Format</title>
+                <para>Array of String</para>
+            </formalpara>
+            <formalpara id="js_signingkeys.desc">
+                <title>Short Description</title>
+                <para>The location of the signing key(s) used by the device's APK repositories.</para>
+            </formalpara>
+            <formalpara id="js_signingkeys.xref">
+                <title>Corresponding HorizonScript key</title>
+                <para><link linkend="signingkey"><literal>signingkey</literal></link></para>
+            </formalpara>
+        </section>
+        <section id="js_users">
+            <title><literal>users</literal></title>
+            <formalpara id="js_users.format">
+                <title>Format</title>
+                <para>Array of Object</para>
+            </formalpara>
+            <formalpara id="js_users.desc">
+                <title>Short Description</title>
+                <para>Specifies the device's user accounts.</para>
+            </formalpara>
+            <formalpara id="js_users.struct">
+                <title>Object Structure</title>
+                <para>
+                    <variablelist>
+                        <varlistentry>
+                            <term><literal>username</literal></term>
+                            <listitem><para>(String) The login name of this account.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>alias</literal></term>
+                            <listitem><para>(String) The friendly name/GECOS of this account.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>passphrase</literal></term>
+                            <listitem><para>(String) The encrypted passphrase to use to authenticate to this account.  See <xref linkend="userpw" /> for information about the format of <literal>passphrase</literal>.</para></listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term><literal>groups</literal></term>
+                            <listitem><para>(String) Comma-separated list of this account's member groups.</para></listitem>
+                        </varlistentry>
+                    </variablelist>
+                </para>
+            </formalpara>
+            <formalpara id="js_users.xref">
+                <title>Corresponding HorizonScript keys</title>
+                <para><link linkend="username"><literal>username</literal></link>, <link linkend="useralias"><literal>useralias</literal></link>, <link linkend="userpw"><literal>userpw</literal></link>, <link linkend="usergroups"><literal>usergroups</literal></link></para>
+            </formalpara>
+        </section>
+    </section>
+    <section id="js_examples">
+        <title>Examples</title>
+        <para>
+            <example id="js_0001-basic">
+                <title>Basic example of Horizon JSON file</title>
+                <programlisting>
+{
+ "hostname": "horizon-json-testmachine.adelielinux.org",
+ "packages": ["adelie-base-posix", "easy-kernel", "easy-kernel-modules",
+              "netifrc", "openrc", "s6-linux-init"],
+ "rootpw": "<userinput>...</userinput>",
+ "root": "/dev/sda1",
+ "netaddresses": [{"id":"eth0", "interface":"eth0", "addr-type":"dhcp"}],
+ "nameservers": ["9.9.9.9"],
+ "timezone": "America/Chicago",
+ "repositories": ["https://distfiles.adelielinux.org/adelie/1.0/system",
+                  "https://distfiles.adelielinux.org/adelie/1.0/user"],
+ "signingkeys": ["/etc/apk/keys/powerpc-1@packages.adelielinux.org.pub",
+                 "/etc/apk/keys/powerpc-2@packages.adelielinux.org.pub"]
+}
+                </programlisting>
+            </example>
+            <example id="js_0002-fuller">
+                <title>Example of multi-configuration Horizon JSON file</title>
+                <programlisting>
+{"images":
+ [
+  {"name": "Test Image",
+   "hostname": "horizon-json-testmachine.adelielinux.org",
+   "packages": ["adelie-base-posix", "easy-kernel", "easy-kernel-modules",
+                "netifrc", "openrc", "s6-linux-init"],
+   "rootpw": "<userinput>...</userinput>",
+   "root": "/dev/sda1",
+   "arch": "ppc64",
+   "language": "en_GB.UTF-8",
+   "keymap": "us",
+   "firmware": false,
+   "netconfig": "netifrc",
+   "netaddresses": [{"id":"eth0", "interface":"eth0", "addr-type":"dhcp"}],
+   "nameservers": ["9.9.9.9"],
+   "timezone": "America/Chicago",
+   "repositories": ["https://distfiles.adelielinux.org/adelie/1.0/system",
+                    "https://distfiles.adelielinux.org/adelie/1.0/user"],
+   "signingkeys": ["/etc/apk/keys/powerpc-1@packages.adelielinux.org.pub",
+                   "/etc/apk/keys/powerpc-2@packages.adelielinux.org.pub"]
+  }
+ ]
+}
+                </programlisting>
+            </example>
+        </para>
+    </section>
+</chapter>

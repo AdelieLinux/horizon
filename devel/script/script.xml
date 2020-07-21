@@ -4,6 +4,7 @@
                <!ENTITY chap1 SYSTEM "1_introduction.xml">
                <!ENTITY chap2 SYSTEM "2_keys.xml">
                <!ENTITY chap3 SYSTEM "3_ondisk.xml">
+               <!ENTITY chap4 SYSTEM "4_json.xml">
 ]>
 <book>
     <bookinfo>
@@ -11,8 +12,8 @@
         <authorgroup>
             <author><firstname>A.</firstname><surname>Wilcox</surname><affiliation><orgname>Adélie Linux</orgname></affiliation></author>
         </authorgroup>
-        <edition>Specification for HorizonScript (Horizon release 1.0)</edition>
-        <pubdate>2020-06-13</pubdate>
+        <edition>Specification for HorizonScript (Horizon release 1.0) + JSON specification 1.0</edition>
+        <pubdate>2020-07-20</pubdate>
         <copyright>
             <year>2019</year><year>2020</year>
             <holder>Adélie Linux</holder>
@@ -26,4 +27,5 @@
     &chap1;
     &chap2;
     &chap3;
+    &chap4;
 </book>
