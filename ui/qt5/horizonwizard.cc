@@ -352,6 +352,18 @@ HorizonWizard::HorizonWizard(QWidget *parent) : QWizard(parent) {
     arch = pmmx;
 #   elif defined(__x86_64__)
     arch = x86_64;
+#   elif defined(__mips64)
+#       if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    arch = mips64el;
+#       else  /* If byte order is not defined, default to big endian. */
+    arch = mips64;
+#       endif
+#   elif defined(__mips__)
+#       if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    arch = mipsel;
+#       else  /* If byte order is not defined, default to big endian. */
+    arch = mips;
+#       endif
 #   else
 #       error You are attempting to compile the Installation Environment UI \
 on an unknown architecture.  Please add a definition to horizonwizard.hh, a \
@@ -550,6 +562,19 @@ QString HorizonWizard::toHScript() {
         lines << "arch x86_64";
         lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/x86-1@packages.adelielinux.org.pub";
         lines << "signingkey https://distfiles.adelielinux.org/adelie/keys/x86-2@packages.adelielinux.org.pub";
+        break;
+    case mips64:
+        lines << "arch mips64";
+	/* XXX: MIPS signing keys are needed before we ship anything. */
+        break;
+    case mips:
+        lines << "arch mips";
+        break;
+    case mips64el:
+        lines << "arch mips64el";
+        break;
+    case mipsel:
+        lines << "arch mipsel";
         break;
     case UnknownCPU:
         /* no arch line.  hopefully it's run on the target. */

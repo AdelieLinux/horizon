@@ -96,6 +96,10 @@ public:
     enum Arch {
         aarch64,
         armv7,
+	mips,
+	mips64,
+	mipsel,
+	mips64el,
         pmmx,
         ppc,
         ppc64,

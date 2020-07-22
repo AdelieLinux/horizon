@@ -722,6 +722,18 @@ const std::string my_arch(const Horizon::Script *script) {
         return "pmmx";
 #   elif defined(__x86_64__)
         return "x86_64";
+#   elif defined(__mips64)
+#       if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+        return "mips64el";
+#       else  /* If byte order is not defined, default to big endian. */
+        return "mips64";
+#       endif
+#   elif defined(__mips__)
+#       if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+        return "mipsel";
+#       else  /* If byte order is not defined, default to big endian. */
+        return "mips";
+#       endif
 #   else
 #       error Unknown architecture.
 #   endif
@@ -755,6 +767,10 @@ bool Bootloader::validate() const {
         const static std::set<std::string> valid_x86 = {"grub-bios",
                                                         "grub-efi"};
         return valid_x86.find(this->value()) != valid_x86.end();
+    } else if(arch == "mips64" || arch == "mips" ||
+              arch == "mips64el" || arch == "mipsel") {
+        const static std::set<std::string> valid_mips = {};
+        return valid_mips.find(this->value()) != valid_mips.end();
     } else {
         output_error(pos, "bootloader: unknown architecture", arch);
         return false;
