@@ -655,7 +655,7 @@ svcenable udev-trigger boot
                         <title>The <literal>svcenable</literal> Key &mdash; Typical Desktop</title>
                         <programlisting>
 svcenable dbus
-svcenable consolekit
+svcenable elogind
 svcenable sddm
                         </programlisting>
                         <para>This configures the target computer to start up a display manager and its required daemons during system boot, enabling graphical logins.</para>

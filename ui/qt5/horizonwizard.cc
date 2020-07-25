@@ -633,13 +633,13 @@ QString HorizonWizard::toHScript() {
         lines << "pkginstall adelie-base-posix firefox-esr libreoffice "
                  "thunderbird vlc kde x11 bluez sddm";
         lines << "svcenable bluetooth";
-        lines << "svcenable consolekit";
+        lines << "svcenable elogind";
         lines << "svcenable sddm";
         break;
     case Compact:
         lines << "pkginstall adelie-base netsurf featherpad lxqt-desktop "
                  "abiword gnumeric sddm xorg-apps xorg-drivers xorg-server";
-        lines << "svcenable consolekit";
+        lines << "svcenable elogind";
         lines << "svcenable sddm";
         break;
     case TextOnly:
