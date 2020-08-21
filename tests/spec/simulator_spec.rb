@@ -40,7 +40,7 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
         it "creates Apple Partition Maps correctly" do
             use_fixture '0122-disklabel-apm.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("parted -ms /dev/sda mklabel apm")
+            expect(last_command_started.stdout).to include("parted -ms /dev/sda mklabel mac")
         end
         it "creates GUID Partition Tables correctly" do
             use_fixture '0124-disklabel-gpt.installfile'

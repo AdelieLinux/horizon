@@ -197,7 +197,7 @@ bool DiskLabel::execute() const {
     std::string type_str;
     switch(this->type()) {
     case APM:
-        type_str = "apm";
+        type_str = "mac";
         break;
     case MBR:
         type_str = "msdos";
