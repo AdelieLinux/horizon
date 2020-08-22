@@ -133,11 +133,10 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*hostname.*/)
                 end
                 # Runner.Validate.hostname.Begin.
-                it "with non-alphabetical first character" do
-                    use_fixture '0024-numeric-hostname.installfile'
+                it "with non-alphanumeric first character" do
+                    use_fixture '0246-hostname-nonalnum.installfile'
                     run_validate
-                    expect(last_command_started).to have_output(PARSER_SUCCESS)
-                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    expect(last_command_started).to have_output(/error: .*hostname.*/)
                 end
                 # Runner.Validate.hostname.Length
                 it "with >320 characters" do
@@ -689,6 +688,19 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     expect(last_command_started).to have_output(/error: .*signingkey.*too many/)
                 end
             end
+            context "for 'version' key" do
+                it "succeeds with a basic version string" do
+                    use_fixture '0247-version-basic.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with an invalid version string" do
+                    use_fixture '0248-version-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*version.*/)
+                end
+            end
             context "for 'pkginstall' key" do
                 it "warns when a package is listed twice in the same line" do
                     use_fixture '0216-pkginstall-dup-single.installfile'
@@ -1133,6 +1145,31 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     use_fixture '0206-fs-duplicate.installfile'
                     run_validate
                     expect(last_command_started).to have_output(/error: .*fs.*already/)
+                end
+            end
+            context "for 'bootloader' key" do
+                it "succeeds with valid values" do
+                    use_fixture '0250-bootloader-x86efi.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    use_fixture '0251-bootloader-x86bios.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
+                it "fails with invalid values" do
+                    use_fixture '0240-bootloader-invalid.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*bootloader.*/)
+                    use_fixture '0249-bootloader-ppc.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*bootloader.*/)
+                end
+                it "fails with unprepared architectures" do
+                    use_fixture '0252-bootloader-alpha.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*bootloader.*/)
                 end
             end
             context "for 'keymap' key" do

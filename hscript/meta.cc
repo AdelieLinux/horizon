@@ -214,8 +214,8 @@ bool Arch::execute() const {
     }
 
     arch_f << this->value() << std::endl;
-#endif
-    return true;
+#endif  /* HAS_INSTALL_ENV */
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 
@@ -742,39 +742,47 @@ const std::string my_arch(const Horizon::Script *script) {
 
 bool Bootloader::validate() const {
     const std::string arch = my_arch(script);
+    bool valid_selection;
 
     /* 'true' and 'false' are always valid. */
     if(_value == "true" || _value == "false") return true;
 
     if(arch == "ppc64") {
         const static std::set<std::string> valid_ppc64 = {"grub-ieee1275"};
-        return valid_ppc64.find(this->value()) != valid_ppc64.end();
+        valid_selection = valid_ppc64.find(this->value()) != valid_ppc64.end();
     } else if(arch == "ppc") {
         const static std::set<std::string> valid_ppc = {"grub-ieee1275",
                                                         "iquik"};
-        return valid_ppc.find(this->value()) != valid_ppc.end();
+        valid_selection = valid_ppc.find(this->value()) != valid_ppc.end();
     } else if(arch == "aarch64") {
         const static std::set<std::string> valid_arm64 = {"grub-efi"};
-        return valid_arm64.find(this->value()) != valid_arm64.end();
+        valid_selection = valid_arm64.find(this->value()) != valid_arm64.end();
     } else if(arch == "armv7") {
         const static std::set<std::string> valid_arm = {};
-        return valid_arm.find(this->value()) != valid_arm.end();
+        valid_selection = valid_arm.find(this->value()) != valid_arm.end();
     } else if(arch == "pmmx") {
         const static std::set<std::string> valid_pmmx = {"grub-bios",
                                                          "grub-efi"};
-        return valid_pmmx.find(this->value()) != valid_pmmx.end();
+        valid_selection = valid_pmmx.find(this->value()) != valid_pmmx.end();
     } else if(arch == "x86_64") {
         const static std::set<std::string> valid_x86 = {"grub-bios",
                                                         "grub-efi"};
-        return valid_x86.find(this->value()) != valid_x86.end();
+        valid_selection = valid_x86.find(this->value()) != valid_x86.end();
     } else if(arch == "mips64" || arch == "mips" ||
               arch == "mips64el" || arch == "mipsel") {
         const static std::set<std::string> valid_mips = {};
-        return valid_mips.find(this->value()) != valid_mips.end();
+        valid_selection = valid_mips.find(this->value()) != valid_mips.end();
     } else {
         output_error(pos, "bootloader: unknown architecture", arch);
         return false;
     }
+
+    if(!valid_selection) {
+        output_error(pos, "bootloader: architecture does not support loader",
+                     this->value());
+    }
+
+    return valid_selection;
 }
 
 bool Bootloader::execute() const {
@@ -794,7 +802,7 @@ bool Bootloader::execute() const {
             if(fs::exists("/sys/firmware/efi")) {
                 method = "grub-efi";
             } else
-#endif
+#endif  /* HAS_INSTALL_ENV */
                 method = "grub-bios";
         } else {
             output_error(pos, "bootloader: no default for architecture", arch);
@@ -838,8 +846,8 @@ bool Bootloader::execute() const {
         mount(nullptr, efipath.c_str(), nullptr,
               MS_REMOUNT | MS_RDONLY | MS_NOEXEC | MS_NODEV | MS_NOSUID |
               MS_RELATIME, nullptr);
-#endif
-        return true;
+#endif  /* HAS_INSTALL_ENV */
+        return true;  /* LCOV_EXCL_LINE */
     }
     else if(method == "grub-bios") {
         if(script->options().test(Simulate)) {
@@ -862,8 +870,8 @@ bool Bootloader::execute() const {
             output_error(pos, "bootloader: failed to install GRUB");
             return false;
         }
-#endif
-        return true;
+#endif  /* HAS_INSTALL_ENV */
+        return true;  /* LCOV_EXCL_LINE */
     }
     else if(method == "iquik") {
         output_error(pos, "bootloader: iQUIK is not yet supported");
@@ -890,9 +898,9 @@ bool Bootloader::execute() const {
             output_error(pos, "bootloader: failed to install GRUB");
             return false;
         }
-#endif
-        return true;
+#endif  /* HAS_INSTALL_ENV */
+        return true;  /* LCOV_EXCL_LINE */
     }
 
-    return false;
+    return false;  /* LCOV_EXCL_LINE */
 }

@@ -9,6 +9,7 @@ disklabel /dev/sda gpt
 partition /dev/sda 1 fill
 fs /dev/sda1 ext4
 mount /dev/sda1 /
+version current
 repository https://distfiles.adelielinux.org/adelie/current/system
 repository https://distfiles.adelielinux.org/adelie/current/user
 signingkey /etc/apk/keys/packages@adelielinux.org.pub
