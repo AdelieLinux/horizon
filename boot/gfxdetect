@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+
+description="Tell the user whether graphical installation is proceeding"
+
+depend()
+{
+	need elogind
+	after *
+	keyword -timeout
+}
+
+start()
+{
+	loginctl show-seat seat0 | grep CanGraphical=yes >/dev/null
+	if [ $? -eq 0 ]; then
+		printf "\n\n\033[1;32mSystem Installation is starting on your default graphics adaptor.\033[0m\n\nPlease wait a moment...\n";
+	else
+		printf "\n\n\033[1;31mSystem Installation does not support your graphics adaptor.\033[0m\n\nYou may need a special kernel, driver support,\nor firmware to use the graphics adaptor in your computer.\n\nRefer to <https://help.adelielinux.org> for more information.\n";
+	fi
+}
+
+stop()
+{
+	:
+}

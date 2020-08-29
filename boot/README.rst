@@ -43,6 +43,10 @@ master branch.
 Directory Layout
 ================
 
+``gfxdetect``
+    OpenRC "service" to print a message about GPU detection.
+    Installed as ``/etc/init.d/gfxdetect``.
+
 ``horizon-session.desktop``
     X session file.
     Installed as ``/usr/share/xsessions/horizon.desktop``.
