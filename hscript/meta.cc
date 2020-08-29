@@ -664,7 +664,7 @@ bool SvcEnable::execute() const {
     }
 
     fs::create_symlink(initd, target, ec);
-    if(ec) {
+    if(ec && ec.value() != EEXIST) {
         output_error(pos, "svcenable: could not enable service " + _svc,
                      ec.message());
         return false;
