@@ -4,7 +4,7 @@ mkdir -p cdroot/boot
 
 # /boot/grub instead of /boot for Petitboot compatibility.
 cat >early.cfg <<'EARLYCFG'
-search.fs_label "Adelie ppc64" root
+search.fs_label "Adelie-ppc64" root
 set prefix=($root)/boot/grub
 EARLYCFG
 
@@ -25,8 +25,8 @@ menuentry "Adelie Linux Live (PowerPC 64-bit)" --class linux --id adelie-live-cd
         insmod part_apple
         insmod iso9660
         insmod linux
-        search --label "Adelie ppc64" --hint cd,apple2 --no-floppy --set
-        linux ($root)/kernel-ppc64 squashroot=ppc64.squashfs
+        search --label "Adelie-ppc64" --hint cd,apple2 --no-floppy --set
+        linux ($root)/kernel-ppc64 root=live:LABEL=Adelie-ppc64 rd.live.dir=/ rd.live.squashimg=ppc64.squashfs
         initrd ($root)/initrd-ppc64
 }
 

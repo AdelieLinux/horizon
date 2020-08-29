@@ -350,18 +350,29 @@ public:
 
         /* REQ: ISO.23 */
         output_info("CD backend", "creating initrd");
-        std::string cdinit_path{""};
-        for(const auto &path : data_dirs()) {
-            fs::path candidate{fs::path{path}.append("horizon").append("iso")
-                               .append("cdinits")};
-            if(fs::exists(candidate, ec)) {
-                cdinit_path = candidate;
+        std::string kver, kverpath;
+        for(const auto &dent :
+            fs::recursive_directory_iterator(target + "/usr/share/kernel", ec))
+        {
+            if(dent.is_regular_file() &&
+               dent.path().filename().string() == "kernel.release") {
+                kverpath = dent.path().string();
+                break;
             }
         }
-#include "initrd.sh.cpp"
-        if(run_command("/bin/sh", {"-ec", initrd, "mkinitrd", my_arch, target,
-                                   cdpath, cdinit_path}) != 0) {
-            output_error("CD backend", "failed to create initrd");
+        if(kverpath.length() == 0) {
+            output_error("CD backend", "cannot find kernel.release");
+            return FS_ERROR;
+        }
+        std::ifstream kverstream(kverpath);
+        kverstream >> kver;
+
+        /* dracut with -r can't autodetect udev directory without udev.pc */
+        ::setenv("udevdir", "/lib/udev", 0);
+        if(run_command("dracut", {"--kver", kver, "-r", target+"/", "-N",
+                                  "--force", "-a", "dmsquash-live",
+                                  cdpath + "/initrd-" + my_arch}) != 0) {
+            output_error("CD backend", "dracut failed to create initramfs");
             return COMMAND_ERROR;
         }
 
@@ -409,7 +420,7 @@ public:
         output_info("CD backend", "creating ISO");
         std::vector<std::string> iso_args = {"-as", "mkisofs", "-o", out_path,
                                              "-joliet", "-rational-rock", "-V",
-                                             "Adelie "+my_arch};
+                                             "Adelie-"+my_arch};
         std::vector<std::string> arch_args;
         std::string raw_arch;
         {

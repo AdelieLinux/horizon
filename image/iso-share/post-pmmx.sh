@@ -3,7 +3,7 @@
 mkdir -p cdroot/boot
 
 cat >early.cfg <<'EARLYCFG'
-search.fs_label "Adelie pmmx" root
+search.fs_label "Adelie-pmmx" root
 set prefix=($root)/boot
 EARLYCFG
 
@@ -11,8 +11,8 @@ cat >cdroot/boot/grub.cfg <<'GRUBCFG'
 menuentry "Adelie Linux Live (Intel 32-bit)" --class linux --id adelie-live-cd {
         insmod iso9660
         insmod linux
-        search --label "Adelie pmmx" --no-floppy --set
-        linux ($root)/kernel-pmmx squashroot=pmmx.squashfs
+        search --label "Adelie-pmmx" --no-floppy --set
+        linux ($root)/kernel-pmmx root=live:LABEL=Adelie-pmmx rd.live.dir=/ rd.live.squashimg=pmmx.squashfs
         initrd ($root)/initrd-pmmx
 }
 

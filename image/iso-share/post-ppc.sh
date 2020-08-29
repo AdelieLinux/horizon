@@ -3,7 +3,7 @@
 mkdir -p cdroot/boot
 
 cat >early.cfg <<'EARLYCFG'
-search.fs_label "Adelie ppc" root
+search.fs_label "Adelie-ppc" root
 set prefix=($root)/boot
 EARLYCFG
 
@@ -23,8 +23,8 @@ menuentry "Adelie Linux Live (PowerPC 32-bit)" --class linux --id adelie-live-cd
         insmod part_apple
         insmod iso9660
         insmod linux
-        search --label "Adelie ppc" --hint cd,apple2 --no-floppy --set
-        linux ($root)/kernel-ppc squashroot=ppc.squashfs
+        search --label "Adelie-ppc" --hint cd,apple2 --no-floppy --set
+        linux ($root)/kernel-ppc root=live:LABEL=Adelie-ppc rd.live.dir=/ rd.live.squashimg=ppc.squashfs
         initrd ($root)/initrd-ppc
 }
 

@@ -3,7 +3,7 @@
 mkdir -p cdroot/boot
 
 cat >early.cfg <<'EARLYCFG'
-search.fs_label "Adelie x86_64" root
+search.fs_label "Adelie-x86_64" root
 set prefix=($root)/boot
 EARLYCFG
 
@@ -11,8 +11,8 @@ cat >cdroot/boot/grub.cfg <<'GRUBCFG'
 menuentry "Adelie Linux Live (Intel 64-bit)" --class linux --id adelie-live-cd {
         insmod iso9660
         insmod linux
-        search --label "Adelie x86_64" --no-floppy --set
-        linux ($root)/kernel-x86_64 squashroot=x86_64.squashfs
+        search --label "Adelie-x86_64" --no-floppy --set
+        linux ($root)/kernel-x86_64 root=live:LABEL=Adelie-x86_64 rd.live.dir=/ rd.live.squashimg=x86_64.squashfs
         initrd ($root)/initrd-x86_64
 }
 
