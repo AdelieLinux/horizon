@@ -707,11 +707,11 @@ signingkey https://packages/builder@ourcompany.net.pub
             </formalpara>
             <formalpara id="bootloader.format">
                 <title>Format</title>
-                <para>The <literal>bootloader</literal> key is a string and/or boolean value.  If the value is <literal>false</literal>, no bootloader will be installed on the target computer and boot configuration must be performed externally.  If the value is <literal>true</literal>, Horizon will install the platform's preferred bootloader.  If the value is a string value, Horizon will attempt to install the specified bootloader.  If the string value does not correspond to a bootloader available for the target computer, script execution will fail.</para>
+                <para>The <literal>bootloader</literal> key is a space-separated list of the desired bootloader configuration.  The first item, which is required, determines the block device that the bootloader will be installed on.  The second item determines which bootloader to install.  If the second value is not specified, or if the value is <literal>true</literal>, Horizon will install the platform's preferred bootloader.  If the value is a string value, Horizon will attempt to install the specified bootloader.  If the string value does not correspond to a bootloader available for the target computer, script execution will fail.</para>
             </formalpara>
             <formalpara id="bootloader.default">
                 <title>Default</title>
-                <para>If no <literal>bootloader</literal> key is specified, the system will behave as if <literal>false</literal> was given.</para>
+                <para>If no <literal>bootloader</literal> key is specified, no bootloader will be installed on the target computer and boot configuration must be performed externally.</para>
             </formalpara>
             <formalpara id="bootloader.example">
                 <title>Example</title>
@@ -719,9 +719,9 @@ signingkey https://packages/builder@ourcompany.net.pub
                     <example>
                         <title>The <literal>bootloader</literal> Key</title>
                         <programlisting>
-bootloader true
+bootloader /dev/sda
                         </programlisting>
-                        <para>This will configure the target computer with the platform's preferred bootloader.</para>
+                        <para>This will configure the target computer with the platform's preferred bootloader installed to <literal>/dev/sda</literal>.</para>
                     </example>
                 </para>
             </formalpara>

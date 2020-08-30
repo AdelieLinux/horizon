@@ -146,13 +146,20 @@ public:
     bool execute() const override;
 };
 
-class Bootloader : public StringKey {
+class Bootloader : public Key {
 private:
+    const std::string _device;
+    const std::string _bootloader;
+
     Bootloader(const Script *_s, const ScriptLocation &_p,
-               const std::string &_v) : StringKey(_s, _p, _v) {}
+               const std::string &_d, const std::string &_b) : Key(_s, _p),
+        _device(_d), _bootloader(_b) {}
 public:
     static Key *parseFromData(const std::string &, const ScriptLocation &,
                               int *, int *, const Script *);
+
+    const std::string device() const { return this->_device; }
+    const std::string bootloader() const { return this->_bootloader; }
     bool validate() const override;
     bool execute() const override;
 };

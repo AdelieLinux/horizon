@@ -300,7 +300,7 @@ struct Script::ScriptPrivate {
     bool store_bootloader(Key *obj, const ScriptLocation &pos, int *errors,
                           int *, const ScriptOptions &) {
         if(boot) {
-            DUPLICATE_ERROR(boot, "bootloader", boot->value())
+            DUPLICATE_ERROR(boot, "bootloader", boot->bootloader())
             return false;
         }
         std::unique_ptr<Bootloader> b(dynamic_cast<Bootloader *>(obj));

@@ -692,18 +692,6 @@ bool Version::execute() const {
 }
 
 
-Key *Bootloader::parseFromData(const std::string &data,
-                               const ScriptLocation &pos, int *errors, int *,
-                               const Script *script) {
-    if(data.find_first_of(" ") != std::string::npos) {
-        if(errors) *errors += 1;
-        output_error(pos, "bootloader: invalid bootloader", data);
-        return nullptr;
-    }
-
-    return new Bootloader(script, pos, data);
-}
-
 const std::string my_arch(const Horizon::Script *script) {
     const Key *arch_key = script->getOneValue("arch");
     if(arch_key != nullptr) {
@@ -740,38 +728,77 @@ const std::string my_arch(const Horizon::Script *script) {
     }
 }
 
+Key *Bootloader::parseFromData(const std::string &data,
+                               const ScriptLocation &pos, int *errors, int *,
+                               const Script *script) {
+    const std::string arch = my_arch(script);
+    std::string device, boot = "true";
+    std::string::size_type space = data.find_first_of(" ");
+
+    if(space == std::string::npos) {
+        device = data;
+    } else {
+        device = data.substr(0, space);
+        boot = data.substr(space + 1);
+
+        if(boot.find_first_of(" ") != std::string::npos) {
+            if(errors) *errors += 1;
+            output_error(pos, "bootloader: invalid bootloader", data);
+            return nullptr;
+        }
+    }
+
+    if(boot == "true") {
+        if(arch == "ppc64" || arch == "ppc") {
+            boot = "grub-ieee1275";
+        } else if(arch == "aarch64") {
+            boot = "grub-efi";
+        } else if(arch == "x86_64" || arch == "pmmx") {
+#ifdef HAS_INSTALL_ENV
+            if(fs::exists("/sys/firmware/efi")) {
+                boot = "grub-efi";
+            } else
+#endif  /* HAS_INSTALL_ENV */
+                boot = "grub-bios";
+        } else {
+            output_error(pos, "bootloader: no default for architecture", arch);
+            return nullptr;
+        }
+    }
+
+    return new Bootloader(script, pos, device, boot);
+}
+
 bool Bootloader::validate() const {
     const std::string arch = my_arch(script);
     bool valid_selection;
-
-    /* 'true' and 'false' are always valid. */
-    if(_value == "true" || _value == "false") return true;
+    const std::string candidate = this->bootloader();
 
     if(arch == "ppc64") {
         const static std::set<std::string> valid_ppc64 = {"grub-ieee1275"};
-        valid_selection = valid_ppc64.find(this->value()) != valid_ppc64.end();
+        valid_selection = valid_ppc64.find(candidate) != valid_ppc64.end();
     } else if(arch == "ppc") {
         const static std::set<std::string> valid_ppc = {"grub-ieee1275",
                                                         "iquik"};
-        valid_selection = valid_ppc.find(this->value()) != valid_ppc.end();
+        valid_selection = valid_ppc.find(candidate) != valid_ppc.end();
     } else if(arch == "aarch64") {
         const static std::set<std::string> valid_arm64 = {"grub-efi"};
-        valid_selection = valid_arm64.find(this->value()) != valid_arm64.end();
+        valid_selection = valid_arm64.find(candidate) != valid_arm64.end();
     } else if(arch == "armv7") {
         const static std::set<std::string> valid_arm = {};
-        valid_selection = valid_arm.find(this->value()) != valid_arm.end();
+        valid_selection = valid_arm.find(candidate) != valid_arm.end();
     } else if(arch == "pmmx") {
         const static std::set<std::string> valid_pmmx = {"grub-bios",
                                                          "grub-efi"};
-        valid_selection = valid_pmmx.find(this->value()) != valid_pmmx.end();
+        valid_selection = valid_pmmx.find(candidate) != valid_pmmx.end();
     } else if(arch == "x86_64") {
         const static std::set<std::string> valid_x86 = {"grub-bios",
                                                         "grub-efi"};
-        valid_selection = valid_x86.find(this->value()) != valid_x86.end();
+        valid_selection = valid_x86.find(candidate) != valid_x86.end();
     } else if(arch == "mips64" || arch == "mips" ||
               arch == "mips64el" || arch == "mipsel") {
         const static std::set<std::string> valid_mips = {};
-        valid_selection = valid_mips.find(this->value()) != valid_mips.end();
+        valid_selection = valid_mips.find(candidate) != valid_mips.end();
     } else {
         output_error(pos, "bootloader: unknown architecture", arch);
         return false;
@@ -779,38 +806,15 @@ bool Bootloader::validate() const {
 
     if(!valid_selection) {
         output_error(pos, "bootloader: architecture does not support loader",
-                     this->value());
+                     candidate);
     }
 
     return valid_selection;
 }
 
 bool Bootloader::execute() const {
-    /* Nothing to do. */
-    if(_value == "false") return true;
-
     const std::string arch = my_arch(script);
-    std::string method;
-
-    if(_value == "true") {
-        if(arch == "ppc64" || arch == "ppc") {
-            method = "grub-ieee1275";
-        } else if(arch == "aarch64") {
-            method = "grub-efi";
-        } else if(arch == "x86_64" || arch == "pmmx") {
-#ifdef HAS_INSTALL_ENV
-            if(fs::exists("/sys/firmware/efi")) {
-                method = "grub-efi";
-            } else
-#endif  /* HAS_INSTALL_ENV */
-                method = "grub-bios";
-        } else {
-            output_error(pos, "bootloader: no default for architecture", arch);
-            return false;
-        }
-    } else {
-        method = _value;
-    }
+    std::string method = _bootloader;
 
     if(method == "grub-efi") {
         if(script->options().test(Simulate)) {
@@ -818,7 +822,7 @@ bool Bootloader::execute() const {
                       << " --keys-dir etc/apk/keys add grub-efi"
                       << std::endl
                       << "chroot " << script->targetDirectory()
-                      << " grub-install" << std::endl;
+                      << " grub-install " << _device << std::endl;
             return true;
         }
 #ifdef HAS_INSTALL_ENV
@@ -836,7 +840,8 @@ bool Bootloader::execute() const {
               MS_REMOUNT | MS_NOEXEC | MS_NODEV | MS_NOSUID | MS_RELATIME,
               nullptr);
 
-        if(run_command("chroot", {script->targetDirectory(), "grub-install"})
+        if(run_command("chroot",
+                       {script->targetDirectory(), "grub-install", _device})
                 != 0) {
             output_error(pos, "bootloader: failed to install GRUB");
             return false;
@@ -855,7 +860,7 @@ bool Bootloader::execute() const {
                       << " --keys-dir etc/apk/keys add grub-bios"
                       << std::endl
                       << "chroot " << script->targetDirectory()
-                      << " grub-install" << std::endl;
+                      << " grub-install " << _device << std::endl;
             return true;
         }
 #ifdef HAS_INSTALL_ENV
@@ -865,7 +870,8 @@ bool Bootloader::execute() const {
             output_error(pos, "bootloader: couldn't add package");
             return false;
         }
-        if(run_command("chroot", {script->targetDirectory(), "grub-install"})
+        if(run_command("chroot",
+                       {script->targetDirectory(), "grub-install", _device})
                 != 0) {
             output_error(pos, "bootloader: failed to install GRUB");
             return false;
@@ -883,7 +889,8 @@ bool Bootloader::execute() const {
                       << " --keys-dir etc/apk/keys add grub-ieee1275"
                       << std::endl
                       << "chroot " << script->targetDirectory()
-                      << " grub-install" << std::endl;
+                      << " grub-install --macppc-directory=/boot/grub "
+                      << _device << std::endl;
             return true;
         }
 #ifdef HAS_INSTALL_ENV
@@ -893,7 +900,9 @@ bool Bootloader::execute() const {
             output_error(pos, "bootloader: couldn't add package");
             return false;
         }
-        if(run_command("chroot", {script->targetDirectory(), "grub-install"})
+        if(run_command("chroot",
+                       {script->targetDirectory(), "grub-install",
+                        "--macppc-directory=/boot/grub", _device})
                 != 0) {
             output_error(pos, "bootloader: failed to install GRUB");
             return false;
