@@ -8,6 +8,80 @@
   © 2019-2020 Adélie Linux and contributors.
 
 
+0.9.4 (2020-08-30)
+==================
+
+Boot to Horizon
+---------------
+
+* Add ``gfxdetect`` oneshot, to reassure the user that System Installation
+  is starting.
+
+
+Disk
+----
+
+* Create Apple Partition Map disk labels correctly.
+
+
+Documentation
+-------------
+
+* The JSON schema used by ``hscript-fromjson`` has been documented in
+  Chapter 4 of the HorizonScript Reference Manual.
+
+
+HorizonScript Library
+---------------------
+
+* Work around a bug in Alpine Linux that prevents ``/dev/stdin`` from being
+  canonicalised.
+
+* Add initial support for MIPS.  This does not include an automatic
+  partitioner, which is required for Tier 1 support.
+
+
+Image Creation
+--------------
+
+* CDs now use Dracut for initramfs instead of the custom init from 2016.
+  This also means that live media can load modules instead of relying on
+  only built-in kernel drivers.
+
+
+Metadata
+--------
+
+* If a service has already been enabled via an external process, such as
+  having an entry in /etc/runlevels from the packaging itself, the
+  ``svcenable`` key will no longer cause script execution to fail.
+
+* The ``bootloader`` key now takes two parameters, with the first one
+  being a required device specification for where to install the system
+  bootloader.  The second parameter is identical to the original specification
+  of ``bootloader``, except that the ``false`` value is no longer valid.
+
+
+Qt UI
+-----
+
+* All references to ConsoleKit have been replaced with elogind.
+
+
+Tests
+-----
+
+* Several tests were added to ensure continued correctness of various metadata
+  keys, including:
+
+  * Non-alphanumeric ``hostname`` s should fail.
+
+  * Correctness of the ``version`` key implementation.
+
+  * Various usages, valid and invalid, of the ``bootloader`` key.
+
+
+
 0.9.3 (2020-07-06)
 ==================
 
