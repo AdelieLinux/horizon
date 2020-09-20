@@ -837,8 +837,8 @@ bool Bootloader::execute() const {
         const auto efipath{script->targetDirectory() +
                            "/sys/firmware/efi/efivars"};
         mount(nullptr, efipath.c_str(), nullptr,
-              MS_REMOUNT | MS_NOEXEC | MS_NODEV | MS_NOSUID | MS_RELATIME,
-              nullptr);
+              MS_REMOUNT | MS_BIND | MS_NOEXEC | MS_NODEV | MS_NOSUID |
+              MS_RELATIME, nullptr);
 
         if(run_command("chroot",
                        {script->targetDirectory(), "grub-install", _device})
@@ -849,8 +849,8 @@ bool Bootloader::execute() const {
 
         /* done, back to r/o */
         mount(nullptr, efipath.c_str(), nullptr,
-              MS_REMOUNT | MS_RDONLY | MS_NOEXEC | MS_NODEV | MS_NOSUID |
-              MS_RELATIME, nullptr);
+              MS_REMOUNT | MS_BIND | MS_RDONLY | MS_NOEXEC | MS_NODEV |
+              MS_NOSUID | MS_RELATIME, nullptr);
 #endif  /* HAS_INSTALL_ENV */
         return true;  /* LCOV_EXCL_LINE */
     }
