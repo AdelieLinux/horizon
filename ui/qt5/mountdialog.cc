@@ -77,6 +77,20 @@ MountDialog::MountDialog(QStringList skipParts, QStringList skipMounts,
     pathInput->setWhatsThis(tr("Select where the partition will be mounted."));
     pathInput->addItems(pathCandidates);
 
+    QStringList fsCandidates = {"ext4", "xfs", "jfs", "hfs+", "vfat", "ext3"};
+    formatChoice = new QCheckBox(tr("Format"));
+    formatChoice->setWhatsThis(tr("Erase and format this device with a new file system."));
+
+    formatInput = new QComboBox;
+    formatInput->setEditable(false);
+    formatInput->setWhatsThis(tr("Select the file system this partition will be formatted."));
+    formatInput->addItems(fsCandidates);
+
+    QHBoxLayout *formatLayout = new QHBoxLayout;
+    formatLayout->addWidget(formatChoice);
+    formatLayout->addStretch();
+    formatLayout->addWidget(formatInput);
+
     QVBoxLayout *controlLayout = new QVBoxLayout;
     controlLayout->addWidget(new QLabel(tr("Partition")));
 #ifdef HAS_INSTALL_ENV
@@ -86,6 +100,7 @@ MountDialog::MountDialog(QStringList skipParts, QStringList skipMounts,
 #endif  /* HAS_INSTALL_ENV */
     controlLayout->addWidget(new QLabel(tr("will be mounted on")));
     controlLayout->addWidget(pathInput);
+    controlLayout->addLayout(formatLayout);
 
     QHBoxLayout *mainBox = new QHBoxLayout;
     mainBox->addLayout(controlLayout);
@@ -119,4 +134,20 @@ QString MountDialog::mountPoint() const {
 
 void MountDialog::setMountPoint(const QString &path) {
     pathInput->setCurrentText(path);
+}
+
+bool MountDialog::isFormatting() const {
+    return formatChoice->isChecked();
+}
+
+void MountDialog::setFormatting(bool format) {
+    formatChoice->setChecked(format);
+}
+
+QString MountDialog::formatType() const {
+    return formatInput->currentText();
+}
+
+void MountDialog::setFormatType(const QString &formatType) {
+    formatInput->setCurrentText(formatType);
 }

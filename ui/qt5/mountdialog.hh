@@ -15,6 +15,7 @@
 
 #include "horizonwizard.hh"
 
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDialog>
 #ifdef HAS_INSTALL_ENV
@@ -32,6 +33,11 @@ public:
     void setPartition(const QString &part);
     QString mountPoint() const;
     void setMountPoint(const QString &path);
+
+    bool isFormatting() const;
+    void setFormatting(bool format);
+    QString formatType() const;
+    void setFormatType(const QString &formatType);
 private:
 #ifdef HAS_INSTALL_ENV
     QListWidget *partList;
@@ -39,6 +45,8 @@ private:
     QLineEdit *partInput;
 #endif  /* HAS_INSTALL_ENV */
     QComboBox *pathInput;
+    QCheckBox *formatChoice;
+    QComboBox *formatInput;
     QString path;
 };
 

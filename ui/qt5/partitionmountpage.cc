@@ -38,10 +38,13 @@ PartitionMountPage::PartitionMountPage(QWidget *parent)
             QListWidgetItem *mount = new QListWidgetItem;
             QString part = md.partition();
             QString path = md.mountPoint();
+            QString fs = md.formatType();
             mount->setText(tr("%1 on %2").arg(part).arg(path));
             mount->setIcon(QIcon::fromTheme("drive-harddisk"));
             mount->setData(Qt::UserRole + 1, part);
             mount->setData(Qt::UserRole + 2, path);
+            mount->setData(Qt::UserRole + 3, md.isFormatting());
+            mount->setData(Qt::UserRole + 4, fs);
 
             mountList->addItem(mount);
         }
@@ -89,8 +92,15 @@ bool PartitionMountPage::isComplete() const {
 QStringList PartitionMountPage::mountLines() const {
     QStringList lines;
     for(const auto &mount : mountList->findItems("", Qt::MatchContains)) {
-       lines << QString("mount %1 %2").arg(mount->data(Qt::UserRole + 1).toString())
-                                      .arg(mount->data(Qt::UserRole + 2).toString());
+        QString part = mount->data(Qt::UserRole + 1).toString();
+        QString path = mount->data(Qt::UserRole + 2).toString();
+        QString fs = mount->data(Qt::UserRole + 4).toString();
+
+        if(mount->data(Qt::UserRole + 3).toBool()) {
+            lines << QString("fs %1 %2").arg(part).arg(fs);
+        }
+
+        lines << QString("mount %1 %2").arg(part).arg(path);
     }
     return lines;
 }
