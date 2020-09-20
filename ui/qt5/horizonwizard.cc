@@ -654,7 +654,7 @@ QString HorizonWizard::toHScript() {
     lines << "pkginstall openrc";
 
     if(this->grub) {
-        lines << "bootloader " << QString::fromStdString(chosen_disk);
+        lines << ("bootloader " + QString::fromStdString(chosen_disk));
     }
 
     switch(this->binsh) {
