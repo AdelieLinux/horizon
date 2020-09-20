@@ -88,17 +88,17 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
         it "creates ext2 filesystems correctly" do
             use_fixture '0193-fs-ext2.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("mkfs.ext2 -q /dev/sdb1")
+            expect(last_command_started.stdout).to include("mkfs.ext2 -q -F /dev/sdb1")
         end
         it "creates ext3 filesystems correctly" do
             use_fixture '0194-fs-ext3.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("mkfs.ext3 -q /dev/sdb1")
+            expect(last_command_started.stdout).to include("mkfs.ext3 -q -F /dev/sdb1")
         end
         it "creates ext4 filesystems correctly" do
             use_fixture '0179-fs-basic.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("mkfs.ext4 -q /dev/sdb1")
+            expect(last_command_started.stdout).to include("mkfs.ext4 -q -F /dev/sdb1")
         end
         it "creates JFS filesystems correctly" do
             use_fixture '0195-fs-jfs.installfile'
