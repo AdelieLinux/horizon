@@ -675,9 +675,8 @@ bool Filesystem::execute() const {
     }
 
     if(_type == Ext2 || _type == Ext3 || _type == Ext4) {
-        const std::string dev_node(
-                    device().substr(device().find_last_of('/') + 1));
         args.push_back("-q");
+        args.push_back("-F");
     }
 
     args.push_back(_block);
