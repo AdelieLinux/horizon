@@ -367,13 +367,18 @@ public:
         std::ifstream kverstream(kverpath);
         kverstream >> kver;
 
-        /* dracut with -r can't autodetect udev directory without udev.pc */
-        ::setenv("udevdir", "/lib/udev", 0);
-        if(run_command("dracut", {"--kver", kver, "-r", target+"/", "-N",
+        const std::string irdname = "initrd-" + my_arch;
+        if(run_command("chroot", {target, "dracut", "--kver", kver, "-N",
                                   "--force", "-a", "dmsquash-live",
-                                  cdpath + "/initrd-" + my_arch}) != 0) {
+                                  "/boot/" + irdname}) != 0) {
             output_error("CD backend", "dracut failed to create initramfs");
             return COMMAND_ERROR;
+        }
+
+        fs::rename(target + "/boot/" + irdname, cdpath + "/" + irdname, ec);
+        if(ec) {
+            output_error("CD backend", "cannot install initrd to CD root");
+            return FS_ERROR;
         }
 
         /* REQ: ISO.24 */
