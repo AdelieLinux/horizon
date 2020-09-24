@@ -66,11 +66,11 @@ MountDialog::MountDialog(QStringList skipParts, QStringList skipMounts,
     });
 #endif
 
-    QStringList pathCandidates = {"/", "/home", "/opt", "/srv", "/usr",
-                                  "/usr/local", "/var", "/var/db", "/var/log"};
-    QSet<QString> paths = pathCandidates.toSet().subtract(skipMounts.toSet());
-    pathCandidates = paths.toList();
-    pathCandidates.sort();
+    QStringList pathCandidates{"/", "/home", "/opt", "/srv", "/usr",
+                               "/usr/local", "/var", "/var/db", "/var/log"};
+    for(QString &mount: skipMounts) {
+        pathCandidates.removeAll(mount);
+    }
 
     pathInput = new QComboBox;
     pathInput->setEditable(true);
