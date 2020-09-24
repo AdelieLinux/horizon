@@ -15,6 +15,7 @@
 
 #include <assert.h>
 #include <QGridLayout>
+#include <QGuiApplication>
 #include <QProcess>
 #include <QUrl>
 #include <QVBoxLayout>
@@ -153,6 +154,10 @@ void NetDHCPPage::initializePage() {
     assert(!horizonWizard()->chosen_auto_iface.empty());
 
     progress->setStepStatus(0, StepProgressWidget::InProgress);
+
+    if(QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier)) {
+        online = true;
+    }
 
     startDHCP();
 }
