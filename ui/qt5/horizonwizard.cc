@@ -655,6 +655,7 @@ QString HorizonWizard::toHScript() {
 
     if(this->grub) {
         lines << ("bootloader " + QString::fromStdString(chosen_disk));
+        lines << "pkginstall dracut easy-boot";
     }
 
     switch(this->binsh) {
