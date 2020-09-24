@@ -30,6 +30,13 @@ int scanResults(wpactrl_t *control, char const *s, size_t len, void *page, tain_
 }
 #endif  /* HAS_INSTALL_ENV */
 
+
+/*! Holds AP flags like WPA2, etc */
+#define FLAGS_ROLE      Qt::UserRole
+/*! Holds the RSSI/signal strength */
+#define SIGNAL_ROLE     Qt::UserRole + 1
+
+
 NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     : HorizonWizardPage(parent)
 #ifdef HAS_INSTALL_ENV
@@ -46,7 +53,7 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     statusLabel->setAlignment(Qt::AlignCenter);
     statusLabel->setWordWrap(true);
 
-    addNetButton = new QPushButton(tr("&Join Hidden Network..."));
+    addNetButton = new QPushButton(tr("&Unlisted Network..."));
     addNetButton->setIcon(QIcon::fromTheme("list-add"));
     connect(addNetButton, &QPushButton::clicked, [=] {
         CustomWiFiDialog d;
@@ -55,9 +62,10 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
             netitem->setText(d.networkName());
             netitem->setIcon(QIcon::fromTheme("network-wireless-signal-none"));
             netitem->setToolTip(tr("Frequency: Unknown"));
-            netitem->setData(Qt::UserRole, d.flags());
-            netitem->setData(Qt::UserRole + 1, 2);
+            netitem->setData(FLAGS_ROLE, d.flags());
+            netitem->setData(SIGNAL_ROLE, 2);
 
+            /* push to top */
             ssidListView->insertItem(0, netitem);
         }
     });
@@ -108,12 +116,15 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
             passphrase->setEchoMode(QLineEdit::Password);
         }
     });
+    passLabel = new QLabel;
+    passLabel->setBuddy(passphrase);
 
     layout->addWidget(statusLabel);
     layout->addSpacing(10);
     layout->addWidget(ssidListView, 0, Qt::AlignCenter);
     layout->addLayout(buttonLayout);
     layout->addSpacing(10);
+    layout->addWidget(passLabel, 0, Qt::AlignCenter);
     layout->addWidget(passphrase, 0, Qt::AlignCenter);
     setLayout(layout);
 }
@@ -135,6 +146,7 @@ void NetworkSimpleWirelessPage::networkChosen(QListWidgetItem *current,
                                               QListWidgetItem *) {
     passphrase->clear();
     passphrase->hide();
+    passLabel->setText("");
 
     if(current == nullptr) {
         emit completeChanged();
@@ -151,6 +163,7 @@ void NetworkSimpleWirelessPage::networkChosen(QListWidgetItem *current,
             passphrase->setEnabled(false);
             passphrase->setPlaceholderText(tr("WPA Enterprise networks are not supported in this release of Horizon."));
             passphrase->show();
+            passLabel->setText(tr("Enter network credentials:"));
             goto done;
         }
 
@@ -158,6 +171,7 @@ void NetworkSimpleWirelessPage::networkChosen(QListWidgetItem *current,
             passphrase->setEnabled(true);
             passphrase->setPlaceholderText(tr("WPA Passphrase"));
             passphrase->show();
+            passLabel->setText(tr("Enter network password:"));
             goto done;
         }
 
@@ -165,6 +179,7 @@ void NetworkSimpleWirelessPage::networkChosen(QListWidgetItem *current,
             passphrase->setEnabled(true);
             passphrase->setPlaceholderText(tr("WEP Passphrase"));
             passphrase->show();
+            passLabel->setText(tr("Enter network password:"));
             goto done;
         }
     }
@@ -437,16 +452,15 @@ int NetworkSimpleWirelessPage::processScan(wpactrl_t *c, const char *, size_t) {
                             .arg(fromMacAddress(network.bssid))
                             .arg(network.signal_level));
         QString zero(QString::fromStdString(std::string("\0", 1)));
-        netitem->setData(Qt::UserRole, QString::fromStdString(flags)
-                                       .split(zero));
-        netitem->setData(Qt::UserRole + 1, network.signal_level);
+        netitem->setData(FLAGS_ROLE, QString::fromStdString(flags).split(zero));
+        netitem->setData(SIGNAL_ROLE, network.signal_level);
         netitems.push_back(netitem);
     }
 
     std::sort(netitems.begin(), netitems.end(),
               [](QListWidgetItem *left, QListWidgetItem *right) {
-        return left->data(Qt::UserRole + 1).toInt() >
-               right->data(Qt::UserRole + 1).toInt();
+        return left->data(SIGNAL_ROLE).toInt() >
+               right->data(SIGNAL_ROLE).toInt();
     });
 
     for(auto &item : netitems) {

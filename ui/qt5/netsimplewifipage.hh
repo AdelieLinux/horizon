@@ -37,7 +37,7 @@ public:
     int nextId() const;
     bool validatePage();
 private:
-    QLabel *statusLabel;
+    QLabel *statusLabel, *passLabel;
     QPushButton *addNetButton;
 
     QListWidget *ssidListView;
