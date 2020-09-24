@@ -1,0 +1,26 @@
+<h2>Configure Your Network</h2>
+
+<p>This page allows you to provide the configuration for your Wi-Fi
+connection.</p>
+
+<h3>Choosing a network</h3>
+
+<p>Select your network from the list that appears.  If your network
+requires a passphrase to access, you will enter it in the input box that
+appears below the available network list.</p>
+
+<h3>What if my network isn't listed?</h3>
+
+<p>If you expected your network to be listed and it isn't, ensure that
+your computer is close enough to the base station or router to receive its
+signal.  If you use a private network that isn't normally listed, you may
+add it by choosing "Unlisted Network..." and providing the details of the
+network.</p>
+
+<h3>Why can I not join my network?</h3>
+
+<p>Your device may be experiencing a weak signal or interference.  Ensure
+you are in range of the base station or router, and that there are no
+devices causing interference.  For example, locate your device away from
+microwave ovens and cordless telephones, which typically operate in the
+same frequency bands as Wi-Fi networks.</p>
