@@ -68,5 +68,5 @@ void AvatarDialog::setAvatar(QString path) {
     if(items.size() == 0)
         aviList->clearSelection();
     else
-        aviList->setItemSelected(items.at(0), true);
+        items.at(0)->setSelected(true);
 }
