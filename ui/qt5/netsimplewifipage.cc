@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <sstream>
+#include <QAction>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
@@ -42,9 +43,10 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     setTitle(tr("Select Your Network"));
 
     statusLabel = new QLabel(tr("Scanning for networks..."));
+    statusLabel->setAlignment(Qt::AlignCenter);
     statusLabel->setWordWrap(true);
 
-    addNetButton = new QPushButton(tr("&Add Network..."));
+    addNetButton = new QPushButton(tr("&Join Hidden Network..."));
     addNetButton->setIcon(QIcon::fromTheme("list-add"));
     connect(addNetButton, &QPushButton::clicked, [=] {
         CustomWiFiDialog d;
@@ -61,7 +63,7 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     });
 
     buttonLayout->addSpacing(10);
-    buttonLayout->addWidget(addNetButton, 0, Qt::AlignCenter);
+    buttonLayout->addWidget(addNetButton, 0, Qt::AlignLeft);
 
     ssidListView = new QListWidget;
     connect(ssidListView, &QListWidget::currentItemChanged,
@@ -71,7 +73,8 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     rescanButton = new QPushButton(tr("&Rescan Networks"));
     connect(rescanButton, &QPushButton::clicked, [=](void) { doScan(); });
 
-    buttonLayout->addWidget(rescanButton, 0, Qt::AlignCenter);
+    buttonLayout->addWidget(rescanButton, 0, Qt::AlignRight);
+    buttonLayout->addSpacing(10);
 
     exchange_item.filter = "CTRL-EVENT-SCAN-RESULTS";
     exchange_item.cb = &scanResults;
@@ -87,8 +90,26 @@ NetworkSimpleWirelessPage::NetworkSimpleWirelessPage(QWidget *parent)
     passphrase->setEchoMode(QLineEdit::Password);
     passphrase->setMinimumWidth(255);
     passphrase->hide();
+    QAction *togglePass = passphrase->addAction(QIcon::fromTheme("visibility"),
+                                                QLineEdit::TrailingPosition);
+    togglePass->setToolTip(tr("Show the passphrase"));
+    togglePass->setData(true);
+    connect(togglePass, &QAction::triggered,
+            [=](void) {
+        if(togglePass->data().toBool() == true) {
+            togglePass->setData(false);
+            togglePass->setIcon(QIcon::fromTheme("hint"));
+            togglePass->setToolTip(tr("Hide the passphrase"));
+            passphrase->setEchoMode(QLineEdit::Normal);
+        } else {
+            togglePass->setData(true);
+            togglePass->setIcon(QIcon::fromTheme("visibility"));
+            togglePass->setToolTip(tr("Show the passphrase"));
+            passphrase->setEchoMode(QLineEdit::Password);
+        }
+    });
 
-    layout->addWidget(statusLabel, 0, Qt::AlignCenter);
+    layout->addWidget(statusLabel);
     layout->addSpacing(10);
     layout->addWidget(ssidListView, 0, Qt::AlignCenter);
     layout->addLayout(buttonLayout);
@@ -168,7 +189,8 @@ void NetworkSimpleWirelessPage::doScan() {
     wpactrl_end(&control);
     if(!wpactrl_start_g(&control, suppsock.c_str(), 2000)) {
         rescanButton->setEnabled(false);
-        statusLabel->setText(tr("Couldn't communicate with wireless subsystem (Code %1)").arg(errno));
+        int error = errno;
+        statusLabel->setText(tr("Couldn't communicate with wireless system (Code %1)").arg(error));
         return;
     }
 
@@ -201,7 +223,7 @@ void NetworkSimpleWirelessPage::doScan() {
             status = tr("Network scan timed out.");
         } else {
             if(wpactrl_update(&control) < 0) {
-                status = tr("Issue communicating with wireless subsystem.");
+                status = tr("Issue communicating with wireless system.");
             } else {
                 int code = wpactrl_xchg_event_g(&control, &exchange);
                 if(code == -2) {
