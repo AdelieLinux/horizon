@@ -63,9 +63,10 @@ IF(UNSUPPORTED_NONFREE_FIRMWARE)
     LIST(APPEND UI_SOURCES firmwarepage.cc)
 ENDIF(UNSUPPORTED_NONFREE_FIRMWARE)
 
+find_package(OpenSSL REQUIRED COMPONENTS Crypto)
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty)
 add_executable(horizon-qt5 ${UI_SOURCES})
-target_link_libraries(horizon-qt5 Qt5::Network Qt5::Widgets crypto)
+target_link_libraries(horizon-qt5 Qt5::Network Qt5::Widgets OpenSSL::Crypto)
 
 IF("cxx_std_17" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
     set_property(TARGET horizon-qt5 PROPERTY CXX_STANDARD 17)
