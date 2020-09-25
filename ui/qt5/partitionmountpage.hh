@@ -25,7 +25,10 @@ public:
     QStringList mountLines() const;
 private:
     QListWidget *mountList;
-    QPushButton *addMountButton, *delMountButton, *rescanButton;
+    QPushButton *addMountButton, *delMountButton;
+#ifdef HAS_INSTALL_ENV
+    QPushButton *rescanButton;
+#endif  /* !HAS_INSTALL_ENV */
 };
 
 #endif  /* !PARTITIONMOUNTPAGE_HH */

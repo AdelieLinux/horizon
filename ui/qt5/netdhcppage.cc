@@ -16,7 +16,6 @@
 #include <assert.h>
 #include <QGridLayout>
 #include <QGuiApplication>
-#include <QProcess>
 #include <QUrl>
 #include <QVBoxLayout>
 
@@ -74,13 +73,14 @@ void NetDHCPPage::startDHCP() {
             logButton->setHidden(false);
         }
     });
-    connect(dhcpcd, static_cast<void (QProcess:: *)(int)>(&QProcess::finished),
-            this, &NetDHCPPage::dhcpFinished);
+    connect(dhcpcd, static_cast<void (QProcess:: *)(int, QProcess::ExitStatus)>(
+                &QProcess::finished
+            ), this, &NetDHCPPage::dhcpFinished);
     dhcpcd->start();
 }
 
-void NetDHCPPage::dhcpFinished(int exitcode) {
-    if(exitcode != 0) {
+void NetDHCPPage::dhcpFinished(int exitcode, QProcess::ExitStatus status) {
+    if(status != QProcess::NormalExit || exitcode != 0) {
         progress->setStepStatus(0, StepProgressWidget::Failed);
         information->setText(tr("The system could not obtain an address."));
         logButton->setHidden(false);

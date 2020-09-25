@@ -19,6 +19,7 @@
 #include <QLabel>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QProcess>
 #include <QPushButton>
 
 class NetDHCPPage : public HorizonWizardPage {
@@ -39,7 +40,7 @@ private:
     bool online = false;
 
     void startDHCP();
-    void dhcpFinished(int exitcode);
+    void dhcpFinished(int exitcode, QProcess::ExitStatus status);
     void checkInet();
     void inetFinished();
 };
