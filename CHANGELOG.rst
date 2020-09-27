@@ -8,6 +8,47 @@
   © 2019-2020 Adélie Linux and contributors.
 
 
+
+0.9.5 (2020-09-27)
+==================
+
+Disk
+----
+
+* Remount EFI vars directory correctly during UEFI bootloader installation.
+
+* Force creation of ext4 file systems.
+
+
+Image Creation
+--------------
+
+* Dracut is now called inside the chroot, making it easier to create foreign
+  architecture media.
+
+
+Qt UI
+-----
+
+* An issue with installing bootloaders has been fixed.
+
+* The Wi-Fi network selection page has been redesigned to be easier to use, and
+  now has a help file.
+
+* It is now possible to format partitions from the manual mount selection page.
+
+* A build issue with unstable versions of Qt has been fixed.  Note that non-LTS
+  versions of Qt are still officially unsupported.  If you have issues using a
+  self-built version of Horizon, please build against Qt 5.12 before reporting.
+
+* It is now possible to build the Runtime Environment wizard for Macintosh.
+
+* The manual mount code was rewritten to perform faster in complex scenarios.
+
+* Dracut will now be installed to the target when the bootloader is selected.
+
+
+
 0.9.4 (2020-08-30)
 ==================
 
