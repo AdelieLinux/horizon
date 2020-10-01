@@ -823,7 +823,7 @@ bool Bootloader::execute() const {
                       << std::endl
                       << "chroot " << script->targetDirectory()
                       << " grub-install " << _device << std::endl;
-            return true;
+            goto updateboot;
         }
 #ifdef HAS_INSTALL_ENV
         if(run_command("/sbin/apk",
@@ -851,8 +851,8 @@ bool Bootloader::execute() const {
         mount(nullptr, efipath.c_str(), nullptr,
               MS_REMOUNT | MS_BIND | MS_RDONLY | MS_NOEXEC | MS_NODEV |
               MS_NOSUID | MS_RELATIME, nullptr);
+        goto updateboot;
 #endif  /* HAS_INSTALL_ENV */
-        return true;  /* LCOV_EXCL_LINE */
     }
     else if(method == "grub-bios") {
         if(script->options().test(Simulate)) {
@@ -861,7 +861,7 @@ bool Bootloader::execute() const {
                       << std::endl
                       << "chroot " << script->targetDirectory()
                       << " grub-install " << _device << std::endl;
-            return true;
+            goto updateboot;
         }
 #ifdef HAS_INSTALL_ENV
         if(run_command("/sbin/apk",
@@ -876,8 +876,8 @@ bool Bootloader::execute() const {
             output_error(pos, "bootloader: failed to install GRUB");
             return false;
         }
+        goto updateboot;
 #endif  /* HAS_INSTALL_ENV */
-        return true;  /* LCOV_EXCL_LINE */
     }
     else if(method == "iquik") {
         output_error(pos, "bootloader: iQUIK is not yet supported");
@@ -891,7 +891,7 @@ bool Bootloader::execute() const {
                       << "chroot " << script->targetDirectory()
                       << " grub-install --macppc-directory=/boot/grub "
                       << _device << std::endl;
-            return true;
+            goto updateboot;
         }
 #ifdef HAS_INSTALL_ENV
         if(run_command("/sbin/apk",
@@ -907,9 +907,23 @@ bool Bootloader::execute() const {
             output_error(pos, "bootloader: failed to install GRUB");
             return false;
         }
+        goto updateboot;
 #endif  /* HAS_INSTALL_ENV */
-        return true;  /* LCOV_EXCL_LINE */
     }
 
     return false;  /* LCOV_EXCL_LINE */
+
+updateboot:
+    /* We ignore if update-boot fails, in case the user has chosen no-boot. */
+    if(script->options().test(Simulate)) {
+        std::cout << "chroot " << script->targetDirectory()
+                  << " /usr/sbin/update-boot || true" << std::endl;
+    }
+#ifdef HAS_INSTALL_ENV
+    else {
+        run_command("chroot",
+                    {script->targetDirectory(), "/usr/sbin/update-boot"});
+    }
+#endif  /* HAS_INSTALL_ENV */
+    return true;
 }
