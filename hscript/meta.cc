@@ -846,9 +846,12 @@ bool Bootloader::execute() const {
         /* remount EFI vars r/w */
         const auto efipath{script->targetDirectory() +
                            "/sys/firmware/efi/efivars"};
-        mount(nullptr, efipath.c_str(), nullptr,
-              MS_REMOUNT | MS_BIND | MS_NOEXEC | MS_NODEV | MS_NOSUID |
-              MS_RELATIME, nullptr);
+        if(mount("efivarfs", efipath.c_str(), "efivarfs", MS_NOEXEC |
+                 MS_NODEV | MS_NOSUID | MS_RELATIME, nullptr) != 0) {
+            output_error(pos, "bootloader: failed to mount writable efivarfs",
+                         strerror(errno));
+            return false;
+        }
 
         if(run_command("chroot",
                        {script->targetDirectory(), "grub-install", _device})
@@ -858,9 +861,7 @@ bool Bootloader::execute() const {
         }
 
         /* done, back to r/o */
-        mount(nullptr, efipath.c_str(), nullptr,
-              MS_REMOUNT | MS_BIND | MS_RDONLY | MS_NOEXEC | MS_NODEV |
-              MS_NOSUID | MS_RELATIME, nullptr);
+	umount(efipath.c_str());
         goto updateboot;
 #endif  /* HAS_INSTALL_ENV */
     }
