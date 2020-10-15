@@ -292,14 +292,14 @@ defaultroute
 lcp-echo-interval 10
 lcp-echo-failure 5
 mtu 9001
-"
-password_ppp0="fuzzball"
-username_ppp0="awilfox"
-plugins_ppp0="pppoe"
-link_ppp0="eth0"
-config_ppp0="ppp"
-rc_net_ppp0_need="eth0"
-config_eth0="null"')
+"')
+            expect(last_command_started.stdout).to include('username_ppp0="awilfox"')
+            expect(last_command_started.stdout).to include('password_ppp0="fuzzball"')
+            expect(last_command_started.stdout).to include('plugins_ppp0="pppoe"')
+            expect(last_command_started.stdout).to include('link_ppp0="eth0"')
+            expect(last_command_started.stdout).to include('config_ppp0="ppp"')
+            expect(last_command_started.stdout).to include('rc_net_ppp0_need="eth0"')
+            expect(last_command_started.stdout).to include('config_eth0="null"')
         end
     end
     context "simulating 'signingkey' execution" do
