@@ -115,21 +115,25 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
     } else {
         base_url += "stable/";
     }
-    Repository *sys_key = dynamic_cast<Repository *>(
+    Repository *sys_key = static_cast<Repository *>(
         Repository::parseFromData(base_url + "system", p, nullptr, nullptr, s)
     );
     if(!sys_key) {
+        /* LCOV_EXCL_START - only relevant in OOM conditions */
         output_error("internal", "failed to create default system repository");
         return false;
+        /* LCOV_EXCL_STOP */
     }
     std::unique_ptr<Repository> sys_repo(sys_key);
     repos.push_back(std::move(sys_repo));
-    Repository *user_key = dynamic_cast<Repository *>(
+    Repository *user_key = static_cast<Repository *>(
         Repository::parseFromData(base_url + "user", p, nullptr, nullptr, s)
     );
     if(!user_key) {
+        /* LCOV_EXCL_START - only relevant in OOM conditions */
         output_error("internal", "failed to create default user repository");
         return false;
+        /* LCOV_EXCL_STOP */
     }
     std::unique_ptr<Repository> user_repo(user_key);
     repos.push_back(std::move(user_repo));
@@ -137,10 +141,10 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
 #ifdef NON_LIBRE_FIRMWARE
     /* REQ: Runner.Execute.firmware.Repository */
     if(firmware) {
-        Repository *fw_key = dynamic_cast<Repository *>(
+        Repository *fw_key = static_cast<Repository *>(
             Repository::parseFromData(
                 "https://distfiles.apkfission.net/adelie/1.0/nonfree",
-                {"internal", 0}, nullptr, nullptr, s
+                p, nullptr, nullptr, s
             )
         );
         if(!fw_key) {
@@ -163,14 +167,16 @@ bool add_default_repos(std::vector<std::unique_ptr<Repository>> &repos,
  */
 bool add_default_repo_keys(std::vector<std::unique_ptr<SigningKey>> &keys,
                            const Script *s, bool firmware = false) {
-    SigningKey *key = dynamic_cast<SigningKey *>(
+    SigningKey *key = static_cast<SigningKey *>(
         SigningKey::parseFromData(
             "/etc/apk/keys/packages@adelielinux.org.pub",
             {"internal", 0}, nullptr, nullptr, s)
     );
     if(!key) {
+        /* LCOV_EXCL_START - only relevant in OOM conditions */
         output_error("internal", "failed to create default repository signing key");
         return false;
+        /* LCOV_EXCL_STOP */
     }
     std::unique_ptr<SigningKey> repo_key(key);
     keys.push_back(std::move(repo_key));
@@ -278,11 +284,15 @@ bool Horizon::Script::validate() const {
 
     /* REQ: Runner.Execute.timezone */
     if(!internal->tzone) {
-        Timezone *utc = dynamic_cast<Timezone *>
-            (Timezone::parseFromData("UTC", {"", 0}, &failures, nullptr, this));
+        Timezone *utc = static_cast<Timezone *>(
+            Timezone::parseFromData("UTC", {"internal", 0}, &failures,
+                                    nullptr, this)
+        );
         if(!utc) {
+            /* LCOV_EXCL_START - only relevant in OOM conditions */
             output_error("internal", "failed to create default timezone");
             return false;
+            /* LCOV_EXCL_STOP */
         }
         std::unique_ptr<Timezone> zone(utc);
         internal->tzone = std::move(zone);
@@ -298,7 +308,7 @@ bool Horizon::Script::validate() const {
                               , internal->firmware && internal->firmware->test()
 #endif
                               )) {
-            return false;
+            return false;  /* LCOV_EXCL_LINE - only OOM */
         }
     }
 
@@ -320,7 +330,7 @@ bool Horizon::Script::validate() const {
                             , internal->firmware && internal->firmware->test()
 #endif
                                   )) {
-            return false;
+            return false;  /* LCOV_EXCL_LINE - only OOM */
         }
     }
 

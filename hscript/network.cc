@@ -70,6 +70,7 @@ Key *NetConfigType::parseFromData(const std::string &data,
     return new NetConfigType(script, pos, system);
 }
 
+/* LCOV_EXCL_START */
 bool NetConfigType::validate() const {
     /* Validation takes place during parsing. */
     return true;
@@ -79,6 +80,7 @@ bool NetConfigType::execute() const {
     /* This key doesn't perform any action by itself. */
     return true;
 }
+/* LCOV_EXCL_STOP */
 
 
 Key *NetAddress::parseFromData(const std::string &data,

@@ -100,6 +100,11 @@ RSpec.describe 'HorizonScript Simulator', :type => :aruba do
             run_simulate
             expect(last_command_started.stdout).to include("mkfs.ext4 -q -F /dev/sdb1")
         end
+        it "creates HFS+ filesystems correctly" do
+            use_fixture '0253-fs-hfsplus.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("mkfs.hfsplus -w /dev/sdb2")
+        end
         it "creates JFS filesystems correctly" do
             use_fixture '0195-fs-jfs.installfile'
             run_simulate
@@ -143,6 +148,29 @@ mount /dev/sda2 /target/usr
 printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/sda2 /usr auto defaults >> /target/etc/fstab
 mount -o noatime /dev/gwyn/source /target/usr/src
 printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> /target/etc/fstab")
+        end
+    end
+    context "simulating 'bootloader' execution" do
+        it "installs grub-bios correctly" do
+            use_fixture '0251-bootloader-x86bios.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("add grub-bios")
+            expect(last_command_started.stdout).to include("grub-install")
+            expect(last_command_started.stdout).to include("/usr/sbin/update-boot")
+        end
+        it "installs grub-efi correctly" do
+            use_fixture '0256-bootloader-arm64.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("add grub-efi")
+            expect(last_command_started.stdout).to include("grub-install")
+            expect(last_command_started.stdout).to include("/usr/sbin/update-boot")
+        end
+        it "installs grub-ieee1275 correctly" do
+            use_fixture '0255-bootloader-devonly.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("add grub-ieee1275")
+            expect(last_command_started.stdout).to include("grub-install")
+            expect(last_command_started.stdout).to include("/usr/sbin/update-boot")
         end
     end
     context "simulating 'hostname' execution" do
@@ -217,15 +245,13 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             run_simulate
             expect(last_command_started.stdout).to include("ln -s /etc/init.d/net.lo /target/etc/init.d/net.eth0")
         end
-        it "configures IPv4 addressing correctly with eni" do
+        it "configures addressing correctly with eni" do
             use_fixture '0227-netconfigtype-eni.installfile'
             run_simulate
-            expect(last_command_started.stdout).to include("auto eth0\niface eth0 inet static")
-        end
-        it "configures IPv6 SLAAC addressing correctly with eni" do
-            use_fixture '0227-netconfigtype-eni.installfile'
-            run_simulate
-            expect(last_command_started.stdout).to include("iface eth0 inet6 manual")
+            expect(last_command_started.stdout).to include("auto eth0\niface eth0 inet static\n\taddress 192.0.2.2")
+            expect(last_command_started.stdout).to include("auto eth1\niface eth1 inet6 manual\n\tpre-up echo 1 > /proc/sys/net/ipv6/conf/eth1/accept_ra")
+            expect(last_command_started.stdout).to include("auto eth2\niface eth2 inet dhcp")
+            expect(last_command_started.stdout).to include("auto eth3\niface eth3 inet6 static\n\tpre-up echo 0 > /proc/sys/net/ipv6/conf/eth3/accept_ra")
         end
     end
     context "simulating 'nameserver' execution" do
@@ -257,6 +283,25 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             expect(last_command_started.stdout).to include("cp /target/etc/resolv.conf* /etc/")
         end
     end
+    context "simulating 'pppoe' execution" do
+        it "supports simulating PPPoE using netifrc" do
+            use_fixture '0243-pppoe-allkeys.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include('pppd_ppp0="noauth
+defaultroute
+lcp-echo-interval 10
+lcp-echo-failure 5
+mtu 9001
+"
+password_ppp0="fuzzball"
+username_ppp0="awilfox"
+plugins_ppp0="pppoe"
+link_ppp0="eth0"
+config_ppp0="ppp"
+rc_net_ppp0_need="eth0"
+config_eth0="null"')
+        end
+    end
     context "simulating 'signingkey' execution" do
         it "downloads remote keys to target" do
             use_fixture '0186-signingkey-basic.installfile'
@@ -280,11 +325,11 @@ printf '%s\\t%s\\t%s\\t%s\\t0\\t0\\n' /dev/gwyn/source /usr/src auto noatime >> 
             run_simulate
             expect(last_command_started.stdout).to include("ln -s /etc/init.d/sshd /target/etc/runlevels/default/sshd")
         end
-	it "handles runlevels correctly" do
-	    use_fixture '0239-svcenable-runlevel.installfile'
-	    run_simulate
-	    expect(last_command_started.stdout).to include("ln -s /etc/init.d/udev /target/etc/runlevels/boot/udev")
-	end
+        it "handles runlevels correctly" do
+            use_fixture '0239-svcenable-runlevel.installfile'
+            run_simulate
+            expect(last_command_started.stdout).to include("ln -s /etc/init.d/udev /target/etc/runlevels/boot/udev")
+        end
     end
     context "simulating 'pkginstall' execution" do
         # Runner.Execute.pkginstall.APKDB

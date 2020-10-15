@@ -272,9 +272,11 @@ bool Encrypt::validate() const {
     return true;
 }
 
+/* LCOV_EXCL_START */
 bool Encrypt::execute() const {
     return false;
 }
+/* LCOV_EXCL_STOP */
 
 
 /*! Parse a size string into a size and type.

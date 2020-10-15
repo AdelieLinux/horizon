@@ -318,7 +318,7 @@ bool UserPassphrase::execute() const {
         return false;
     }
 #endif  /* HAS_INSTALL_ENV */
-    return true;
+    return true;  /* LCOV_EXCL_LINE */
 }
 
 

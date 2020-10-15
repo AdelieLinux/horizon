@@ -937,6 +937,18 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                         expect(last_command_started).to have_output(PARSER_SUCCESS)
                         expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
                     end
+                    it "handles 'bios'" do
+                        use_fixture '0253-fs-hfsplus.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
+                    it "handles 'prep'" do
+                        use_fixture '0254-partition-type-prep.installfile'
+                        run_validate
+                        expect(last_command_started).to have_output(PARSER_SUCCESS)
+                        expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                    end
                     it "handles no value" do
                         use_fixture '0154-partition-type-none.installfile'
                         run_validate
@@ -1146,6 +1158,12 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     run_validate
                     expect(last_command_started).to have_output(/error: .*fs.*already/)
                 end
+                it "succeeds with HFS+" do
+                    use_fixture '0253-fs-hfsplus.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(PARSER_SUCCESS)
+                    expect(last_command_started).to have_output(VALIDATOR_SUCCESS)
+                end
             end
             context "for 'bootloader' key" do
                 it "succeeds with valid values" do
@@ -1165,11 +1183,19 @@ RSpec.describe 'HorizonScript validation', :type => :aruba do
                     use_fixture '0249-bootloader-ppc.installfile'
                     run_validate
                     expect(last_command_started).to have_output(/error: .*bootloader.*/)
+                    use_fixture '0258-bootloader-spaces.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*bootloader.*/)
                 end
                 it "fails with unprepared architectures" do
                     use_fixture '0252-bootloader-alpha.installfile'
                     run_validate
                     expect(last_command_started).to have_output(/error: .*bootloader.*/)
+                end
+                it "fails when loader not specified and architecture doesn't have default" do
+                    use_fixture '0257-bootloader-armv7.installfile'
+                    run_validate
+                    expect(last_command_started).to have_output(/error: .*bootloader: no default.*/)
                 end
             end
             context "for 'keymap' key" do

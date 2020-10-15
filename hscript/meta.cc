@@ -451,9 +451,11 @@ Key *Timezone::parseFromData(const std::string &data, const ScriptLocation &pos,
     }
 
     if(access("/usr/share/zoneinfo", X_OK) != 0) {
+        /* LCOV_EXCL_START */
         if(warnings) *warnings += 1;
         output_warning(pos, "timezone: can't determine validity of timezone",
                        "zoneinfo data is missing or inaccessible");
+        /* LCOV_EXCL_STOP */
     } else {
         std::string zi_path = "/usr/share/zoneinfo/" + data;
         if(access(zi_path.c_str(), F_OK) != 0) {
@@ -642,9 +644,11 @@ Key *SvcEnable::parseFromData(const std::string &data,
     return new SvcEnable(script, pos, svc, runlevel);
 }
 
+/* LCOV_EXCL_START */
 bool SvcEnable::validate() const {
     return true;  /* validation occurs during parsing */
 }
+/* LCOV_EXCL_STOP */
 
 bool SvcEnable::execute() const {
     const std::string target = script->targetDirectory() +
@@ -687,9 +691,11 @@ Key *Version::parseFromData(const std::string &data,
     return new Version(script, pos, data);
 }
 
+/* LCOV_EXCL_START */
 bool Version::execute() const {
     return true;
 }
+/* LCOV_EXCL_STOP */
 
 
 const std::string my_arch(const Horizon::Script *script) {
@@ -785,8 +791,10 @@ bool Bootloader::validate() const {
         const static std::set<std::string> valid_arm64 = {"grub-efi"};
         valid_selection = valid_arm64.find(candidate) != valid_arm64.end();
     } else if(arch == "armv7") {
+    /* LCOV_EXCL_START - unreachable atm */
         const static std::set<std::string> valid_arm = {};
         valid_selection = valid_arm.find(candidate) != valid_arm.end();
+    /* LCOV_EXCL_STOP */
     } else if(arch == "pmmx") {
         const static std::set<std::string> valid_pmmx = {"grub-bios",
                                                          "grub-efi"};
@@ -797,8 +805,10 @@ bool Bootloader::validate() const {
         valid_selection = valid_x86.find(candidate) != valid_x86.end();
     } else if(arch == "mips64" || arch == "mips" ||
               arch == "mips64el" || arch == "mipsel") {
+    /* LCOV_EXCL_START - unreachable atm */
         const static std::set<std::string> valid_mips = {};
         valid_selection = valid_mips.find(candidate) != valid_mips.end();
+    /* LCOV_EXCL_STOP */
     } else {
         output_error(pos, "bootloader: unknown architecture", arch);
         return false;
@@ -879,10 +889,12 @@ bool Bootloader::execute() const {
         goto updateboot;
 #endif  /* HAS_INSTALL_ENV */
     }
+    /* LCOV_EXCL_START */
     else if(method == "iquik") {
         output_error(pos, "bootloader: iQUIK is not yet supported");
         return false;
     }
+    /* LCOV_EXCL_STOP */
     else if(method == "grub-ieee1275") {
         if(script->options().test(Simulate)) {
             std::cout << "apk --root " << script->targetDirectory()
