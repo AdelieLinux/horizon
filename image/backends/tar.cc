@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "basic.hh"
+#include "hscript/util.hh"
 #include "util/filesystem.hh"
 #include "util/output.hh"
 
@@ -86,9 +87,9 @@ public:
         void *buff;
         std::string target = this->ir_dir + "/target";
 
-        umount((ir_dir + "/target/sys").c_str());
+        run_command("umount", {"-R", (ir_dir + "/target/sys")});
         umount((ir_dir + "/target/proc").c_str());
-        umount((ir_dir + "/target/dev").c_str());
+        run_command("umount", {"-R", (ir_dir + "/target/dev")});
 
         for(const auto& dent : fs::recursive_directory_iterator(target, ec)) {
             fs::path relpath = dent.path().lexically_relative(target);
@@ -105,8 +106,14 @@ public:
             if(dent.is_symlink()) {
                 archive_entry_set_filetype(entry, AE_IFLNK);
                 fs::path resolved = fs::read_symlink(dent.path(), ec);
-                const fs::path::value_type *c_rpath = resolved.u8string().c_str();
-                archive_entry_update_symlink_utf8(entry, c_rpath);
+                if(ec) {
+                    output_error("tar backend", "failed to read symlink",
+                                 strerror(ec.value()));
+                    code = -1;
+                    goto ret;
+                }
+                const auto r_path = resolved.u8string();
+                archive_entry_update_symlink_utf8(entry, r_path.c_str());
             }
             archive_entry_update_pathname_utf8(entry, relpath.u8string().c_str());
             if(archive_write_header(this->a, entry) != ARCHIVE_OK) {
