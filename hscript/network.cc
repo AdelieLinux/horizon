@@ -407,7 +407,7 @@ Key *PPPoE::parseFromData(const std::string &data, const ScriptLocation &pos,
             if(next == std::string::npos) {
                 val = data.substr(equals + 1);
             } else {
-                val = data.substr(equals + 1, next - equals);
+                val = data.substr(equals + 1, next - equals - 1);
             }
         } else {
             if(next == std::string::npos) {
