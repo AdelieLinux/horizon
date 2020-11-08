@@ -9,6 +9,41 @@
 
 
 
+0.9.6 (2020-11-07)
+==================
+
+Disk
+----
+
+* Correctly fix EFI vars directory issue.
+
+
+Image Creation
+--------------
+
+* An issue regarding creating archives with symlinks has been fixed.
+
+
+Metadata
+--------
+
+* Horizon now runs ``update-boot`` when bootloader installation is requested.
+
+
+Network
+-------
+
+* PPPoE: An issue reading certain configuration keys has been fixed.
+
+
+Tests
+-----
+
+* Many additional test cases have been added, bringing code coverage to nearly
+  97%.
+
+
+
 0.9.5 (2020-09-27)
 ==================
 
